@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  /* Slate & Colorful Palette (Reference Match) */
+  --color-party-dark: #1e293b;
+  /* Slate 800 - Deep Navy Base */
+  --color-party-primary: #FFFFFF;
+  /* White Primary Text */
+  --color-party-secondary: #EFC050;
+  /* Gold Accent */
+  --color-party-accent: #65B7F0;
+  /* Sky Blue Accent */
+  --color-party-surface: #334155;
+  /* Slate 700 - Card Surface */
+
+  --animate-slide-up: slideUp 0.3s ease-out forwards;
+
+  @keyframes slideUp {
+    0% {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+body {
+  background-color: var(--color-party-dark);
+  color: white;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Specific class for the main Logo/Title */
+.font-serif {
+  font-family: 'Playfair Display', serif;
+}
