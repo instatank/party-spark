@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
-import { Wine, Sparkles, Flame, ArrowRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed } from 'lucide-react';
+import { Wine, Sparkles, Flame, ArrowRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap } from 'lucide-react';
 import questionData from '../../data/truth_or_drink.json';
 
-type Category = 'classic' | 'spicy';
+type Category = 'classic' | 'spicy' | 'deep' | 'exes' | 'chaos';
 type GameState =
     | 'CATEGORY_SELECT'
     | 'SETUP'
@@ -50,6 +50,39 @@ const CATEGORIES: CategoryMeta[] = [
         accentText: 'text-rose-400',
         accentBorderFocus: 'focus:border-rose-500',
         icon: <Flame size={28} className="text-white shrink-0" />,
+    },
+    {
+        id: 'deep',
+        title: 'Deep Cuts',
+        tagline: 'Vulnerable, heartfelt, and ugly-cry adjacent.',
+        emoji: '🌊',
+        gradient: 'from-emerald-600 to-teal-500',
+        shadow: 'shadow-emerald-900/30',
+        accentText: 'text-emerald-400',
+        accentBorderFocus: 'focus:border-emerald-500',
+        icon: <Waves size={28} className="text-white shrink-0" />,
+    },
+    {
+        id: 'exes',
+        title: 'Ex Files',
+        tagline: 'Every receipt, every red flag, every relapse.',
+        emoji: '💔',
+        gradient: 'from-pink-600 to-red-500',
+        shadow: 'shadow-pink-900/30',
+        accentText: 'text-pink-400',
+        accentBorderFocus: 'focus:border-pink-500',
+        icon: <HeartCrack size={28} className="text-white shrink-0" />,
+    },
+    {
+        id: 'chaos',
+        title: 'Chaos Mode',
+        tagline: 'Absurd, surreal, slightly cursed.',
+        emoji: '🌀',
+        gradient: 'from-fuchsia-600 to-purple-500',
+        shadow: 'shadow-fuchsia-900/30',
+        accentText: 'text-fuchsia-400',
+        accentBorderFocus: 'focus:border-fuchsia-500',
+        icon: <Zap size={28} className="text-white shrink-0" />,
     },
 ];
 
@@ -157,34 +190,32 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
                 <ScreenHeader title="Truth or Drink" onBack={onExit} onHome={onExit} />
-                <div className="flex-1 flex flex-col items-center justify-center px-2 gap-6">
-                    <div className="text-center mb-2">
-                        <p className="text-6xl mb-4">🥃</p>
-                        <h2 className="text-2xl font-serif font-bold text-white mb-2">Confess or take a sip.</h2>
-                        <p className="text-gray-400 text-sm px-6">Pick a deck. Answer honestly — or drink the question away.</p>
+                <div className="flex-1 flex flex-col items-center px-2 gap-4 pb-4">
+                    <div className="text-center mb-1">
+                        <p className="text-5xl mb-2">🥃</p>
+                        <h2 className="text-xl font-serif font-bold text-white mb-1">Confess or take a sip.</h2>
+                        <p className="text-gray-400 text-xs px-6">Pick a deck. Answer honestly — or drink it away.</p>
                     </div>
 
-                    {CATEGORIES.map(cat => (
-                        <button
-                            key={cat.id}
-                            onClick={() => handleCategorySelect(cat.id)}
-                            className={`w-full bg-gradient-to-r ${cat.gradient} text-white p-5 rounded-2xl flex items-center gap-4 active:scale-95 transition-all shadow-lg ${cat.shadow} group relative overflow-hidden`}
-                        >
-                            <div className="absolute top-0 right-0 w-32 h-32 opacity-30 rounded-full blur-3xl -mr-10 -mt-10 bg-white" />
-                            {cat.icon}
-                            <div className="text-left relative z-10 flex-1">
-                                <h3 className="font-bold text-lg flex items-center gap-2">
-                                    {cat.title} <span className="text-base">{cat.emoji}</span>
-                                </h3>
-                                <p className="text-sm text-white/80">{cat.tagline}</p>
-                            </div>
-                            <ArrowRight size={22} className="text-white/80 shrink-0 group-active:translate-x-1 transition-transform" />
-                        </button>
-                    ))}
-
-                    <p className="text-xs text-gray-500 text-center px-8 mt-2">
-                        More decks dropping soon — Deep Cuts, Ex Files & Chaos Mode.
-                    </p>
+                    <div className="w-full space-y-3">
+                        {CATEGORIES.map(cat => (
+                            <button
+                                key={cat.id}
+                                onClick={() => handleCategorySelect(cat.id)}
+                                className={`w-full bg-gradient-to-r ${cat.gradient} text-white p-4 rounded-2xl flex items-center gap-4 active:scale-95 transition-all shadow-lg ${cat.shadow} group relative overflow-hidden`}
+                            >
+                                <div className="absolute top-0 right-0 w-32 h-32 opacity-30 rounded-full blur-3xl -mr-10 -mt-10 bg-white" />
+                                {cat.icon}
+                                <div className="text-left relative z-10 flex-1">
+                                    <h3 className="font-bold text-lg flex items-center gap-2">
+                                        {cat.title} <span className="text-base">{cat.emoji}</span>
+                                    </h3>
+                                    <p className="text-sm text-white/80">{cat.tagline}</p>
+                                </div>
+                                <ArrowRight size={22} className="text-white/80 shrink-0 group-active:translate-x-1 transition-transform" />
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
         );
