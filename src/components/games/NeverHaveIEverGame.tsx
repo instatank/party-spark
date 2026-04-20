@@ -71,7 +71,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                         Pick a category. Stand up if you've done it. Last one sitting wins.
                     </p>
 
-                    <div className="grid gap-2">
+                    <div className="grid gap-2 max-w-[340px] mx-auto w-full">
                         {NEVER_HAVE_I_EVER_CATEGORIES.map((cat) => {
                             const meta = CAT_META[cat.id];
                             const Icon = meta?.Icon || Sparkles;
@@ -88,7 +88,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                         <div className="flex items-center gap-3">
                                             <Icon className={`${meta?.accent || 'text-white'} flex-shrink-0`} size={16} />
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="text-base font-bold text-white leading-tight">{cat.label}</h3>
+                                                <h3 className="text-base font-bold text-white leading-tight truncate">{cat.label}</h3>
                                                 <p className="text-xs text-gray-400 leading-snug truncate">{cat.description}</p>
                                             </div>
                                             <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />

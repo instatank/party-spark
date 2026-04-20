@@ -359,7 +359,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                     Pick a vibe. Read the card. Everyone points on 3!
                 </p>
                 <div className="flex-1 overflow-y-auto pb-8">
-                    <div className="grid gap-2">
+                    <div className="grid gap-2 max-w-[340px] mx-auto w-full">
                         {MOST_LIKELY_TO_CATEGORIES.map((cat: any) => (
                             <button
                                 key={cat.id}
@@ -382,8 +382,8 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                                         </span>
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-base font-bold text-white leading-tight flex items-center gap-2">
-                                                {cat.label}
-                                                {cat.disabled && <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-neutral-400 font-medium">Soon</span>}
+                                                <span className="truncate">{cat.label}</span>
+                                                {cat.disabled && <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-neutral-400 font-medium flex-shrink-0">Soon</span>}
                                             </h3>
                                             <p className="text-xs text-gray-400 leading-snug truncate">{cat.description}</p>
                                         </div>

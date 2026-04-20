@@ -33,7 +33,7 @@ const CATEGORIES: CategoryMeta[] = [
     {
         id: 'classic',
         title: 'Classic',
-        tagline: 'Party staples. Petty confessions. Certified chaos.',
+        tagline: 'Petty confessions & party chaos.',
         emoji: '🍷',
         gradient: 'from-violet-600 to-indigo-500',
         shadow: 'shadow-violet-900/30',
@@ -46,7 +46,7 @@ const CATEGORIES: CategoryMeta[] = [
     {
         id: 'spicy',
         title: 'Spicy',
-        tagline: 'Flirty, scandalous, and a little unhinged.',
+        tagline: 'Flirty, scandalous, unhinged.',
         emoji: '🌶️',
         gradient: 'from-rose-600 to-orange-500',
         shadow: 'shadow-rose-900/30',
@@ -59,7 +59,7 @@ const CATEGORIES: CategoryMeta[] = [
     {
         id: 'deep',
         title: 'Deep Cuts',
-        tagline: 'Vulnerable, heartfelt, and ugly-cry adjacent.',
+        tagline: 'Vulnerable & heartfelt.',
         emoji: '🌊',
         gradient: 'from-emerald-600 to-teal-500',
         shadow: 'shadow-emerald-900/30',
@@ -72,7 +72,7 @@ const CATEGORIES: CategoryMeta[] = [
     {
         id: 'exes',
         title: 'Ex Files',
-        tagline: 'Every receipt, every red flag, every relapse.',
+        tagline: 'Receipts, red flags, relapses.',
         emoji: '💔',
         gradient: 'from-pink-600 to-red-500',
         shadow: 'shadow-pink-900/30',
@@ -84,8 +84,8 @@ const CATEGORIES: CategoryMeta[] = [
     },
     {
         id: 'chaos',
-        title: 'Chaos Mode',
-        tagline: 'Absurd, surreal, slightly cursed.',
+        title: 'Chaos',
+        tagline: 'Absurd, surreal, cursed.',
         emoji: '🌀',
         gradient: 'from-fuchsia-600 to-purple-500',
         shadow: 'shadow-fuchsia-900/30',
@@ -206,7 +206,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     Pick a deck. Answer honestly — or take a sip.
                 </p>
                 <div className="flex-1 overflow-y-auto pb-8">
-                    <div className="grid gap-2">
+                    <div className="grid gap-2 max-w-[340px] mx-auto w-full">
                         {CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}
@@ -218,7 +218,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                         <cat.Icon className={`${cat.accentText} flex-shrink-0`} size={16} />
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-base font-bold text-white leading-tight flex items-center gap-1.5">
-                                                {cat.title} <span className="text-sm">{cat.emoji}</span>
+                                                <span className="truncate">{cat.title}</span>
+                                                <span className="text-sm flex-shrink-0">{cat.emoji}</span>
                                             </h3>
                                             <p className="text-xs text-gray-400 leading-snug truncate">{cat.tagline}</p>
                                         </div>

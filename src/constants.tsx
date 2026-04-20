@@ -143,22 +143,22 @@ export const TABOO_CATEGORIES = [
 ];
 
 export const MOST_LIKELY_TO_CATEGORIES = [
-    { id: 'custom_vibe', label: '✨ Create Your Vibe', description: 'AI-powered cards tailored to YOUR group. Describe who you are!', color: 'bg-gradient-to-r from-violet-600 to-fuchsia-500', isCustom: true },
-    { id: 'family_friendly', label: 'Family Friendly', description: 'Wholesome, funny memories. PG.', color: 'bg-emerald-500' },
-    { id: 'fun', label: 'Fun & Light', description: 'Witty, PG-13 scenarios.', color: 'bg-blue-500' },
-    { id: 'scandalous', label: 'Scandalous', description: 'Spill the tea. Gossipy & dramatic.', color: 'bg-pink-600' },
-    { id: 'adult', label: 'X-Rated / Saucy', description: 'Spice level: High. 18+ only.', color: 'bg-red-600' },
-    { id: 'chaos', label: 'Chaos Mode', description: 'Absurd, surreal, and unhinged.', color: 'bg-purple-600' },
-    { id: 'bbf', label: 'For BBF 👨‍👩‍👧‍👦', description: 'Decades of love, chaos & secrets. You know who.', color: 'bg-purple-600' }
+    { id: 'custom_vibe', label: 'Create Your Vibe', description: 'Personalised cards, powered by AI.', color: 'bg-gradient-to-r from-violet-600 to-fuchsia-500', isCustom: true },
+    { id: 'family_friendly', label: 'Family Friendly', description: 'Wholesome & funny. PG.', color: 'bg-emerald-500' },
+    { id: 'fun', label: 'Fun & Light', description: 'Witty & light. PG-13.', color: 'bg-blue-500' },
+    { id: 'scandalous', label: 'Scandalous', description: 'Gossipy & dramatic.', color: 'bg-pink-600' },
+    { id: 'adult', label: 'X-Rated', description: 'High spice. 18+ only.', color: 'bg-red-600' },
+    { id: 'chaos', label: 'Chaos Mode', description: 'Absurd & unhinged.', color: 'bg-purple-600' },
+    { id: 'bbf', label: 'For BBF', description: 'Decades of love, chaos & secrets.', color: 'bg-purple-600' }
 ];
 
 export const NEVER_HAVE_I_EVER_CATEGORIES = [
-    { id: 'rehaan', label: 'Rehaan Answers 🤔', description: 'Rehaan in the hot seat! Being the young London cousin.', color: 'bg-cyan-600' },
-    { id: 'rehaan_asks', label: 'Rehaan Asks 😈', description: 'Rehaan interrogates the adults. Let the chaos begin!', color: 'bg-orange-500' },
-    { id: 'agra', label: 'Agra Confessions 🕌', description: 'Mughal secrets & family history in Agra.', color: 'bg-amber-600' },
-    { id: 'bbf', label: 'For BBF', description: 'For the incredibly close-knit core family members.', color: 'bg-purple-600' },
+    { id: 'rehaan', label: 'Rehaan Answers', description: 'Rehaan in the hot seat.', color: 'bg-cyan-600' },
+    { id: 'rehaan_asks', label: 'Rehaan Asks', description: 'Rehaan grills the adults.', color: 'bg-orange-500' },
+    { id: 'agra', label: 'Agra Confessions', description: 'Mughal secrets & Agra history.', color: 'bg-amber-600' },
+    { id: 'bbf', label: 'For BBF', description: 'For the core family crew.', color: 'bg-purple-600' },
     { id: 'classic', label: 'Classic Party', description: 'Fun, relatable scenarios.', color: 'bg-emerald-500' },
-    { id: 'guilty_pleasures', label: 'Guilty Pleasures', description: 'Slightly embarrassing acts we all do.', color: 'bg-pink-600' }
+    { id: 'guilty_pleasures', label: 'Guilty Pleasures', description: 'Slightly embarrassing stuff.', color: 'bg-pink-600' }
 ];
 
 export const TRIVIA_CATEGORIES = [
