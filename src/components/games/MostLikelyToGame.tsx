@@ -308,6 +308,28 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
     }
 
     if (gameState === 'CATEGORY') {
+        // Variation A — "Slim Row"
+        // Compact horizontal rows with a colored left accent bar.
+        // Static maps (not dynamic) so Tailwind v4's JIT compiles every class.
+        const ACCENT_BORDER: Record<string, string> = {
+            custom_vibe: 'border-l-violet-500',
+            family_friendly: 'border-l-emerald-500',
+            fun: 'border-l-blue-500',
+            scandalous: 'border-l-pink-500',
+            adult: 'border-l-red-500',
+            chaos: 'border-l-purple-500',
+            bbf: 'border-l-purple-500',
+        };
+        const ICON_ACCENT: Record<string, string> = {
+            custom_vibe: 'text-violet-400',
+            family_friendly: 'text-emerald-400',
+            fun: 'text-blue-400',
+            scandalous: 'text-pink-400',
+            adult: 'text-red-400',
+            chaos: 'text-purple-400',
+            bbf: 'text-purple-400',
+        };
+
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Most Likely To..." onBack={onExit} onHome={onExit} />
@@ -324,46 +346,39 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                         }}
                     />
                 )}
-                <p className="text-gray-400 mb-6 text-sm text-center">
+                <p className="text-gray-400 mb-4 text-sm text-center">
                     Pick a vibe. Read the card. Everyone points on 3!
                 </p>
                 <div className="flex-1 overflow-y-auto pb-8">
-                    <div className="grid gap-4">
+                    <div className="grid gap-2">
                         {MOST_LIKELY_TO_CATEGORIES.map((cat: any) => (
                             <button
                                 key={cat.id}
                                 onClick={() => !cat.disabled && startGame(cat)}
                                 disabled={cat.disabled}
-                                className={`group relative w-full text-left transition-all duration-300
-                                    ${cat.disabled ? 'opacity-40 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98] cursor-pointer'}
+                                className={`group relative w-full text-left transition-all duration-200
+                                    ${cat.disabled ? 'opacity-40 cursor-not-allowed' : 'active:scale-[0.99] cursor-pointer'}
                                 `}
                             >
-                                {/* Ambient glow */}
-                                <div className={`absolute inset-0 rounded-2xl ${cat.color} opacity-0 group-hover:opacity-10 transition-opacity blur-xl`} />
-                                <div className={`bg-neutral-900 border p-5 rounded-2xl shadow-xl transition-colors relative overflow-hidden
-                                    ${cat.isCustom ? 'border-violet-500/40 hover:border-violet-500/70' : 'border-neutral-800 hover:border-neutral-700'}
-                                `}>
-                                    <div className="relative z-10 flex items-center justify-between p-2">
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-1">
-                                                {cat.id === 'custom_vibe'     && <Wand2 className="text-violet-400" size={20} />}
-                                                {cat.id === 'rehaan'          && <Sparkles className="text-orange-400" size={20} />}
-                                                {cat.id === 'bbf'             && <Users className="text-purple-400" size={20} />}
-                                                {cat.id === 'family_friendly' && <Users className="text-emerald-400" size={20} />}
-                                                {cat.id === 'fun'             && <Sparkles className="text-blue-400" size={20} />}
-                                                {cat.id === 'scandalous'      && <Zap className="text-pink-400" size={20} />}
-                                                {cat.id === 'adult'           && <Flame className="text-red-500" size={20} />}
-                                                {cat.id === 'chaos'           && <AlertTriangle className="text-purple-400" size={20} />}
-                                                <h3 className="text-xl font-bold text-white">
-                                                    {cat.label}
-                                                    {cat.disabled && <span className="ml-2 text-[10px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-neutral-400">Soon</span>}
-                                                </h3>
-                                            </div>
-                                            <p className="text-sm text-neutral-400">{cat.description}</p>
+                                <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${ACCENT_BORDER[cat.id] || 'border-l-white/20'} hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors`}>
+                                    <div className="flex items-center gap-3">
+                                        <span className={`${ICON_ACCENT[cat.id] || 'text-white'} flex-shrink-0`}>
+                                            {cat.id === 'custom_vibe'     && <Wand2 size={16} />}
+                                            {cat.id === 'family_friendly' && <Users size={16} />}
+                                            {cat.id === 'fun'             && <Sparkles size={16} />}
+                                            {cat.id === 'scandalous'      && <Zap size={16} />}
+                                            {cat.id === 'adult'           && <Flame size={16} />}
+                                            {cat.id === 'chaos'           && <AlertTriangle size={16} />}
+                                            {cat.id === 'bbf'             && <Users size={16} />}
+                                        </span>
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="text-base font-bold text-white leading-tight flex items-center gap-2">
+                                                {cat.label}
+                                                {cat.disabled && <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-neutral-400 font-medium">Soon</span>}
+                                            </h3>
+                                            <p className="text-xs text-gray-400 leading-snug truncate">{cat.description}</p>
                                         </div>
-                                        <div className={`w-10 h-10 rounded-full ${cat.disabled ? 'bg-neutral-700' : cat.isCustom ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500' : cat.color} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow flex-shrink-0`}>
-                                            <ChevronRight className="text-white" size={20} />
-                                        </div>
+                                        <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
                                     </div>
                                 </div>
                             </button>

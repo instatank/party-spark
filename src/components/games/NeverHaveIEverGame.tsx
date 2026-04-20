@@ -3,7 +3,8 @@ import { NEVER_HAVE_I_EVER_CATEGORIES } from '../../constants';
 import { ScreenHeader } from '../ui/Layout';
 import neverHaveIEverData from '../../data/never_have_i_ever.json';
 import { generateNeverHaveIEver } from '../../services/geminiService';
-import { Sparkles, Lock, ChevronRight, Hand } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { Sparkles, Lock, Hand, MessageCircle, Flame, Landmark, Users } from 'lucide-react';
 
 interface GameProps {
     onExit: () => void;
@@ -50,44 +51,49 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     };
 
     if (gameState === 'SELECT') {
+        // Variation C — "Icon Grid"
+        // 2-column grid with a big gradient icon circle up top, compact title below.
+        // Static class strings per category so Tailwind v4 JIT compiles them.
+        const CAT_META: Record<string, { Icon: LucideIcon; accent: string; iconBg: string }> = {
+            rehaan:           { Icon: MessageCircle, accent: 'text-cyan-300',    iconBg: 'from-cyan-500/30 to-cyan-500/5' },
+            rehaan_asks:      { Icon: Flame,         accent: 'text-orange-300',  iconBg: 'from-orange-500/30 to-orange-500/5' },
+            agra:             { Icon: Landmark,      accent: 'text-amber-300',   iconBg: 'from-amber-500/30 to-amber-500/5' },
+            bbf:              { Icon: Users,         accent: 'text-purple-300',  iconBg: 'from-purple-500/30 to-purple-500/5' },
+            classic:          { Icon: Hand,          accent: 'text-emerald-300', iconBg: 'from-emerald-500/30 to-emerald-500/5' },
+            guilty_pleasures: { Icon: Lock,          accent: 'text-pink-300',    iconBg: 'from-pink-500/30 to-pink-500/5' },
+        };
+
         return (
             <div className="flex flex-col h-full animate-fade-in relative">
                 <ScreenHeader title="Never Have I Ever" onBack={onExit} onHome={onExit} />
-                
+
                 <div className="flex-1 overflow-y-auto pb-8">
-                    <p className="text-gray-400 mb-6 text-sm text-center">
-                        Select a category. We'll show a statement. If you've done it, stand up or raise your hand! Last one sitting wins.
+                    <p className="text-gray-400 mb-4 text-sm text-center">
+                        Pick a category. Stand up if you've done it. Last one sitting wins.
                     </p>
 
-                    <div className="grid gap-4">
-                        {NEVER_HAVE_I_EVER_CATEGORIES.map((cat) => (
-                            <button
-                                key={cat.id}
-                                onClick={() => {
-                                    setCategory(cat.id);
-                                    setGameState('PLAY');
-                                }}
-                                className="group relative w-full text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-                            >
-                                <div className={`absolute inset-0 rounded-2xl ${cat.color} opacity-0 group-hover:opacity-10 transition-opacity blur-xl`} />
-                                <div className="bg-neutral-900 border border-neutral-800 p-5 rounded-2xl shadow-xl hover:border-neutral-700 transition-colors relative overflow-hidden">
-                                    <div className="relative z-10 flex items-center justify-between p-2">
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-1">
-                                                {cat.id === 'rehaan' && <Sparkles className="text-cyan-400" size={20} />}
-                                                {cat.id === 'classic' && <Hand className="text-emerald-400" size={20} />}
-                                                {cat.id === 'guilty_pleasures' && <Lock className="text-pink-400" size={20} />}
-                                                <h3 className="text-xl font-bold text-white">{cat.label}</h3>
-                                            </div>
-                                            <p className="text-sm text-neutral-400">{cat.description}</p>
+                    <div className="grid grid-cols-2 gap-3">
+                        {NEVER_HAVE_I_EVER_CATEGORIES.map((cat) => {
+                            const meta = CAT_META[cat.id];
+                            const Icon = meta?.Icon || Sparkles;
+                            return (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => {
+                                        setCategory(cat.id);
+                                        setGameState('PLAY');
+                                    }}
+                                    className="group relative transition-all duration-200 active:scale-[0.97]"
+                                >
+                                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/25 hover:bg-white/[0.08] rounded-2xl p-4 transition-colors flex flex-col items-center text-center gap-2 min-h-[130px] justify-center">
+                                        <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${meta?.iconBg || 'from-white/20 to-white/5'} flex items-center justify-center shadow-lg ring-1 ring-white/10`}>
+                                            <Icon className={meta?.accent || 'text-white'} size={24} />
                                         </div>
-                                        <div className={`w-10 h-10 rounded-full ${cat.color} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow`}>
-                                            <ChevronRight className="text-white" size={20} />
-                                        </div>
+                                        <h3 className="text-sm font-bold text-white leading-tight px-1">{cat.label}</h3>
                                     </div>
-                                </div>
-                            </button>
-                        ))}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
