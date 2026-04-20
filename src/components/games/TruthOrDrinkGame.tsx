@@ -25,10 +25,14 @@ interface CategoryMeta {
     accentText: string;
     accentBorderFocus: string;
     Icon: LucideIcon;
+    // Variation B — "Gradient Chip" fields. Must be literal static strings for
+    // Tailwind v4's JIT to detect them.
+    chipBg: string;
+    chipHover: string;
+    chipBorder: string;
+    chipIconBg: string;
 }
 
-// NOTE: Tailwind v4's JIT only detects class names that appear as complete static
-// strings in source. Keep these literal — do not build them via template strings.
 const CATEGORIES: CategoryMeta[] = [
     {
         id: 'classic',
@@ -40,6 +44,10 @@ const CATEGORIES: CategoryMeta[] = [
         accentText: 'text-violet-400',
         accentBorderFocus: 'focus:border-violet-500',
         Icon: Sparkles,
+        chipBg: 'bg-violet-500/10',
+        chipHover: 'hover:bg-violet-500/20',
+        chipBorder: 'border-violet-500/30',
+        chipIconBg: 'bg-violet-500/20',
     },
     {
         id: 'spicy',
@@ -51,6 +59,10 @@ const CATEGORIES: CategoryMeta[] = [
         accentText: 'text-rose-400',
         accentBorderFocus: 'focus:border-rose-500',
         Icon: Flame,
+        chipBg: 'bg-rose-500/10',
+        chipHover: 'hover:bg-rose-500/20',
+        chipBorder: 'border-rose-500/30',
+        chipIconBg: 'bg-rose-500/20',
     },
     {
         id: 'deep',
@@ -62,6 +74,10 @@ const CATEGORIES: CategoryMeta[] = [
         accentText: 'text-emerald-400',
         accentBorderFocus: 'focus:border-emerald-500',
         Icon: Waves,
+        chipBg: 'bg-emerald-500/10',
+        chipHover: 'hover:bg-emerald-500/20',
+        chipBorder: 'border-emerald-500/30',
+        chipIconBg: 'bg-emerald-500/20',
     },
     {
         id: 'exes',
@@ -73,6 +89,10 @@ const CATEGORIES: CategoryMeta[] = [
         accentText: 'text-pink-400',
         accentBorderFocus: 'focus:border-pink-500',
         Icon: HeartCrack,
+        chipBg: 'bg-pink-500/10',
+        chipHover: 'hover:bg-pink-500/20',
+        chipBorder: 'border-pink-500/30',
+        chipIconBg: 'bg-pink-500/20',
     },
     {
         id: 'chaos',
@@ -84,6 +104,10 @@ const CATEGORIES: CategoryMeta[] = [
         accentText: 'text-fuchsia-400',
         accentBorderFocus: 'focus:border-fuchsia-500',
         Icon: Zap,
+        chipBg: 'bg-fuchsia-500/10',
+        chipHover: 'hover:bg-fuchsia-500/20',
+        chipBorder: 'border-fuchsia-500/30',
+        chipIconBg: 'bg-fuchsia-500/20',
     },
 ];
 
@@ -186,39 +210,34 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     // RENDER
     // ========================
 
-    // CATEGORY SELECT
+    // CATEGORY SELECT — Variation B "Gradient Chip"
+    // Color-tinted glass tiles with a small gradient icon square.
     if (gameState === 'CATEGORY_SELECT') {
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Truth or Drink" onBack={onExit} onHome={onExit} />
-                <p className="text-gray-400 mb-6 text-sm text-center">
+                <p className="text-gray-400 mb-4 text-sm text-center">
                     Pick a deck. Answer honestly — or take a sip.
                 </p>
                 <div className="flex-1 overflow-y-auto pb-8">
-                    <div className="grid gap-3">
+                    <div className="grid gap-2.5">
                         {CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}
                                 onClick={() => handleCategorySelect(cat.id)}
-                                className="group relative w-full text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                                className="group relative w-full text-left transition-all duration-200 active:scale-[0.98] cursor-pointer"
                             >
-                                {/* Ambient glow on hover */}
-                                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${cat.gradient} opacity-0 group-hover:opacity-10 transition-opacity blur-xl`} />
-                                <div className="bg-neutral-900 border border-neutral-800 hover:border-neutral-700 p-5 rounded-2xl shadow-xl transition-colors relative overflow-hidden">
-                                    <div className="relative z-10 flex items-center justify-between p-1">
-                                        <div className="flex-1 pr-3">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <cat.Icon className={cat.accentText} size={20} />
-                                                <h3 className="text-xl font-bold text-white">
-                                                    {cat.title} <span className="text-base align-middle">{cat.emoji}</span>
-                                                </h3>
-                                            </div>
-                                            <p className="text-sm text-neutral-400">{cat.tagline}</p>
-                                        </div>
-                                        <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${cat.gradient} flex items-center justify-center shadow-lg ${cat.shadow} group-hover:shadow-xl transition-shadow flex-shrink-0`}>
-                                            <ChevronRight className="text-white" size={20} />
-                                        </div>
+                                <div className={`${cat.chipBg} ${cat.chipHover} backdrop-blur-sm border ${cat.chipBorder} rounded-xl py-3 px-3.5 transition-colors flex items-center gap-3`}>
+                                    <div className={`${cat.chipIconBg} w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0`}>
+                                        <cat.Icon className={cat.accentText} size={20} />
                                     </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-base font-bold text-white leading-tight flex items-center gap-1.5">
+                                            {cat.title} <span className="text-sm">{cat.emoji}</span>
+                                        </h3>
+                                        <p className="text-xs text-gray-400 leading-snug truncate">{cat.tagline}</p>
+                                    </div>
+                                    <ChevronRight size={16} className={`${cat.accentText} opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all flex-shrink-0`} />
                                 </div>
                             </button>
                         ))}
