@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
-import { Wine, Sparkles, Flame, ArrowRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { Wine, Sparkles, Flame, ArrowRight, ChevronRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap } from 'lucide-react';
 import questionData from '../../data/truth_or_drink.json';
 
 type Category = 'classic' | 'spicy' | 'deep' | 'exes' | 'chaos';
@@ -23,7 +24,7 @@ interface CategoryMeta {
     shadow: string;
     accentText: string;
     accentBorderFocus: string;
-    icon: React.ReactNode;
+    Icon: LucideIcon;
 }
 
 // NOTE: Tailwind v4's JIT only detects class names that appear as complete static
@@ -38,7 +39,7 @@ const CATEGORIES: CategoryMeta[] = [
         shadow: 'shadow-violet-900/30',
         accentText: 'text-violet-400',
         accentBorderFocus: 'focus:border-violet-500',
-        icon: <Sparkles size={28} className="text-white shrink-0" />,
+        Icon: Sparkles,
     },
     {
         id: 'spicy',
@@ -49,7 +50,7 @@ const CATEGORIES: CategoryMeta[] = [
         shadow: 'shadow-rose-900/30',
         accentText: 'text-rose-400',
         accentBorderFocus: 'focus:border-rose-500',
-        icon: <Flame size={28} className="text-white shrink-0" />,
+        Icon: Flame,
     },
     {
         id: 'deep',
@@ -60,7 +61,7 @@ const CATEGORIES: CategoryMeta[] = [
         shadow: 'shadow-emerald-900/30',
         accentText: 'text-emerald-400',
         accentBorderFocus: 'focus:border-emerald-500',
-        icon: <Waves size={28} className="text-white shrink-0" />,
+        Icon: Waves,
     },
     {
         id: 'exes',
@@ -71,7 +72,7 @@ const CATEGORIES: CategoryMeta[] = [
         shadow: 'shadow-pink-900/30',
         accentText: 'text-pink-400',
         accentBorderFocus: 'focus:border-pink-500',
-        icon: <HeartCrack size={28} className="text-white shrink-0" />,
+        Icon: HeartCrack,
     },
     {
         id: 'chaos',
@@ -82,7 +83,7 @@ const CATEGORIES: CategoryMeta[] = [
         shadow: 'shadow-fuchsia-900/30',
         accentText: 'text-fuchsia-400',
         accentBorderFocus: 'focus:border-fuchsia-500',
-        icon: <Zap size={28} className="text-white shrink-0" />,
+        Icon: Zap,
     },
 ];
 
@@ -188,31 +189,37 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     // CATEGORY SELECT
     if (gameState === 'CATEGORY_SELECT') {
         return (
-            <div className="flex flex-col h-full animate-fade-in relative z-10">
+            <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Truth or Drink" onBack={onExit} onHome={onExit} />
-                <div className="flex-1 flex flex-col items-center px-2 gap-4 pb-4">
-                    <div className="text-center mb-1">
-                        <p className="text-5xl mb-2">🥃</p>
-                        <h2 className="text-xl font-serif font-bold text-white mb-1">Confess or take a sip.</h2>
-                        <p className="text-gray-400 text-xs px-6">Pick a deck. Answer honestly — or drink it away.</p>
-                    </div>
-
-                    <div className="w-full space-y-3">
+                <p className="text-gray-400 mb-6 text-sm text-center">
+                    Pick a deck. Answer honestly — or take a sip.
+                </p>
+                <div className="flex-1 overflow-y-auto pb-8">
+                    <div className="grid gap-3">
                         {CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}
                                 onClick={() => handleCategorySelect(cat.id)}
-                                className={`w-full bg-gradient-to-r ${cat.gradient} text-white p-4 rounded-2xl flex items-center gap-4 active:scale-95 transition-all shadow-lg ${cat.shadow} group relative overflow-hidden`}
+                                className="group relative w-full text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                             >
-                                <div className="absolute top-0 right-0 w-32 h-32 opacity-30 rounded-full blur-3xl -mr-10 -mt-10 bg-white" />
-                                {cat.icon}
-                                <div className="text-left relative z-10 flex-1">
-                                    <h3 className="font-bold text-lg flex items-center gap-2">
-                                        {cat.title} <span className="text-base">{cat.emoji}</span>
-                                    </h3>
-                                    <p className="text-sm text-white/80">{cat.tagline}</p>
+                                {/* Ambient glow on hover */}
+                                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${cat.gradient} opacity-0 group-hover:opacity-10 transition-opacity blur-xl`} />
+                                <div className="bg-neutral-900 border border-neutral-800 hover:border-neutral-700 p-5 rounded-2xl shadow-xl transition-colors relative overflow-hidden">
+                                    <div className="relative z-10 flex items-center justify-between p-1">
+                                        <div className="flex-1 pr-3">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <cat.Icon className={cat.accentText} size={20} />
+                                                <h3 className="text-xl font-bold text-white">
+                                                    {cat.title} <span className="text-base align-middle">{cat.emoji}</span>
+                                                </h3>
+                                            </div>
+                                            <p className="text-sm text-neutral-400">{cat.tagline}</p>
+                                        </div>
+                                        <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${cat.gradient} flex items-center justify-center shadow-lg ${cat.shadow} group-hover:shadow-xl transition-shadow flex-shrink-0`}>
+                                            <ChevronRight className="text-white" size={20} />
+                                        </div>
+                                    </div>
                                 </div>
-                                <ArrowRight size={22} className="text-white/80 shrink-0 group-active:translate-x-1 transition-transform" />
                             </button>
                         ))}
                     </div>
