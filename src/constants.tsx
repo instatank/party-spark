@@ -179,9 +179,9 @@ export const IMPOSTER_CATEGORIES = [
 ];
 
 export const WOULD_YOU_RATHER_CATEGORIES = [
-    { id: 'classic_chaos', label: '🎲 Classic Chaos', description: 'Absurd hypotheticals & superpowers. Easy laughs.', color: 'bg-indigo-500', adult: false },
-    { id: 'deep_revealing', label: '🧠 Deep & Revealing', description: 'Values, regret, legacy. Accidental therapy.', color: 'bg-violet-600', adult: false },
-    { id: 'travel_living', label: '🌍 Travel & Living', description: 'Food, drink, cities, daily-life dilemmas.', color: 'bg-emerald-500', adult: false },
-    { id: 'pop_culture', label: '🎬 Pop Culture & Fandom', description: 'Franchises, celebs, music, TV.', color: 'bg-pink-600', adult: false },
-    { id: 'spicy', label: '🌶️ Spicy / Adults Only', description: 'Dating, intimacy, taboo. PIN required.', color: 'bg-red-600', adult: true }
+    { id: 'classic_chaos', title: 'Classic Chaos', tagline: 'Absurd hypotheticals & superpowers. Easy laughs.', accentText: 'text-indigo-400', gradient: 'from-indigo-600 to-violet-500', shadow: 'shadow-indigo-900/30', adult: false },
+    { id: 'deep_revealing', title: 'Deep & Revealing', tagline: 'Values, regret, legacy. Accidental therapy.', accentText: 'text-violet-400', gradient: 'from-violet-600 to-fuchsia-500', shadow: 'shadow-violet-900/30', adult: false },
+    { id: 'travel_living', title: 'Travel & Living', tagline: 'Food, drink, cities, daily-life dilemmas.', accentText: 'text-emerald-400', gradient: 'from-emerald-600 to-teal-500', shadow: 'shadow-emerald-900/30', adult: false },
+    { id: 'pop_culture', title: 'Pop Culture & Fandom', tagline: 'Franchises, celebs, music, TV.', accentText: 'text-pink-400', gradient: 'from-pink-600 to-rose-500', shadow: 'shadow-pink-900/30', adult: false },
+    { id: 'spicy', title: 'Spicy', tagline: 'Dating, intimacy, taboo. PIN required.', accentText: 'text-rose-400', gradient: 'from-rose-600 to-orange-500', shadow: 'shadow-rose-900/30', adult: true }
 ];

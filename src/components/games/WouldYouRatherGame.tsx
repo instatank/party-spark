@@ -2,12 +2,20 @@
 import React, { useState } from 'react';
 import { Card, Button } from '../ui/Layout';
 import { ScreenHeader } from '../ui/Layout';
-import { ArrowRight, Brain, ChevronRight, Sparkles, Compass, Globe, Film, Flame } from 'lucide-react';
+import { ArrowRight, Brain, ChevronRight, Sparkles, Compass, Film, Flame } from 'lucide-react';
 import WYR_DATA from '../../data/would_you_rather.json';
 import { WOULD_YOU_RATHER_CATEGORIES } from '../../constants';
 import { sessionService } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
+
+const CATEGORY_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+    classic_chaos: Sparkles,
+    deep_revealing: Brain,
+    travel_living: Compass,
+    pop_culture: Film,
+    spicy: Flame,
+};
 
 interface WYRQuestion {
     id: string;
@@ -30,17 +38,6 @@ interface WouldYouRatherGameProps {
 }
 
 const ROUND_SIZE = 10;
-
-const getCategoryIcon = (id: string) => {
-    switch (id) {
-        case 'classic_chaos':  return <Sparkles size={20} className="text-indigo-300" />;
-        case 'deep_revealing': return <Brain size={20} className="text-violet-300" />;
-        case 'travel_living':  return <Compass size={20} className="text-emerald-300" />;
-        case 'pop_culture':    return <Film size={20} className="text-pink-300" />;
-        case 'spicy':          return <Flame size={20} className="text-red-400" />;
-        default:               return <Globe size={20} className="text-white" />;
-    }
-};
 
 export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }) => {
     const [gameState, setGameState] = useState<'CATEGORY' | 'PLAYING'>('CATEGORY');
@@ -135,39 +132,42 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                         }}
                     />
                 )}
-                <p className="text-gray-400 mb-6 text-sm text-center">
-                    Pick a vibe. Vote on 10 brutal hypotheticals. Get psychoanalysed.
-                </p>
+                <div className="text-center mb-6">
+                    <p className="text-5xl mb-2">🤔</p>
+                    <h2 className="text-xl font-serif font-bold text-white mb-1">Pick your <em>vibe</em>.</h2>
+                    <p className="text-gray-400 text-sm">Vote on 10 brutal hypotheticals. Get psychoanalysed.</p>
+                </div>
                 <div className="flex-1 overflow-y-auto pb-8">
-                    <div className="grid gap-4">
-                        {WOULD_YOU_RATHER_CATEGORIES.map((cat) => (
-                            <button
-                                key={cat.id}
-                                onClick={() => startCategory(cat.id)}
-                                className="group relative w-full text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-                            >
-                                <div className={`absolute inset-0 rounded-2xl ${cat.color} opacity-0 group-hover:opacity-10 transition-opacity blur-xl`} />
-                                <div className={`bg-neutral-900 border p-5 rounded-2xl shadow-xl transition-colors relative overflow-hidden
-                                    ${cat.adult ? 'border-red-500/40 hover:border-red-500/70' : 'border-neutral-800 hover:border-neutral-700'}
-                                `}>
-                                    <div className="relative z-10 flex items-center justify-between p-2 gap-3">
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                {getCategoryIcon(cat.id)}
-                                                <h3 className="text-xl font-bold text-white">
-                                                    {cat.label}
-                                                    {cat.adult && <span className="ml-2 text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded uppercase tracking-wider">18+</span>}
-                                                </h3>
+                    <div className="grid gap-3">
+                        {WOULD_YOU_RATHER_CATEGORIES.map(cat => {
+                            const Icon = CATEGORY_ICONS[cat.id] ?? Sparkles;
+                            return (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => startCategory(cat.id)}
+                                    className="group relative w-full text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                                >
+                                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${cat.gradient} opacity-0 group-hover:opacity-10 transition-opacity blur-xl`} />
+                                    <div className="bg-white/5 border border-white/10 hover:bg-white/[0.07] hover:border-white/20 backdrop-blur-sm p-5 rounded-2xl shadow-xl transition-colors relative overflow-hidden">
+                                        <div className="relative z-10 flex items-center justify-between p-1">
+                                            <div className="flex-1 pr-3">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <Icon className={cat.accentText} size={20} />
+                                                    <h3 className="text-xl font-bold text-white">
+                                                        {cat.title}
+                                                        {cat.adult && <span className="ml-2 text-[10px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-gray-300">Adults Only</span>}
+                                                    </h3>
+                                                </div>
+                                                <p className="text-sm text-gray-300">{cat.tagline}</p>
                                             </div>
-                                            <p className="text-sm text-neutral-400">{cat.description}</p>
-                                        </div>
-                                        <div className={`w-10 h-10 rounded-full ${cat.color} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow flex-shrink-0`}>
-                                            <ChevronRight className="text-white" size={20} />
+                                            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${cat.gradient} flex items-center justify-center shadow-lg ${cat.shadow} group-hover:shadow-xl transition-shadow flex-shrink-0`}>
+                                                <ChevronRight className="text-white" size={20} />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </button>
-                        ))}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
