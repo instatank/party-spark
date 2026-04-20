@@ -4,7 +4,7 @@ import { ScreenHeader } from '../ui/Layout';
 import neverHaveIEverData from '../../data/never_have_i_ever.json';
 import { generateNeverHaveIEver } from '../../services/geminiService';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Lock, Hand, MessageCircle, Flame, Landmark, Users } from 'lucide-react';
+import { Sparkles, Lock, ChevronRight, Hand, MessageCircle, Flame, Landmark, Users } from 'lucide-react';
 
 interface GameProps {
     onExit: () => void;
@@ -51,16 +51,15 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     };
 
     if (gameState === 'SELECT') {
-        // Variation C — "Icon Grid"
-        // 2-column grid with a big gradient icon circle up top, compact title below.
+        // "Slim Row" — compact horizontal rows with a colored left accent bar.
         // Static class strings per category so Tailwind v4 JIT compiles them.
-        const CAT_META: Record<string, { Icon: LucideIcon; accent: string; iconBg: string }> = {
-            rehaan:           { Icon: MessageCircle, accent: 'text-cyan-300',    iconBg: 'from-cyan-500/30 to-cyan-500/5' },
-            rehaan_asks:      { Icon: Flame,         accent: 'text-orange-300',  iconBg: 'from-orange-500/30 to-orange-500/5' },
-            agra:             { Icon: Landmark,      accent: 'text-amber-300',   iconBg: 'from-amber-500/30 to-amber-500/5' },
-            bbf:              { Icon: Users,         accent: 'text-purple-300',  iconBg: 'from-purple-500/30 to-purple-500/5' },
-            classic:          { Icon: Hand,          accent: 'text-emerald-300', iconBg: 'from-emerald-500/30 to-emerald-500/5' },
-            guilty_pleasures: { Icon: Lock,          accent: 'text-pink-300',    iconBg: 'from-pink-500/30 to-pink-500/5' },
+        const CAT_META: Record<string, { Icon: LucideIcon; accent: string; borderL: string }> = {
+            rehaan:           { Icon: MessageCircle, accent: 'text-cyan-400',    borderL: 'border-l-cyan-500' },
+            rehaan_asks:      { Icon: Flame,         accent: 'text-orange-400',  borderL: 'border-l-orange-500' },
+            agra:             { Icon: Landmark,      accent: 'text-amber-400',   borderL: 'border-l-amber-500' },
+            bbf:              { Icon: Users,         accent: 'text-purple-400',  borderL: 'border-l-purple-500' },
+            classic:          { Icon: Hand,          accent: 'text-emerald-400', borderL: 'border-l-emerald-500' },
+            guilty_pleasures: { Icon: Lock,          accent: 'text-pink-400',    borderL: 'border-l-pink-500' },
         };
 
         return (
@@ -72,7 +71,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                         Pick a category. Stand up if you've done it. Last one sitting wins.
                     </p>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid gap-2">
                         {NEVER_HAVE_I_EVER_CATEGORIES.map((cat) => {
                             const meta = CAT_META[cat.id];
                             const Icon = meta?.Icon || Sparkles;
@@ -83,13 +82,17 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                         setCategory(cat.id);
                                         setGameState('PLAY');
                                     }}
-                                    className="group relative transition-all duration-200 active:scale-[0.97]"
+                                    className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                                 >
-                                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/25 hover:bg-white/[0.08] rounded-2xl p-4 transition-colors flex flex-col items-center text-center gap-2 min-h-[130px] justify-center">
-                                        <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${meta?.iconBg || 'from-white/20 to-white/5'} flex items-center justify-center shadow-lg ring-1 ring-white/10`}>
-                                            <Icon className={meta?.accent || 'text-white'} size={24} />
+                                    <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${meta?.borderL || 'border-l-white/20'} hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors`}>
+                                        <div className="flex items-center gap-3">
+                                            <Icon className={`${meta?.accent || 'text-white'} flex-shrink-0`} size={16} />
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-base font-bold text-white leading-tight">{cat.label}</h3>
+                                                <p className="text-xs text-gray-400 leading-snug truncate">{cat.description}</p>
+                                            </div>
+                                            <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
                                         </div>
-                                        <h3 className="text-sm font-bold text-white leading-tight px-1">{cat.label}</h3>
                                     </div>
                                 </button>
                             );
