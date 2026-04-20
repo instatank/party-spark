@@ -178,15 +178,10 @@ export const IMPOSTER_CATEGORIES = [
     { id: 'jobs', label: 'Jobs', color: 'bg-red-500', words: ['Doctor', 'Teacher', 'Artist', 'Chef', 'Pilot', 'Firefighter', 'Police', 'Actor', 'Scientist', 'Soldier', 'Magician', 'Astronaut', 'Archaeologist', 'Spy', 'Surgeon', 'Lifeguard', 'Architect', 'Sommelier', 'Stuntman', 'Zookeeper', 'Bounty Hunter', 'Ventriloquist', 'Bomb Disposal', 'Cryptographer', 'Beekeeper', 'Ghost Hunter', 'Jockey', 'Taxidermist', 'Mime', 'Rickshaw Driver', 'Mechanic', 'Plumber', 'Electrician', 'Carpenter', 'Janitor', 'Bouncer', 'Lumberjack', 'Meteorologist', 'Judge', 'Politician', 'Dentist', 'Nurse', 'Baker', 'Butcher', 'Tailor', 'Barber', 'Florist', 'Photographer', 'Journalist', 'Librarian', 'Singer', 'Dancer', 'Pianist', 'Drummer', 'Guitarist', 'Comedian', 'Writer', 'Poet', 'Director', 'Producer'] }
 ];
 
-export const WOULD_YOU_RATHER_QUESTIONS = [
-    { id: '1', optionA: "Be able to fly", optionB: "Be able to turn invisible", category: "Superpower" },
-    { id: '2', optionA: "Always have to say everything on your mind", optionB: "Never be able to speak again", category: "Social" },
-    { id: '3', optionA: "Live in a treehouse", optionB: "Live in a cave", category: "Lifestyle" },
-    { id: '4', optionA: "Fight 1 horse-sized duck", optionB: "Fight 100 duck-sized horses", category: "Absurd" },
-    { id: '5', optionA: "Have unlimited free food", optionB: "Have unlimited free travel", category: "Lifestyle" },
-    { id: '6', optionA: "Be a famous movie star", optionB: "Be a brilliant scientist", category: "Career" },
-    { id: '7', optionA: "Never have to sleep", optionB: "Never have to eat", category: "Biological" },
-    { id: '8', optionA: "Have a pause button for your life", optionB: "Have a rewind button for your life", category: "Superpower" },
-    { id: '9', optionA: "Be the smartest person in the world", optionB: "Be the richest person in the world", category: "Attribute" },
-    { id: '10', optionA: "Explore space", optionB: "Explore the deep ocean", category: "Adventure" }
+export const WOULD_YOU_RATHER_CATEGORIES = [
+    { id: 'classic_chaos', label: '🎲 Classic Chaos', description: 'Absurd hypotheticals & superpowers. Easy laughs.', color: 'bg-indigo-500', adult: false },
+    { id: 'deep_revealing', label: '🧠 Deep & Revealing', description: 'Values, regret, legacy. Accidental therapy.', color: 'bg-violet-600', adult: false },
+    { id: 'travel_living', label: '🌍 Travel & Living', description: 'Food, drink, cities, daily-life dilemmas.', color: 'bg-emerald-500', adult: false },
+    { id: 'pop_culture', label: '🎬 Pop Culture & Fandom', description: 'Franchises, celebs, music, TV.', color: 'bg-pink-600', adult: false },
+    { id: 'spicy', label: '🌶️ Spicy / Adults Only', description: 'Dating, intimacy, taboo. PIN required.', color: 'bg-red-600', adult: true }
 ];

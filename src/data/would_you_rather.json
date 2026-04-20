@@ -1,1190 +1,199 @@
-[
-  {
-    "id": "classic_0",
-    "optionA": "Fight 100 duck-sized horses",
-    "optionB": "Fight 1 horse-sized duck",
-    "category": "Absurd",
-    "stats": {
-      "a": 45,
-      "b": 55
-    },
-    "analysisA": "You think quantity is easier than quality. You're wrong. You're just going to get nibbled to death.",
-    "analysisB": "You prefer a boss battle. You have main character energy, but you might underestimate the power of a giant beak."
-  },
-  {
-    "id": "classic_1",
-    "optionA": "Always say everything on your mind",
-    "optionB": "Never be able to speak again",
-    "category": "Social",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're a chaos agent. You value truth over tact and probably have zero secrets.",
-    "analysisB": "You're a secretive observer. You'd rather suffer in silence than accidentally reveal your dark thoughts."
-  },
-  {
-    "id": "classic_2",
-    "optionA": "Have pause buttons for your life",
-    "optionB": "Have rewind buttons for your life",
-    "category": "Superpowers",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You're overwhelmed. You just need a break. Procrastinator energy.",
-    "analysisB": "You live in the past. You regret things easily and want a do-over. Perfectionist."
-  },
-  {
-    "id": "classic_3",
-    "optionA": "Be invisible for a day",
-    "optionB": "Can fly for a day",
-    "category": "Superpowers",
-    "stats": {
-      "a": 55,
-      "b": 45
-    },
-    "analysisA": "You're nosy. You want to snoop. Trust issues detected.",
-    "analysisB": "You crave freedom. You feel trapped and just want to escape it all."
-  },
-  {
-    "id": "classic_4",
-    "optionA": "Lose all your money and valuables",
-    "optionB": "Lose all the pictures you have ever taken",
-    "category": "Deep",
-    "stats": {
-      "a": 20,
-      "b": 80
-    },
-    "analysisA": "You're sentimental. You value memories over material wealth. Or you're just broke anyway.",
-    "analysisB": "You're a materialist. You'd rather buy new memories than keep the old ones."
-  },
-  {
-    "id": "classic_5",
-    "optionA": "Be famous when you are alive and forgotten when you die",
-    "optionB": "Go down in history when you die but be unknown while alive",
-    "category": "Ego",
-    "stats": {
-      "a": 60,
-      "b": 40
-    },
-    "analysisA": "You thrive on validation. You need the likes *now*. Instant gratification junkie.",
-    "analysisB": "You're an artist. You care about legacy more than comfort. Or you're just a martyr."
-  },
-  {
-    "id": "classic_6",
-    "optionA": "Live in a house that is always too hot",
-    "optionB": "Live in a house that is always too cold",
-    "category": "Comfort",
-    "stats": {
-      "a": 25,
-      "b": 75
-    },
-    "analysisA": "You're a lizard. You like to bake.",
-    "analysisB": "You can always put on more layers. Practical thinker."
-  },
-  {
-    "id": "classic_7",
-    "optionA": "Explore space",
-    "optionB": "Explore the ocean",
-    "category": "Adventure",
-    "stats": {
-      "a": 65,
-      "b": 35
-    },
-    "analysisA": "You look up. You're a dreamer, an optimist, maybe a bit flighty.",
-    "analysisB": "You look down. You're grounded, curious about the depths, maybe a bit dark."
-  },
-  {
-    "id": "classic_8",
-    "optionA": "Be able to talk with the animals",
-    "optionB": "Speak all foreign languages",
-    "category": "Superpowers",
-    "stats": {
-      "a": 50,
-      "b": 50
-    },
-    "analysisA": "You prefer pets to people. Socially awkward but pure heart.",
-    "analysisB": "You want to connect with humans. Or just eavesdrop on tourists."
-  },
-  {
-    "id": "classic_9",
-    "optionA": "Have a rewind button",
-    "optionB": "Have a pause button",
-    "category": "Time",
-    "stats": {
-      "a": 68,
-      "b": 32
-    },
-    "analysisA": "Regret guides you.",
-    "analysisB": "Stress guides you."
-  },
-  {
-    "id": "classic_10",
-    "optionA": "Be Batman",
-    "optionB": "Be Iron Man",
-    "category": "Fandom",
-    "stats": {
-      "a": 45,
-      "b": 55
-    },
-    "analysisA": "You're brooding and edgy. You think trauma makes you interesting.",
-    "analysisB": "You're flashy and arrogant. You think money solves everything."
-  },
-  {
-    "id": "classic_11",
-    "optionA": "Give up social media forever",
-    "optionB": "Give up movies and TV forever",
-    "category": "Lifestyle",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You're addicted to the scroll. You need validation.",
-    "analysisB": "You value connection over content. Or you just really like memes."
-  },
-  {
-    "id": "classic_12",
-    "optionA": "Be a reverse centaur (human legs, horse top)",
-    "optionB": "Be a standard centaur (horse legs, human top)",
-    "category": "Absurd",
-    "stats": {
-      "a": 10,
-      "b": 90
-    },
-    "analysisA": "You're a monster. Why would you choose this? Pure chaos.",
-    "analysisB": "You want the speed but keep the brain. Logical choice."
-  },
-  {
-    "id": "classic_13",
-    "optionA": "Sneeze every time you hide",
-    "optionB": "Laugh every time you lie",
-    "category": "Inconvenience",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're terrible at stealth games.",
-    "analysisB": "You're a terrible liar. But at least you're jolly."
-  },
-  {
-    "id": "classic_14",
-    "optionA": "See 10 minutes into the future",
-    "optionB": "See 100 years into the future",
-    "category": "Superpowers",
-    "stats": {
-      "a": 60,
-      "b": 40
-    },
-    "analysisA": "You're anxious. You want to control the immediate outcome.",
-    "analysisB": "You're curious about the big picture. Or you just want to know if we survive."
-  },
-  {
-    "id": "classic_15",
-    "optionA": "Have unlimited free food",
-    "optionB": "Have unlimited free travel",
-    "category": "Lifestyle",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're a homebody. Comfort food is your love language.",
-    "analysisB": "You're an explorer. Experiences over calories."
-  },
-  {
-    "id": "classic_16",
-    "optionA": "Be the smartest person in the room",
-    "optionB": "Be the funniest person in the room",
-    "category": "Social",
-    "stats": {
-      "a": 35,
-      "b": 65
-    },
-    "analysisA": "You need to be right. Intellectual vanity.",
-    "analysisB": "You need to be liked. Social butterfly."
-  },
-  {
-    "id": "classic_17",
-    "optionA": "Wear a clown wig every day",
-    "optionB": "Wear clown shoes every day",
-    "category": "Absurd",
-    "stats": {
-      "a": 50,
-      "b": 50
-    },
-    "analysisA": "You want people to look at your face. Attention seeker.",
-    "analysisB": "You hope people don't look down. Shuffler."
-  },
-  {
-    "id": "classic_18",
-    "optionA": "Accidentally send a spicy text to your boss",
-    "optionB": "Accidentally send a mean text about your mom to your mom",
-    "category": "Cringe",
-    "stats": {
-      "a": 70,
-      "b": 30
-    },
-    "analysisA": "Career suicide is better than family emotional damage.",
-    "analysisB": "You're heartless. Or you just really hate your job."
-  },
-  {
-    "id": "classic_19",
-    "optionA": "Have to read every Terms of Service",
-    "optionB": "Have to create a password with a special character, number, and uppercase letter for every thought you have",
-    "category": "Tech",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're a masochist for boredom.",
-    "analysisB": "You're mentally exhausted just thinking about it."
-  },
-  {
-    "id": "classic_20",
-    "optionA": "Be an unknown superhero",
-    "optionB": "Be a famous villain",
-    "category": "Moral",
-    "stats": {
-      "a": 65,
-      "b": 35
-    },
-    "analysisA": "Altruistic. You do good for good's sake.",
-    "analysisB": "You want the credit. You'd burn the world to be known."
-  },
-  {
-    "id": "classic_21",
-    "optionA": "Live without music",
-    "optionB": "Live without TV",
-    "category": "Lifestyle",
-    "stats": {
-      "a": 20,
-      "b": 80
-    },
-    "analysisA": "You have no soul.",
-    "analysisB": "You can make your own entertainment."
-  },
-  {
-    "id": "classic_22",
-    "optionA": "Find true love",
-    "optionB": "Find a suitcase with 5 million dollars",
-    "category": "Love vs Money",
-    "stats": {
-      "a": 45,
-      "b": 55
-    },
-    "analysisA": "You're a hopeless romantic.",
-    "analysisB": "You're a realist. You can buy a lot of dates with 5 mil."
-  },
-  {
-    "id": "classic_23",
-    "optionA": "Only communicate with emojis",
-    "optionB": "Only communicate in rhymes",
-    "category": "Social",
-    "stats": {
-      "a": 55,
-      "b": 45
-    },
-    "analysisA": "You're basic. 🍆🍑",
-    "analysisB": "You're a poet / and you know it."
-  },
-  {
-    "id": "1770914324766_0",
-    "optionA": "Always know exactly what to say to make someone like you, but you can never remember anyone's name.",
-    "optionB": "Always remember everyone's name, but you're constantly saying awkward things.",
-    "category": "Social",
-    "stats": {
-      "a": 45,
-      "b": 55
-    },
-    "analysisA": "You prioritize impact over detail, probably have a vast network of superficial acquaintances, and are secretly terrified of being caught out. You're a charming fraud.",
-    "analysisB": "You're a well-intentioned dork who probably apologizes too much, but your heart's in the right place. People forgive you because you make them feel seen, even if you make them cringe."
-  },
-  {
-    "id": "1770914324766_1",
-    "optionA": "Every time you hear music, it's your absolute favorite song, but you can't ever choose what to listen to.",
-    "optionB": "You can choose any music you want, but every song is slightly out of tune.",
-    "category": "Sensory",
-    "stats": {
-      "a": 60,
-      "b": 40
-    },
-    "analysisA": "You're a passive pleasure-seeker, content to let fate dictate your good times. Probably someone who never picks the movie and says 'I'm easy' way too often.",
-    "analysisB": "You're a control freak with a discerning ear, willing to tolerate slight imperfection for the sake of autonomy. You probably correct people's grammar even in casual conversation."
-  },
-  {
-    "id": "1770914324766_2",
-    "optionA": "Every time you sneeze, you orgasm.",
-    "optionB": "Every time you orgasm, you sneeze loudly.",
-    "category": "Body Quirks",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You're a walking paradox of public mortification and private bliss, possibly someone who finds joy in unexpected places. You probably schedule your allergy meds very carefully.",
-    "analysisB": "You're an exhibitionist at heart, or at least someone who can't keep a secret. Your partners probably think it's hilarious, and your neighbors know too much."
-  },
-  {
-    "id": "1770914324766_3",
-    "optionA": "Have incredibly vivid, epic dreams every night, but your waking life is boring and mundane.",
-    "optionB": "Have an incredibly exciting and fulfilling waking life, but you never remember any of your dreams.",
-    "category": "Lifestyle",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're an escapist, more comfortable in the realm of fantasy than reality. You probably spend too much time on Reddit and avoid making eye contact in public.",
-    "analysisB": "You're a go-getter, living life to the fullest and too busy making memories to care about what your subconscious is up to. You probably don't even have a 'dream journal.'"
-  },
-  {
-    "id": "1770914324766_4",
-    "optionA": "Have a pet dragon the size of a cat.",
-    "optionB": "Have a pet cat the size of a dragon.",
-    "category": "Fantasy Pets",
-    "stats": {
-      "a": 75,
-      "b": 25
-    },
-    "analysisA": "You're a closet fantasy enthusiast who wants a dangerous companion, but only if it's manageable and cute. You probably collect limited edition figurines.",
-    "analysisB": "You're an absurdist who loves to shock and awe, or just someone who thinks bigger is always better. Your home probably smells faintly of catnip and fear."
-  },
-  {
-    "id": "1770914324766_5",
-    "optionA": "Only be able to communicate through interpretive dance.",
-    "optionB": "Only be able to communicate through spoken word, but every word is sung like an opera.",
-    "category": "Communication",
-    "stats": {
-      "a": 20,
-      "b": 80
-    },
-    "analysisA": "You're a performance artist waiting for your moment, or someone who's given up on words entirely. Your life is a constant, confusing ballet.",
-    "analysisB": "You're a dramatic individual who believes every moment is a stage, whether anyone else wants to watch or not. You probably make a grand entrance everywhere you go, even the grocery store."
-  },
-  {
-    "id": "1770914324766_6",
-    "optionA": "Instantly learn any new skill by watching someone do it once, but you forget it after 24 hours.",
-    "optionB": "Learn any new skill normally, but you can never forget any mistakes you've ever made while learning.",
-    "category": "Learning",
-    "stats": {
-      "a": 50,
-      "b": 50
-    },
-    "analysisA": "You're a superficial dabbler, good at impressing people briefly but lacking any real commitment. You're probably excellent at party tricks.",
-    "analysisB": "You're a perfectionist burdened by your past, constantly replaying failures but likely never repeating them. You probably keep an extensive mental ledger of every faux pas."
-  },
-  {
-    "id": "1770914324766_7",
-    "optionA": "Have perfect hair every single day, but your clothes are always slightly wrinkled.",
-    "optionB": "Have perfectly pressed clothes every day, but your hair is always a mess.",
-    "category": "Appearance",
-    "stats": {
-      "a": 65,
-      "b": 35
-    },
-    "analysisA": "You're a vanity-driven individual who prioritizes the focal point. You probably think a good haircut can solve most of life's problems.",
-    "analysisB": "You're a stickler for presentation, believing that outward order reflects inner discipline. You probably iron your underwear."
-  },
-  {
-    "id": "1770914324766_8",
-    "optionA": "Be able to travel anywhere in the world instantly, but you can only stay for one hour.",
-    "optionB": "Be able to travel anywhere in the world for an unlimited time, but it takes you a year to get there.",
-    "category": "Travel",
-    "stats": {
-      "a": 55,
-      "b": 45
-    },
-    "analysisA": "You're a superficial sightseer, more interested in checking off boxes than deep experiences. Your Instagram is probably full of 'I was here!' photos.",
-    "analysisB": "You're a journey-over-destination type, or just incredibly patient, perhaps too patient. You probably start packing for vacations years in advance."
-  },
-  {
-    "id": "1770914324766_9",
-    "optionA": "Be an incredible public speaker, but you're terribly awkward in one-on-one conversations.",
-    "optionB": "Be an incredible one-on-one conversationalist, but you freeze up completely when speaking to groups.",
-    "category": "Social",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You thrive on the anonymous energy of a crowd, but crumble under the scrutiny of intimacy. You're probably a charismatic leader with no close friends.",
-    "analysisB": "You're a master of connection, but terrified of losing control. You probably excel at therapy and hate birthday parties."
-  },
-  {
-    "id": "1770914324766_10",
-    "optionA": "Have everything you own be brand new and perfectly functional, but you can never keep anything for more than a month.",
-    "optionB": "Have everything you own be incredibly old and worn, but it lasts forever.",
-    "category": "Possessions",
-    "stats": {
-      "a": 35,
-      "b": 65
-    },
-    "analysisA": "You're a consumerist who loves the thrill of the new, but lacks sentimental attachment. Your life is a revolving door of fleeting satisfaction.",
-    "analysisB": "You's a nostalgic hoarder, clinging to the past and terrified of change. Your house is probably a museum of your own history."
-  },
-  {
-    "id": "1770914324766_11",
-    "optionA": "See sound.",
-    "optionB": "Hear colors.",
-    "category": "Senses",
-    "stats": {
-      "a": 50,
-      "b": 50
-    },
-    "analysisA": "You're a visually oriented eccentric, probably very observant but easily overwhelmed. You probably describe concerts as a 'light show for your ears.'",
-    "analysisB": "You're an auditory aficionado with a vibrant inner world, or just someone who enjoys a good synesthetic trip. You probably have strong opinions on what 'red' sounds like."
-  },
-  {
-    "id": "1770914324766_12",
-    "optionA": "Never have to sleep again, but you always feel slightly tired.",
-    "optionB": "Sleep 12 hours a day, but you wake up feeling completely refreshed.",
-    "category": "Lifestyle",
-    "stats": {
-      "a": 70,
-      "b": 30
-    },
-    "analysisA": "You're a restless hustler, always looking for an edge, even if it means sacrificing true rest. You probably brag about how little sleep you get.",
-    "analysisB": "You're a committed hedonist or deeply pragmatic about self-care, valuing quality rest above all else. You probably own multiple expensive mattresses."
-  },
-  {
-    "id": "1770914324766_13",
-    "optionA": "Have 1 million followers on social media, but every post you make is subtly misinterpreted by your audience.",
-    "optionB": "Have 10 genuine, deeply supportive followers, but you can only post once a month.",
-    "category": "Social Media",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You're a clout-chaser, hungry for validation even if it's based on a false premise. You probably spend hours crafting captions no one understands anyway.",
-    "analysisB": "You're an authenticity-seeker, valuing substance over superficiality. You probably only share profound thoughts, usually about artisanal bread."
-  },
-  {
-    "id": "1770914324766_14",
-    "optionA": "Always be exactly the right temperature, but everyone around you is always too hot or too cold.",
-    "optionB": "Everyone around you is always exactly the right temperature, but you're always slightly uncomfortable.",
-    "category": "Comfort",
-    "stats": {
-      "a": 55,
-      "b": 45
-    },
-    "analysisA": "You're a selfish creature of comfort, perfectly content as long as your own needs are met. You probably hog the thermostat at home.",
-    "analysisB": "You're a martyr, prioritizing the comfort of others over your own. You probably volunteer for everything and never complain, even when you're freezing."
-  },
-  {
-    "id": "1770914324766_15",
-    "optionA": "Understand what all animals are saying, but you can't talk to humans.",
-    "optionB": "Understand what all humans are saying, but you can't talk to animals.",
-    "category": "Communication",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're a misanthrope who prefers the company of beasts, possibly a Disney princess in denial. You probably have strong opinions on squirrel politics.",
-    "analysisB": "You're a social animal, perhaps a gossip, deeply invested in the human drama. You probably talk to your pet as if it understands you anyway."
-  },
-  {
-    "id": "1770914324766_16",
-    "optionA": "Be able to taste all new and exotic flavors, but familiar foods taste like cardboard.",
-    "optionB": "Only be able to taste familiar foods, but they're always perfectly delicious.",
-    "category": "Food",
-    "stats": {
-      "a": 45,
-      "b": 55
-    },
-    "analysisA": "You're an adventurous epicurean, constantly seeking novelty and bored by the mundane. You probably have a passport full of food stamps.",
-    "analysisB": "You're a comfort eater, finding solace in the known and reliable. Your comfort zone extends to your palate, and you probably have a favorite diner."
-  },
-  {
-    "id": "1770914324766_17",
-    "optionA": "Every day lasts 48 hours, but you still only get 24 hours of productivity.",
-    "optionB": "Every day lasts 12 hours, but you get 24 hours of productivity.",
-    "category": "Time",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You're a perpetual procrastinator who just needs more 'thinking time,' even if nothing actually gets done. You probably love long weekends.",
-    "analysisB": "You're a hyper-efficient go-getter, squeezing every drop out of life. You probably have 10 tabs open and three projects on the go."
-  },
-  {
-    "id": "1770914324766_18",
-    "optionA": "Remember everything you've ever learned, but you can't forget anything painful or embarrassing.",
-    "optionB": "Only remember pleasant memories, but you often forget important facts and details.",
-    "category": "Memory",
-    "stats": {
-      "a": 60,
-      "b": 40
-    },
-    "analysisA": "You're a walking encyclopedia of regrets and triumphs, probably prone to rumination. You probably hold grudges and excel at trivia.",
-    "analysisB": "You're a blissful optimist, or perhaps just conveniently forgetful. Your life is a highlight reel, even if you can't remember where you left your keys."
-  },
-  {
-    "id": "1770914324766_19",
-    "optionA": "Always have perfect traffic, but your car can only drive 10 mph.",
-    "optionB": "Your car can go as fast as you want, but you always hit every red light and traffic jam.",
-    "category": "Transportation",
-    "stats": {
-      "a": 50,
-      "b": 50
-    },
-    "analysisA": "You're a patient, methodical individual who values predictability above speed. You probably enjoy the journey more than the destination.",
-    "analysisB": "You're an impatient thrill-seeker, convinced that speed is the only measure of progress, even if you're constantly stuck. You probably get road rage easily."
-  },
-  {
-    "id": "1770914324766_20",
-    "optionA": "Live in a mansion, but it's always incredibly messy and disorganized.",
-    "optionB": "Live in a tiny apartment, but it's always perfectly clean and organized.",
-    "category": "Lifestyle",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're a maximalist with a chaotic soul, prioritizing space over order. You probably view clutter as 'character.'",
-    "analysisB": "You're a minimalist with an obsessive streak, valuing control and pristine environments above all else. Your sock drawer is probably immaculate."
-  },
-  {
-    "id": "1770914324766_21",
-    "optionA": "Be immune to all diseases, but you constantly have minor aches and pains (headaches, stubbed toes, etc.).",
-    "optionB": "Be perfectly healthy, but susceptible to any common illness (colds, flu, etc.).",
-    "category": "Health",
-    "stats": {
-      "a": 70,
-      "b": 30
-    },
-    "analysisA": "You're a hypochondriac's nightmare, always feeling something but never anything serious. You probably have a vast collection of bandaids and Advil.",
-    "analysisB": "You're a risk-taker with a robust immune system, but you're not above catching a seasonal bug. You probably don't believe in wearing a coat."
-  },
-  {
-    "id": "1770914324766_22",
-    "optionA": "Only receive gifts you truly want, but they're always slightly broken or damaged.",
-    "optionB": "Only receive perfectly intact gifts, but they're always things you absolutely don't want.",
-    "category": "Possessions",
-    "stats": {
-      "a": 65,
-      "b": 35
-    },
-    "analysisA": "You're a pragmatist who values the core item, even if it needs some TLC. You probably fix everything yourself and hate waste.",
-    "analysisB": "You're a consumerist who values perfection over utility, or just someone who can't stand receiving ugly things. Your gift closet is probably overflowing."
-  },
-  {
-    "id": "1770914324766_23",
-    "optionA": "Always look impeccably dressed, but your breath always smells faintly of onions.",
-    "optionB": "Always have perfect fresh breath, but you're constantly dressed in mismatched socks and a stained shirt.",
-    "category": "Appearance",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You're a visual perfectionist, convinced that outward appearance is everything, even if your inner self (and breath) tells a different story. You probably own several mirrors.",
-    "analysisB": "You're a sensory purist, prioritizing immediate comfort and pleasantries over visual aesthetics. You probably hug a lot of people and don't own an iron."
-  },
-  {
-    "id": "1770914324766_24",
-    "optionA": "Be able to read minds, but you can't turn it off and hear everyone's thoughts constantly.",
-    "optionB": "Be able to instantly learn any language, but you forget your native language.",
-    "category": "Powers/Communication",
-    "stats": {
-      "a": 45,
-      "b": 55
-    },
-    "analysisA": "You're a curious busybody who craves ultimate knowledge, but you'd be quickly overwhelmed by the sheer noise of humanity. You probably already eavesdrop a lot.",
-    "analysisB": "You're a globalist with an unfortunate side effect, willing to sacrifice your roots for universal understanding. You'd probably quickly pick up your native language again through immersion, you clever devil."
-  },
-  {
-    "id": "1770914389927_0",
-    "optionA": "Always have a pebble in your shoe.",
-    "optionB": "Always have an itchy spot you can't reach.",
-    "category": "Annoyances",
-    "stats": {
-      "a": 45,
-      "b": 55
-    },
-    "analysisA": "You're a masochist who thrives on predictable, controllable discomfort. You probably think it builds character or gives you something to complain about in an endearing way. You secretly love the drama of a constant, minor struggle.",
-    "analysisB": "You're the kind of person who believes in 'out of sight, out of mind' until it drives you absolutely mad. You prefer the psychological torture of the unknown itch, probably a metaphor for all the unfinished tasks in your life. You enjoy the torment of the unattainable."
-  },
-  {
-    "id": "1770914389927_1",
-    "optionA": "Only able to whisper.",
-    "optionB": "Only able to shout.",
-    "category": "Communication",
-    "stats": {
-      "a": 60,
-      "b": 40
-    },
-    "analysisA": "You're a covert operator in a world that demands volume. You probably think you're mysterious, but in reality, you're just making everyone lean in awkwardly, constantly asking 'What did you say?' You thrive on being understated, to the point of annoyance.",
-    "analysisB": "You're a walking exclamation point, demanding attention whether anyone wants to give it or not. You believe the loudest voice wins, probably confusing volume with validity. Your friends likely communicate with you via text, even when you're in the same room."
-  },
-  {
-    "id": "1770914389927_2",
-    "optionA": "Instantly fluent in every language.",
-    "optionB": "Master every musical instrument.",
-    "category": "Skills",
-    "stats": {
-      "a": 50,
-      "b": 50
-    },
-    "analysisA": "You're a globalist who believes words are the ultimate weapon and bridge. You probably think you're going to solve world peace with your linguistic prowess, when really you just want to understand every podcast and confuse customs agents in thirty different dialects.",
-    "analysisB": "You're an artist at heart, craving universal emotional expression. You probably envision yourself as the centerpiece of every gathering, ready to pull out a sitar or a glockenspiel at a moment's notice. You're definitely the one who brings their ukulele to a campfire."
-  },
-  {
-    "id": "1770914389927_3",
-    "optionA": "All food you eat is bland.",
-    "optionB": "All drinks you taste are slightly sour.",
-    "category": "Senses/Food",
-    "stats": {
-      "a": 55,
-      "b": 45
-    },
-    "analysisA": "You're someone who sees eating as a necessary chore, a functional fuel stop. You probably enjoy the texture more than the taste, or perhaps you're just perpetually dieting. Your spice rack consists of salt and 'other salt'.",
-    "analysisB": "You're a chronic complain-er, always finding the cloud in every silver lining. You probably have a love-hate relationship with citrus and believe everything could just be *a little bit better* if only it weren't for that subtle tang. Your life is a perpetual 'puckered face' emoji."
-  },
-  {
-    "id": "1770914389927_4",
-    "optionA": "Live in a world without music.",
-    "optionB": "Live in a world without art (visual).",
-    "category": "Culture",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're a pragmatic soul who prioritizes function over feeling. You probably think silence is golden, or that podcasts can fill the void. You likely struggle with understanding why anyone would ever just 'vibe' to a beat.",
-    "analysisB": "You're a literal thinker who probably thinks 'decorating' is rearranging your furniture. You might appreciate symmetry, but true aesthetic expression is lost on you. Your home is probably beige, and you genuinely don't understand why anyone would pay money for a painting."
-  },
-  {
-    "id": "1770914389927_5",
-    "optionA": "Every time you try to tell a lie, you hiccup uncontrollably.",
-    "optionB": "Every time you're about to say something true, you blush violently.",
-    "category": "Social/Honesty",
-    "stats": {
-      "a": 70,
-      "b": 30
-    },
-    "analysisA": "You're a person who desperately wants to be seen as trustworthy, but clearly has a past full of fibs. You're probably already a bad liar, and this just makes it hilariously obvious. You'd quickly become the friend everyone interrogates for hiccups.",
-    "analysisB": "You're an open book, whether you like it or not, betraying your deepest convictions with a crimson glow. You probably hate small talk and thrive in environments where brutal honesty is the norm, or you're just perpetually embarrassed by your own authenticity."
-  },
-  {
-    "id": "1770914389927_6",
-    "optionA": "Be able to perfectly parallel park any vehicle, first try, every time.",
-    "optionB": "Never forget where you put your keys/wallet/phone again.",
-    "category": "Convenience",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You live in a city or have an inexplicable vendetta against parking garages. You're either a show-off who loves the applause of onlookers or deeply insecure about your spatial reasoning. Either way, you prioritize specific skills over general life efficiency.",
-    "analysisB": "You're a person perpetually running late, forever doing the 'pat-down dance' before leaving the house. You thrive on efficiency and hate the tiny, soul-crushing moments of 'where is it?!'. You're probably a meticulous planner whose system always falls apart at the last minute."
-  },
-  {
-    "id": "1770914389927_7",
-    "optionA": "Be followed everywhere by a personal spotlight.",
-    "optionB": "Be followed everywhere by a personal theme song (only you can hear).",
-    "category": "Attention",
-    "stats": {
-      "a": 20,
-      "b": 80
-    },
-    "analysisA": "You're a narcissist in the making, or already there. You crave external validation and believe every moment is your cue to shine. You probably think you're the main character in a movie, and frankly, you're not wrong – but it's a documentary about someone desperately seeking attention.",
-    "analysisB": "You're an internal performer, a maestro of your own mind. You live for the dramatic monologue that plays out only in your head, thriving on the inner narrative. You're either incredibly self-confident or deeply delusional, convinced your life is a carefully scored cinematic masterpiece."
-  },
-  {
-    "id": "1770914389927_8",
-    "optionA": "Only eat food prepared by yourself.",
-    "optionB": "Only eat food prepared by others.",
-    "category": "Food",
-    "stats": {
-      "a": 65,
-      "b": 35
-    },
-    "analysisA": "You're a control freak in the kitchen, utterly distrustful of anyone else's culinary choices or hygiene standards. You probably view dining out as a perilous adventure and potlucks as a potential biohazard. Your food is 'safe' but probably never truly surprising.",
-    "analysisB": "You're either incredibly lazy or have absolute faith in humanity's cooking abilities (or lack thereof in your own). You probably have a favorite takeout menu memorized and view cooking as a primitive skill best left to the professionals or desperate amateurs. You're either living the dream or constantly at the mercy of others' dubious casseroles."
-  },
-  {
-    "id": "1770914389927_9",
-    "optionA": "Be able to talk to animals but they only complain.",
-    "optionB": "Be able to talk to plants but they only tell you secrets about other plants.",
-    "category": "Abilities",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're a glutton for punishment and probably have a long history of being an emotional support human. You thrive on being needed, even if it means listening to your cat's existential dread or your dog's eternal hunger pangs. You're a perpetual therapist for the animal kingdom.",
-    "analysisB": "You're a nosy busybody, thriving on gossip and botanical intrigue. You probably have a secret garden where all the ferns are spilling tea about the roses, and you're living for it. You prefer the silent, dramatic whispers of the chlorophyll community over any actual conversation."
-  },
-  {
-    "id": "1770914389927_10",
-    "optionA": "Always wear mismatched socks.",
-    "optionB": "Always have a tiny, unnoticeable stain on your shirt.",
-    "category": "Appearance",
-    "stats": {
-      "a": 75,
-      "b": 25
-    },
-    "analysisA": "You're a rebel without a cause, or at least a cause worth fighting for. You embrace 'quirkiness' and probably think it adds character, when in reality, it just confirms you lost a sock in the laundry... again. You're chaotic, but in a harmless, slightly endearing way.",
-    "analysisB": "You're a perfectionist who can't stand visible flaws, but deep down, you're tormented by the knowledge of imperfection. You're probably constantly checking your appearance, even for things no one else can see. Your internal monologue is a constant battle against the invisible enemies of tidiness."
-  },
-  {
-    "id": "1770914389927_11",
-    "optionA": "Have a photographic memory for every embarrassing moment you've ever had.",
-    "optionB": "Forget every movie/book/show you've ever experienced immediately after finishing it.",
-    "category": "Memory",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You're a masochist who thrives on self-inflicted cringe. You probably enjoy reliving your awkward phases and can recall every social misstep with horrifying clarity. You're either incredibly resilient or constantly undergoing therapy.",
-    "analysisB": "You're an eternal optimist, or perhaps just a lover of fresh starts and constant novelty. You probably love the feeling of experiencing something 'for the first time' over and over again. Your friends hate rewatching anything with you because you always ask 'Who's that guy again?'"
-  },
-  {
-    "id": "1770914389927_12",
-    "optionA": "Be able to perfectly predict the weather one week in advance.",
-    "optionB": "Be able to perfectly predict stock market trends 5 minutes in advance.",
-    "category": "Future/Utility",
-    "stats": {
-      "a": 15,
-      "b": 85
-    },
-    "analysisA": "You're a picnic planner's dream and a financial advisor's nightmare. You prioritize comfort and convenience over massive wealth, probably because you just want to know if you should bring an umbrella to brunch. Your wildest dream is a perfectly executed outdoor event.",
-    "analysisB": "You're a capitalist in waiting, a titan of industry whose only flaw is needing to act *very* quickly. You understand that true power lies in wealth, and you're willing to live in a perpetually unpredictable climate if it means never having to work a day in your life. You're practically a walking hedge fund."
-  },
-  {
-    "id": "1770914389927_13",
-    "optionA": "Your phone battery dies if it drops below 50%.",
-    "optionB": "Your internet only works between 2 AM and 5 AM.",
-    "category": "Technology",
-    "stats": {
-      "a": 60,
-      "b": 40
-    },
-    "analysisA": "You're a constant charger, living in a state of low-key panic and always scouting for outlets. You have an irrational fear of the red battery icon and probably own five portable chargers. Your life is an endless quest for a charging port.",
-    "analysisB": "You're a night owl with a serious digital addiction, or perhaps a secret operative thriving in the dark hours. Your social life consists of late-night forums, and you've probably mastered the art of power-napping through the day. You operate on a different time zone than the rest of humanity."
-  },
-  {
-    "id": "1770914389927_14",
-    "optionA": "Every time you try to use a remote control, it does the opposite action.",
-    "optionB": "Every time you open a door, it squeaks loudly.",
-    "category": "Annoyances",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're a rebel against automation, or just incredibly unlucky with technology. You probably prefer manual controls and see this as a justification for your analog lifestyle. Your life is a constant battle against inanimate objects, and you probably yell at your TV frequently.",
-    "analysisB": "You're a creature of habit who hates drawing attention, especially at inopportune times. You probably have an active nightlife or just a general fear of waking anyone up. Your stealth missions to the fridge are now tragically impossible, and you secretly resent every hinge in your home."
-  },
-  {
-    "id": "1770914389927_15",
-    "optionA": "Be able to instantly learn any dance move.",
-    "optionB": "Be able to instantly learn any card trick.",
-    "category": "Skills",
-    "stats": {
-      "a": 55,
-      "b": 45
-    },
-    "analysisA": "You're a showman (or woman) who thrives on being the life of the party, probably the first one on the dance floor and the last to leave. You live for applause and the sheer joy of movement, even if you secretly have two left feet that magically align. Your life is a flash mob waiting to happen.",
-    "analysisB": "You're a master of subtle manipulation and understated flair, thriving on quiet deception. You probably love the 'oohs' and 'aahs' that come with a perfectly executed sleight of hand. You're either a charming trickster or someone who secretly believes they could make it in Vegas. You definitely carry a deck of cards everywhere."
-  },
-  {
-    "id": "1770914389927_16",
-    "optionA": "Only ever wear clothes that are slightly too big.",
-    "optionB": "Only ever wear clothes that are slightly too small.",
-    "category": "Appearance",
-    "stats": {
-      "a": 80,
-      "b": 20
-    },
-    "analysisA": "You're a comfort seeker, valuing ease over elegance. You probably embrace the 'oversized' look and genuinely believe it's a style choice, not a fashion curse. You're either perpetually cozy or trying to hide from the world.",
-    "analysisB": "You're a martyr to fashion, willing to sacrifice comfort for the illusion of looking 'put together'. You probably subscribe to the 'if it zips, it fits' philosophy and spend your days subtly adjusting your wardrobe. Your circulatory system is probably screaming for mercy."
-  },
-  {
-    "id": "1770914389927_17",
-    "optionA": "Have a constantly runny nose.",
-    "optionB": "Always have a piece of food stuck in your teeth (visible).",
-    "category": "Annoyances/Appearance",
-    "stats": {
-      "a": 65,
-      "b": 35
-    },
-    "analysisA": "You're a person who has accepted perpetual mild discomfort as a fact of life. You probably have a lifetime supply of tissues and are constantly dabbing. You've perfected the art of subtle nose-wiping and have embraced your role as the perpetually sniffly friend.",
-    "analysisB": "You're a walking horror story for anyone with a modicum of social anxiety. You probably avoid mirrors and refuse to smile in photos. You're either completely oblivious to social cues or defiantly unbothered by what others think of your oral hygiene, embracing a truly 'rustic' aesthetic."
-  },
-  {
-    "id": "1770914389927_18",
-    "optionA": "Be able to speak to ghosts.",
-    "optionB": "Be able to speak to aliens (if they ever visited).",
-    "category": "Supernatural/Sci-Fi",
-    "stats": {
-      "a": 45,
-      "b": 55
-    },
-    "analysisA": "You're a historical gossip hound, craving the drama of the past and the secrets of the dearly departed. You probably spend your weekends in old cemeteries or haunted houses, hoping for a juicy spectral revelation. You're either incredibly brave or incredibly lonely.",
-    "analysisB": "You're an interstellar ambassador in waiting, convinced that humanity's true destiny lies among the stars. You probably spend your nights stargazing and secretly hoping for first contact. You're either a visionary or desperately trying to escape the mundane realities of Earth."
-  },
-  {
-    "id": "1770914389927_19",
-    "optionA": "Every time you snap your fingers, a random small object appears 1 foot away from you.",
-    "optionB": "Every time you clap your hands, a random small object disappears 1 foot away from you.",
-    "category": "Magic/Chaos",
-    "stats": {
-      "a": 50,
-      "b": 50
-    },
-    "analysisA": "You're a maximalist, constantly seeking more and thriving on the unpredictable bounty of the universe. Your home is probably a chaotic collection of trinkets, and you probably think this is a fantastic way to acquire novelty. You're either an accidental hoarder or a one-person gift shop.",
-    "analysisB": "You're a minimalist who craves order and cleanliness, or perhaps a secret agent of anti-clutter. You probably revel in the ability to make annoying things vanish, from dust bunnies to your neighbor's annoying lawn gnome. You're either incredibly tidy or incredibly petty."
-  },
-  {
-    "id": "1770914389927_20",
-    "optionA": "Only be able to see in black and white.",
-    "optionB": "Only be able to hear in mono (no stereo).",
-    "category": "Senses",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You're a vintage soul, perhaps a film noir enthusiast, who finds beauty in grayscale. You probably appreciate stark contrasts and believe true art doesn't need 'distracting' colors. You're either incredibly philosophical or just really bad at picking out clothes.",
-    "analysisB": "You're someone who doesn't understand the finer nuances of sound, or perhaps you're perfectly content with a simpler auditory world. You probably prefer spoken word over complex musical arrangements and find binaural beats utterly confusing. You're either blissfully unaware or have a very efficient brain that cuts out unnecessary 'noise'."
-  },
-  {
-    "id": "1770914389927_21",
-    "optionA": "Have a tail (prehensile).",
-    "optionB": "Have gills (functional).",
-    "category": "Body Modification/Abilities",
-    "stats": {
-      "a": 70,
-      "b": 30
-    },
-    "analysisA": "You're an innovator, always looking for a hands-free solution to life's problems. You probably fantasize about hanging upside down and opening doors with your new appendage. You're either incredibly creative or just desperately need more ways to carry groceries.",
-    "analysisB": "You're a mermaid (or merman) at heart, dreaming of an aquatic existence and despising the terrestrial grind. You probably hate sweating and love the idea of escaping to the deep blue. You're either a serene water-lover or desperately trying to avoid paying your utility bills by moving into the ocean."
-  },
-  {
-    "id": "1770914389927_22",
-    "optionA": "Be immune to all disease but also immune to all pain.",
-    "optionB": "Be able to instantly cure any disease in others but experience their pain for 1 hour.",
-    "category": "Health/Empathy",
-    "stats": {
-      "a": 60,
-      "b": 40
-    },
-    "analysisA": "You're a self-preservationist, prioritizing personal comfort and longevity above all else. You probably view emotional pain as equally inconvenient and have mastered the art of detachment. You're either stoic and unshakeable, or completely numb and potentially a danger to yourself without feeling consequences.",
-    "analysisB": "You're a true empath, willing to suffer for the well-being of others, even if it's excruciating. You probably have a hero complex and believe your suffering is noble. You'd be the friend everyone calls for a headache, but secretly you're just racking up a collection of phantom ailments."
-  },
-  {
-    "id": "1770914389927_23",
-    "optionA": "Every time you try to compliment someone, it comes out as an insult.",
-    "optionB": "Every time you try to insult someone, it comes out as a compliment.",
-    "category": "Social/Communication",
-    "stats": {
-      "a": 45,
-      "b": 55
-    },
-    "analysisA": "You're a walking social disaster, constantly offending people with your accidental backhanded remarks. You probably have the best intentions but the worst delivery. Your life is a series of cringe-worthy moments, and you've probably given up on being genuinely nice, leaning into your unintentional 'roast master' persona.",
-    "analysisB": "You're a secret softie who can't even be genuinely mean when you try. You probably attempt to be a tough critic but always end up making someone's day. You're either incredibly kind-hearted or just spectacularly bad at being a jerk. Your enemies probably think you secretly admire them."
-  },
-  {
-    "id": "1770914389927_24",
-    "optionA": "Always know the exact time, down to the millisecond.",
-    "optionB": "Always know the exact location of any object you've ever touched.",
-    "category": "Knowledge/Utility",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You're a temporal obsessive, living life by the clock and likely causing everyone around you stress with your punctuality. You probably think 'on time' means 'five minutes early' and get annoyed by anyone who isn't. Your life is a perfectly synchronized (and perhaps rigid) dance with the microseconds.",
-    "analysisB": "You're a domestic detective, a master of lost and found. Your brain is a super-powered search engine for misplaced items, making you the ultimate helper for forgetful friends. You're either incredibly organized by proxy or just really hate searching for your keys in the morning."
-  },
-  {
-    "id": "1770916161055_0",
-    "optionA": "Have all your thoughts appear as speech bubbles above your head.",
-    "optionB": "Have everything you say come out in an auto-tuned, robotic voice.",
-    "category": "Communication",
-    "stats": {
-      "a": 55,
-      "b": 45
-    },
-    "analysisA": "Your inner monologue is clearly so dull, you think people need to see it. Nobody cares.",
-    "analysisB": "You just want to sound cooler than you are. Newsflash: a robot voice won't fix your personality."
-  },
-  {
-    "id": "1770916161055_1",
-    "optionA": "Only be able to eat food that is extremely bland.",
-    "optionB": "Only be able to eat food that is incredibly spicy.",
-    "category": "Food",
-    "stats": {
-      "a": 60,
-      "b": 40
-    },
-    "analysisA": "You're choosing a life as flavorless as your wardrobe. Predictable and boring.",
-    "analysisB": "You're chasing an artificial high because your life lacks actual excitement. Pathetic."
-  },
-  {
-    "id": "1770916161055_2",
-    "optionA": "Have to wear socks with sandals for the rest of your life.",
-    "optionB": "Have to wear a visibly too-small hat for the rest of your life.",
-    "category": "Fashion",
-    "stats": {
-      "a": 35,
-      "b": 65
-    },
-    "analysisA": "You've given up on self-respect. Congratulations on fully embracing 'tourist chic,' you fashion criminal.",
-    "analysisB": "You just want to remind everyone your head is oversized. Insecurity is a bad accessory."
-  },
-  {
-    "id": "1770916161055_3",
-    "optionA": "Be able to teleport, but only to places you've already been.",
-    "optionB": "Be able to fly, but only at jogging speed.",
-    "category": "Superpower",
-    "stats": {
-      "a": 50,
-      "b": 50
-    },
-    "analysisA": "You're choosing efficient mediocrity. Your comfort zone just got a fast pass. Bravo, you boring person.",
-    "analysisB": "You're too lazy to walk, but too uninspired to fly properly. So you'll just... jog in the air."
-  },
-  {
-    "id": "1770916161055_4",
-    "optionA": "Have an incredibly catchy, annoying song stuck in your head permanently.",
-    "optionB": "Have a constant, mild, non-painful itch you can never scratch.",
-    "category": "Annoyances",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're a masochist who enjoys mental torture. Explains why you love your own company.",
-    "analysisB": "You thrive on perpetual low-level discomfort. Probably why your relationships are so messy."
-  },
-  {
-    "id": "1770916161055_5",
-    "optionA": "Always know if someone is lying, but never know the truth.",
-    "optionB": "Always know the truth, but never know if someone is lying.",
-    "category": "Social",
-    "stats": {
-      "a": 45,
-      "b": 55
-    },
-    "analysisA": "You just want to feel superior by catching people out. Trust issues much?",
-    "analysisB": "Ignorance is bliss for you, isn't it? You'll believe anything as long as it's 'true'."
-  },
-  {
-    "id": "1770916161055_6",
-    "optionA": "Live in a beautiful, isolated cabin in the woods with no internet.",
-    "optionB": "Live in a bustling city penthouse with constant connectivity.",
-    "category": "Lifestyle",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You call it 'peaceful,' we call it 'terrified of human interaction.' Go hug a tree, weirdo.",
-    "analysisB": "Addicted to noise and validation. Your soul is as quiet as your apartment on a Friday night."
-  },
-  {
-    "id": "1770916161055_7",
-    "optionA": "Be able to talk to animals, but they only complain about humans.",
-    "optionB": "Be able to understand babies, but they only cry about trivial things.",
-    "category": "Interaction",
-    "stats": {
-      "a": 50,
-      "b": 50
-    },
-    "analysisA": "You're already miserable, so a chorus of animal complaints just confirms your worldview. Depressing.",
-    "analysisB": "You revel in petty drama. Perfect, now you can share in a baby's inconsolable rage over a dropped pacifier."
-  },
-  {
-    "id": "1770916161055_8",
-    "optionA": "Have a personal chef but only for instant ramen.",
-    "optionB": "Have a personal stylist but only for Crocs and fanny packs.",
-    "category": "Luxury",
-    "stats": {
-      "a": 70,
-      "b": 30
-    },
-    "analysisA": "You outsource the simplest tasks. Your life is a monument to convenience and low expectations.",
-    "analysisB": "You're embracing peak irony, trying to make the worst fashion 'work'. Just admit you have no style."
-  },
-  {
-    "id": "1770916161055_9",
-    "optionA": "Every time you laugh, a random rubber duck quacks nearby.",
-    "optionB": "Every time you sneeze, you loudly cluck like a chicken.",
-    "category": "Public Embarrassment",
-    "stats": {
-      "a": 65,
-      "b": 35
-    },
-    "analysisA": "You want to be unique, but in the most profoundly irritating way possible. Seek attention much?",
-    "analysisB": "You prefer a sudden, explosive embarrassment. It's less 'you' and more 'a chicken just escaped'."
-  },
-  {
-    "id": "1770916161055_10",
-    "optionA": "Only be able to whisper for the rest of your life.",
-    "optionB": "Only be able to shout for the rest of your life.",
-    "category": "Voice",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're choosing to be ignored. Your opinions were probably quiet before anyway.",
-    "analysisB": "You're already overcompensating for your lack of presence. This just makes it louder, not better."
-  },
-  {
-    "id": "1770916161055_11",
-    "optionA": "Have infinite money but live in a perpetual state of boredom.",
-    "optionB": "Have just enough money to be comfortable, but be constantly thrilled and engaged.",
-    "category": "Wealth",
-    "stats": {
-      "a": 25,
-      "b": 75
-    },
-    "analysisA": "You think money fixes everything. It just buys a fancier cage for your emptiness.",
-    "analysisB": "You're clinging to the idea of 'authentic' happiness. Just admit you're afraid of being rich."
-  },
-  {
-    "id": "1770916161055_12",
-    "optionA": "Be able to control the weather, but only over your own house.",
-    "optionB": "Be able to talk to plants, but they're all incredibly sarcastic.",
-    "category": "Powers",
-    "stats": {
-      "a": 55,
-      "b": 45
-    },
-    "analysisA": "You're a micro-manager, even with the elements. Your control issues are showing.",
-    "analysisB": "You crave constant verbal sparring. Probably why your houseplants glare at you already."
-  },
-  {
-    "id": "1770916161055_13",
-    "optionA": "Have every single traffic light turn green as you approach.",
-    "optionB": "Never have to wait in line for anything, ever.",
-    "category": "Convenience",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're optimizing for trivialities. Clearly, the biggest roadblock in your life is a red light.",
-    "analysisB": "You're too important to wait. Your ego is bigger than the queue you just skipped."
-  },
-  {
-    "id": "1770916161055_14",
-    "optionA": "Your phone's battery is always at 1%.",
-    "optionB": "Your phone's internet speed is always dial-up.",
-    "category": "Technology",
-    "stats": {
-      "a": 70,
-      "b": 30
-    },
-    "analysisA": "You thrive on anxiety and living on the edge. Probably why your life is always almost dead.",
-    "analysisB": "You enjoy the slow torture, making every interaction a test of patience. Just get a flip phone."
-  },
-  {
-    "id": "1770916161055_15",
-    "optionA": "Your entire life is filmed as a reality TV show, but you get paid millions.",
-    "optionB": "Live a completely private life, but struggle financially.",
-    "category": "Fame",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You'd sell your soul for money and attention. No surprise there, you're already performing.",
-    "analysisB": "You're just afraid of being seen for who you really are. Your privacy is a flimsy shield."
-  },
-  {
-    "id": "1770916161055_16",
-    "optionA": "Be able to perfectly mimic any sound you hear.",
-    "optionB": "Be able to perfectly draw anything you see.",
-    "category": "Talent",
-    "stats": {
-      "a": 50,
-      "b": 50
-    },
-    "analysisA": "You're choosing to be an annoying human parrot. Your talent is literally just copying.",
-    "analysisB": "You're choosing to be a human camera. Originality is clearly not your strong suit."
-  },
-  {
-    "id": "1770916161055_17",
-    "optionA": "Every time you open a door, a dramatic gust of wind blows through.",
-    "optionB": "Every time you answer a phone call, a mysterious fog fills the room.",
-    "category": "Atmosphere",
-    "stats": {
-      "a": 60,
-      "b": 40
-    },
-    "analysisA": "You want to make an entrance, even if it's just to the bathroom. Main character syndrome much?",
-    "analysisB": "You love drama and mystery, even when it's just ordering pizza. Get a hobby."
-  },
-  {
-    "id": "1770916161055_18",
-    "optionA": "Always have wet socks.",
-    "optionB": "Always have something sticky on your hands.",
-    "category": "Sensory",
-    "stats": {
-      "a": 45,
-      "b": 55
-    },
-    "analysisA": "You're embracing perpetual discomfort. Your life is already a soggy mess, so why not?",
-    "analysisB": "You love the feeling of being trapped, unable to fully clean yourself. It's a metaphor for your life."
-  },
-  {
-    "id": "1770916161055_19",
-    "optionA": "Be the smartest person in a room full of idiots.",
-    "optionB": "Be the dumbest person in a room full of geniuses.",
-    "category": "Intellect",
-    "stats": {
-      "a": 70,
-      "b": 30
-    },
-    "analysisA": "You crave validation and constant superiority. Your ego is bigger than that room.",
-    "analysisB": "You enjoy feeling small and inadequate. Clearly, you thrive on self-deprecating humor."
-  },
-  {
-    "id": "1770916161055_20",
-    "optionA": "All your clothes are permanently one size too big.",
-    "optionB": "All your clothes are permanently one size too small.",
-    "category": "Clothing",
-    "stats": {
-      "a": 55,
-      "b": 45
-    },
-    "analysisA": "You've embraced 'effortless comfort,' which is just an excuse for looking sloppy. Sloppy you.",
-    "analysisB": "You're choosing constant restriction and discomfort. Your life is already too tight, isn't it?"
-  },
-  {
-    "id": "1770916161055_21",
-    "optionA": "Have a personal masseuse who only uses sandpaper.",
-    "optionB": "Have a personal chef who only makes bland gruel.",
-    "category": "Services",
-    "stats": {
-      "a": 30,
-      "b": 70
-    },
-    "analysisA": "You enjoy pain, and pretending it's relaxing. Clearly, you're just a glutton for punishment.",
-    "analysisB": "You've accepted a life of culinary misery. Your palate is as uninspired as your personality."
-  },
-  {
-    "id": "1770916161055_22",
-    "optionA": "Only be able to listen to elevator music.",
-    "optionB": "Only be able to watch infomercials.",
-    "category": "Entertainment",
-    "stats": {
-      "a": 65,
-      "b": 35
-    },
-    "analysisA": "You're choosing a life of predictable, unoffensive background noise. You're basically an NPC.",
-    "analysisB": "You're embracing endless sales pitches and false promises. Just like your dating life."
-  },
-  {
-    "id": "1770916161055_23",
-    "optionA": "Every time you sneeze, glitter explodes from your nose.",
-    "optionB": "Every time you burp, a tiny, harmless puff of smoke comes out.",
-    "category": "Bodily Functions",
-    "stats": {
-      "a": 40,
-      "b": 60
-    },
-    "analysisA": "You're choosing to be perpetually fabulous and messy. Your life is already a glitter bomb.",
-    "analysisB": "You're embracing the subtle, mysterious dramatic flair. Your farts probably have mood lighting too."
-  },
-  {
-    "id": "1770916161055_24",
-    "optionA": "Be able to perfectly solve any Rubik's Cube instantly.",
-    "optionB": "Be able to perfectly parallel park any vehicle, anywhere, instantly.",
-    "category": "Niche Skill",
-    "stats": {
-      "a": 35,
-      "b": 65
-    },
-    "analysisA": "You're choosing a useless party trick. Your social skills are as developed as your Rubik's cube technique.",
-    "analysisB": "You're prioritizing practicality over actual substance. Your life is just one long, boring commute."
-  }
-]
+{
+  "categories": [
+    {
+      "id": "classic_chaos",
+      "name": "Classic Chaos",
+      "adult": false,
+      "items": [
+        { "id": "cc_01", "optionA": "Fight 100 duck-sized horses", "optionB": "Fight 1 horse-sized duck", "stats": { "a": 45, "b": 55 }, "analysisA": "You think quantity is easier than quality. You're wrong. You're just going to get nibbled to death.", "analysisB": "You prefer a boss battle. Main character energy, but you're underestimating the beak." },
+        { "id": "cc_02", "optionA": "Have pause buttons for your life", "optionB": "Have rewind buttons for your life", "stats": { "a": 30, "b": 70 }, "analysisA": "You're overwhelmed. You just need a break. Procrastinator energy.", "analysisB": "You live in the past. You regret things easily and want a do-over. Perfectionist." },
+        { "id": "cc_03", "optionA": "Be invisible for a day", "optionB": "Fly for a day", "stats": { "a": 55, "b": 45 }, "analysisA": "You're nosy. You want to snoop. Trust issues detected.", "analysisB": "You crave freedom. You feel trapped and just want to escape it all." },
+        { "id": "cc_04", "optionA": "Talk to animals", "optionB": "Speak every human language", "stats": { "a": 50, "b": 50 }, "analysisA": "You prefer pets to people. Socially awkward but pure heart.", "analysisB": "You want to connect with humans. Or just eavesdrop on tourists." },
+        { "id": "cc_05", "optionA": "Be a reverse centaur (human legs, horse top)", "optionB": "Be a standard centaur (horse legs, human top)", "stats": { "a": 10, "b": 90 }, "analysisA": "You're a monster. Why would you choose this? Pure chaos.", "analysisB": "You want the speed but keep the brain. Logical choice." },
+        { "id": "cc_06", "optionA": "Sneeze every time you hide", "optionB": "Laugh every time you lie", "stats": { "a": 40, "b": 60 }, "analysisA": "You're terrible at stealth games.", "analysisB": "You're a terrible liar. But at least you're jolly." },
+        { "id": "cc_07", "optionA": "See 10 minutes into the future", "optionB": "See 100 years into the future", "stats": { "a": 60, "b": 40 }, "analysisA": "You're anxious. You want to control the immediate outcome.", "analysisB": "You're curious about the big picture. Or you just want to know if we survive." },
+        { "id": "cc_08", "optionA": "Wear a clown wig every day", "optionB": "Wear clown shoes every day", "stats": { "a": 50, "b": 50 }, "analysisA": "You want people to look at your face. Attention seeker.", "analysisB": "You hope people don't look down. Shuffler." },
+        { "id": "cc_09", "optionA": "Have a tail (prehensile)", "optionB": "Have functional gills", "stats": { "a": 70, "b": 30 }, "analysisA": "Innovator. You fantasise about hands-free everything. Mostly groceries.", "analysisB": "Mermaid energy. You hate sweating and rent." },
+        { "id": "cc_10", "optionA": "Have a pet dragon the size of a cat", "optionB": "Have a pet cat the size of a dragon", "stats": { "a": 75, "b": 25 }, "analysisA": "Closet fantasy enthusiast. Dangerous, but make it cute.", "analysisB": "You think bigger is always better. Your house smells of catnip and fear." },
+        { "id": "cc_11", "optionA": "Snap your fingers and a random object appears 1 foot away", "optionB": "Clap your hands and a random object disappears 1 foot away", "stats": { "a": 50, "b": 50 }, "analysisA": "Maximalist. Accidental hoarder in 6 months.", "analysisB": "Petty minimalist. The neighbour's gnome is going first." },
+        { "id": "cc_12", "optionA": "Be followed everywhere by a personal spotlight", "optionB": "Be followed everywhere by a personal theme song (only you hear it)", "stats": { "a": 20, "b": 80 }, "analysisA": "Narcissist in training. You think everything is your cue.", "analysisB": "Inner monologue is a Hans Zimmer score. Delusional but iconic." },
+        { "id": "cc_13", "optionA": "Have your thoughts appear as speech bubbles above your head", "optionB": "Have everything you say come out auto-tuned and robotic", "stats": { "a": 55, "b": 45 }, "analysisA": "Your inner monologue is so dull you think people need subtitles.", "analysisB": "You think a robot voice fixes a personality. It does not." },
+        { "id": "cc_14", "optionA": "Speak only in interpretive dance", "optionB": "Speak only by singing every word like opera", "stats": { "a": 20, "b": 80 }, "analysisA": "Performance artist waiting for your moment. Life is a confused ballet.", "analysisB": "Every room is a stage. The grocery store dreads you." },
+        { "id": "cc_15", "optionA": "Sneeze and have glitter explode from your nose", "optionB": "Burp and have a tiny puff of smoke come out", "stats": { "a": 40, "b": 60 }, "analysisA": "Perpetually fabulous and messy. Carpet is destroyed.", "analysisB": "Subtle dramatic flair. Your farts probably have mood lighting too." },
+        { "id": "cc_16", "optionA": "Open every door to a dramatic gust of wind", "optionB": "Answer every phone call to a mysterious fog filling the room", "stats": { "a": 60, "b": 40 }, "analysisA": "You make an entrance to the bathroom. Main character syndrome.", "analysisB": "You add fog to ordering pizza. Get a hobby." },
+        { "id": "cc_17", "optionA": "Have a permanent tiny rain cloud over your head", "optionB": "Have a permanent tiny sunbeam follow you (even indoors)", "stats": { "a": 30, "b": 70 }, "analysisA": "Goth aesthetic locked in. Your hair is always damp.", "analysisB": "Sunburn at the cinema. But great for selfies." },
+        { "id": "cc_18", "optionA": "Have hands that are always slightly sticky", "optionB": "Have feet that are always slightly damp", "stats": { "a": 40, "b": 60 }, "analysisA": "Trapped in your own life metaphor. Handshakes are over.", "analysisB": "Sock industry hates you. Yoga class banishes you." },
+        { "id": "cc_19", "optionA": "Be able to perfectly mimic any sound you hear", "optionB": "Be able to perfectly draw anything you see", "stats": { "a": 50, "b": 50 }, "analysisA": "You chose 'human parrot.' Your talent is literally copying.", "analysisB": "You chose 'human camera.' Originality wasn't on the menu." },
+        { "id": "cc_20", "optionA": "Always know if someone is lying — but never know the truth", "optionB": "Always know the truth — but never know if someone is lying", "stats": { "a": 45, "b": 55 }, "analysisA": "You just want to feel superior by catching people. Trust issues much?", "analysisB": "Ignorance is bliss. You'll believe anything as long as it's 'true'." },
+        { "id": "cc_21", "optionA": "Teleport, but only to places you've already been", "optionB": "Fly, but only at jogging speed", "stats": { "a": 70, "b": 30 }, "analysisA": "Efficient mediocrity. Comfort zone got a fast pass.", "analysisB": "Too lazy to walk, too uninspired to soar. So you jog. In the air." },
+        { "id": "cc_22", "optionA": "Talk to plants — but they're sarcastic", "optionB": "Talk to animals — but they only complain", "stats": { "a": 55, "b": 45 }, "analysisA": "You crave verbal sparring. Your houseplants already glare.", "analysisB": "You're an emotional support human for the animal kingdom." },
+        { "id": "cc_23", "optionA": "Have a dramatic wind machine activate whenever you walk", "optionB": "Have slow-motion replays trigger every time you do something cool", "stats": { "a": 45, "b": 55 }, "analysisA": "Beyoncé energy. Every hallway is a runway.", "analysisB": "You highlight-reel yourself eating cereal. Iconic." },
+        { "id": "cc_24", "optionA": "Have a constant low-volume kazoo soundtrack to your life", "optionB": "Have your inner monologue narrated by Morgan Freeman (out loud)", "stats": { "a": 25, "b": 75 }, "analysisA": "Comedy at the cost of dignity. You'll lose every job interview.", "analysisB": "Every grocery list becomes profound. Worth the lawsuit." },
+        { "id": "cc_25", "optionA": "Sneeze and confetti shoots out", "optionB": "Cough and a tiny rainbow appears", "stats": { "a": 55, "b": 45 }, "analysisA": "Allergy season is now a parade. Very exhausting branding.", "analysisB": "Bronchitis pride. You're a Pixar short film." },
+        { "id": "cc_26", "optionA": "Have a random celebrity cameo in every selfie you take", "optionB": "Have every group photo accidentally exclude you", "stats": { "a": 70, "b": 30 }, "analysisA": "Clout farming on hard mode. Your camera roll is chaos.", "analysisB": "Ghost in your own life. Great for plausible deniability." },
+        { "id": "cc_27", "optionA": "Have one finger that's twice as long as the others", "optionB": "Have one ear that's twice as big as the other", "stats": { "a": 50, "b": 50 }, "analysisA": "Typing is destroyed. Pointing is unmatched.", "analysisB": "You hear secrets stereo. Sunglasses sit weird forever." },
+        { "id": "cc_28", "optionA": "Burp every time you say 'thank you'", "optionB": "Hiccup every time you say 'sorry'", "stats": { "a": 35, "b": 65 }, "analysisA": "Customer service jobs over. Weddings ruined.", "analysisB": "Apologetic by nature, hiccupping forever. British people would die." },
+        { "id": "cc_29", "optionA": "Always have an audience laugh-track on your good jokes", "optionB": "Always have crickets play on your bad jokes", "stats": { "a": 60, "b": 40 }, "analysisA": "Sitcom protagonist energy. You'll start writing for the laugh.", "analysisB": "Brutal feedback loop. Stand-up career instantly viable." },
+        { "id": "cc_30", "optionA": "Be cursed to always finish other people's sentences (incorrectly)", "optionB": "Be cursed to always misremember the punchline of every joke", "stats": { "a": 40, "b": 60 }, "analysisA": "Conversational chaos agent. Friends warn strangers about you.", "analysisB": "Dad-joke ruiner. Everyone winces but loves you anyway." },
+        { "id": "cc_31", "optionA": "Have a tiny invisible orchestra play whenever you cook", "optionB": "Have a tiny invisible choir sing whenever you shower", "stats": { "a": 45, "b": 55 }, "analysisA": "Every omelette is a Michelin moment. Pasta is now opera.", "analysisB": "Concerts in the bathroom. Roommates moving out tomorrow." },
+        { "id": "cc_32", "optionA": "Be unable to say the letter 'S'", "optionB": "Be unable to say the letter 'T'", "stats": { "a": 50, "b": 50 }, "analysisA": "'Yeth pleathe' for the rest of your life. Snake names ruined.", "analysisB": "'Hank you' to everyone. 'Toas' for breakfast. Devastating." }
+      ]
+    },
+    {
+      "id": "deep_revealing",
+      "name": "Deep & Revealing",
+      "adult": false,
+      "items": [
+        { "id": "dr_01", "optionA": "Lose all your money and valuables", "optionB": "Lose all the photos you've ever taken", "stats": { "a": 20, "b": 80 }, "analysisA": "Sentimental. You value memories over wealth. Or you're broke anyway.", "analysisB": "Materialist. You'd rather buy new memories than keep the old ones." },
+        { "id": "dr_02", "optionA": "Be famous when you're alive and forgotten when you die", "optionB": "Go down in history when you die but be unknown while alive", "stats": { "a": 60, "b": 40 }, "analysisA": "You thrive on validation. Instant gratification junkie.", "analysisB": "You're an artist. You care about legacy more than comfort. Or you're a martyr." },
+        { "id": "dr_03", "optionA": "Be an unknown superhero", "optionB": "Be a famous villain", "stats": { "a": 65, "b": 35 }, "analysisA": "Altruistic. You do good for good's sake.", "analysisB": "You want the credit. You'd burn the world to be known." },
+        { "id": "dr_04", "optionA": "Find true love", "optionB": "Find a suitcase with 5 million dollars", "stats": { "a": 45, "b": 55 }, "analysisA": "Hopeless romantic. Unrealistically optimistic.", "analysisB": "Realist. You can buy a lot of dates with five mil." },
+        { "id": "dr_05", "optionA": "Remember everything but never forget anything painful or embarrassing", "optionB": "Only remember pleasant memories but constantly forget important details", "stats": { "a": 60, "b": 40 }, "analysisA": "Walking encyclopedia of regrets. You hold grudges and excel at trivia.", "analysisB": "Blissful optimist or conveniently forgetful. Highlight-reel personality." },
+        { "id": "dr_06", "optionA": "Know the exact day you'll die", "optionB": "Know exactly how you'll die", "stats": { "a": 40, "b": 60 }, "analysisA": "You want to plan the bucket list. Type-A even about death.", "analysisB": "You want to dodge it. You'll never sleep again." },
+        { "id": "dr_07", "optionA": "Have everyone you love forget who you are", "optionB": "Forget everyone you love", "stats": { "a": 35, "b": 65 }, "analysisA": "Brutal. You'd rather suffer than make them suffer.", "analysisB": "You chose your own peace. Unsettlingly self-protective." },
+        { "id": "dr_08", "optionA": "Be perfectly happy but average at everything", "optionB": "Be exceptional at one thing but never satisfied", "stats": { "a": 55, "b": 45 }, "analysisA": "You picked peace. Boring people live longer.", "analysisB": "Tortured-genius cosplay. You need the chase." },
+        { "id": "dr_09", "optionA": "Always feel slightly anxious", "optionB": "Always feel slightly numb", "stats": { "a": 50, "b": 50 }, "analysisA": "At least you're alive. Existing in fight-or-flight is a vibe.", "analysisB": "Functional but hollow. You'll text 'I'm fine' forever." },
+        { "id": "dr_10", "optionA": "Know what everyone really thinks of you", "optionB": "Never know what anyone really thinks of you", "stats": { "a": 30, "b": 70 }, "analysisA": "Brave. Or about to spiral. You can't unhear it.", "analysisB": "You picked the lie. Comfortable, blissful, unexamined." },
+        { "id": "dr_11", "optionA": "Have your biggest secret revealed to everyone you know", "optionB": "Have a random secret about you (you choose) revealed worldwide", "stats": { "a": 35, "b": 65 }, "analysisA": "You'd rather burn locally than globally. Strategic.", "analysisB": "You'd trade familiarity for anonymity. Strangers don't matter to you." },
+        { "id": "dr_12", "optionA": "Live a long life full of regret", "optionB": "Live a short life with no regrets", "stats": { "a": 25, "b": 75 }, "analysisA": "You're betting on time to fix things. Bold assumption.", "analysisB": "You'd burn out clean. Romantic but reckless." },
+        { "id": "dr_13", "optionA": "Be deeply loved by 3 people", "optionB": "Be casually liked by 3000 people", "stats": { "a": 70, "b": 30 }, "analysisA": "Quality over quantity. Therapist-approved.", "analysisB": "You confused popularity with peace. Lonely in a crowd." },
+        { "id": "dr_14", "optionA": "Always be 5 minutes late to everything", "optionB": "Always know you'll fail right before you try", "stats": { "a": 80, "b": 20 }, "analysisA": "Annoying but liveable. Your friends already know.", "analysisB": "You picked despair on a calendar. That's bleak." },
+        { "id": "dr_15", "optionA": "Have to live every day like it's your last", "optionB": "Have to plan 10 years ahead at all times", "stats": { "a": 50, "b": 50 }, "analysisA": "Exhausting hedonism. You'll be broke and emotional.", "analysisB": "Spreadsheet for a soul. You forgot to live." },
+        { "id": "dr_16", "optionA": "Lose the ability to lie", "optionB": "Lose the ability to keep a secret", "stats": { "a": 55, "b": 45 }, "analysisA": "Brutal honesty. Friendships will not survive.", "analysisB": "Walking gossip. People will stop telling you anything." },
+        { "id": "dr_17", "optionA": "Know the moment your parents will die", "optionB": "Know the moment your best friend will betray you", "stats": { "a": 60, "b": 40 }, "analysisA": "Painful but useful. You can say goodbye.", "analysisB": "You'd rather pre-grieve a person who's still hugging you." },
+        { "id": "dr_18", "optionA": "Have your biggest dream come true exactly once", "optionB": "Have a small, content life — guaranteed", "stats": { "a": 65, "b": 35 }, "analysisA": "You'd trade decades for one perfect moment. Romantic.", "analysisB": "You picked the soft life. Wise, slightly dim." },
+        { "id": "dr_19", "optionA": "Be respected but never loved", "optionB": "Be loved but never respected", "stats": { "a": 55, "b": 45 }, "analysisA": "Boardroom over bedroom. Lonely at the top.", "analysisB": "Hugged but never heard. Exhausting." },
+        { "id": "dr_20", "optionA": "Forget your happiest memory", "optionB": "Forget your worst memory", "stats": { "a": 40, "b": 60 }, "analysisA": "You'd lose joy to keep the lesson. Therapist energy.", "analysisB": "You'd erase the wound. Self-protective. Maybe cowardly." },
+        { "id": "dr_21", "optionA": "Be feared but never crossed", "optionB": "Be liked but constantly underestimated", "stats": { "a": 35, "b": 65 }, "analysisA": "Power move. Lonely move.", "analysisB": "Underdog forever. Quietly satisfying revenge potential." },
+        { "id": "dr_22", "optionA": "Have one true soulmate but you'll never meet them", "optionB": "Have many shallow loves your whole life", "stats": { "a": 45, "b": 55 }, "analysisA": "Beautifully tragic. You'll romanticise it forever.", "analysisB": "Realistic. Slightly cynical. Many great stories." },
+        { "id": "dr_23", "optionA": "Be honest in every conversation, no filter", "optionB": "Be tactful in every conversation, even when it's a lie", "stats": { "a": 35, "b": 65 }, "analysisA": "Truth-bomb personality. Free, friendless.", "analysisB": "Diplomat. Smooth, sometimes hollow." },
+        { "id": "dr_24", "optionA": "Be the smartest person you know", "optionB": "Be the kindest person you know", "stats": { "a": 30, "b": 70 }, "analysisA": "Ego choice. You want the trophy, not the warmth.", "analysisB": "Soft power. You'll be remembered longer." },
+        { "id": "dr_25", "optionA": "Live in a world without lies", "optionB": "Live in a world without surprises", "stats": { "a": 60, "b": 40 }, "analysisA": "You'd love it for a week. Then crave a polite lie.", "analysisB": "Predictable. Safe. Slightly grim." },
+        { "id": "dr_26", "optionA": "Always know what you should do — but never do it", "optionB": "Never know what to do — but always commit fully", "stats": { "a": 25, "b": 75 }, "analysisA": "Awareness-as-prison. The classic overthinker.", "analysisB": "Blissful chaos agent. At least you move." },
+        { "id": "dr_27", "optionA": "Have your worst trait erased forever", "optionB": "Have your best trait amplified to perfection", "stats": { "a": 65, "b": 35 }, "analysisA": "You picked therapy. Healthy.", "analysisB": "You picked superpower. Risky — your worst trait is still there." },
+        { "id": "dr_28", "optionA": "Always be the one who loves more in a relationship", "optionB": "Always be the one who's loved more in a relationship", "stats": { "a": 45, "b": 55 }, "analysisA": "Romantic giver. Often heartbroken.", "analysisB": "Quietly powerful. Often guilty." },
+        { "id": "dr_29", "optionA": "Live a life that looks great but feels empty", "optionB": "Live a life that feels great but looks like a mess", "stats": { "a": 20, "b": 80 }, "analysisA": "Instagram won. You lost.", "analysisB": "You picked yourself. Inconvenient for others, freeing for you." },
+        { "id": "dr_30", "optionA": "Be remembered for your worst moment", "optionB": "Be forgotten despite your best moment", "stats": { "a": 25, "b": 75 }, "analysisA": "Infamy is a kind of immortality. Bleak.", "analysisB": "You'd rather vanish than be defined by a low. Dignified." },
+        { "id": "dr_31", "optionA": "Always tell people exactly how much you love them", "optionB": "Always show people exactly how much you love them", "stats": { "a": 45, "b": 55 }, "analysisA": "Verbal lover. Words are your gift — and your overshare.", "analysisB": "Acts of service. Quiet, exhausting, undervalued." },
+        { "id": "dr_32", "optionA": "Be incapable of feeling jealousy", "optionB": "Be incapable of feeling regret", "stats": { "a": 55, "b": 45 }, "analysisA": "Healthy. Annoying. Your friends won't believe you.", "analysisB": "Sociopath-adjacent. But peaceful." }
+      ]
+    },
+    {
+      "id": "travel_living",
+      "name": "Travel & Living",
+      "adult": false,
+      "items": [
+        { "id": "tl_01", "optionA": "Have unlimited free food", "optionB": "Have unlimited free travel", "stats": { "a": 40, "b": 60 }, "analysisA": "Homebody. Comfort food is your love language.", "analysisB": "Explorer. Experiences over calories." },
+        { "id": "tl_02", "optionA": "Live in a house that's always too hot", "optionB": "Live in a house that's always too cold", "stats": { "a": 25, "b": 75 }, "analysisA": "You're a lizard. You like to bake.", "analysisB": "You can always put on more layers. Practical thinker." },
+        { "id": "tl_03", "optionA": "Live in a beautiful, isolated cabin in the woods with no internet", "optionB": "Live in a bustling city penthouse with constant connectivity", "stats": { "a": 30, "b": 70 }, "analysisA": "You call it 'peaceful' — we call it 'avoidant.' Go hug a tree.", "analysisB": "Addicted to noise. Your soul is as quiet as a Friday penthouse." },
+        { "id": "tl_04", "optionA": "Travel anywhere instantly but only stay 1 hour", "optionB": "Travel anywhere for unlimited time but it takes a year to get there", "stats": { "a": 55, "b": 45 }, "analysisA": "Superficial sightseer. Your Instagram is checkbox tourism.", "analysisB": "Journey-over-destination type. Or just terrifyingly patient." },
+        { "id": "tl_05", "optionA": "Live in a mansion that's always messy and disorganised", "optionB": "Live in a tiny apartment that's always perfectly clean", "stats": { "a": 40, "b": 60 }, "analysisA": "Maximalist with a chaotic soul. Clutter is 'character.'", "analysisB": "Minimalist with an obsessive streak. Sock drawer is immaculate." },
+        { "id": "tl_06", "optionA": "Only eat food you cook yourself", "optionB": "Only eat food prepared by others", "stats": { "a": 65, "b": 35 }, "analysisA": "Control freak in the kitchen. Potlucks are a biohazard to you.", "analysisB": "Lazy or trusting. Your favourite takeout menu is memorised." },
+        { "id": "tl_07", "optionA": "Only eat extremely bland food forever", "optionB": "Only eat incredibly spicy food forever", "stats": { "a": 60, "b": 40 }, "analysisA": "You chose a life as flavourless as your wardrobe.", "analysisB": "Chasing a chemical high because life lacks excitement." },
+        { "id": "tl_08", "optionA": "Taste exotic flavours brilliantly but familiar food tastes like cardboard", "optionB": "Only taste familiar food but it's always perfect", "stats": { "a": 45, "b": 55 }, "analysisA": "Adventurous epicurean. Bored by the mundane.", "analysisB": "Comfort eater. You have a favourite diner and you defend it." },
+        { "id": "tl_09", "optionA": "Have a personal chef but only for instant ramen", "optionB": "Have a personal stylist but only for Crocs and fanny packs", "stats": { "a": 70, "b": 30 }, "analysisA": "You outsource the simplest tasks. Monument to convenience.", "analysisB": "Peak irony. Just admit you have no style." },
+        { "id": "tl_10", "optionA": "Travel only by train, forever", "optionB": "Travel only by plane, forever", "stats": { "a": 55, "b": 45 }, "analysisA": "Slow romantic. You think every journey is a Wes Anderson film.", "analysisB": "Time-obsessed. You'd rather cramp than wait." },
+        { "id": "tl_11", "optionA": "Live somewhere it's always 22°C and sunny", "optionB": "Live somewhere with all four dramatic seasons", "stats": { "a": 50, "b": 50 }, "analysisA": "Boring climate, boring person. (Sorry, San Diego.)", "analysisB": "You want feelings with your weather. Maximalist." },
+        { "id": "tl_12", "optionA": "Live above a bakery", "optionB": "Live above a coffee shop", "stats": { "a": 55, "b": 45 }, "analysisA": "You'd weigh 200kg in a year. Worth it.", "analysisB": "Caffeine-fuelled, sleep-deprived, weirdly happy." },
+        { "id": "tl_13", "optionA": "Have one dream restaurant for free, forever", "optionB": "Have any restaurant in the world, but pay full price", "stats": { "a": 55, "b": 45 }, "analysisA": "Loyalist. The waiter is now family. Boring but cosy.", "analysisB": "Variety-driven. Broke but cultured." },
+        { "id": "tl_14", "optionA": "Drink only water for the rest of your life", "optionB": "Drink anything except water for the rest of your life", "stats": { "a": 35, "b": 65 }, "analysisA": "Health saint. Brunches are now sad.", "analysisB": "Kidney roulette. But the brunches go hard." },
+        { "id": "tl_15", "optionA": "Have to eat the same breakfast every day for life", "optionB": "Never eat the same breakfast twice", "stats": { "a": 60, "b": 40 }, "analysisA": "Routine over chaos. You probably already do this.", "analysisB": "Decision fatigue is your hobby. Exhausting." },
+        { "id": "tl_16", "optionA": "Live in a city you've always dreamed of but know no one", "optionB": "Live in your hometown forever, surrounded by everyone you love", "stats": { "a": 50, "b": 50 }, "analysisA": "Brave reset. Loneliness incoming.", "analysisB": "Cosy stagnation. You'll wonder 'what if' forever." },
+        { "id": "tl_17", "optionA": "Stay in 5-star hotels but always solo", "optionB": "Stay in hostels but always with great company", "stats": { "a": 45, "b": 55 }, "analysisA": "Luxurious loner. The minibar is your friend.", "analysisB": "Memory-rich, sleep-poor. The bunk bed builds character." },
+        { "id": "tl_18", "optionA": "Eat your favourite meal every day and never get sick of it", "optionB": "Eat a different brand-new meal every day", "stats": { "a": 50, "b": 50 }, "analysisA": "Loyalist comfort core. Your palate is locked in.", "analysisB": "Foodie chaos goblin. The kitchen is a science lab." },
+        { "id": "tl_19", "optionA": "Have a kitchen that cooks for you (badly)", "optionB": "Have a kitchen you cook in yourself (well)", "stats": { "a": 55, "b": 45 }, "analysisA": "Lazy. You'll eat mediocre forever and call it a win.", "analysisB": "Skilled but tired. Your back hurts." },
+        { "id": "tl_20", "optionA": "Live a year in Paris", "optionB": "Live a year in Tokyo", "stats": { "a": 50, "b": 50 }, "analysisA": "Romantic. Croissant-pilled. Slightly cliché.", "analysisB": "Hyper-modern. Convenience-store dinner enthusiast." },
+        { "id": "tl_21", "optionA": "Have an apartment with an incredible view but tiny", "optionB": "Have a huge apartment with a brick wall view", "stats": { "a": 65, "b": 35 }, "analysisA": "Aesthetic over function. Daily inspiration tax.", "analysisB": "Practical hermit. The brick is honestly fine." },
+        { "id": "tl_22", "optionA": "Always be cold but live by the beach", "optionB": "Always be hot but live in the mountains", "stats": { "a": 50, "b": 50 }, "analysisA": "Picturesque suffering. Worth it for the sunsets.", "analysisB": "Elevated misery. Hiking apologists." },
+        { "id": "tl_23", "optionA": "Drink the world's best coffee, but only one cup a day", "optionB": "Drink unlimited mediocre coffee", "stats": { "a": 60, "b": 40 }, "analysisA": "Quality snob. Ritual matters more than caffeine.", "analysisB": "Volume person. You don't drink coffee, you commute on it." },
+        { "id": "tl_24", "optionA": "Eat sushi every day", "optionB": "Eat pizza every day", "stats": { "a": 50, "b": 50 }, "analysisA": "Refined palate, expensive habit, smug emails.", "analysisB": "Joyful gremlin. No notes." },
+        { "id": "tl_25", "optionA": "Travel the world solo for a year", "optionB": "Travel one country deeply for a year with friends", "stats": { "a": 50, "b": 50 }, "analysisA": "Eat-Pray-Love arc. You'll come back insufferable.", "analysisB": "Memory factory. You'll have inside jokes for life." },
+        { "id": "tl_26", "optionA": "Live somewhere with an amazing food scene but no nature", "optionB": "Live somewhere with incredible nature but bad food", "stats": { "a": 60, "b": 40 }, "analysisA": "Mouth over lungs. Predictable city dweller.", "analysisB": "Lungs over mouth. You will get tired of granola." },
+        { "id": "tl_27", "optionA": "Have to wake up at 5 AM every day", "optionB": "Have to stay up till 3 AM every night", "stats": { "a": 45, "b": 55 }, "analysisA": "Smug morning evangelist. Insufferable on Mondays.", "analysisB": "Vampire shift. Productive at 2 AM, useless at 10." },
+        { "id": "tl_28", "optionA": "Live in a houseboat", "optionB": "Live in a converted van", "stats": { "a": 55, "b": 45 }, "analysisA": "Permanent gentle rocking. Your back is somehow fine.", "analysisB": "Van-life Instagram phase. Showering is the problem." },
+        { "id": "tl_29", "optionA": "Have all your meals delivered, never cook", "optionB": "Have to cook every single meal from scratch", "stats": { "a": 60, "b": 40 }, "analysisA": "Outsourced existence. Wallet hates you.", "analysisB": "Chef energy or martyr energy. Possibly both." },
+        { "id": "tl_30", "optionA": "Have one perfect food memory you can taste any time", "optionB": "Have one perfect travel memory you can re-live any time", "stats": { "a": 30, "b": 70 }, "analysisA": "Sensory loyalist. Grandma's curry on tap.", "analysisB": "Adventurer's nostalgia. The sunset replays forever." },
+        { "id": "tl_31", "optionA": "Live in a place where it's always your favourite season", "optionB": "Live in a place where every day is a brand-new adventure", "stats": { "a": 55, "b": 45 }, "analysisA": "Comfort-coded. Predictable bliss.", "analysisB": "Chaos-coded. Exhausted but smiling." },
+        { "id": "tl_32", "optionA": "Eat dinner with your 10-year-old self", "optionB": "Eat dinner with your 80-year-old self", "stats": { "a": 45, "b": 55 }, "analysisA": "Healing arc. Will end in tears.", "analysisB": "Spoilers arc. Will also end in tears." }
+      ]
+    },
+    {
+      "id": "pop_culture",
+      "name": "Pop Culture & Fandom",
+      "adult": false,
+      "items": [
+        { "id": "pc_01", "optionA": "Be Batman", "optionB": "Be Iron Man", "stats": { "a": 45, "b": 55 }, "analysisA": "Brooding and edgy. You think trauma makes you interesting.", "analysisB": "Flashy and arrogant. You think money solves everything." },
+        { "id": "pc_02", "optionA": "Give up social media forever", "optionB": "Give up movies and TV forever", "stats": { "a": 30, "b": 70 }, "analysisA": "Addicted to the scroll. You need validation.", "analysisB": "You value connection over content. Or you really like memes." },
+        { "id": "pc_03", "optionA": "Live without music", "optionB": "Live without TV", "stats": { "a": 20, "b": 80 }, "analysisA": "You have no soul.", "analysisB": "You can make your own entertainment." },
+        { "id": "pc_04", "optionA": "Live in the Marvel universe", "optionB": "Live in the Harry Potter universe", "stats": { "a": 45, "b": 55 }, "analysisA": "Saviour complex. Constant city-destroying chaos.", "analysisB": "Boarding-school nostalgic. Ignoring the wizard fascism." },
+        { "id": "pc_05", "optionA": "Lose all music made before 2010", "optionB": "Lose all music made after 2010", "stats": { "a": 50, "b": 50 }, "analysisA": "Modernist. Goodbye Queen, hello brain rot.", "analysisB": "Boomer in training. Slightly justified." },
+        { "id": "pc_06", "optionA": "Be the lead in a hit reality TV show", "optionB": "Be a writer behind your favourite scripted show", "stats": { "a": 35, "b": 65 }, "analysisA": "Fame-thirsty. The contract will ruin your life.", "analysisB": "Dignified influence. No one will know your name." },
+        { "id": "pc_07", "optionA": "Have a verified blue check on every platform but only 50 followers", "optionB": "Have 1 million followers but no verification, ever", "stats": { "a": 30, "b": 70 }, "analysisA": "Vanity over reach. Cute.", "analysisB": "Reach over status. Smart and slightly chaotic." },
+        { "id": "pc_08", "optionA": "Be in a Christopher Nolan film (you won't understand it)", "optionB": "Be in a Wes Anderson film (you have to wear that outfit forever)", "stats": { "a": 50, "b": 50 }, "analysisA": "Confused but cinematic. Inception-core.", "analysisB": "Symmetrical for life. The hat is non-negotiable." },
+        { "id": "pc_09", "optionA": "Have unlimited concert tickets but only solo seats", "optionB": "Have one VIP backstage pass per year but never buy tickets again", "stats": { "a": 55, "b": 45 }, "analysisA": "Anti-social music nerd. Headphones are family.", "analysisB": "Big swing energy. One night a year carries you." },
+        { "id": "pc_10", "optionA": "Be cast in the next Bond film", "optionB": "Be cast in the next Marvel film", "stats": { "a": 50, "b": 50 }, "analysisA": "Old-school cool. Tuxedos and stunts.", "analysisB": "Franchise contract slavery. But the trailer drops slap." },
+        { "id": "pc_11", "optionA": "Spend a day on the set of Friends", "optionB": "Spend a day on the set of Game of Thrones", "stats": { "a": 60, "b": 40 }, "analysisA": "Comfort TV core. You'd flirt with Joey.", "analysisB": "Drama tourist. The CGI dragons are smaller than you think." },
+        { "id": "pc_12", "optionA": "Be famous on TikTok forever", "optionB": "Be famous in print magazines forever", "stats": { "a": 40, "b": 60 }, "analysisA": "Algorithm pet. Burnout in 18 months.", "analysisB": "Vintage prestige. Nobody under 30 knows you." },
+        { "id": "pc_13", "optionA": "Watch only the same 5 movies for the rest of your life", "optionB": "Watch every new release but never re-watch anything", "stats": { "a": 45, "b": 55 }, "analysisA": "Comfort over discovery. You'll quote them constantly.", "analysisB": "Critic mode. No emotional attachment, just throughput." },
+        { "id": "pc_14", "optionA": "Have unlimited access to Netflix but no other platform", "optionB": "Have access to every platform but only 1 hour a day", "stats": { "a": 60, "b": 40 }, "analysisA": "Algorithm captive. You'll watch the same crime doc twice.", "analysisB": "Curated viewer. Forced to actually choose." },
+        { "id": "pc_15", "optionA": "Be a one-hit-wonder pop star", "optionB": "Be a respected indie artist no one buys", "stats": { "a": 55, "b": 45 }, "analysisA": "Quick fame, long shame. Royalties are nice.", "analysisB": "Critical darling, eternal broke. Pitchfork loves you." },
+        { "id": "pc_16", "optionA": "Live in any anime universe", "optionB": "Live in any video game universe", "stats": { "a": 50, "b": 50 }, "analysisA": "Dramatic monologue energy. Hair is now extreme.", "analysisB": "Respawn enabled. Inventory management is hell." },
+        { "id": "pc_17", "optionA": "Sing the next James Bond theme", "optionB": "Score the next Pixar film", "stats": { "a": 55, "b": 45 }, "analysisA": "Solo glory. One iconic note.", "analysisB": "Quietly devastating. Children will sob to your music." },
+        { "id": "pc_18", "optionA": "Win a Nobel Prize but no one knows what for", "optionB": "Win an Oscar but for a movie you didn't make", "stats": { "a": 40, "b": 60 }, "analysisA": "Mystery genius. The plaque is enough.", "analysisB": "Fraud, but accepting the speech anyway." },
+        { "id": "pc_19", "optionA": "Be best friends with your favourite musician", "optionB": "Be best friends with your favourite actor", "stats": { "a": 50, "b": 50 }, "analysisA": "Backstage forever. Their schedule will ruin you.", "analysisB": "Premiere-pilled. They'll never text back." },
+        { "id": "pc_20", "optionA": "Be famous for one viral mistake forever", "optionB": "Be invisible despite a brilliant career", "stats": { "a": 30, "b": 70 }, "analysisA": "You picked infamy. Bold.", "analysisB": "Quiet legend. Slightly bitter, very respected." },
+        { "id": "pc_21", "optionA": "Have your favourite show get one perfect final season", "optionB": "Have your favourite show go on for 20 more seasons (mid quality)", "stats": { "a": 75, "b": 25 }, "analysisA": "Adult choice. Closure-pilled.", "analysisB": "You'd milk it dry. Late seasons are your whole personality." },
+        { "id": "pc_22", "optionA": "Direct one Oscar-winning film", "optionB": "Star in ten forgettable hits", "stats": { "a": 55, "b": 45 }, "analysisA": "Auteur. Cocktail-party god.", "analysisB": "Working actor. Comfortable, anonymous, employed." },
+        { "id": "pc_23", "optionA": "Have a daily column in a major paper", "optionB": "Have a podcast 1 million people listen to", "stats": { "a": 35, "b": 65 }, "analysisA": "Respected. Slow. Print is dying anyway.", "analysisB": "Loud, lucrative, exhausting. You'll have a cold-brew sponsor." },
+        { "id": "pc_24", "optionA": "Be the breakout star of a sitcom", "optionB": "Be the villain in a prestige drama", "stats": { "a": 50, "b": 50 }, "analysisA": "Catchphrase forever. Typecast forever.", "analysisB": "Emmy bait. Strangers will hate you in real life." },
+        { "id": "pc_25", "optionA": "Trade lives with your favourite musician for a week", "optionB": "Trade lives with your favourite athlete for a week", "stats": { "a": 50, "b": 50 }, "analysisA": "Hangover-core. The voice does not survive this.", "analysisB": "Pain-core. Your body is not built for it." },
+        { "id": "pc_26", "optionA": "Have to listen only to the top 40 forever", "optionB": "Have to listen only to your dad's music forever", "stats": { "a": 50, "b": 50 }, "analysisA": "Algorithm slop. You'll know every Drake feature.", "analysisB": "Classic rock prison. Actually maybe upgrade." },
+        { "id": "pc_27", "optionA": "Have a movie made about your life starring a great actor (it's mid)", "optionB": "Have a documentary made about your life that's brilliant (no one watches)", "stats": { "a": 55, "b": 45 }, "analysisA": "Vanity over truth. The trailer is decent.", "analysisB": "Truth over fame. You'll dine out on the Sundance moment." },
+        { "id": "pc_28", "optionA": "Be in a band that breaks up after one perfect album", "optionB": "Be in a band that releases 12 mediocre albums", "stats": { "a": 65, "b": 35 }, "analysisA": "Cult-classic energy. Reunion tour rumours forever.", "analysisB": "Touring lifers. Royalty-comfortable, soul-tired." },
+        { "id": "pc_29", "optionA": "Be able to spoil any movie or show before watching it", "optionB": "Never have anything spoiled, ever, ever", "stats": { "a": 25, "b": 75 }, "analysisA": "Chaos goblin. You ruin parties.", "analysisB": "Pure consumer bliss. The internet has been muted." },
+        { "id": "pc_30", "optionA": "Have unlimited free books for life", "optionB": "Have unlimited free streaming for life", "stats": { "a": 50, "b": 50 }, "analysisA": "Tea-and-cardigan core. Quietly superior.", "analysisB": "Couch-pilled. You'll finish nothing but watch everything." },
+        { "id": "pc_31", "optionA": "Be the star of a Studio Ghibli film", "optionB": "Be the star of a Pixar film", "stats": { "a": 55, "b": 45 }, "analysisA": "Soft, watercolour life. There's a forest spirit involved.", "analysisB": "Emotionally devastating in 90 minutes. Inevitable life lesson." },
+        { "id": "pc_32", "optionA": "Have a character named after you in your favourite franchise", "optionB": "Be the actor who plays a tiny but iconic role in it", "stats": { "a": 55, "b": 45 }, "analysisA": "Immortal nerd cred. Wikipedia entry locked in.", "analysisB": "Convention-circuit royalty. Forever 'that guy.'" }
+      ]
+    },
+    {
+      "id": "spicy",
+      "name": "Spicy / Adults Only",
+      "adult": true,
+      "items": [
+        { "id": "sp_01", "optionA": "Date someone wildly attractive but boring in conversation", "optionB": "Date someone average-looking but the best conversationalist you've ever met", "stats": { "a": 25, "b": 75 }, "analysisA": "Honest. Shallow. The silence will break you in 3 weeks.", "analysisB": "Mature. Smug. You'll write a Medium post about it." },
+        { "id": "sp_02", "optionA": "Have your search history made public for one day", "optionB": "Have your DMs made public for one day", "stats": { "a": 65, "b": 35 }, "analysisA": "You'd rather be judged for curiosity than receipts.", "analysisB": "You're either innocent or about to be unemployed." },
+        { "id": "sp_03", "optionA": "Have an amazing first kiss but a terrible relationship", "optionB": "Have an awkward first kiss but a perfect relationship", "stats": { "a": 20, "b": 80 }, "analysisA": "Sucker for fireworks. You'll romanticise the wreckage.", "analysisB": "Long-game player. The kiss gets better, promise." },
+        { "id": "sp_04", "optionA": "Be told every flaw your ex saw in you", "optionB": "Be told every reason your ex still thinks about you", "stats": { "a": 30, "b": 70 }, "analysisA": "Masochist. Therapy on hard mode.", "analysisB": "Ego food. You'll spiral but smile." },
+        { "id": "sp_05", "optionA": "Date someone who's secretly read your diary", "optionB": "Date someone whose diary you've secretly read", "stats": { "a": 55, "b": 45 }, "analysisA": "You'd rather be exposed than be the snake.", "analysisB": "Snake. You picked snake. Self-aware queen." },
+        { "id": "sp_06", "optionA": "Have one wild story about you go viral", "optionB": "Have all your text exchanges with your crush leaked", "stats": { "a": 70, "b": 30 }, "analysisA": "Folk-hero ambitions. The story is now mythology.", "analysisB": "You'd rather die. We get it." },
+        { "id": "sp_07", "optionA": "Always know if someone's flirting with you", "optionB": "Always know if you're flirting with someone (you can't tell now)", "stats": { "a": 60, "b": 40 }, "analysisA": "You missed every signal in your 20s. This is overdue.", "analysisB": "Self-awareness chaos. You're flirty and didn't know." },
+        { "id": "sp_08", "optionA": "Have a partner who's wildly jealous", "optionB": "Have a partner who's bizarrely uninterested", "stats": { "a": 40, "b": 60 }, "analysisA": "You read jealousy as love. Red flag, possibly a parade.", "analysisB": "You'd rather be ignored than smothered. Avoidant much?" },
+        { "id": "sp_09", "optionA": "Sext only via emoji forever", "optionB": "Sext only in fully formatted essays forever", "stats": { "a": 60, "b": 40 }, "analysisA": "Lazy and effective. 🍑🔥 carries you.", "analysisB": "MLA citations on the foreplay. Niche, weirdly hot." },
+        { "id": "sp_10", "optionA": "Hook up with your celebrity crush once (no one ever knows)", "optionB": "Have everyone know about it but it never actually happened", "stats": { "a": 65, "b": 35 }, "analysisA": "Private win. You'll smile to yourself for years.", "analysisB": "Clout over reality. The lie is the prize." },
+        { "id": "sp_11", "optionA": "Date someone with the exact same flaws as you", "optionB": "Date someone with the exact opposite flaws as you", "stats": { "a": 35, "b": 65 }, "analysisA": "Trauma-bond fast track. Therapy can't keep up.", "analysisB": "Friction-bond. Either growth or war." },
+        { "id": "sp_12", "optionA": "Have an ex marry someone better than you", "optionB": "Have an ex marry someone obviously worse than you", "stats": { "a": 45, "b": 55 }, "analysisA": "Mature. You're rooting for them. Sort of.", "analysisB": "Petty. Comforting. Smug for years." },
+        { "id": "sp_13", "optionA": "Have a one-night stand you remember forever", "optionB": "Have a 5-year relationship you barely remember", "stats": { "a": 50, "b": 50 }, "analysisA": "Quality intensity. Very romantic, slightly unhinged.", "analysisB": "Beige comfort. You forgot anniversaries on purpose." },
+        { "id": "sp_14", "optionA": "Be told every flirty thought your partner has had about other people", "optionB": "Be told every flirty thought you've had revealed to your partner", "stats": { "a": 40, "b": 60 }, "analysisA": "You can handle the truth. Allegedly.", "analysisB": "You'd rather burn yourself than them. Self-sacrificial chaos." },
+        { "id": "sp_15", "optionA": "Have a partner who PDA's constantly in public", "optionB": "Have a partner who never touches you in public, ever", "stats": { "a": 55, "b": 45 }, "analysisA": "Performative love. Friends are leaving the chat.", "analysisB": "Cold-coded. Nobody believes you're together." },
+        { "id": "sp_16", "optionA": "Have your most embarrassing dating moment shown on national TV", "optionB": "Have your most embarrassing dating moment played at your wedding", "stats": { "a": 40, "b": 60 }, "analysisA": "Strangers laughing is survivable. Just.", "analysisB": "At least it's an inside joke now. Right? Right??" },
+        { "id": "sp_17", "optionA": "Date someone 10 years older", "optionB": "Date someone 10 years younger", "stats": { "a": 50, "b": 50 }, "analysisA": "Wisdom-pilled. Their friends will hate you.", "analysisB": "Energy-pilled. Their playlists will baffle you." },
+        { "id": "sp_18", "optionA": "Always be the bigger flirt in the relationship", "optionB": "Always be the more reserved one", "stats": { "a": 50, "b": 50 }, "analysisA": "Charm is your love language. And your weapon.", "analysisB": "Slow-burn. Quietly devastating once you commit." },
+        { "id": "sp_19", "optionA": "Sleep with the lights on every night", "optionB": "Sleep in pitch black every night", "stats": { "a": 25, "b": 75 }, "analysisA": "Scared of the dark. Or of yourself.", "analysisB": "Cave-dweller. Productivity post-nap is unmatched." },
+        { "id": "sp_20", "optionA": "Have your partner read every text you've ever sent", "optionB": "Have your boss read every text you've ever sent", "stats": { "a": 70, "b": 30 }, "analysisA": "Awkward, possibly survivable. Mostly.", "analysisB": "Career-ending event. Unemployment incoming." },
+        { "id": "sp_21", "optionA": "Date your celebrity crush for 1 month, knowing it ends", "optionB": "Date a stranger for 50 years, perfect happiness guaranteed", "stats": { "a": 25, "b": 75 }, "analysisA": "Live fast, regret late. Iconic.", "analysisB": "Boring. Wise. Probably correct." },
+        { "id": "sp_22", "optionA": "Have to share your phone unlocked with your partner forever", "optionB": "Have to share your bank account fully visible with your partner forever", "stats": { "a": 30, "b": 70 }, "analysisA": "You have nothing to hide. Allegedly.", "analysisB": "Money is the lesser secret. Telling." },
+        { "id": "sp_23", "optionA": "Hook up with someone who's a great kisser but selfish", "optionB": "Hook up with someone who's a bad kisser but generous", "stats": { "a": 30, "b": 70 }, "analysisA": "You picked the trailer over the movie. Bold.", "analysisB": "Wise long-game. The kiss can be coached." },
+        { "id": "sp_24", "optionA": "Be told the exact day you meet your soulmate", "optionB": "Be told the exact day your last relationship ends", "stats": { "a": 65, "b": 35 }, "analysisA": "Hopeful planner. The countdown will haunt you.", "analysisB": "Doom-pilled. You'd live in pre-grief forever." },
+        { "id": "sp_25", "optionA": "Have one wild secret about you tattooed on your arm", "optionB": "Have one bland fact about you screamed at you every morning", "stats": { "a": 30, "b": 70 }, "analysisA": "You wear your chaos. It's a vibe.", "analysisB": "Annoying but private. Wins long-term." },
+        { "id": "sp_26", "optionA": "Find out your partner has hooked up with one of your friends (before you met)", "optionB": "Find out your partner has hooked up with one of your siblings (before you met)", "stats": { "a": 80, "b": 20 }, "analysisA": "Awkward Christmas. Survivable.", "analysisB": "Family group chat is now a war zone." },
+        { "id": "sp_27", "optionA": "Have an open book about every person you've ever kissed", "optionB": "Have an open book about every person who's ever rejected you", "stats": { "a": 60, "b": 40 }, "analysisA": "Receipts. Mostly fine. A few will sting.", "analysisB": "The receipts are devastating in volume." },
+        { "id": "sp_28", "optionA": "Be cursed to always tell the truth on a first date", "optionB": "Be cursed to always lie on a first date", "stats": { "a": 60, "b": 40 }, "analysisA": "Speedrun the red flags. Efficient.", "analysisB": "Built on sand. Second date becomes cardio." },
+        { "id": "sp_29", "optionA": "Have a partner who's loud in private", "optionB": "Have a partner who's loud in public", "stats": { "a": 75, "b": 25 }, "analysisA": "Standard. Slightly smug. Walls are thin though.", "analysisB": "Restaurant horror. Friends stop inviting you." },
+        { "id": "sp_30", "optionA": "Have your last text sent at 2 AM read by everyone you know", "optionB": "Have your last screenshot saved read by everyone you know", "stats": { "a": 50, "b": 50 }, "analysisA": "Drunk feelings, public feelings. Career-adjacent risk.", "analysisB": "Receipts hoarder exposed. Friendships adjusting." },
+        { "id": "sp_31", "optionA": "Marry the person you've loved most (it lasts 5 years)", "optionB": "Marry someone you grow to love deeply (it lasts 50 years)", "stats": { "a": 35, "b": 65 }, "analysisA": "Romantic. Doomed. Worth it.", "analysisB": "Pragmatic. Lovely. Possibly the right answer." },
+        { "id": "sp_32", "optionA": "Be irresistible to people you have zero interest in", "optionB": "Be invisible to people you're wildly attracted to", "stats": { "a": 55, "b": 45 }, "analysisA": "Endless awkward declines. The ego is fed though.", "analysisB": "Romantic ghost. The crushes will outlive you." }
+      ]
+    }
+  ]
+}

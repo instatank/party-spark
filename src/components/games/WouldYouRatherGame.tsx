@@ -1,87 +1,98 @@
 
 import React, { useState } from 'react';
 import { Card, Button } from '../ui/Layout';
-import { Home, ArrowLeft, ArrowRight, Brain } from 'lucide-react';
-import WOULD_YOU_RATHER_DATA from '../../data/would_you_rather.json';
+import { ScreenHeader } from '../ui/Layout';
+import { ArrowRight, Brain, ChevronRight, Sparkles, Compass, Globe, Film, Flame } from 'lucide-react';
+import WYR_DATA from '../../data/would_you_rather.json';
+import { WOULD_YOU_RATHER_CATEGORIES } from '../../constants';
 import { sessionService } from '../../services/SessionManager';
-import { generateWouldYouRatherQuestions } from '../../services/geminiService';
 import { GameType } from '../../types';
+import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
+
+interface WYRQuestion {
+    id: string;
+    optionA: string;
+    optionB: string;
+    stats: { a: number; b: number };
+    analysisA: string;
+    analysisB: string;
+}
+
+interface WYRCategory {
+    id: string;
+    name: string;
+    adult: boolean;
+    items: WYRQuestion[];
+}
 
 interface WouldYouRatherGameProps {
     onExit: () => void;
 }
 
+const ROUND_SIZE = 10;
+
+const getCategoryIcon = (id: string) => {
+    switch (id) {
+        case 'classic_chaos':  return <Sparkles size={20} className="text-indigo-300" />;
+        case 'deep_revealing': return <Brain size={20} className="text-violet-300" />;
+        case 'travel_living':  return <Compass size={20} className="text-emerald-300" />;
+        case 'pop_culture':    return <Film size={20} className="text-pink-300" />;
+        case 'spicy':          return <Flame size={20} className="text-red-400" />;
+        default:               return <Globe size={20} className="text-white" />;
+    }
+};
+
 export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }) => {
-    // State
-    const [questions, setQuestions] = useState<typeof WOULD_YOU_RATHER_DATA>([]);
+    const [gameState, setGameState] = useState<'CATEGORY' | 'PLAYING'>('CATEGORY');
+    const [activeCategory, setActiveCategory] = useState<WYRCategory | null>(null);
+    const [questions, setQuestions] = useState<WYRQuestion[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [hasVoted, setHasVoted] = useState(false);
     const [selectedOption, setSelectedOption] = useState<'A' | 'B' | null>(null);
-    // Analysis is now part of the data, so we just track if we should show it
 
-    // Initialize game with unique questions
-    React.useEffect(() => {
-        const initGame = async () => {
-            // 1. Filter Local Data
-            const availableLocal = sessionService.filterContent(
-                GameType.WOULD_YOU_RATHER,
-                'general',
-                WOULD_YOU_RATHER_DATA,
-                (q) => q.id
-            );
+    // PIN gate state for adult category
+    const [showPinGate, setShowPinGate] = useState(false);
+    const [pendingCategoryId, setPendingCategoryId] = useState<string | null>(null);
 
-            let selectedQuestions: any[] = [];
-
-            // 2. Need 10 questions
-            if (availableLocal.length >= 10) {
-                // Enough local content
-                const shuffled = [...availableLocal].sort(() => 0.5 - Math.random());
-                selectedQuestions = shuffled.slice(0, 10);
-            } else {
-                // Not enough local content, use what's left and generate the rest
-                selectedQuestions = [...availableLocal];
-                const countNeeded = 10 - selectedQuestions.length;
-
-                try {
-                    console.log(`Generating ${countNeeded} new WYR questions...`);
-                    const newQuestions = await generateWouldYouRatherQuestions(countNeeded);
-                    selectedQuestions = [...selectedQuestions, ...newQuestions];
-                } catch (error) {
-                    console.error("Failed to generate fallback questions", error);
-                    // Fallback to allowing repeats if generation fails
-                    const shuffled = [...WOULD_YOU_RATHER_DATA].sort(() => 0.5 - Math.random());
-                    const filler = shuffled.slice(0, countNeeded);
-                    selectedQuestions = [...selectedQuestions, ...filler];
-                }
-            }
-
-            setQuestions(selectedQuestions);
-        };
-
-        initGame();
-    }, []);
-
-    // Scroll to top on new question
     const cardRef = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
         window.scrollTo(0, 0);
-        if (cardRef.current) {
-            cardRef.current.scrollTop = 0;
-        }
+        if (cardRef.current) cardRef.current.scrollTop = 0;
     }, [currentQuestionIndex]);
 
-    const currentQuestion = questions[currentQuestionIndex];
+    const startCategory = (categoryId: string) => {
+        const category = (WYR_DATA as { categories: WYRCategory[] }).categories.find(c => c.id === categoryId);
+        if (!category) return;
 
-    // Touch handling state
-    // Mark as used when voted
-    React.useEffect(() => {
-        if (hasVoted && currentQuestion) {
-            sessionService.markAsUsed(GameType.WOULD_YOU_RATHER, 'general', currentQuestion.id);
+        if (category.adult && !isAdultUnlocked()) {
+            setPendingCategoryId(categoryId);
+            setShowPinGate(true);
+            return;
         }
-    }, [hasVoted, currentQuestion]);
 
-    // If questions haven't loaded yet
-    if (!currentQuestion) return <div className="text-white text-center p-10">Loading questions...</div>;
+        // Filter out already-used questions for this category in this session
+        const available = sessionService.filterContent(
+            GameType.WOULD_YOU_RATHER,
+            category.id,
+            category.items,
+            (q: WYRQuestion) => q.id
+        );
+
+        let pool: WYRQuestion[];
+        if (available.length >= ROUND_SIZE) {
+            pool = [...available].sort(() => 0.5 - Math.random()).slice(0, ROUND_SIZE);
+        } else {
+            // Reset session tracking — full deck nearly exhausted, reshuffle from all
+            pool = [...category.items].sort(() => 0.5 - Math.random()).slice(0, ROUND_SIZE);
+        }
+
+        setActiveCategory(category);
+        setQuestions(pool);
+        setCurrentQuestionIndex(0);
+        setHasVoted(false);
+        setSelectedOption(null);
+        setGameState('PLAYING');
+    };
 
     const handleVote = (option: 'A' | 'B') => {
         if (hasVoted) return;
@@ -89,10 +100,16 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
         setSelectedOption(option);
     };
 
+    React.useEffect(() => {
+        if (hasVoted && activeCategory && questions[currentQuestionIndex]) {
+            sessionService.markAsUsed(GameType.WOULD_YOU_RATHER, activeCategory.id, questions[currentQuestionIndex].id);
+        }
+    }, [hasVoted, currentQuestionIndex, activeCategory, questions]);
+
     const nextQuestion = () => {
         if (currentQuestionIndex >= questions.length - 1) {
-            // End of round - strictly 10 questions
-            onExit();
+            setGameState('CATEGORY');
+            setActiveCategory(null);
             return;
         }
         setCurrentQuestionIndex(prev => prev + 1);
@@ -100,136 +117,192 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
         setSelectedOption(null);
     };
 
+    // ===== CATEGORY SELECT =====
+    if (gameState === 'CATEGORY') {
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Would You Rather?" onBack={onExit} onHome={onExit} />
+                {showPinGate && (
+                    <PinGateModal
+                        onSuccess={() => {
+                            setShowPinGate(false);
+                            if (pendingCategoryId) startCategory(pendingCategoryId);
+                            setPendingCategoryId(null);
+                        }}
+                        onCancel={() => {
+                            setShowPinGate(false);
+                            setPendingCategoryId(null);
+                        }}
+                    />
+                )}
+                <p className="text-gray-400 mb-6 text-sm text-center">
+                    Pick a vibe. Vote on 10 brutal hypotheticals. Get psychoanalysed.
+                </p>
+                <div className="flex-1 overflow-y-auto pb-8">
+                    <div className="grid gap-4">
+                        {WOULD_YOU_RATHER_CATEGORIES.map((cat) => (
+                            <button
+                                key={cat.id}
+                                onClick={() => startCategory(cat.id)}
+                                className="group relative w-full text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                            >
+                                <div className={`absolute inset-0 rounded-2xl ${cat.color} opacity-0 group-hover:opacity-10 transition-opacity blur-xl`} />
+                                <div className={`bg-neutral-900 border p-5 rounded-2xl shadow-xl transition-colors relative overflow-hidden
+                                    ${cat.adult ? 'border-red-500/40 hover:border-red-500/70' : 'border-neutral-800 hover:border-neutral-700'}
+                                `}>
+                                    <div className="relative z-10 flex items-center justify-between p-2 gap-3">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                {getCategoryIcon(cat.id)}
+                                                <h3 className="text-xl font-bold text-white">
+                                                    {cat.label}
+                                                    {cat.adult && <span className="ml-2 text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded uppercase tracking-wider">18+</span>}
+                                                </h3>
+                                            </div>
+                                            <p className="text-sm text-neutral-400">{cat.description}</p>
+                                        </div>
+                                        <div className={`w-10 h-10 rounded-full ${cat.color} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow flex-shrink-0`}>
+                                            <ChevronRight className="text-white" size={20} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ===== PLAYING =====
+    const currentQuestion = questions[currentQuestionIndex];
+    if (!currentQuestion) {
+        return <div className="text-white text-center p-10">Loading…</div>;
+    }
     const analysis = selectedOption === 'A' ? currentQuestion.analysisA : currentQuestion.analysisB;
+    const goBackToCategory = () => {
+        setGameState('CATEGORY');
+        setActiveCategory(null);
+    };
 
     return (
-        <Card
-            ref={cardRef}
-            className="flex flex-col min-h-screen p-6 relative overflow-y-auto pb-32 safe-pb"
-        >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8 z-10 shrink-0">
-                <Button variant="ghost" onClick={onExit} className="!p-2 -ml-2">
-                    <ArrowLeft />
-                </Button>
+        <div className="h-full flex flex-col">
+            <ScreenHeader
+                title={activeCategory?.name ?? 'Would You Rather?'}
+                onBack={goBackToCategory}
+                onHome={onExit}
+            />
 
-                <div className="text-center">
-                    <h2 className="text-2xl font-bold font-serif text-party-secondary uppercase tracking-widest">
-                        Would You Rather?
-                    </h2>
+            <Card
+                ref={cardRef}
+                className="flex flex-col flex-1 p-6 relative overflow-y-auto pb-32 safe-pb"
+            >
+                <div className="text-center mb-4 z-10 shrink-0">
                     <span className="text-xs font-mono text-gray-500">
                         Question {currentQuestionIndex + 1} / {questions.length}
                     </span>
                 </div>
 
-                <Button variant="ghost" onClick={onExit} className="!p-2 text-gray-400 hover:text-white">
-                    <Home size={20} />
-                </Button>
-            </div>
+                <div className="flex-1 flex flex-col justify-center gap-6 z-10 pb-8">
+                    {/* Option A */}
+                    <button
+                        onClick={() => handleVote('A')}
+                        disabled={hasVoted}
+                        className={`relative w-full p-6 md:p-8 rounded-2xl border-2 transition-all duration-300 text-left group flex items-center justify-between gap-4 ${hasVoted
+                            ? selectedOption === 'A'
+                                ? 'bg-green-600/30 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
+                                : 'bg-red-600/30 border-red-500 opacity-60'
+                            : 'bg-party-dark border-white/10 hover:bg-party-dark/80 hover:border-party-secondary hover:shadow-lg active:scale-[0.98]'
+                            }`}
+                    >
+                        <div className="relative z-10 flex-1">
+                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'A' ? 'text-green-300' : 'text-red-300') : 'text-party-secondary'}`}>Option A</div>
+                            <h3 className="text-xl md:text-3xl font-bold text-white leading-tight">
+                                {currentQuestion.optionA}
+                            </h3>
+                        </div>
 
-            {/* Game Area */}
-            <div className="flex-1 flex flex-col justify-center gap-6 z-10 pb-8">
-                {/* Option A */}
-                <button
-                    onClick={() => handleVote('A')}
-                    disabled={hasVoted}
-                    className={`relative w-full p-6 md:p-8 rounded-2xl border-2 transition-all duration-300 text-left group flex items-center justify-between gap-4 ${hasVoted
-                        ? selectedOption === 'A'
-                            ? 'bg-green-600/30 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
-                            : 'bg-red-600/30 border-red-500 opacity-60'
-                        : 'bg-party-dark border-white/10 hover:bg-party-dark/80 hover:border-party-secondary hover:shadow-lg active:scale-[0.98]'
-                        }`}
-                >
-                    <div className="relative z-10 flex-1">
-                        <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'A' ? 'text-green-300' : 'text-red-300') : 'text-party-secondary'}`}>Option A</div>
-                        <h3 className="text-xl md:text-3xl font-bold text-white leading-tight">
-                            {currentQuestion.optionA}
-                        </h3>
+                        {hasVoted && (
+                            <div className={`shrink-0 w-16 h-16 rounded-full flex items-center justify-center border-4 shadow-lg animate-fade-in ${currentQuestion.stats.a >= 50
+                                ? 'bg-green-500 text-white border-green-400'
+                                : 'bg-red-500 text-white border-red-400'
+                                }`}>
+                                <span className="text-xl font-black">{currentQuestion.stats.a}%</span>
+                            </div>
+                        )}
+                    </button>
+
+                    {/* OR Divider */}
+                    <div className="flex items-center gap-4 text-gray-500 font-serif italic justify-center my-2">
+                        <div className="h-px bg-gray-700 flex-1" />
+                        <span>OR</span>
+                        <div className="h-px bg-gray-700 flex-1" />
                     </div>
 
-                    {hasVoted && (
-                        <div className={`shrink-0 w-16 h-16 rounded-full flex items-center justify-center border-4 shadow-lg animate-fade-in ${currentQuestion.stats.a >= 50
-                            ? 'bg-green-500 text-white border-green-400'
-                            : 'bg-red-500 text-white border-red-400'
-                            }`}>
-                            <span className="text-xl font-black">{currentQuestion.stats.a}%</span>
+                    {/* Option B */}
+                    <button
+                        onClick={() => handleVote('B')}
+                        disabled={hasVoted}
+                        className={`relative w-full p-6 md:p-8 rounded-2xl border-2 transition-all duration-300 text-left group flex items-center justify-between gap-4 ${hasVoted
+                            ? selectedOption === 'B'
+                                ? 'bg-green-600/30 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
+                                : 'bg-red-600/30 border-red-500 opacity-60'
+                            : 'bg-party-dark border-white/10 hover:bg-party-dark/80 hover:border-party-accent hover:shadow-lg active:scale-[0.98]'
+                            }`}
+                    >
+                        <div className="relative z-10 flex-1">
+                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'B' ? 'text-green-300' : 'text-red-300') : 'text-party-accent'}`}>Option B</div>
+                            <h3 className="text-xl md:text-3xl font-bold text-white leading-tight">
+                                {currentQuestion.optionB}
+                            </h3>
                         </div>
-                    )}
-                </button>
 
-                {/* OR Divider */}
-                <div className="flex items-center gap-4 text-gray-500 font-serif italic justify-center my-2">
-                    <div className="h-px bg-gray-700 flex-1" />
-                    <span>OR</span>
-                    <div className="h-px bg-gray-700 flex-1" />
+                        {hasVoted && (
+                            <div className={`shrink-0 w-16 h-16 rounded-full flex items-center justify-center border-4 shadow-lg animate-fade-in ${currentQuestion.stats.b >= 50
+                                ? 'bg-green-500 text-white border-green-400'
+                                : 'bg-red-500 text-white border-red-400'
+                                }`}>
+                                <span className="text-xl font-black">{currentQuestion.stats.b}%</span>
+                            </div>
+                        )}
+                    </button>
                 </div>
 
-                {/* Option B */}
-                <button
-                    onClick={() => handleVote('B')}
-                    disabled={hasVoted}
-                    className={`relative w-full p-6 md:p-8 rounded-2xl border-2 transition-all duration-300 text-left group flex items-center justify-between gap-4 ${hasVoted
-                        ? selectedOption === 'B'
-                            ? 'bg-green-600/30 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
-                            : 'bg-red-600/30 border-red-500 opacity-60'
-                        : 'bg-party-dark border-white/10 hover:bg-party-dark/80 hover:border-party-accent hover:shadow-lg active:scale-[0.98]'
-                        }`}
-                >
-                    <div className="relative z-10 flex-1">
-                        <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'B' ? 'text-green-300' : 'text-red-300') : 'text-party-accent'}`}>Option B</div>
-                        <h3 className="text-xl md:text-3xl font-bold text-white leading-tight">
-                            {currentQuestion.optionB}
-                        </h3>
-                    </div>
-
-                    {hasVoted && (
-                        <div className={`shrink-0 w-16 h-16 rounded-full flex items-center justify-center border-4 shadow-lg animate-fade-in ${currentQuestion.stats.b >= 50
-                            ? 'bg-green-500 text-white border-green-400'
-                            : 'bg-red-500 text-white border-red-400'
-                            }`}>
-                            <span className="text-xl font-black">{currentQuestion.stats.b}%</span>
-                        </div>
-                    )}
-                </button>
-            </div>
-
-            {/* Analysis & Next Button Area */}
-            <div className={`mt-auto pb-10 transition-all duration-500 ease-out transform ${hasVoted ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
-                {/* Analysis Box */}
-                <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 mb-6">
-                    <div className="flex items-start gap-3">
-                        <div className="p-2 bg-purple-500/20 rounded-lg shrink-0">
-                            <Brain className="w-5 h-5 text-purple-300" />
-                        </div>
-                        <div>
-                            <h4 className="text-sm font-bold text-purple-200 uppercase tracking-wider mb-1">
-                                Psychoanalysis
-                            </h4>
-                            <p className="text-gray-100 italic leading-relaxed">
-                                {analysis}
-                            </p>
+                {/* Analysis & Next Button Area */}
+                <div className={`mt-auto pb-10 transition-all duration-500 ease-out transform ${hasVoted ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
+                    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 mb-6">
+                        <div className="flex items-start gap-3">
+                            <div className="p-2 bg-purple-500/20 rounded-lg shrink-0">
+                                <Brain className="w-5 h-5 text-purple-300" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-bold text-purple-200 uppercase tracking-wider mb-1">
+                                    Psychoanalysis
+                                </h4>
+                                <p className="text-gray-100 italic leading-relaxed">
+                                    {analysis}
+                                </p>
+                            </div>
                         </div>
                     </div>
+
+                    <Button
+                        onClick={nextQuestion}
+                        className="w-full py-4 text-lg bg-white text-party-dark hover:bg-gray-200 font-bold flex items-center justify-center gap-2 shadow-lg shadow-white/10 mb-8"
+                    >
+                        {currentQuestionIndex >= questions.length - 1 ? 'Finish Round' : 'Next Question'} <ArrowRight size={20} />
+                    </Button>
                 </div>
 
-                <Button
-                    onClick={nextQuestion}
-                    className="w-full py-4 text-lg bg-white text-party-dark hover:bg-gray-200 font-bold flex items-center justify-center gap-2 shadow-lg shadow-white/10 mb-8"
-                >
-                    Next Question <ArrowRight size={20} />
-                </Button>
-            </div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-party-secondary/5 rounded-full blur-3xl -z-0 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-party-accent/5 rounded-full blur-3xl -z-0 pointer-events-none" />
 
-            {/* Background Decoration */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-party-secondary/5 rounded-full blur-3xl -z-0 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-party-accent/5 rounded-full blur-3xl -z-0 pointer-events-none" />
-
-            {/* Stats Disclaimer */}
-            <div className="mt-8 text-center shrink-0">
-                <p className="text-[10px] text-white/30 font-mono">
-                    * Percentages represent global player votes
-                </p>
-            </div>
-        </Card>
+                <div className="mt-8 text-center shrink-0">
+                    <p className="text-[10px] text-white/30 font-mono">
+                        * Percentages represent global player votes
+                    </p>
+                </div>
+            </Card>
+        </div>
     );
 };
