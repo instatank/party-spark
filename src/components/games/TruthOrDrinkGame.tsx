@@ -25,6 +25,7 @@ interface CategoryMeta {
     accentText: string;
     accentBorderFocus: string;
     accentBorderLeft: string;
+    accentBorderBottom: string;
     Icon: LucideIcon;
 }
 
@@ -39,6 +40,7 @@ const CATEGORIES: CategoryMeta[] = [
         accentText: 'text-violet-400',
         accentBorderFocus: 'focus:border-violet-500',
         accentBorderLeft: 'border-l-violet-500',
+        accentBorderBottom: 'border-b-violet-500',
         Icon: Sparkles,
     },
     {
@@ -51,6 +53,7 @@ const CATEGORIES: CategoryMeta[] = [
         accentText: 'text-rose-400',
         accentBorderFocus: 'focus:border-rose-500',
         accentBorderLeft: 'border-l-rose-500',
+        accentBorderBottom: 'border-b-rose-500',
         Icon: Flame,
     },
     {
@@ -63,6 +66,7 @@ const CATEGORIES: CategoryMeta[] = [
         accentText: 'text-emerald-400',
         accentBorderFocus: 'focus:border-emerald-500',
         accentBorderLeft: 'border-l-emerald-500',
+        accentBorderBottom: 'border-b-emerald-500',
         Icon: Waves,
     },
     {
@@ -75,6 +79,7 @@ const CATEGORIES: CategoryMeta[] = [
         accentText: 'text-pink-400',
         accentBorderFocus: 'focus:border-pink-500',
         accentBorderLeft: 'border-l-pink-500',
+        accentBorderBottom: 'border-b-pink-500',
         Icon: HeartCrack,
     },
     {
@@ -87,6 +92,7 @@ const CATEGORIES: CategoryMeta[] = [
         accentText: 'text-fuchsia-400',
         accentBorderFocus: 'focus:border-fuchsia-500',
         accentBorderLeft: 'border-l-fuchsia-500',
+        accentBorderBottom: 'border-b-fuchsia-500',
         Icon: Zap,
     },
 ];
@@ -207,7 +213,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                 onClick={() => handleCategorySelect(cat.id)}
                                 className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                             >
-                                <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${cat.accentBorderLeft} hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors`}>
+                                <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${cat.accentBorderLeft} border-b-2 ${cat.accentBorderBottom} hover:bg-white/[0.08] hover:border-t-white/20 hover:border-r-white/20 rounded-xl py-3 px-4 transition-colors`}>
                                     <div className="flex items-center gap-3">
                                         <cat.Icon className={`${cat.accentText} flex-shrink-0`} size={16} />
                                         <div className="flex-1 min-w-0">

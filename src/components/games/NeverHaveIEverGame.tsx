@@ -53,13 +53,13 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     if (gameState === 'SELECT') {
         // "Slim Row" — compact horizontal rows with a colored left accent bar.
         // Static class strings per category so Tailwind v4 JIT compiles them.
-        const CAT_META: Record<string, { Icon: LucideIcon; accent: string; borderL: string }> = {
-            rehaan:           { Icon: MessageCircle, accent: 'text-cyan-400',    borderL: 'border-l-cyan-500' },
-            rehaan_asks:      { Icon: Flame,         accent: 'text-orange-400',  borderL: 'border-l-orange-500' },
-            agra:             { Icon: Landmark,      accent: 'text-amber-400',   borderL: 'border-l-amber-500' },
-            bbf:              { Icon: Users,         accent: 'text-purple-400',  borderL: 'border-l-purple-500' },
-            classic:          { Icon: Hand,          accent: 'text-emerald-400', borderL: 'border-l-emerald-500' },
-            guilty_pleasures: { Icon: Lock,          accent: 'text-pink-400',    borderL: 'border-l-pink-500' },
+        const CAT_META: Record<string, { Icon: LucideIcon; accent: string; borderL: string; borderB: string }> = {
+            rehaan:           { Icon: MessageCircle, accent: 'text-cyan-400',    borderL: 'border-l-cyan-500',    borderB: 'border-b-cyan-500' },
+            rehaan_asks:      { Icon: Flame,         accent: 'text-orange-400',  borderL: 'border-l-orange-500',  borderB: 'border-b-orange-500' },
+            agra:             { Icon: Landmark,      accent: 'text-amber-400',   borderL: 'border-l-amber-500',   borderB: 'border-b-amber-500' },
+            bbf:              { Icon: Users,         accent: 'text-purple-400',  borderL: 'border-l-purple-500',  borderB: 'border-b-purple-500' },
+            classic:          { Icon: Hand,          accent: 'text-emerald-400', borderL: 'border-l-emerald-500', borderB: 'border-b-emerald-500' },
+            guilty_pleasures: { Icon: Lock,          accent: 'text-pink-400',    borderL: 'border-l-pink-500',    borderB: 'border-b-pink-500' },
         };
 
         return (
@@ -84,7 +84,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                     }}
                                     className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                                 >
-                                    <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${meta?.borderL || 'border-l-white/20'} hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors`}>
+                                    <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${meta?.borderL || 'border-l-white/20'} border-b-2 ${meta?.borderB || 'border-b-white/20'} hover:bg-white/[0.08] hover:border-t-white/20 hover:border-r-white/20 rounded-xl py-3 px-4 transition-colors`}>
                                         <div className="flex items-center gap-3">
                                             <Icon className={`${meta?.accent || 'text-white'} flex-shrink-0`} size={16} />
                                             <div className="flex-1 min-w-0">

@@ -320,6 +320,15 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
             chaos: 'border-l-purple-500',
             bbf: 'border-l-purple-500',
         };
+        const ACCENT_BORDER_BOTTOM: Record<string, string> = {
+            custom_vibe: 'border-b-violet-500',
+            family_friendly: 'border-b-emerald-500',
+            fun: 'border-b-blue-500',
+            scandalous: 'border-b-pink-500',
+            adult: 'border-b-red-500',
+            chaos: 'border-b-purple-500',
+            bbf: 'border-b-purple-500',
+        };
         const ICON_ACCENT: Record<string, string> = {
             custom_vibe: 'text-violet-400',
             family_friendly: 'text-emerald-400',
@@ -360,7 +369,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                                     ${cat.disabled ? 'opacity-40 cursor-not-allowed' : 'active:scale-[0.99] cursor-pointer'}
                                 `}
                             >
-                                <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${ACCENT_BORDER[cat.id] || 'border-l-white/20'} hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors`}>
+                                <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${ACCENT_BORDER[cat.id] || 'border-l-white/20'} border-b-2 ${ACCENT_BORDER_BOTTOM[cat.id] || 'border-b-white/20'} hover:bg-white/[0.08] hover:border-t-white/20 hover:border-r-white/20 rounded-xl py-3 px-4 transition-colors`}>
                                     <div className="flex items-center gap-3">
                                         <span className={`${ICON_ACCENT[cat.id] || 'text-white'} flex-shrink-0`}>
                                             {cat.id === 'custom_vibe'     && <Wand2 size={16} />}
