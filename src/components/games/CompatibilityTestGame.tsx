@@ -222,32 +222,40 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                 </div>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3">
-                        {MODES.map(m => (
-                            <button
-                                key={m.id}
-                                onClick={() => handleModeSelect(m.id)}
-                                className="group relative w-full text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-                            >
-                                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${m.gradient} opacity-0 group-hover:opacity-10 transition-opacity blur-xl`} />
-                                <div className="bg-neutral-900 border border-neutral-800 hover:border-neutral-700 p-5 rounded-2xl shadow-xl transition-colors relative overflow-hidden">
-                                    <div className="relative z-10 flex items-center justify-between p-1">
-                                        <div className="flex-1 pr-3">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <m.Icon className={m.accentText} size={20} />
-                                                <h3 className="text-xl font-bold text-white">
-                                                    {m.title}
-                                                    {m.adult && <span className="ml-2 text-[10px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-neutral-400">Adults Only</span>}
-                                                </h3>
+                        {MODES.map(m => {
+                            // Experimental: glass-on-navy (Charades tab style) for the first tile only
+                            const useGlass = m.id === 'couples';
+                            return (
+                                <button
+                                    key={m.id}
+                                    onClick={() => handleModeSelect(m.id)}
+                                    className="group relative w-full text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                                >
+                                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${m.gradient} opacity-0 group-hover:opacity-10 transition-opacity blur-xl`} />
+                                    <div className={`p-5 rounded-2xl shadow-xl transition-colors relative overflow-hidden ${
+                                        useGlass
+                                            ? 'bg-white/5 border border-white/10 hover:bg-white/[0.07] hover:border-white/20 backdrop-blur-sm'
+                                            : 'bg-neutral-900 border border-neutral-800 hover:border-neutral-700'
+                                    }`}>
+                                        <div className="relative z-10 flex items-center justify-between p-1">
+                                            <div className="flex-1 pr-3">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <m.Icon className={m.accentText} size={20} />
+                                                    <h3 className="text-xl font-bold text-white">
+                                                        {m.title}
+                                                        {m.adult && <span className="ml-2 text-[10px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-neutral-400">Adults Only</span>}
+                                                    </h3>
+                                                </div>
+                                                <p className={`text-sm ${useGlass ? 'text-gray-300' : 'text-neutral-400'}`}>{m.tagline}</p>
                                             </div>
-                                            <p className="text-sm text-neutral-400">{m.tagline}</p>
-                                        </div>
-                                        <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${m.gradient} flex items-center justify-center shadow-lg ${m.shadow} group-hover:shadow-xl transition-shadow flex-shrink-0`}>
-                                            <ChevronRight className="text-white" size={20} />
+                                            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${m.gradient} flex items-center justify-center shadow-lg ${m.shadow} group-hover:shadow-xl transition-shadow flex-shrink-0`}>
+                                                <ChevronRight className="text-white" size={20} />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </button>
-                        ))}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
