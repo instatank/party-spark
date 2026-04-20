@@ -14,7 +14,24 @@ export enum GameType {
     SIMPLE_SELFIE = 'SIMPLE_SELFIE',
     ROAST = 'ROAST',
     IMPOSTER = 'IMPOSTER',
-    WOULD_YOU_RATHER = 'WOULD_YOU_RATHER'
+    WOULD_YOU_RATHER = 'WOULD_YOU_RATHER',
+    MOST_LIKELY_TO = 'MOST_LIKELY_TO',
+    WOULD_I_LIE_TO_YOU = 'WOULD_I_LIE_TO_YOU',
+    NEVER_HAVE_I_EVER = 'NEVER_HAVE_I_EVER',
+    MINI_MAFIA = 'MINI_MAFIA',
+    AGRA_QUEST = 'AGRA_QUEST',
+    FACT_OR_FICTION = 'FACT_OR_FICTION',
+    TRUTH_OR_DRINK = 'TRUTH_OR_DRINK',
+    COMPATIBILITY_TEST = 'COMPATIBILITY_TEST'
+}
+
+export type MafiaRole = 'MAFIA' | 'DOCTOR' | 'DETECTIVE' | 'VILLAGER';
+
+export interface MafiaPlayer {
+    id: string;
+    name: string;
+    role: MafiaRole;
+    isAlive: boolean;
 }
 
 export interface GameMeta {

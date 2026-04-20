@@ -27,12 +27,22 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
         { id: '2', name: '', isImposter: false },
         { id: '3', name: '', isImposter: false }
     ]);
+    const [savedGroups, setSavedGroups] = useState<Record<string, string[]>>({});
+    const [showHowToPlay, setShowHowToPlay] = useState(false);
+
+    React.useEffect(() => {
+        const loaded = localStorage.getItem('imposterGroups');
+        if (loaded) {
+            try { setSavedGroups(JSON.parse(loaded)); } catch(e) {}
+        }
+    }, []);
     const [category, setCategory] = useState(IMPOSTER_CATEGORIES[0]);
     const [secretWord, setSecretWord] = useState('');
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
     const [isRevealing, setIsRevealing] = useState(false);
     const [winner, setWinner] = useState<'CIVILIANS' | 'IMPOSTER' | null>(null);
     const [imposterName, setImposterName] = useState('');
+    const [isHardMode, setIsHardMode] = useState(false);
 
     const handleAddPlayer = () => {
         setPlayers([...players, { id: Date.now().toString(), name: '', isImposter: false }]);
@@ -46,6 +56,20 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
 
     const updateName = (id: string, name: string) => {
         setPlayers(players.map(p => p.id === id ? { ...p, name } : p));
+    };
+
+    const saveCurrentGroup = () => {
+        const validPlayers = players.filter(p => p.name.trim() !== '');
+        if (validPlayers.length < 3) return;
+        const name = prompt("Enter a name for this group (e.g., 'Squad'):");
+        if (!name) return;
+        const updated = { ...savedGroups, [name]: validPlayers.map(p => p.name.trim()) };
+        setSavedGroups(updated);
+        localStorage.setItem('imposterGroups', JSON.stringify(updated));
+    };
+
+    const loadGroup = (names: string[]) => {
+        setPlayers(names.map((name, i) => ({ id: `saved-${i}-${Date.now()}`, name, isImposter: false })));
     };
 
     const startGame = async () => {
@@ -108,24 +132,18 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
 
         // Assign Imposter
         const imposterIndex = Math.floor(Math.random() * validPlayers.length);
-        const newPlayers = validPlayers.map((p, idx) => ({
+        const assignedPlayers = validPlayers.map((p, idx) => ({
             ...p,
             isImposter: idx === imposterIndex
         }));
 
+        // Shuffle reveal order so it's different every game
+        const newPlayers = [...assignedPlayers].sort(() => Math.random() - 0.5);
+
         setPlayers(newPlayers);
-        setImposterName(newPlayers[imposterIndex].name);
+        setImposterName(newPlayers.find(p => p.isImposter)!.name);
         setCurrentPlayerIndex(0);
         setGameState('REVEAL');
-    };
-
-    const nextPlayer = () => {
-        if (currentPlayerIndex < players.length - 1) {
-            setCurrentPlayerIndex(prev => prev + 1);
-            setIsRevealing(false);
-        } else {
-            setGameState('PLAY');
-        }
     };
 
     const handleVote = (playerId: string) => {
@@ -155,8 +173,50 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Setup Game" onBack={onExit} onHome={onExit} />
                 <Card className="p-6 flex-1 overflow-y-auto">
-                    <div className="space-y-3 mb-8">
+                    <div className="text-center mb-6">
+                        <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-party-accent border border-party-accent/30 px-3 py-1 bg-white/5 hover:bg-white/10 transition relative z-10 mx-auto block mb-2 rounded shadow-lg uppercase">
+                             {showHowToPlay ? 'Hide Rules' : 'How To Play'}
+                        </button>
+                        
+                        {showHowToPlay && (
+                            <div className="text-left text-xs text-gray-300 bg-black/20 border border-white/10 p-4 mt-2 mb-4 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner">
+                                <p><strong className="text-white">1. SETUP:</strong> All players join. A category and secret word are chosen automatically.</p>
+                                <p><strong className="text-red-400">2. THE SECRET:</strong> Everyone learns the secret word EXCEPT ONE person (the Imposter). The Imposter {isHardMode ? 'gets absolutely NO clues!' : 'only gets the category'}.</p>
+                                <p><strong className="text-emerald-400">3. DISCUSS:</strong> Take turns saying exactly one word related to the secret word to prove you know it. The Imposter must bluff!</p>
+                                <p><strong className="text-blue-400">4. VOTE:</strong> After everyone gives a word, vote on who the Imposter is. If the group guesses right, Civilians win!</p>
+                            </div>
+                        )}
+                    </div>
+                    {Object.keys(savedGroups).length > 0 && (
+                        <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
+                            {Object.entries(savedGroups).map(([gName, gPlayers]) => (
+                                <button key={gName} onClick={() => loadGroup(gPlayers)} className="whitespace-nowrap px-4 py-2 bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 rounded-full text-xs font-bold transition">
+                                    Load: {gName} ({gPlayers.length})
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                    <div className="mb-6 p-4 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between shadow-inner">
+                        <div>
+                            <div className="font-bold text-sm text-party-accent mb-0.5">Hard Mode</div>
+                            <div className="text-xs text-gray-400">Hide category from the Imposter</div>
+                        </div>
+                        <div 
+                            className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors shadow-inner ${isHardMode ? 'bg-red-500' : 'bg-gray-600'}`}
+                            onClick={() => setIsHardMode(!isHardMode)}
+                        >
+                            <div className={`w-4 h-4 bg-white rounded-full transition-transform shadow-md ${isHardMode ? 'translate-x-6' : ''}`} />
+                        </div>
+                    </div>
+                    <div className="flex justify-between items-end mb-3">
                         <label className="block text-sm font-medium text-gray-400">Players ({players.length})</label>
+                        {players.filter(p => p.name.trim() !== '').length >= 3 && (
+                            <button onClick={saveCurrentGroup} className="text-xs text-party-accent hover:text-cyan-300 font-bold">
+                                Save Current Group
+                            </button>
+                        )}
+                    </div>
+                    <div className="space-y-3 mb-8">
                         {players.map((player, idx) => (
                             <div key={player.id} className="flex gap-2">
                                 <input
@@ -206,42 +266,101 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
     }
 
     if (gameState === 'REVEAL') {
-        const currentPlayer = players[currentPlayerIndex];
+        // If a specific player is currently viewing their role
+        if (isRevealing) {
+            const currentPlayer = players[currentPlayerIndex];
+            return (
+                <div className="h-full flex flex-col">
+                    <ScreenHeader title="Your Role" onBack={() => setGameState('SETUP')} onHome={onExit} />
+                    <Card className="p-6 text-center flex-1 flex flex-col justify-center animate-fade-in">
+                        <div className="mb-8">
+                            <div className="uppercase tracking-widest text-sm text-gray-500 mb-2">Your Secret Word</div>
+                            {currentPlayer.isImposter ? (
+                                <div className="text-red-500">
+                                    <VenetianMask size={64} className="mx-auto mb-4" />
+                                    <h2 className="text-4xl font-black tracking-tight">YOU ARE THE IMPOSTER</h2>
+                                    <p className="text-gray-400 mt-4 text-sm">Blend in. Don't let them know you don't know the word.</p>
+                                    {!isHardMode ? (
+                                        <p className="text-gray-500 mt-2 text-xs uppercase tracking-wider font-bold">Category: {category.label}</p>
+                                    ) : (
+                                        <p className="text-red-500 mt-2 text-xs uppercase tracking-wider font-bold animate-pulse">Category: HIDDEN</p>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="text-emerald-400">
+                                    <div className="text-5xl font-black mb-2 tracking-tight">{secretWord}</div>
+                                    <p className="text-gray-400 mt-4 text-sm">Category: {category.label}</p>
+                                </div>
+                            )}
+                        </div>
+                        <Button
+                            onClick={() => {
+                                setIsRevealing(false);
+                                setCurrentPlayerIndex(-1);
+                                // Mark this player as revealed
+                                setPlayers(prev => prev.map(p =>
+                                    p.id === currentPlayer.id ? { ...p, hasRevealed: true } as any : p
+                                ));
+                            }}
+                            className="w-full py-4 bg-white/10 hover:bg-white/20 text-white"
+                        >
+                            Got it — Hide & Pass Back
+                        </Button>
+                    </Card>
+                </div>
+            );
+        }
+
+        // Grid picker — all names visible, pick your own
+        const allRevealed = players.every(p => (p as any).hasRevealed);
+
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Secret Role" onBack={() => setGameState('SETUP')} onHome={onExit} />
-                <Card className="p-6 text-center flex-1 flex flex-col justify-center">
-                    {!isRevealing ? (
-                        <div className="animate-fade-in">
-                            <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <User size={40} className="text-party-accent" />
-                            </div>
-                            <h2 className="text-3xl font-bold mb-2">Pass to {currentPlayer.name}</h2>
-                            <p className="text-gray-400 mb-8">Keep the screen hidden from others!</p>
-                            <Button onClick={() => setIsRevealing(true)} className="w-full py-4 text-xl">
-                                Reveal Role
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className="animate-flip-up">
-                            <div className="mb-8">
-                                <div className="uppercase tracking-widest text-sm text-gray-500 mb-2">Your Secret Word</div>
-                                {currentPlayer.isImposter ? (
-                                    <div className="text-red-500">
-                                        <VenetianMask size={64} className="mx-auto mb-4" />
-                                        <h2 className="text-4xl font-black tracking-tight">YOU ARE THE IMPOSTER</h2>
-                                        <p className="text-gray-400 mt-4 text-sm">Blend in. Don't let them know you don't know the word.</p>
-                                        <p className="text-gray-500 mt-2 text-xs uppercase tracking-wider">Category: {category.label}</p>
-                                    </div>
-                                ) : (
-                                    <div className="text-emerald-400">
-                                        <div className="text-5xl font-black mb-2 tracking-tight">{secretWord}</div>
-                                        <p className="text-gray-400 mt-4 text-sm">Valid for category: {category.label}</p>
-                                    </div>
-                                )}
-                            </div>
-                            <Button onClick={nextPlayer} className="w-full py-4 bg-white/10 hover:bg-white/20 text-white">
-                                Hide & Pass Next
+                <ScreenHeader title="Find Your Name" onBack={() => setGameState('SETUP')} onHome={onExit} />
+                <Card className="p-6 flex-1 flex flex-col">
+                    <div className="text-center mb-6">
+                        <p className="text-gray-300 text-sm leading-relaxed">
+                            Pass the phone around. <strong className="text-white">Each person taps their own name</strong> to see their secret role privately, then hides the screen and passes it back.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 flex-1 content-start">
+                        {players.map((p, idx) => {
+                            const hasRevealed = (p as any).hasRevealed;
+                            return (
+                                <button
+                                    key={p.id}
+                                    onClick={() => {
+                                        if (!hasRevealed) {
+                                            setCurrentPlayerIndex(idx);
+                                            setIsRevealing(true);
+                                        }
+                                    }}
+                                    disabled={hasRevealed}
+                                    className={`relative flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all active:scale-95 min-h-[80px] font-bold text-lg
+                                        ${hasRevealed
+                                            ? 'bg-white/5 border-white/10 text-gray-600 cursor-default opacity-60'
+                                            : 'bg-white/5 border-white/20 hover:border-party-accent hover:bg-white/10 text-white shadow-md active:shadow-none'
+                                        }`}
+                                >
+                                    {hasRevealed ? (
+                                        <Check size={22} className="text-emerald-500" />
+                                    ) : (
+                                        <User size={22} className="text-party-accent" />
+                                    )}
+                                    <span className={hasRevealed ? 'line-through text-gray-600' : ''}>{p.name}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {allRevealed && (
+                        <div className="mt-6 animate-fade-in">
+                            <Button
+                                onClick={() => setGameState('PLAY')}
+                                className="w-full py-4 text-lg font-bold bg-gradient-to-r from-red-500 to-orange-600"
+                            >
+                                Everyone's Ready — Start Game! <ArrowRight className="inline ml-2" size={20} />
                             </Button>
                         </div>
                     )}
@@ -249,6 +368,7 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
             </div>
         );
     }
+
 
     if (gameState === 'PLAY') {
         return (

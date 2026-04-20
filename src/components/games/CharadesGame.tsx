@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Button, Card, ScreenHeader } from '../ui/Layout';
 import { Timer, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { generateCharadesWords } from '../../services/geminiService';
-import { getLocalCharadesWords } from '../../services/LocalGameService';
 // import { useContent } from '../../contexts/ContentContext'; // Unused for now, maybe later
 import { useContent } from '../../contexts/ContentContext';
 import { CHARADES_CATEGORIES } from '../../constants';
@@ -21,7 +20,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<'SETUP' | 'PLAYING' | 'SUMMARY'>('SETUP');
     const [score, setScore] = useState(0);
     const [timeLeft, setTimeLeft] = useState(60);
-    const [category, setCategory] = useState("hollywood_movies");
+    const [category, setCategory] = useState("mix_movies");
     const { prefetchGameContent } = useContent();
 
     // const categories = ["Movies", "Animals", "Actions", "Celebrities", "Objects"]; // Replaced by constant
@@ -36,8 +35,28 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         try {
             // 1. Get all local words for this category
             const charadesData = (gamesDataRaw as any).games.charades;
-            const categoryData = charadesData.categories.find((c: any) => c.id === category);
-            const allLocalWords: string[] = categoryData ? categoryData.items : [];
+            let allLocalWords: string[] = [];
+
+            if (category === 'mix_movies') {
+                // Combine ALL movie categories for the mix
+                const hollywood = charadesData.categories.find((c: any) => c.id === 'hollywood_movies')?.items || [];
+                const bollywood = charadesData.categories.find((c: any) => c.id === 'bollywood_movies')?.items || [];
+                const mixUnique = charadesData.categories.find((c: any) => c.id === 'mix_movies')?.items || [];
+                allLocalWords = Array.from(new Set([...hollywood, ...bollywood, ...mixUnique]));
+                console.log(`Movie Mix loaded: ${allLocalWords.length} unique titles`);
+            } else if (category === 'family_mix') {
+                // Combine all family-friendly sub-categories
+                const everyday = charadesData.categories.find((c: any) => c.id === 'everyday_actions')?.items || [];
+                const house = charadesData.categories.find((c: any) => c.id === 'around_the_house')?.items || [];
+                const zoo = charadesData.categories.find((c: any) => c.id === 'the_zoo')?.items || [];
+                const familyBase = charadesData.categories.find((c: any) => c.id === 'family_mix')?.items || [];
+                allLocalWords = Array.from(new Set([...familyBase, ...everyday, ...house, ...zoo]));
+                console.log(`Family Mix loaded: ${allLocalWords.length} unique words`);
+            } else {
+                // Standard category behavior
+                const categoryData = charadesData.categories.find((c: any) => c.id === category);
+                allLocalWords = categoryData ? categoryData.items : [];
+            }
 
             // 2. Filter used words
             const availableLocal = sessionService.filterContent(

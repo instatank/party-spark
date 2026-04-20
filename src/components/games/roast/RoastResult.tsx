@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
-import { editImage, cleanBase64, getCaricaturePrompt, type RoastIntensity } from '../services/geminiService';
+import { Download, Share2 } from 'lucide-react';
+import { editImage, cleanBase64, getCaricaturePrompt, type RoastTheme } from '../../../services/geminiService';
 
 interface RoastResultProps {
     originalImage: string;
@@ -18,14 +20,12 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
 
         setIsEditing(true);
         try {
-            // We edit the ORIGINAL image with the new prompt to preserve quality
-            const imageToEdit = originalImage;
-            const rawBase64 = cleanBase64(imageToEdit);
+            const rawBase64 = cleanBase64(originalImage);
             const newImage = await editImage(rawBase64, promptToUse);
 
             if (newImage) {
                 onUpdateImage(newImage);
-                if (!customPrompt) setPrompt(''); // Clear input if it was a manual text entry
+                if (!customPrompt) setPrompt('');
             }
         } catch (e) {
             console.error(e);
@@ -35,8 +35,44 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
         }
     };
 
-    const handleIntensityClick = (level: RoastIntensity) => {
+    const handleIntensityClick = (level: RoastTheme) => {
         handleCustomEdit(getCaricaturePrompt(level));
+    };
+
+    const handleSave = () => {
+        try {
+            const link = document.createElement('a');
+            link.href = resultImage;
+            link.download = `partyspark_roast_${Date.now()}.jpg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Error saving image:', error);
+            alert('Failed to save image.');
+        }
+    };
+
+    const handleShare = async () => {
+        try {
+            const response = await fetch(resultImage);
+            const blob = await response.blob();
+            const file = new File([blob], 'partyspark_roast.jpg', { type: 'image/jpeg' });
+            if (navigator.share) {
+                await navigator.share({
+                    title: 'My PartySpark Roast',
+                    text: `Check out my roast from PartySpark!\n\n"${roastText}"`,
+                    files: [file],
+                });
+            } else {
+                alert('Sharing is not supported on this device/browser. Please use the Save button instead.');
+            }
+        } catch (error) {
+            console.error('Error sharing image:', error);
+            if ((error as any).name !== 'AbortError') {
+                alert('Sharing failed. Please try saving the image instead.');
+            }
+        }
     };
 
     return (
@@ -59,38 +95,51 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                     </div>
                 </div>
 
-                {/* Edit Controls */}
-                <div className="bg-neutral-900 p-4 rounded-xl border border-neutral-800 space-y-4">
+                <div className="flex gap-4 mb-4">
+                    <button
+                        onClick={handleSave}
+                        className="flex-1 flex items-center justify-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium py-3 rounded-xl border border-neutral-700 transition-colors"
+                    >
+                        <Download size={18} />
+                        Save Photo
+                    </button>
+                    <button
+                        onClick={handleShare}
+                        className="flex-1 flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-3 rounded-xl transition-colors shadow-lg shadow-yellow-900/20"
+                    >
+                        <Share2 size={18} />
+                        Share
+                    </button>
+                </div>
 
-                    {/* Quick Presets */}
+                <div className="bg-neutral-900 p-4 rounded-xl border border-neutral-800 space-y-4">
                     <div>
-                        <h3 className="text-neutral-400 text-xs font-bold mb-2 uppercase tracking-wider">Change Intensity</h3>
+                        <h3 className="text-neutral-400 text-xs font-bold mb-2 uppercase tracking-wider">Change Theme</h3>
                         <div className="flex gap-2">
                             <button
-                                onClick={() => handleIntensityClick('subtle')}
+                                onClick={() => handleIntensityClick('animate')}
                                 disabled={isEditing}
-                                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white text-sm font-medium py-2 rounded-lg border border-neutral-700 transition-all"
+                                className="flex-1 bg-neutral-800 hover:bg-yellow-900/40 text-yellow-500 text-sm font-medium py-2 rounded-lg border border-neutral-700 transition-all"
                             >
-                                Subtle
+                                Animate
                             </button>
                             <button
-                                onClick={() => handleIntensityClick('medium')}
+                                onClick={() => handleIntensityClick('tabloid')}
                                 disabled={isEditing}
-                                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-yellow-500 text-sm font-medium py-2 rounded-lg border border-neutral-700 transition-all"
+                                className="flex-1 bg-neutral-800 hover:bg-pink-900/40 text-pink-500 text-sm font-medium py-2 rounded-lg border border-neutral-700 transition-all"
                             >
-                                Medium
+                                Tabloid
                             </button>
                             <button
-                                onClick={() => handleIntensityClick('extreme')}
+                                onClick={() => handleIntensityClick('movie')}
                                 disabled={isEditing}
-                                className="flex-1 bg-neutral-800 hover:bg-red-900/30 text-red-500 text-sm font-medium py-2 rounded-lg border border-neutral-700 border-red-900/30 transition-all"
+                                className="flex-1 bg-neutral-800 hover:bg-blue-900/40 text-blue-500 text-sm font-medium py-2 rounded-lg border border-neutral-700 transition-all"
                             >
-                                EXTREME
+                                Movie
                             </button>
                         </div>
                     </div>
 
-                    {/* Custom Prompt */}
                     <div>
                         <h3 className="text-neutral-400 text-xs font-bold mb-2 uppercase tracking-wider">Custom Refinement</h3>
                         <div className="flex gap-2">
@@ -132,7 +181,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                     <div className="mt-8 flex items-center justify-between border-t border-red-900/30 pt-4">
                         <div className="flex items-center space-x-2">
                             <span className="text-neutral-400 text-sm">Roasted by</span>
-                            <span className="text-yellow-500 font-bold">Gemini 2.5</span>
+                            <span className="text-yellow-500 font-bold uppercase tracking-tighter">Gemini 3 Pro</span>
                         </div>
                         <div className="flex space-x-1 text-yellow-500">
                             {'★★★★★'.split('').map((star, i) => (

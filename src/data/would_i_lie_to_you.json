@@ -1,0 +1,42 @@
+[
+    {
+        "category": "Travel",
+        "topic": "Airplanes & Flights"
+    },
+    {
+        "category": "Childhood",
+        "topic": "School Days"
+    },
+    {
+        "category": "Food & Drink",
+        "topic": "Cooking Disasters"
+    },
+    {
+        "category": "Social",
+        "topic": "Parties & Events"
+    },
+    {
+        "category": "Animals",
+        "topic": "Pets or Wildlife"
+    },
+    {
+        "category": "Work",
+        "topic": "Job Interviews"
+    },
+    {
+        "category": "Misadventures",
+        "topic": "Getting Lost"
+    },
+    {
+        "category": "Technology",
+        "topic": "Tech Fails"
+    },
+    {
+        "category": "Romance",
+        "topic": "Bad Dates"
+    },
+    {
+        "category": "Hobbies",
+        "topic": "Sports or Activities"
+    }
+]

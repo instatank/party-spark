@@ -1,0 +1,1241 @@
+{
+  "friends": {
+    "round1": [
+      {
+        "text": "What does {name} reach for first when they're stressed?",
+        "options": [
+          "Junk food",
+          "Their phone",
+          "A nap",
+          "Music"
+        ]
+      },
+      {
+        "text": "What would {name} most likely binge-watch on a lazy Sunday?",
+        "options": [
+          "True crime docs",
+          "Sitcom reruns",
+          "Reality TV",
+          "Anime or sci-fi"
+        ]
+      },
+      {
+        "text": "What's {name}'s go-to order at a coffee shop?",
+        "options": [
+          "Black coffee",
+          "Iced latte",
+          "Chai or tea",
+          "Something with caramel"
+        ]
+      },
+      {
+        "text": "How does {name} act when they're running late?",
+        "options": [
+          "Panic and sprint",
+          "Casually stroll in",
+          "Send 5 sorry texts",
+          "Pretend they're on time"
+        ]
+      },
+      {
+        "text": "What would {name} grab first in a fire?",
+        "options": [
+          "Phone",
+          "Wallet",
+          "A pet or plant",
+          "Nothing — just run"
+        ]
+      },
+      {
+        "text": "What does {name} do at a party where they know nobody?",
+        "options": [
+          "Find the snack table",
+          "Make one best friend",
+          "Leave after 20 mins",
+          "Become the DJ"
+        ]
+      },
+      {
+        "text": "What's {name}'s most annoying habit?",
+        "options": [
+          "Being on their phone",
+          "Running late",
+          "Talking too much",
+          "Leaving things messy"
+        ]
+      },
+      {
+        "text": "How does {name} handle losing at a board game?",
+        "options": [
+          "Silent rage",
+          "Dramatic outburst",
+          "Immediately demand rematch",
+          "Shrug and laugh it off"
+        ]
+      },
+      {
+        "text": "What's {name}'s guilty pleasure food?",
+        "options": [
+          "Instant noodles",
+          "Ice cream at midnight",
+          "Fast food drive-thru",
+          "An entire bag of chips"
+        ]
+      },
+      {
+        "text": "What does {name} do in the first 5 minutes of waking up?",
+        "options": [
+          "Check their phone",
+          "Hit snooze 3 times",
+          "Head straight to the bathroom",
+          "Lie there existentially"
+        ]
+      },
+      {
+        "text": "If {name} is ordering a coffee, which one is most likely appearing on the receipt?",
+        "options": [
+          "A complex, 5-step customized order with alternative milk",
+          "A black coffee or double espresso—liquid fuel only",
+          "The most sugary, seasonal special on the menu",
+          "They don't know; they just asked the barista for a recommendation"
+        ]
+      },
+      {
+        "text": "How does {name} typically behave at a party where they only know the host?",
+        "options": [
+          "The 'Social Butterfly' working the room within ten minutes",
+          "The 'Kitchen Dweller' hovering near the snacks and the dog",
+          "The 'Shadow' following the host around until they find a safe group",
+          "The 'Ghost' who makes a polite appearance and leaves after 45 minutes"
+        ]
+      },
+      {
+        "text": "What is {name}'s digital communication style?",
+        "options": [
+          "The 'Instant Responder' who replies before you've even finished typing",
+          "The 'Novelist' who sends five consecutive paragraphs",
+          "The 'Time Traveler' who replies three business days later with 'lol true'",
+          "The 'Voice Noter' who refuses to use their thumbs"
+        ]
+      },
+      {
+        "text": "It's a rainy Saturday afternoon. Where is {name}?",
+        "options": [
+          "Deep-cleaning the entire house while listening to a podcast",
+          "Horizontal on the couch in a 'doom-scrolling' trance",
+          "Halfway through a hobby they started yesterday and will quit tomorrow",
+          "Aggressively napping to make up for a chaotic week"
+        ]
+      },
+      {
+        "text": "What is {name}'s go-to move when they're genuinely annoyed?",
+        "options": [
+          "Total radio silence and a very visible 'fine' face",
+          "A calculated, sarcastic remark that cuts deep",
+          "Venting to anyone who will listen for exactly twenty minutes",
+          "Cleaning or organizing things aggressively to blow off steam"
+        ]
+      }
+    ],
+    "round2": [
+      {
+        "text": "What would {name} regret most not doing?",
+        "options": [
+          "Travelling more",
+          "Starting a business",
+          "Learning an instrument",
+          "Writing something meaningful"
+        ]
+      },
+      {
+        "text": "If {name} could master one skill overnight, what would it be?",
+        "options": [
+          "Cooking like a chef",
+          "Speaking 5 languages",
+          "Playing guitar",
+          "Public speaking"
+        ]
+      },
+      {
+        "text": "What does {name} value most in a friendship?",
+        "options": [
+          "Loyalty",
+          "Humour",
+          "Honest feedback",
+          "Showing up when it matters"
+        ]
+      },
+      {
+        "text": "What would {name} do with a surprise week off work?",
+        "options": [
+          "Solo trip somewhere",
+          "Sleep for 3 days straight",
+          "Start a side project",
+          "Catch up with old friends"
+        ]
+      },
+      {
+        "text": "What hill would {name} die on?",
+        "options": [
+          "Pineapple on pizza is valid",
+          "Morning people are superior",
+          "Texting is better than calling",
+          "Dogs are better than cats"
+        ]
+      },
+      {
+        "text": "What's {name}'s biggest ick?",
+        "options": [
+          "Bad table manners",
+          "People who one-up stories",
+          "Slow walkers",
+          "Loud chewing"
+        ]
+      },
+      {
+        "text": "How does {name} deal with conflict?",
+        "options": [
+          "Confront it head-on",
+          "Avoid until it blows over",
+          "Write a long text message",
+          "Joke their way out of it"
+        ]
+      },
+      {
+        "text": "What keeps {name} up at night?",
+        "options": [
+          "Replaying conversations",
+          "Career worries",
+          "Existential dread",
+          "Tomorrow's to-do list"
+        ]
+      },
+      {
+        "text": "What would {name} spend a windfall of money on first?",
+        "options": [
+          "A holiday",
+          "Invest or save it",
+          "Treat friends and family",
+          "Something impulsive for themselves"
+        ]
+      },
+      {
+        "text": "If {name} had to give up one forever?",
+        "options": [
+          "Social media",
+          "Streaming services",
+          "Takeout food",
+          "Sleeping in on weekends"
+        ]
+      },
+      {
+        "text": "If {name} found a wallet with \u0000 and no ID, what would they actually do?",
+        "options": [
+          "Keep it—it's a gift from the universe",
+          "Hand it into the nearest shop, even if they think the staff will keep it",
+          "Spend it immediately on a round of drinks for everyone",
+          "Leave it exactly where it is to avoid the moral karma"
+        ]
+      },
+      {
+        "text": "What does {name} value most in a long-term friendship?",
+        "options": [
+          "Brutal honesty, even when it's uncomfortable",
+          "Consistency and showing up for the boring stuff",
+          "Shared humor and the ability to laugh at anything",
+          "Loyalty—knowing they have a 'ride or die' in their corner"
+        ]
+      },
+      {
+        "text": "How does {name} handle a major life disagreement with a friend?",
+        "options": [
+          "Initiates a 'sit down' talk to process every emotion",
+          "Wait for it to blow over and act like nothing happened",
+          "Writes a long, carefully worded text to avoid immediate confrontation",
+          "Distances themselves until they aren't angry anymore"
+        ]
+      },
+      {
+        "text": "What is {name}'s internal 'success' metric?",
+        "options": [
+          "Professional status and the respect of their peers",
+          "Financial freedom and the ability to buy whatever they want",
+          "The quality and depth of their personal relationships",
+          "Personal growth and feeling like a 'better' version of themselves"
+        ]
+      },
+      {
+        "text": "In a hypothetical 'zombie apocalypse' group, what is {name}'s role?",
+        "options": [
+          "The Leader: Making the hard calls and keeping order",
+          "The Specialist: Fixing things and being useful",
+          "The Morale Booster: Cracking jokes so no one loses it",
+          "The Realist: Pointing out why every plan will probably fail"
+        ]
+      }
+    ],
+    "round3": [
+      {
+        "text": "What does {name} secretly judge people for?",
+        "options": [
+          "Their music taste",
+          "How they treat waiters",
+          "Their social media behaviour",
+          "Their punctuality"
+        ]
+      },
+      {
+        "text": "What's {name}'s biggest insecurity they rarely talk about?",
+        "options": [
+          "How they look",
+          "Whether they're successful enough",
+          "Being liked",
+          "Being taken seriously"
+        ]
+      },
+      {
+        "text": "How would {name} react to a major life disappointment?",
+        "options": [
+          "Withdraw and process alone",
+          "Talk it out with someone close",
+          "Channel it into work",
+          "Pretend they're fine until they are"
+        ]
+      },
+      {
+        "text": "What's {name} most afraid of about the future?",
+        "options": [
+          "Losing close people",
+          "Career stagnation",
+          "Being alone",
+          "Regret over roads not taken"
+        ]
+      },
+      {
+        "text": "What does {name} wish people understood about them?",
+        "options": [
+          "They care more than they show",
+          "They need more alone time",
+          "They're not as confident as they seem",
+          "They overthink everything"
+        ]
+      },
+      {
+        "text": "If {name} could change one thing about themselves?",
+        "options": [
+          "Be less anxious",
+          "Be more disciplined",
+          "Care less about what others think",
+          "Be better at expressing emotions"
+        ]
+      },
+      {
+        "text": "What makes {name} cry (even if they won't admit it)?",
+        "options": [
+          "Sentimental movie scenes",
+          "Thinking about family",
+          "Feeling misunderstood",
+          "Acts of unexpected kindness"
+        ]
+      },
+      {
+        "text": "What's the compliment {name} secretly wants to hear most?",
+        "options": [
+          "'You're really talented'",
+          "'You make people feel safe'",
+          "'You're funnier than you think'",
+          "'I admire how you handle things'"
+        ]
+      },
+      {
+        "text": "What would {name} never forgive in a friendship?",
+        "options": [
+          "Lying to their face",
+          "Talking behind their back",
+          "Not showing up when needed",
+          "Betraying a shared secret"
+        ]
+      },
+      {
+        "text": "What emotion does {name} have the hardest time expressing?",
+        "options": [
+          "Vulnerability",
+          "Anger",
+          "Gratitude",
+          "Sadness"
+        ]
+      },
+      {
+        "text": "What is {name}'s most recurring 'middle of the night' insecurity?",
+        "options": [
+          "That they aren't living up to their full potential",
+          "That they are secretly annoying to the people they love",
+          "That they've made a major life choice they can't take back",
+          "That everyone else has a 'manual' for life that they missed"
+        ]
+      },
+      {
+        "text": "Which of these is {name} most likely to hide from the world?",
+        "options": [
+          "How much they actually care about what strangers think",
+          "A deep-seated fear of being alone or forgotten",
+          "A sensitive side that contradicts their 'tough' exterior",
+          "How much they struggle with basic daily tasks"
+        ]
+      },
+      {
+        "text": "When {name} is feeling overwhelmed, what do they need most but rarely ask for?",
+        "options": [
+          "Someone to take the lead and make decisions for them",
+          "Genuine validation that they are doing a good job",
+          "Physical space and total silence without judgment",
+          "A distraction that makes them forget their responsibilities"
+        ]
+      },
+      {
+        "text": "What is the fastest way to hurt {name}'s feelings, even if they don't show it?",
+        "options": [
+          "Dismissing an idea they were genuinely excited about",
+          "Questioning their intelligence or competence",
+          "Being 'left out' of a plan or an inner-circle joke",
+          "Receiving constructive criticism when they didn't ask for it"
+        ]
+      },
+      {
+        "text": "If {name} were to be totally honest, what is their 'emotional default'?",
+        "options": [
+          "Restless—always looking for the next thing",
+          "Anxious—anticipating the next problem",
+          "Content—trying to maintain the current peace",
+          "Guarded—waiting to see how others react first"
+        ]
+      }
+    ]
+  },
+  "couples": {
+    "round1": [
+      {
+        "text": "What side of the bed does {name} prefer?",
+        "options": [
+          "Left side",
+          "Right side",
+          "The entire bed",
+          "Wherever you're not"
+        ]
+      },
+      {
+        "text": "What does {name} do when they want your attention?",
+        "options": [
+          "Get physically clingy",
+          "Start talking non-stop",
+          "Stare dramatically",
+          "Send memes from 2 feet away"
+        ]
+      },
+      {
+        "text": "What's {name}'s ideal date night?",
+        "options": [
+          "Fancy dinner out",
+          "Couch + takeout + movie",
+          "An activity like bowling or cooking",
+          "A surprise — they love spontaneity"
+        ]
+      },
+      {
+        "text": "How does {name} show love without saying it?",
+        "options": [
+          "Making food or coffee",
+          "Doing chores quietly",
+          "Physical touch",
+          "Remembering small details"
+        ]
+      },
+      {
+        "text": "What's {name}'s most annoying relationship habit?",
+        "options": [
+          "Leaving dishes in the sink",
+          "Being on their phone during movies",
+          "Stealing the blanket",
+          "Saying 'I don't mind, you pick'"
+        ]
+      },
+      {
+        "text": "What does {name} look like when they're hangry?",
+        "options": [
+          "Short, snappy answers",
+          "Complete silence",
+          "Dramatic sighing",
+          "Declaring they'll never eat again"
+        ]
+      },
+      {
+        "text": "What would {name} want for breakfast in bed?",
+        "options": [
+          "Pancakes and fruit",
+          "Eggs and toast",
+          "Just coffee, don't talk to me",
+          "They'd rather make it themselves"
+        ]
+      },
+      {
+        "text": "How does {name} react to a spider in the house?",
+        "options": [
+          "Scream and call you",
+          "Calmly catch it",
+          "Burn the house down",
+          "Ignore it and hope it leaves"
+        ]
+      },
+      {
+        "text": "What does {name} hog most?",
+        "options": [
+          "The bathroom",
+          "The TV remote",
+          "The blanket",
+          "Conversation at dinner"
+        ]
+      },
+      {
+        "text": "What's {name}'s texting style when you're apart?",
+        "options": [
+          "Constant updates",
+          "Memes and TikToks only",
+          "One word replies",
+          "Voice notes"
+        ]
+      },
+      {
+        "text": "Which household 'crime' is {name} most guilty of?",
+        "options": [
+          "Leaving 'half-drunk' beverages in various rooms",
+          "The 'floordrobe'—clothes that are neither clean nor dirty",
+          "Starting the dishwasher but never actually emptying it",
+          "Hoarding cardboard boxes or 'useful' clutter"
+        ]
+      },
+      {
+        "text": "What is {name}'s ideal 'lazy' date night?",
+        "options": [
+          "Ordering the exact same takeout as last time and a movie",
+          "Parallel play: both on phones/laptops but touching feet",
+          "A long drive with a specific playlist and no destination",
+          "Deep-diving into a niche YouTube documentary together"
+        ]
+      },
+      {
+        "text": "How does {name} usually announce they are hungry?",
+        "options": [
+          "A subtle, polite 'What are you thinking for dinner?'",
+          "Getting increasingly cranky (hangry) until you notice",
+          "The 'I'll eat anything' lie (they will reject the first 3 options)",
+          "Sending a link to a menu or a food photo with no context"
+        ]
+      },
+      {
+        "text": "What is {name}'s 'social battery' limit when you're out together?",
+        "options": [
+          "The 'Early Bird': Ready to go as soon as the main event ends",
+          "The 'Vibe Checker': Stays as long as the music/energy is good",
+          "The 'Marathoner': Always the last to leave",
+          "The 'Look': They give you a specific facial expression that means 'leave now'"
+        ]
+      },
+      {
+        "text": "What is {name}'s most specific domestic quirk?",
+        "options": [
+          "A very particular way the bed must be made",
+          "An irrational hatred of a specific chore (e.g., the bins)",
+          "Needing to 'decompress' in total silence for 20 minutes after work",
+          "A bizarrely organized ritual for their morning routine"
+        ]
+      }
+    ],
+    "round2": [
+      {
+        "text": "What does {name} need most after a hard day?",
+        "options": [
+          "Space and quiet",
+          "A long hug",
+          "To vent without advice",
+          "Distraction — make them laugh"
+        ]
+      },
+      {
+        "text": "What's {name}'s love language?",
+        "options": [
+          "Words of affirmation",
+          "Physical touch",
+          "Quality time",
+          "Acts of service"
+        ]
+      },
+      {
+        "text": "What would {name} sacrifice last?",
+        "options": [
+          "Career ambition",
+          "Time with family",
+          "Personal freedom",
+          "Financial security"
+        ]
+      },
+      {
+        "text": "Where does {name} see you both in 5 years?",
+        "options": [
+          "Travelling together",
+          "Settled with a home",
+          "Building something big",
+          "Same vibes, deeper bond"
+        ]
+      },
+      {
+        "text": "What topic does {name} avoid talking about?",
+        "options": [
+          "Money",
+          "Past relationships",
+          "The distant future",
+          "Family dynamics"
+        ]
+      },
+      {
+        "text": "What does {name} think makes a relationship last?",
+        "options": [
+          "Trust above everything",
+          "Keeping things fun",
+          "Growing individually together",
+          "Fighting fair, not avoiding fights"
+        ]
+      },
+      {
+        "text": "What's {name}'s way of apologising after a fight?",
+        "options": [
+          "Saying sorry directly",
+          "Acting extra nice without words",
+          "Buying food or gifts",
+          "Cracking a joke to break the ice"
+        ]
+      },
+      {
+        "text": "What's the one thing {name} wishes you did more of?",
+        "options": [
+          "Compliment them",
+          "Plan surprises",
+          "Listen more carefully",
+          "Put the phone down"
+        ]
+      },
+      {
+        "text": "How does {name} handle jealousy?",
+        "options": [
+          "Talks about it openly",
+          "Gets quietly distant",
+          "Makes passive-aggressive jokes",
+          "Pretends it doesn't exist"
+        ]
+      },
+      {
+        "text": "What would upset {name} most in a relationship?",
+        "options": [
+          "Being lied to",
+          "Being taken for granted",
+          "Not being prioritised",
+          "Having no personal space"
+        ]
+      },
+      {
+        "text": "Which 'Love Language' does {name} actually value most in a partner?",
+        "options": [
+          "Acts of Service: Doing the thing they didn't want to do",
+          "Words of Affirmation: Specific, unprompted compliments",
+          "Quality Time: Phones away, focused attention",
+          "Physical Touch: Constant, low-key physical proximity"
+        ]
+      },
+      {
+        "text": "How does {name} handle a heated argument?",
+        "options": [
+          "The Lawyer: Debating points with logic and facts",
+          "The Exploder: Everything comes out at once, then they're fine",
+          "The Turtle: Needs to retreat and process before speaking",
+          "The Peacemaker: Tries to fix it or apologize immediately to end the tension"
+        ]
+      },
+      {
+        "text": "What is {name}'s biggest 'green flag' in a relationship?",
+        "options": [
+          "Being able to sit in comfortable silence together",
+          "Matching their level of ambition and drive",
+          "Emotional intelligence and self-awareness",
+          "A sense of humor that perfectly mirrors their own"
+        ]
+      },
+      {
+        "text": "What does {name} find most difficult to share with you?",
+        "options": [
+          "When they are feeling inadequate or 'not enough'",
+          "Specific financial worries or stress",
+          "When they are annoyed by something small you did",
+          "Their wildest, most 'unrealistic' future dreams"
+        ]
+      },
+      {
+        "text": "If you both had a completely free day, what would {name} want to prioritize?",
+        "options": [
+          "Productivity: Ticking off life goals or errands together",
+          "Rest: Deep recovery and zero responsibilities",
+          "Adventure: Going somewhere new or doing an activity",
+          "Connection: Focused time to talk and reconnect"
+        ]
+      }
+    ],
+    "round3": [
+      {
+        "text": "What does {name} secretly worry about in this relationship?",
+        "options": [
+          "Not being enough",
+          "Things getting boring",
+          "Growing apart",
+          "Losing independence"
+        ]
+      },
+      {
+        "text": "What's the hardest thing for {name} to say to you?",
+        "options": [
+          "'I need help'",
+          "'You hurt me'",
+          "'I'm scared'",
+          "'I was wrong'"
+        ]
+      },
+      {
+        "text": "What does {name} value most about you?",
+        "options": [
+          "Your patience",
+          "Your humour",
+          "Your honesty",
+          "How safe you make them feel"
+        ]
+      },
+      {
+        "text": "What's {name}'s biggest relationship fear?",
+        "options": [
+          "Repeating past mistakes",
+          "Losing themselves",
+          "Being truly seen",
+          "Loving more than being loved"
+        ]
+      },
+      {
+        "text": "What would {name} change about how you argue?",
+        "options": [
+          "Less silent treatment",
+          "Less shouting",
+          "More listening",
+          "Resolve faster, don't let it simmer"
+        ]
+      },
+      {
+        "text": "What makes {name} feel most loved by you?",
+        "options": [
+          "When you remember the little things",
+          "When you defend them publicly",
+          "When you choose them over other plans",
+          "When you just sit with them in silence"
+        ]
+      },
+      {
+        "text": "What has {name} learned about themselves from being with you?",
+        "options": [
+          "That they can trust someone",
+          "That they're more patient than they thought",
+          "That vulnerability isn't weakness",
+          "That they deserve to be loved well"
+        ]
+      },
+      {
+        "text": "What moment in your relationship does {name} replay the most?",
+        "options": [
+          "An inside joke that always lands",
+          "The first real 'I love you'",
+          "A time you showed up when it mattered",
+          "A trip or adventure together"
+        ]
+      },
+      {
+        "text": "If {name} could relive one day with you, what kind of day?",
+        "options": [
+          "A spontaneous adventure",
+          "A quiet day at home",
+          "A milestone celebration",
+          "An ordinary day that just felt perfect"
+        ]
+      },
+      {
+        "text": "What does {name} need to hear from you right now but hasn't asked for?",
+        "options": [
+          "'I'm proud of you'",
+          "'I'm not going anywhere'",
+          "'You don't have to be strong all the time'",
+          "'I see how hard you're trying'"
+        ]
+      },
+      {
+        "text": "What is {name}'s deepest 'relationship fear'?",
+        "options": [
+          "Becoming 'boring' or stagnant as a couple",
+          "Losing their individual identity within the partnership",
+          "Waking up one day and realizing the spark is gone",
+          "Being a burden to you during hard times"
+        ]
+      },
+      {
+        "text": "What is something {name} often needs from you but struggles to voice?",
+        "options": [
+          "To be told they are attractive/desired without asking",
+          "To be given more 'mental load' support without prompting",
+          "To be checked in on when they seem 'fine'",
+          "To have their boundaries respected without having to defend them"
+        ]
+      },
+      {
+        "text": "How has {name}'s view of love changed since being with you?",
+        "options": [
+          "It feels more like a choice/commitment than just a feeling",
+          "They feel safer to be 'messy' and imperfect",
+          "They've realized they don't have to do everything alone",
+          "They've learned that conflict doesn't always lead to ending"
+        ]
+      },
+      {
+        "text": "What part of {name}'s personality do they feel you 'get' better than anyone else?",
+        "options": [
+          "Their weird sense of humor that others find confusing",
+          "Their underlying anxiety that they mask with confidence",
+          "Their deep-seated need for independence",
+          "The way they show love through small, invisible actions"
+        ]
+      },
+      {
+        "text": "If {name} could change one 'dynamic' in the relationship, what would it be?",
+        "options": [
+          "Better communication during high-stress moments",
+          "More spontaneous 'fun' and less routine",
+          "Finding a better balance of household/life responsibilities",
+          "Deepening the emotional intimacy even further"
+        ]
+      }
+    ]
+  },
+  "bunny": {
+    "round1": [
+      {
+        "text": "What's {name}'s go-to sleeping position?",
+        "options": [
+          "Starfish — claims the whole bed",
+          "Foetal position, fully cocooned",
+          "On their stomach, face down",
+          "Clinging onto you like a koala"
+        ]
+      },
+      {
+        "text": "How many pillows does {name} need to function?",
+        "options": [
+          "One (normal human)",
+          "Three minimum",
+          "A full pillow fort",
+          "Zero — they use you instead"
+        ]
+      },
+      {
+        "text": "What does {name} wear to bed?",
+        "options": [
+          "Full matching pyjamas",
+          "Oversized t-shirt and nothing else",
+          "As little as legally possible",
+          "Whatever they wore that day"
+        ]
+      },
+      {
+        "text": "How does {name} react when your cold feet touch them in bed?",
+        "options": [
+          "Full scream and kick",
+          "Silent passive-aggressive shuffle away",
+          "Trap your feet between theirs",
+          "Don't care — already asleep"
+        ]
+      },
+      {
+        "text": "What's {name}'s cuddling style?",
+        "options": [
+          "Big spoon energy",
+          "Little spoon, fully wrapped",
+          "Starts cuddling then rolls away in 3 mins",
+          "Leg draped over, face buried in pillow"
+        ]
+      },
+      {
+        "text": "What does {name} do right before falling asleep?",
+        "options": [
+          "Scroll phone for 45 more minutes",
+          "Immediately pass out mid-sentence",
+          "Need to talk about the meaning of life",
+          "One more episode (repeat x4)"
+        ]
+      },
+      {
+        "text": "How does {name} wake you up on weekends?",
+        "options": [
+          "Gently with coffee",
+          "By being annoyingly energetic",
+          "They don't — they sleep later than you",
+          "Passive-aggressively making noise nearby"
+        ]
+      },
+      {
+        "text": "What's {name}'s blanket behaviour?",
+        "options": [
+          "Full burrito wrap, steals everything",
+          "Kicks it off within 10 minutes",
+          "One leg out, perfectly balanced",
+          "Doesn't need one — they run hot"
+        ]
+      },
+      {
+        "text": "How does {name} react to morning breath?",
+        "options": [
+          "Breathes directly in your face",
+          "Turns away dramatically",
+          "Says they don't have it (they do)",
+          "Immediately goes to brush teeth"
+        ]
+      },
+      {
+        "text": "What would {name} do if you started snoring?",
+        "options": [
+          "Elbow you aggressively",
+          "Film it for evidence",
+          "Put headphones in and suffer",
+          "They're snoring louder than you"
+        ]
+      },
+      {
+        "text": "What is {name}'s most common 'bed crime'?",
+        "options": [
+          "The 'Blanket Cocoon': Slowly rolling until you have nothing",
+          "The 'Human Furnace': Radiating enough heat to melt the ice caps",
+          "The 'Starfish': Gradually expanding until they occupy 80% of the bed",
+          "The 'Phone Glow': Scrolling until 2 AM while you try to sleep"
+        ]
+      },
+      {
+        "text": "What is {name}'s preferred 'uniform' for the bedroom?",
+        "options": [
+          "An oversized, soft t-shirt that's seen better days",
+          "Just underwear—functional and simple",
+          "A coordinated, 'grown-up' pajama set",
+          "Strictly the 'Birthday Suit' at all times"
+        ]
+      },
+      {
+        "text": "How does {name} feel about 'Morning Energy'?",
+        "options": [
+          "A 'Cuddle Monster' who won't let you leave the bed",
+          "Strictly 'don't touch me' until coffee has been consumed",
+          "Playful and ready for action immediately",
+          "Needs a solid 30 minutes of scrolling in silence first"
+        ]
+      },
+      {
+        "text": "What is {name}'s favorite way to wake you up?",
+        "options": [
+          "Soft, lingering touches and whispers",
+          "Bringing you a hot drink as a peace offering",
+          "Aggressive cuddling to force you into consciousness",
+          "Opening the curtains and being suspiciously productive"
+        ]
+      },
+      {
+        "text": "What is the 'ideal' temperature for {name} to sleep in?",
+        "options": [
+          "Arctic Tundra: Fans on, window open, heavy duvet",
+          "The Sauna: Warm, cozy, and multiple blankets",
+          "Exactly 68 degrees with a single sheet",
+          "They don't care, as long as they are touching you"
+        ]
+      }
+    ],
+    "round2": [
+      {
+        "text": "What's {name}'s biggest turn-on that isn't physical?",
+        "options": [
+          "Cooking them dinner",
+          "Making them laugh really hard",
+          "Taking charge and planning something",
+          "Saying something unexpectedly deep"
+        ]
+      },
+      {
+        "text": "What time of day is {name} most… in the mood?",
+        "options": [
+          "Morning — they're a sunrise person",
+          "Late night, after a good show",
+          "Random mid-afternoon energy",
+          "Only when they should be doing something else"
+        ]
+      },
+      {
+        "text": "How does {name} flirt when they want something?",
+        "options": [
+          "Gets touchy and close",
+          "Drops obvious hints nobody could miss",
+          "Suddenly becomes very helpful around the house",
+          "Sends a spicy text from the next room"
+        ]
+      },
+      {
+        "text": "What kills the mood fastest for {name}?",
+        "options": [
+          "Talking about work",
+          "Bad hygiene",
+          "Checking their phone",
+          "A weird smell or sound"
+        ]
+      },
+      {
+        "text": "What's {name}'s opinion on candles and mood lighting?",
+        "options": [
+          "Essential — ambiance matters",
+          "Couldn't care less",
+          "Will light them but forget to blow them out",
+          "Prefers fairy lights or nothing"
+        ]
+      },
+      {
+        "text": "{name}'s ideal setting for a romantic night?",
+        "options": [
+          "Hotel room somewhere new",
+          "Living room fort with blankets",
+          "Fancy bath with wine",
+          "Honestly, just the bed with clean sheets"
+        ]
+      },
+      {
+        "text": "How long does {name} take to get 'ready' for bed?",
+        "options": [
+          "30 seconds — hops right in",
+          "A full 45-minute skincare routine",
+          "Depends if they're 'in the mood'",
+          "They're always ready, just ask"
+        ]
+      },
+      {
+        "text": "What's {name}'s post-intimacy move?",
+        "options": [
+          "Immediate snack run",
+          "Deep philosophical conversation",
+          "Pass out instantly",
+          "Want round two"
+        ]
+      },
+      {
+        "text": "What would {name} say is their signature move?",
+        "options": [
+          "The slow tease",
+          "Eye contact that hits different",
+          "Surprising confidence",
+          "Making you laugh mid-moment"
+        ]
+      },
+      {
+        "text": "How does {name} feel about PDA?",
+        "options": [
+          "All in — hold hands, kiss, everything",
+          "Subtle only — hand on the back",
+          "Depends on who's watching",
+          "Save it for home"
+        ]
+      },
+      {
+        "text": "What is {name}'s most effective 'mood setter'?",
+        "options": [
+          "A specific playlist they've spent hours curating",
+          "Dimmed lighting or specific 'vibe' candles",
+          "Physical proximity—leaning in and making eye contact",
+          "Wit and banter that leads to physical tension"
+        ]
+      },
+      {
+        "text": "How does {name} typically flirt when they're 'in the mood'?",
+        "options": [
+          "Subtle, suggestive comments that fly under the radar",
+          "Tactile: Lots of passing touches and 'accidental' brushes",
+          "Bold: Being very direct about what they want",
+          "Sarcastic: Teasing you until the tension is unbearable"
+        ]
+      },
+      {
+        "text": "What does {name} find most attractive in the heat of the moment?",
+        "options": [
+          "Confidence and taking the lead",
+          "Gentleness and a soft, slow approach",
+          "Playfulness and a bit of 'cheeky' humor",
+          "Intensity and total focus on them"
+        ]
+      },
+      {
+        "text": "Where is {name}'s 'sweet spot' for Public Displays of Affection?",
+        "options": [
+          "Strictly private: 'Keep it behind closed doors'",
+          "Low-key: Hand-holding and the occasional quick kiss",
+          "Subtle: A hand on the back or a knee under the table",
+          "No limits: They don't care who is watching"
+        ]
+      },
+      {
+        "text": "What is {name}'s 'weakness' when it comes to physical touch?",
+        "options": [
+          "Neck and shoulder attention",
+          "Hands running through their hair",
+          "Slow, light touches on their arms or back",
+          "A firm, confident hold around their waist"
+        ]
+      }
+    ],
+    "round3": [
+      {
+        "text": "What fantasy has {name} definitely thought about but won't bring up?",
+        "options": [
+          "Role play scenario",
+          "A spontaneous getaway with no plan",
+          "Something involving blindfolds",
+          "They're too shy to even think about it"
+        ]
+      },
+      {
+        "text": "What does {name} secretly wish you'd do more of in bed?",
+        "options": [
+          "Take the lead more often",
+          "Slow things down",
+          "Be more vocal",
+          "Surprise them — break the routine"
+        ]
+      },
+      {
+        "text": "What's {name}'s honest opinion on morning intimacy?",
+        "options": [
+          "Best kind — sleepy and warm",
+          "Hard no — need coffee first",
+          "In theory yes, in practice they choose sleep",
+          "Depends entirely on the vibe"
+        ]
+      },
+      {
+        "text": "If {name} rated your physical chemistry, what would they secretly think?",
+        "options": [
+          "Off the charts — no complaints",
+          "Good but could use more adventure",
+          "Amazing connection, could be more frequent",
+          "Underrated — we don't talk about it enough"
+        ]
+      },
+      {
+        "text": "What's the thing {name} finds unexpectedly attractive about you?",
+        "options": [
+          "Your voice when you're being serious",
+          "The way you smell in the morning",
+          "Your confidence in weird moments",
+          "How you look when you're concentrating"
+        ]
+      },
+      {
+        "text": "What would {name} want written on a coupon book from you?",
+        "options": [
+          "One full body massage",
+          "Breakfast in bed + no talking",
+          "You pick everything tonight",
+          "One guilt-free nap while you handle everything"
+        ]
+      },
+      {
+        "text": "How adventurous does {name} actually want to be?",
+        "options": [
+          "Way more than they let on",
+          "Happy with things exactly as they are",
+          "Open to trying anything once",
+          "They need to be convinced but secretly love it"
+        ]
+      },
+      {
+        "text": "What makes {name} feel sexiest?",
+        "options": [
+          "When you can't keep your eyes off them",
+          "After a great workout",
+          "When they're dressed up and going out",
+          "When you tell them something specific you love"
+        ]
+      },
+      {
+        "text": "What would {name} never admit they enjoy?",
+        "options": [
+          "Being the little spoon",
+          "Cheesy romantic gestures",
+          "That one thing you do that they pretend annoys them",
+          "Watching you get ready"
+        ]
+      },
+      {
+        "text": "If you could read {name}'s mind in bed, what would shock you most?",
+        "options": [
+          "How much they think about you during the day",
+          "That they have a secret playlist for the mood",
+          "How nervous they still get sometimes",
+          "That they've planned things in their head you'd never guess"
+        ]
+      },
+      {
+        "text": "If {name} were to be 'adventurous', what direction would they head in?",
+        "options": [
+          "Trying a new, unexpected location",
+          "Introducing a bit of 'roleplay' or power dynamics",
+          "Focusing on a very slow, sensory-overload experience",
+          "Keeping it simple but increasing the physical intensity"
+        ]
+      },
+      {
+        "text": "What is {name}'s secret bedroom 'superpower'?",
+        "options": [
+          "Being incredibly intuitive about what you need",
+          "Their ability to switch from 'sweet' to 'spicy' instantly",
+          "Their stamina and dedication to the process",
+          "Making even the simplest moments feel high-stakes"
+        ]
+      },
+      {
+        "text": "What is something {name} finds 'secretly' attractive but hasn't fully admitted?",
+        "options": [
+          "When you are being bossy or in charge",
+          "When you are being particularly vulnerable or 'soft'",
+          "When you are dressed in a very specific, non-obvious way",
+          "When you are deeply focused on a task or hobby"
+        ]
+      },
+      {
+        "text": "Which of these is the 'ultimate' intimate experience for {name}?",
+        "options": [
+          "A long, slow burn that builds over an entire evening",
+          "A spontaneous, high-energy 'quick' moment",
+          "A deep, emotional connection where it feels like 'one'",
+          "A playful, experimental session with lots of laughter"
+        ]
+      },
+      {
+        "text": "What does {name} want more of, but feels 'too shy' to ask for?",
+        "options": [
+          "More verbal feedback and 'talk' during the act",
+          "More focus on their specific desires and fantasies",
+          "More variety in the routine and the 'way' things happen",
+          "More physical reassurance after the moment is over"
+        ]
+      }
+    ]
+  }
+}

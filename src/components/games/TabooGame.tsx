@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, ScreenHeader } from '../ui/Layout';
-import { generateTabooCards } from '../../services/geminiService';
-import { getLocalTabooCards } from '../../services/LocalGameService';
+// generateTabooCards removed — full local deck is loaded each round
 import { useContent } from '../../contexts/ContentContext';
 import type { TabooCard } from '../../types';
 import { Timer, ThumbsUp, X, Ban } from 'lucide-react';
@@ -31,7 +30,6 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
         prefetchGameContent('TABOO', category);
 
         // 1. Get all local cards
-        // Logic similar to getLocalTabooCards but returning all for filtering
         let allLocalCards: any[] = [];
         try {
             if (category === 'mix_taboo') {
@@ -48,7 +46,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
             console.warn("Failed to read local taboo data", e);
         }
 
-        // 2. Filter used
+        // 2. Filter used cards from this session
         const availableLocal = sessionService.filterContent(
             GameType.TABOO,
             category,
@@ -56,25 +54,16 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
             (c) => c.word
         );
 
-        let selectedCards: TabooCard[] = [];
+        let selectedCards: TabooCard[];
 
-        if (availableLocal.length >= 10) {
-            const shuffled = [...availableLocal].sort(() => 0.5 - Math.random());
-            selectedCards = shuffled.slice(0, 10);
+        if (availableLocal.length >= 5) {
+            // Shuffle ALL available cards and load the full deck — no repeats until exhausted
+            selectedCards = [...availableLocal].sort(() => 0.5 - Math.random());
         } else {
-            // Not enough local, use what's left + generate
-            selectedCards = [...availableLocal];
-            const needed = 10 - selectedCards.length;
-            console.log(`Local Taboo exhausted. Generating ${needed} cards...`);
-            try {
-                const generated = await generateTabooCards(category, needed);
-                selectedCards = [...selectedCards, ...generated];
-            } catch (e) {
-                console.error("Failed to generate Taboo cards", e);
-                // Fallback to local repeats
-                const shuffled = [...allLocalCards].sort(() => 0.5 - Math.random());
-                selectedCards = [...selectedCards, ...shuffled.slice(0, needed)];
-            }
+            // Pool nearly exhausted — reset session tracking for this category and reshuffle from full set
+            console.log("Taboo deck nearly exhausted, reshuffling full pool...");
+            // Reshuffle from ALL local cards since the filtered pool is nearly empty
+            selectedCards = [...allLocalCards].sort(() => 0.5 - Math.random());
         }
 
         setCards(selectedCards);
@@ -107,29 +96,16 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
         nextCard();
     };
 
-    const nextCard = async () => {
+    const nextCard = () => {
         // Mark current as used
         if (cards[currentIndex]) {
             sessionService.markAsUsed(GameType.TABOO, currentCategory, cards[currentIndex].word);
         }
 
-        // Check buffer and fetch more if needed
-        if (cards.length - currentIndex < 5) {
-            console.log("Buffer low, fetching more cards...");
-            // Non-blocking fetch
-            try {
-                const moreCards = await generateTabooCards(currentCategory, 10); // Fetch small batch
-                setCards(prev => [...prev, ...moreCards]);
-            } catch (e) {
-                console.warn("Background fetch failed", e);
-            }
-        }
-
         if (currentIndex < cards.length - 1) {
             setCurrentIndex(c => c + 1);
         } else {
-            // Only end if we truly have no cards left, which shouldn't happen with infinite mode
-            // But if fetch failed and we reached end:
+            // Entire deck exhausted during this round — end round
             setGameState('SUMMARY');
         }
     };
@@ -144,7 +120,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                         <button
                             key={cat.id}
                             onClick={() => startGame(cat.id)}
-                            className={`p-4 rounded-xl flex flex-col items-center gap-3 transition-all active:scale-95 bg-party-surface hover:bg-slate-600 border border-white/5`}
+                            className={`p-4 rounded-xl flex flex-col items-center gap-3 transition-all active:scale-95 bg-party-surface hover:bg-slate-800 border-2 ${(cat as any).borderColor || 'border-white/5'}`}
                         >
                             <div className={`p-2 rounded-full bg-white/5 ${cat.color}`}>
                                 {cat.icon}

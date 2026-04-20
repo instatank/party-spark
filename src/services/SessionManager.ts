@@ -61,6 +61,12 @@ class SessionService {
         }
     }
 
+    public getUsageCount(gameId: string): number {
+        if (!this.session.usedContent[gameId]) return 0;
+        // Sum up all items across all categories for this game
+        return Object.values(this.session.usedContent[gameId]).reduce((acc, curr) => acc + curr.length, 0);
+    }
+
     public getUsedItems(gameId: string, category: string): string[] {
         return this.session.usedContent[gameId]?.[category] || [];
     }

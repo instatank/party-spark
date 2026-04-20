@@ -222,6 +222,156 @@
             "Shang-Chi",
             "Black Widow"
           ]
+        },
+        {
+          "id": "everyday_actions",
+          "name": "Everyday Actions",
+          "description": "Hilarious things you do every day.",
+          "items": [
+            "Brushing your teeth",
+            "Trying to catch a fly",
+            "Walking a dog that is pulling hard",
+            "Changing a lightbulb",
+            "Flipping a pancake",
+            "Driving a racing car",
+            "Painting a wall",
+            "Baking a cake",
+            "Chopsticks dropping food",
+            "Taking an icy cold shower",
+            "Sneezing loudly",
+            "Stuck in a spider web",
+            "Riding a bumpy rollercoaster",
+            "Opening a stuck jar",
+            "Singing opera",
+            "Washing windows",
+            "Mowing the lawn",
+            "Raking leaves",
+            "Shoveling snow",
+            "Wrapping a present"
+          ]
+        },
+        {
+          "id": "around_the_house",
+          "name": "Around the House",
+          "description": "Objects and appliances found at home.",
+          "items": [
+            "Vacuum Cleaner",
+            "Washing Machine",
+            "Toaster",
+            "Ceiling Fan",
+            "Alarm Clock",
+            "Refrigerator",
+            "Microwave",
+            "Hair Dryer",
+            "Coffee Maker",
+            "Blender",
+            "Ironing Board",
+            "Water Sprinkler",
+            "Doorbell",
+            "Television",
+            "Radio",
+            "Toilet Flusher",
+            "Shower Head",
+            "Trash Can",
+            "Mailbox",
+            "Lawn Mower"
+          ]
+        },
+        {
+          "id": "the_zoo",
+          "name": "The Zoo",
+          "description": "Lions, tigers, and penguins, oh my!",
+          "items": [
+            "Penguin waddling",
+            "Kangaroo jumping",
+            "Monkey scratching its head",
+            "Elephant spraying water",
+            "Lion roaring",
+            "Giraffe eating leaves",
+            "Snake slithering",
+            "Bird pecking",
+            "Frog catching a fly",
+            "Turtle walking slowly",
+            "Cheetah running fast",
+            "Gorilla beating chest",
+            "Peacock showing feathers",
+            "Hippopotamus yawning",
+            "Crocodile snapping jaws",
+            "Bear catching a fish",
+            "Owl hooting",
+            "Flamingo standing on one leg",
+            "Rhinoceros charging",
+            "Zebra trotting",
+            "Sloth moving slowly"
+          ]
+        },
+        {
+          "id": "family_mix",
+          "name": "Family Mix",
+          "description": "A massive mix of easy words for all ages.",
+          "items": [
+            "Chopsticks dropping food",
+            "Zebra trotting",
+            "Ironing Board",
+            "Walking a dog that is pulling hard",
+            "Mowing the lawn",
+            "Cheetah running fast",
+            "Stuck in a spider web",
+            "Penguin waddling",
+            "Lion roaring",
+            "Shoveling snow",
+            "Shower Head",
+            "Mailbox",
+            "Peacock showing feathers",
+            "Kangaroo jumping",
+            "Opening a stuck jar",
+            "Gorilla beating chest",
+            "Riding a bumpy rollercoaster",
+            "Changing a lightbulb",
+            "Raking leaves",
+            "Owl hooting",
+            "Taking an icy cold shower",
+            "Coffee Maker",
+            "Turtle walking slowly",
+            "Painting a wall",
+            "Brushing your teeth",
+            "Trash Can",
+            "Monkey scratching its head",
+            "Television",
+            "Driving a racing car",
+            "Toaster",
+            "Vacuum Cleaner",
+            "Water Sprinkler",
+            "Ceiling Fan",
+            "Trying to catch a fly",
+            "Alarm Clock",
+            "Elephant spraying water",
+            "Singing opera",
+            "Radio",
+            "Bear catching a fish",
+            "Toilet Flusher",
+            "Baking a cake",
+            "Blender",
+            "Sneezing loudly",
+            "Washing Machine",
+            "Wrapping a present",
+            "Washing windows",
+            "Snake slithering",
+            "Lawn Mower",
+            "Crocodile snapping jaws",
+            "Refrigerator",
+            "Flamingo standing on one leg",
+            "Doorbell",
+            "Hippopotamus yawning",
+            "Giraffe eating leaves",
+            "Microwave",
+            "Frog catching a fly",
+            "Flipping a pancake",
+            "Sloth moving slowly",
+            "Rhinoceros charging",
+            "Bird pecking",
+            "Hair Dryer"
+          ]
         }
       ]
     },
@@ -1331,6 +1481,1706 @@
                 "Horse"
               ],
               "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_0",
+              "word": "APPLE",
+              "forbidden": [
+                "FRUIT",
+                "RED",
+                "EAT",
+                "TREE",
+                "CIDER"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_1",
+              "word": "SUN",
+              "forbidden": [
+                "HOT",
+                "STAR",
+                "DAY",
+                "LIGHT",
+                "YELLOW"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_2",
+              "word": "WATER",
+              "forbidden": [
+                "DRINK",
+                "WET",
+                "LIQUID",
+                "OCEAN",
+                "BOTTLE"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_3",
+              "word": "CHAIR",
+              "forbidden": [
+                "SIT",
+                "FURNITURE",
+                "TABLE",
+                "WOOD",
+                "ROOM"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_4",
+              "word": "BOOK",
+              "forbidden": [
+                "READ",
+                "PAGES",
+                "STORY",
+                "LIBRARY",
+                "PAPER"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_5",
+              "word": "CAR",
+              "forbidden": [
+                "DRIVE",
+                "WHEELS",
+                "ROAD",
+                "VEHICLE",
+                "GAS"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_6",
+              "word": "DOG",
+              "forbidden": [
+                "PET",
+                "ANIMAL",
+                "BARK",
+                "PUPPY",
+                "CAT"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_7",
+              "word": "HOUSE",
+              "forbidden": [
+                "HOME",
+                "BUILD",
+                "LIVE",
+                "ROOM",
+                "ROOF"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_8",
+              "word": "SHOE",
+              "forbidden": [
+                "FOOT",
+                "WEAR",
+                "SOCKS",
+                "PAIR",
+                "LACE"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_9",
+              "word": "HAT",
+              "forbidden": [
+                "HEAD",
+                "WEAR",
+                "CAP",
+                "TOP",
+                "SUN"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_10",
+              "word": "COFFEE",
+              "forbidden": [
+                "DRINK",
+                "HOT",
+                "BEAN",
+                "MORNING",
+                "CUP"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_11",
+              "word": "BED",
+              "forbidden": [
+                "SLEEP",
+                "ROOM",
+                "NIGHT",
+                "MATTRESS",
+                "PILLOW"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_12",
+              "word": "PHONE",
+              "forbidden": [
+                "CALL",
+                "TALK",
+                "MOBILE",
+                "TEXT",
+                "SCREEN"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_13",
+              "word": "CLOCK",
+              "forbidden": [
+                "TIME",
+                "WATCH",
+                "WALL",
+                "TICK",
+                "HOUR"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_14",
+              "word": "DOOR",
+              "forbidden": [
+                "OPEN",
+                "CLOSE",
+                "ROOM",
+                "HANDLE",
+                "WOOD"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_15",
+              "word": "TREE",
+              "forbidden": [
+                "PLANT",
+                "WOOD",
+                "LEAVES",
+                "FOREST",
+                "BRANCH"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_16",
+              "word": "BALL",
+              "forbidden": [
+                "ROUND",
+                "PLAY",
+                "THROW",
+                "GAME",
+                "SPORT"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_17",
+              "word": "BIRD",
+              "forbidden": [
+                "FLY",
+                "WINGS",
+                "NEST",
+                "FEATHERS",
+                "ANIMAL"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_18",
+              "word": "FLOWER",
+              "forbidden": [
+                "PLANT",
+                "GARDEN",
+                "BLOOM",
+                "PETAL",
+                "SMELL"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_19",
+              "word": "PENCIL",
+              "forbidden": [
+                "WRITE",
+                "DRAW",
+                "PAPER",
+                "ERASER",
+                "SHARP"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_20",
+              "word": "TABLE",
+              "forbidden": [
+                "FURNITURE",
+                "CHAIR",
+                "EAT",
+                "WOOD",
+                "ROOM"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_21",
+              "word": "WINDOW",
+              "forbidden": [
+                "GLASS",
+                "LOOK",
+                "OPEN",
+                "HOUSE",
+                "VIEW"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_22",
+              "word": "MONEY",
+              "forbidden": [
+                "BUY",
+                "SPEND",
+                "DOLLAR",
+                "COIN",
+                "BANK"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_23",
+              "word": "CLOUD",
+              "forbidden": [
+                "SKY",
+                "WHITE",
+                "RAIN",
+                "AIR",
+                "WEATHER"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_24",
+              "word": "MUSIC",
+              "forbidden": [
+                "SONG",
+                "LISTEN",
+                "PLAY",
+                "SOUND",
+                "RADIO"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_25",
+              "word": "Apple",
+              "forbidden": [
+                "Fruit",
+                "Red",
+                "Tree",
+                "Eat",
+                "Round"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_26",
+              "word": "Chair",
+              "forbidden": [
+                "Sit",
+                "Furniture",
+                "Table",
+                "Wood",
+                "Legs"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_27",
+              "word": "Book",
+              "forbidden": [
+                "Read",
+                "Pages",
+                "Story",
+                "Library",
+                "Cover"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_28",
+              "word": "Sun",
+              "forbidden": [
+                "Sky",
+                "Hot",
+                "Light",
+                "Star",
+                "Yellow"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_29",
+              "word": "Water",
+              "forbidden": [
+                "Drink",
+                "Liquid",
+                "Ocean",
+                "Thirsty",
+                "Blue"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_30",
+              "word": "Cat",
+              "forbidden": [
+                "Animal",
+                "Pet",
+                "Meow",
+                "Fur",
+                "Dog"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_31",
+              "word": "Car",
+              "forbidden": [
+                "Drive",
+                "Vehicle",
+                "Wheels",
+                "Road",
+                "Engine"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_32",
+              "word": "House",
+              "forbidden": [
+                "Home",
+                "Building",
+                "Live",
+                "Roof",
+                "Walls"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_33",
+              "word": "Ball",
+              "forbidden": [
+                "Round",
+                "Play",
+                "Throw",
+                "Game",
+                "Sport"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_34",
+              "word": "Tree",
+              "forbidden": [
+                "Plant",
+                "Wood",
+                "Leaves",
+                "Forest",
+                "Green"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_35",
+              "word": "Phone",
+              "forbidden": [
+                "Call",
+                "Talk",
+                "Mobile",
+                "Ring",
+                "Screen"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_36",
+              "word": "Shoe",
+              "forbidden": [
+                "Foot",
+                "Wear",
+                "Pair",
+                "Walk",
+                "Tie"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_37",
+              "word": "Bed",
+              "forbidden": [
+                "Sleep",
+                "Room",
+                "Mattress",
+                "Dream",
+                "Night"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_38",
+              "word": "Food",
+              "forbidden": [
+                "Eat",
+                "Hunger",
+                "Meal",
+                "Cook",
+                "Taste"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_39",
+              "word": "Hand",
+              "forbidden": [
+                "Arm",
+                "Finger",
+                "Body",
+                "Hold",
+                "Wave"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_40",
+              "word": "Music",
+              "forbidden": [
+                "Song",
+                "Play",
+                "Listen",
+                "Sound",
+                "Instrument"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_41",
+              "word": "School",
+              "forbidden": [
+                "Learn",
+                "Teacher",
+                "Student",
+                "Class",
+                "Study"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_42",
+              "word": "Clock",
+              "forbidden": [
+                "Time",
+                "Watch",
+                "Wall",
+                "Numbers",
+                "Hour"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_43",
+              "word": "Door",
+              "forbidden": [
+                "Open",
+                "Close",
+                "Room",
+                "Wood",
+                "Handle"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_44",
+              "word": "Pencil",
+              "forbidden": [
+                "Write",
+                "Pen",
+                "Paper",
+                "Erase",
+                "Draw"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_45",
+              "word": "Cloud",
+              "forbidden": [
+                "Sky",
+                "White",
+                "Rain",
+                "Air",
+                "Weather"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_46",
+              "word": "Bird",
+              "forbidden": [
+                "Fly",
+                "Feather",
+                "Nest",
+                "Animal",
+                "Wings"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_47",
+              "word": "Road",
+              "forbidden": [
+                "Car",
+                "Drive",
+                "Street",
+                "Path",
+                "Travel"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_48",
+              "word": "Flower",
+              "forbidden": [
+                "Plant",
+                "Garden",
+                "Bloom",
+                "Petal",
+                "Smell"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "id": "easy_exp_2_1771050916182_49",
+              "word": "Happy",
+              "forbidden": [
+                "Sad",
+                "Feeling",
+                "Joy",
+                "Smile",
+                "Good"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Smile",
+              "forbidden": [
+                "Happy",
+                "Face",
+                "Teeth",
+                "Mouth",
+                "Laugh"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Dance",
+              "forbidden": [
+                "Music",
+                "Move",
+                "Feet",
+                "Party",
+                "Song"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Jump",
+              "forbidden": [
+                "Up",
+                "High",
+                "Air",
+                "Legs",
+                "Hop"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Sing",
+              "forbidden": [
+                "Song",
+                "Music",
+                "Voice",
+                "Loud",
+                "Choir"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Draw",
+              "forbidden": [
+                "Picture",
+                "Pencil",
+                "Paper",
+                "Art",
+                "Sketch"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Kiss",
+              "forbidden": [
+                "Lips",
+                "Love",
+                "Mouth",
+                "Romantic",
+                "Face"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Hug",
+              "forbidden": [
+                "Arms",
+                "Squeeze",
+                "Love",
+                "Hold",
+                "Embrace"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Run",
+              "forbidden": [
+                "Fast",
+                "Sprint",
+                "Walk",
+                "Legs",
+                "Race"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Swim",
+              "forbidden": [
+                "Water",
+                "Pool",
+                "Ocean",
+                "Wet",
+                "Stroke"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Sleep",
+              "forbidden": [
+                "Bed",
+                "Night",
+                "Tired",
+                "Dream",
+                "Eyes"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Dream",
+              "forbidden": [
+                "Sleep",
+                "Night",
+                "Bed",
+                "Mind",
+                "Imagine"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Cry",
+              "forbidden": [
+                "Tears",
+                "Sad",
+                "Eyes",
+                "Weep",
+                "Unhappy"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Laugh",
+              "forbidden": [
+                "Funny",
+                "Joke",
+                "Smile",
+                "Happy",
+                "Haha"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Read",
+              "forbidden": [
+                "Book",
+                "Words",
+                "Page",
+                "Library",
+                "Story"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Write",
+              "forbidden": [
+                "Pen",
+                "Pencil",
+                "Paper",
+                "Letter",
+                "Word"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Fly",
+              "forbidden": [
+                "Bird",
+                "Plane",
+                "Air",
+                "Sky",
+                "Wings"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Throw",
+              "forbidden": [
+                "Ball",
+                "Catch",
+                "Arm",
+                "Toss",
+                "Pitch"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Catch",
+              "forbidden": [
+                "Throw",
+                "Ball",
+                "Hands",
+                "Grab",
+                "Hold"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Breakfast",
+              "forbidden": [
+                "Morning",
+                "Food",
+                "Eat",
+                "Eggs",
+                "Cereal"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Lunch",
+              "forbidden": [
+                "Noon",
+                "Food",
+                "Sandwich",
+                "Eat",
+                "Meal"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Dinner",
+              "forbidden": [
+                "Evening",
+                "Food",
+                "Eat",
+                "Meal",
+                "Night"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Snack",
+              "forbidden": [
+                "Eat",
+                "Food",
+                "Hungry",
+                "Between",
+                "Chips"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Desert",
+              "forbidden": [
+                "Sand",
+                "Hot",
+                "Dry",
+                "Camel",
+                "Sahara"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Mountain",
+              "forbidden": [
+                "High",
+                "Climb",
+                "Peak",
+                "Snow",
+                "Everest"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Ocean",
+              "forbidden": [
+                "Water",
+                "Sea",
+                "Waves",
+                "Beach",
+                "Blue"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "River",
+              "forbidden": [
+                "Water",
+                "Flow",
+                "Stream",
+                "Bank",
+                "Boat"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Lake",
+              "forbidden": [
+                "Water",
+                "Fresh",
+                "Boat",
+                "Fish",
+                "Pond"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Forest",
+              "forbidden": [
+                "Trees",
+                "Wood",
+                "Nature",
+                "Animals",
+                "Green"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Sand",
+              "forbidden": [
+                "Beach",
+                "Desert",
+                "Castle",
+                "Grains",
+                "Dirt"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Dirt",
+              "forbidden": [
+                "Soil",
+                "Earth",
+                "Mud",
+                "Ground",
+                "Plant"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Rock",
+              "forbidden": [
+                "Stone",
+                "Hard",
+                "Mountain",
+                "Pebble",
+                "Mineral"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Grass",
+              "forbidden": [
+                "Green",
+                "Lawn",
+                "Yard",
+                "Plant",
+                "Mow"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Star",
+              "forbidden": [
+                "Sky",
+                "Night",
+                "Twinkle",
+                "Bright",
+                "Space"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Planet",
+              "forbidden": [
+                "Space",
+                "Earth",
+                "Mars",
+                "Orbit",
+                "System"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Space",
+              "forbidden": [
+                "Stars",
+                "Planets",
+                "Universe",
+                "Rocket",
+                "Astronaut"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Alien",
+              "forbidden": [
+                "Space",
+                "UFO",
+                "Green",
+                "Mars",
+                "Extraterrestrial"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Ghost",
+              "forbidden": [
+                "Scary",
+                "Spirit",
+                "White",
+                "Haunted",
+                "Boo"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Skeleton",
+              "forbidden": [
+                "Bones",
+                "Skull",
+                "Scary",
+                "Halloween",
+                "Body"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Zombie",
+              "forbidden": [
+                "Dead",
+                "Brain",
+                "Walk",
+                "Scary",
+                "Monster"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Vampire",
+              "forbidden": [
+                "Blood",
+                "Bite",
+                "Dracula",
+                "Teeth",
+                "Bat"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Witch",
+              "forbidden": [
+                "Broom",
+                "Magic",
+                "Spell",
+                "Hat",
+                "Cauldron"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Magic",
+              "forbidden": [
+                "Trick",
+                "Wand",
+                "Spell",
+                "Illusion",
+                "Wizard"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Spell",
+              "forbidden": [
+                "Magic",
+                "Witch",
+                "Words",
+                "Curse",
+                "Book"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Castle",
+              "forbidden": [
+                "King",
+                "Queen",
+                "Knight",
+                "Fortress",
+                "Building"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Knight",
+              "forbidden": [
+                "Armor",
+                "Sword",
+                "Horse",
+                "Castle",
+                "Fight"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Dragon",
+              "forbidden": [
+                "Fire",
+                "Breathe",
+                "Wings",
+                "Scale",
+                "Myth"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Princess",
+              "forbidden": [
+                "Girl",
+                "Castle",
+                "Crown",
+                "Queen",
+                "Dress"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Queen",
+              "forbidden": [
+                "King",
+                "Crown",
+                "Princess",
+                "Royal",
+                "Rule"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "King",
+              "forbidden": [
+                "Queen",
+                "Crown",
+                "Royal",
+                "Rule",
+                "Throne"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Sword",
+              "forbidden": [
+                "Weapon",
+                "Sharp",
+                "Knight",
+                "Blade",
+                "Fight"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Shield",
+              "forbidden": [
+                "Protect",
+                "Defend",
+                "Knight",
+                "Armor",
+                "Sword"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Bow",
+              "forbidden": [
+                "Arrow",
+                "Shoot",
+                "String",
+                "Weapon",
+                "Target"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Arrow",
+              "forbidden": [
+                "Bow",
+                "Shoot",
+                "Target",
+                "Point",
+                "Quiver"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Horse",
+              "forbidden": [
+                "Ride",
+                "Animal",
+                "Saddle",
+                "Gallop",
+                "Neigh"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Cow",
+              "forbidden": [
+                "Bovine",
+                "Milk",
+                "Farm",
+                "Animal",
+                "Moo"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Pig",
+              "forbidden": [
+                "Mud",
+                "Pink",
+                "Oink",
+                "Farm",
+                "Bacon"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Sheep",
+              "forbidden": [
+                "Wool",
+                "Baa",
+                "Farm",
+                "Flock",
+                "White"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Goat",
+              "forbidden": [
+                "Horns",
+                "Farm",
+                "Animal",
+                "Bleat",
+                "Mountain"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Chicken",
+              "forbidden": [
+                "Egg",
+                "Bird",
+                "Farm",
+                "Meat",
+                "Cluck"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Turkey",
+              "forbidden": [
+                "Thanksgiving",
+                "Bird",
+                "GOBBLE",
+                "Meat",
+                "Holiday"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Eagle",
+              "forbidden": [
+                "Bird",
+                "Fly",
+                "Bald",
+                "Sky",
+                "America"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Owl",
+              "forbidden": [
+                "Night",
+                "Bird",
+                "Hoot",
+                "Eyes",
+                "Wise"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Bear",
+              "forbidden": [
+                "Brown",
+                "Grizzly",
+                "Animal",
+                "Forest",
+                "Honey"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Wolf",
+              "forbidden": [
+                "Howl",
+                "Moon",
+                "Dog",
+                "Pack",
+                "Forest"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Fox",
+              "forbidden": [
+                "Sly",
+                "Red",
+                "Animal",
+                "Tail",
+                "Smart"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Deer",
+              "forbidden": [
+                "Antlers",
+                "Bambi",
+                "Forest",
+                "Animal",
+                "Hunt"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Lion",
+              "forbidden": [
+                "Roar",
+                "King",
+                "Jungle",
+                "Africa",
+                "Mane"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Tiger",
+              "forbidden": [
+                "Stripes",
+                "Orange",
+                "Cat",
+                "Jungle",
+                "Roar"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Monkey",
+              "forbidden": [
+                "Banana",
+                "Ape",
+                "Swing",
+                "Tree",
+                "Jungle"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Elephant",
+              "forbidden": [
+                "Trunk",
+                "Big",
+                "Grey",
+                "Africa",
+                "Ivory"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Giraffe",
+              "forbidden": [
+                "Neck",
+                "Tall",
+                "Spots",
+                "Africa",
+                "Animal"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Zebra",
+              "forbidden": [
+                "Stripes",
+                "Black",
+                "White",
+                "Africa",
+                "Horse"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Hippo",
+              "forbidden": [
+                "Water",
+                "Big",
+                "Africa",
+                "River",
+                "Animal"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Rhino",
+              "forbidden": [
+                "Horn",
+                "Grey",
+                "Big",
+                "Africa",
+                "Animal"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Kangaroo",
+              "forbidden": [
+                "Jump",
+                "Pouch",
+                "Australia",
+                "Animal",
+                "Hop"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Penguin",
+              "forbidden": [
+                "Bird",
+                "Ice",
+                "Cold",
+                "Black",
+                "White"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Whale",
+              "forbidden": [
+                "Ocean",
+                "Big",
+                "Mammal",
+                "Blowhole",
+                "Sea"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Shark",
+              "forbidden": [
+                "Teeth",
+                "Ocean",
+                "Bite",
+                "Fin",
+                "Fish"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Dolphin",
+              "forbidden": [
+                "Smart",
+                "Ocean",
+                "Mammal",
+                "Flipper",
+                "Echo"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Octopus",
+              "forbidden": [
+                "Eight",
+                "Legs",
+                "Ocean",
+                "Tentacles",
+                "Ink"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Crab",
+              "forbidden": [
+                "Shell",
+                "Ocean",
+                "Claws",
+                "Sand",
+                "Walk"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Lobster",
+              "forbidden": [
+                "Red",
+                "Ocean",
+                "Claws",
+                "Shell",
+                "Eat"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Shrimp",
+              "forbidden": [
+                "Small",
+                "Seafood",
+                "Ocean",
+                "Pink",
+                "Cocktail"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Shell",
+              "forbidden": [
+                "Beach",
+                "Sea",
+                "Snail",
+                "Hard",
+                "Crab"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Island",
+              "forbidden": [
+                "Water",
+                "Land",
+                "Ocean",
+                "Tropical",
+                "Beach"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Boat",
+              "forbidden": [
+                "Water",
+                "Ship",
+                "Float",
+                "River",
+                "Sail"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Ship",
+              "forbidden": [
+                "Boat",
+                "Ocean",
+                "Cruise",
+                "Water",
+                "Sail"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Sail",
+              "forbidden": [
+                "Boat",
+                "Wind",
+                "Water",
+                "Ship",
+                "Mast"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Pirate",
+              "forbidden": [
+                "Ship",
+                "Sail",
+                "Treasure",
+                "Eye",
+                "Patch"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Treasure",
+              "forbidden": [
+                "Gold",
+                "Pirate",
+                "Chest",
+                "Map",
+                "Silver"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Map",
+              "forbidden": [
+                "Directions",
+                "Paper",
+                "Find",
+                "Location",
+                "Treasure"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Gold",
+              "forbidden": [
+                "Silver",
+                "Metal",
+                "Yellow",
+                "Jewelry",
+                "Valuable"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Silver",
+              "forbidden": [
+                "Gold",
+                "Metal",
+                "Grey",
+                "Coin",
+                "Jewelry"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Diamond",
+              "forbidden": [
+                "Ring",
+                "Jewel",
+                "Rock",
+                "Expensive",
+                "Engagement"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Spider",
+              "forbidden": [
+                "Web",
+                "Bite",
+                "Eight",
+                "Insects",
+                "Scary"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Snake",
+              "forbidden": [
+                "Hiss",
+                "Slither",
+                "Bite",
+                "Poison",
+                "Reptile"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Train",
+              "forbidden": [
+                "Tracks",
+                "Thomas",
+                "Choo",
+                "Rail",
+                "Engine"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Ice",
+              "forbidden": [
+                "Cold",
+                "Water",
+                "Freeze",
+                "Cube",
+                "Snow"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Fire",
+              "forbidden": [
+                "Hot",
+                "Burn",
+                "Flame",
+                "Camp",
+                "Red"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "word": "Wind",
+              "forbidden": [
+                "Air",
+                "Blow",
+                "Breeze",
+                "Weather",
+                "Storm"
+              ],
+              "difficulty": "easy"
             }
           ]
         },
@@ -1341,554 +3191,1004 @@
           "icon": "Sparkles",
           "items": [
             {
-              "word": "Bungee Jumping",
+              "word": "Road Trip",
               "forbidden": [
-                "Jump",
-                "Rope",
-                "Bridge",
-                "Extreme",
-                "Fall"
-              ],
-              "difficulty": "medium"
+                "Drive",
+                "Car",
+                "Travel",
+                "Highway",
+                "Journey"
+              ]
             },
             {
-              "word": "Brainstorming",
-              "forbidden": [
-                "Ideas",
-                "Think",
-                "Group",
-                "Meeting",
-                "Discuss"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Procrastinate",
-              "forbidden": [
-                "Delay",
-                "Later",
-                "Work",
-                "Avoid",
-                "Put Off"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Meditate",
-              "forbidden": [
-                "Relax",
-                "Mind",
-                "Zen",
-                "Yoga",
-                "Calm"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Delegate",
-              "forbidden": [
-                "Assign",
-                "Task",
-                "Work",
-                "Hand Over",
-                "Team"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Hypothesize",
-              "forbidden": [
-                "Guess",
-                "Theory",
-                "Science",
-                "Experiment",
-                "Assume"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Negotiate",
-              "forbidden": [
-                "Deal",
-                "Talk",
-                "Agree",
-                "Business",
-                "Bargain"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Compromise",
-              "forbidden": [
-                "Agreement",
-                "Middle",
-                "Deal",
-                "Both",
-                "Give"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Improvise",
-              "forbidden": [
-                "Spontaneous",
-                "Act",
-                "Plan",
-                "Think",
-                "Create"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Illustrate",
-              "forbidden": [
-                "Draw",
-                "Picture",
-                "Explain",
-                "Book",
-                "Show"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Kaleidoscope",
-              "forbidden": [
-                "Colors",
-                "Tube",
-                "Pattern",
-                "Toy",
-                "Reflect"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Thermostat",
+              "word": "Microwave",
               "forbidden": [
                 "Heat",
-                "Cold",
-                "Temperature",
-                "Control",
-                "Adjust"
-              ],
-              "difficulty": "medium"
+                "Kitchen",
+                "Cook",
+                "Oven",
+                "Warm"
+              ]
             },
             {
-              "word": "Chronometer",
+              "word": "Password",
               "forbidden": [
-                "Watch",
+                "Login",
+                "Secret",
+                "Type",
+                "Computer",
+                "Enter"
+              ]
+            },
+            {
+              "word": "Selfie",
+              "forbidden": [
+                "Photo",
+                "Phone",
+                "Camera",
+                "Face",
+                "Take"
+              ]
+            },
+            {
+              "word": "Sunburn",
+              "forbidden": [
+                "Sun",
+                "Red",
+                "Skin",
+                "Beach",
+                "Hot"
+              ]
+            },
+            {
+              "word": "Piggyback",
+              "forbidden": [
+                "Carry",
+                "Back",
+                "Ride",
+                "Shoulders",
+                "Child"
+              ]
+            },
+            {
+              "word": "Karaoke",
+              "forbidden": [
+                "Sing",
+                "Song",
+                "Music",
+                "Microphone",
+                "Stage"
+              ]
+            },
+            {
+              "word": "Barbecue",
+              "forbidden": [
+                "Grill",
+                "Meat",
+                "Cook",
+                "Fire",
+                "Outside"
+              ]
+            },
+            {
+              "word": "Traffic Jam",
+              "forbidden": [
+                "Car",
+                "Road",
+                "Stuck",
+                "Slow",
+                "Drive"
+              ]
+            },
+            {
+              "word": "Alarm Clock",
+              "forbidden": [
+                "Wake",
+                "Morning",
+                "Ring",
                 "Time",
-                "Clock",
-                "Measure",
-                "Ship"
-              ],
-              "difficulty": "medium"
+                "Sleep"
+              ]
             },
             {
-              "word": "Incubator",
+              "word": "Popcorn",
               "forbidden": [
-                "Baby",
-                "Eggs",
-                "Warm",
-                "Grow",
-                "Hatch"
-              ],
-              "difficulty": "medium"
+                "Corn",
+                "Movie",
+                "Snack",
+                "Butter",
+                "Pop"
+              ]
             },
             {
-              "word": "Telescope",
+              "word": "Escalator",
               "forbidden": [
-                "Stars",
-                "Space",
-                "Look",
-                "Magnify",
-                "Astronomy"
-              ],
-              "difficulty": "medium"
+                "Stairs",
+                "Move",
+                "Up",
+                "Down",
+                "Mall"
+              ]
             },
             {
-              "word": "Microscope",
+              "word": "Parachute",
               "forbidden": [
-                "Small",
-                "See",
-                "Science",
-                "Cells",
-                "Magnify"
-              ],
-              "difficulty": "medium"
+                "Fall",
+                "Sky",
+                "Jump",
+                "Plane",
+                "Open"
+              ]
             },
             {
-              "word": "Briefcase",
+              "word": "Snowflake",
               "forbidden": [
-                "Business",
-                "Bag",
-                "Work",
-                "Documents",
-                "Handle"
-              ],
-              "difficulty": "medium"
+                "Snow",
+                "Cold",
+                "Ice",
+                "Winter",
+                "White"
+              ]
             },
             {
-              "word": "Typewriter",
+              "word": "Fingerprint",
               "forbidden": [
-                "Keys",
-                "Paper",
-                "Machine",
-                "Write",
-                "Old"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Walkie-Talkie",
-              "forbidden": [
-                "Radio",
-                "Talk",
-                "Handheld",
-                "Communicate",
+                "Finger",
+                "Unique",
+                "Touch",
+                "Identity",
                 "Police"
-              ],
-              "difficulty": "medium"
+              ]
+            },
+            {
+              "word": "Chameleon",
+              "forbidden": [
+                "Color",
+                "Change",
+                "Lizard",
+                "Blend",
+                "Reptile"
+              ]
+            },
+            {
+              "word": "Homework",
+              "forbidden": [
+                "School",
+                "Study",
+                "Teacher",
+                "Assignment",
+                "Home"
+              ]
+            },
+            {
+              "word": "Thunderstorm",
+              "forbidden": [
+                "Rain",
+                "Lightning",
+                "Cloud",
+                "Storm",
+                "Thunder"
+              ]
+            },
+            {
+              "word": "Fortune Cookie",
+              "forbidden": [
+                "Cookie",
+                "Message",
+                "Chinese",
+                "Luck",
+                "Restaurant"
+              ]
+            },
+            {
+              "word": "Speed Limit",
+              "forbidden": [
+                "Fast",
+                "Drive",
+                "Sign",
+                "Road",
+                "Slow"
+              ]
+            },
+            {
+              "word": "Hiccups",
+              "forbidden": [
+                "Sound",
+                "Breath",
+                "Stop",
+                "Involuntary",
+                "Water"
+              ]
             },
             {
               "word": "Trampoline",
               "forbidden": [
                 "Jump",
                 "Bounce",
-                "Net",
-                "Outdoor",
+                "Fun",
+                "Kids",
                 "Spring"
-              ],
-              "difficulty": "medium"
+              ]
             },
             {
-              "word": "Deja Vu",
+              "word": "Wheelchair",
               "forbidden": [
-                "Feeling",
-                "Experienced",
-                "Again",
-                "Seen",
-                "Already"
-              ],
-              "difficulty": "medium"
+                "Sit",
+                "Wheel",
+                "Disability",
+                "Roll",
+                "Chair"
+              ]
             },
             {
-              "word": "Brain Trust",
+              "word": "Toothbrush",
               "forbidden": [
-                "Smart",
-                "Group",
-                "Experts",
-                "Advice",
-                "Ideas"
-              ],
-              "difficulty": "medium"
+                "Teeth",
+                "Brush",
+                "Clean",
+                "Mouth",
+                "Paste"
+              ]
             },
             {
-              "word": "Plot Twist",
-              "forbidden": [
-                "Story",
-                "Surprise",
-                "Movie",
-                "Ending",
-                "Unexpected"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Cliffhanger",
-              "forbidden": [
-                "Ending",
-                "Story",
-                "Suspense",
-                "Book",
-                "Wait"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Paradox",
-              "forbidden": [
-                "Contradiction",
-                "Truth",
-                "Statement",
-                "Logic",
-                "Problem"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Blockchain",
-              "forbidden": [
-                "Crypto",
-                "Digital",
-                "Money",
-                "Technology",
-                "Bitcoin"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Virtual Reality",
-              "forbidden": [
-                "Headset",
-                "Game",
-                "Digital",
-                "Experience",
-                "Computer"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Algorithm",
-              "forbidden": [
-                "Code",
-                "Computer",
-                "Steps",
-                "Process",
-                "Program"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Social Media",
-              "forbidden": [
-                "Facebook",
-                "Instagram",
-                "Online",
-                "Network",
-                "Friends"
-              ],
-              "difficulty": "medium"
-            },
-            {
-              "word": "Podcast",
+              "word": "Headphones",
               "forbidden": [
                 "Listen",
-                "Show",
-                "Audio",
-                "Episode",
-                "Host"
-              ],
-              "difficulty": "medium"
+                "Music",
+                "Ear",
+                "Sound",
+                "Wire"
+              ]
             },
             {
-              "word": "Hashtag",
+              "word": "Remote Control",
               "forbidden": [
-                "Twitter",
-                "Symbol",
-                "Trend",
-                "Topic",
-                "Social"
-              ],
-              "difficulty": "medium"
+                "TV",
+                "Button",
+                "Channel",
+                "Press",
+                "Change"
+              ]
             },
             {
-              "word": "Spoiler Alert",
+              "word": "Roller Coaster",
               "forbidden": [
-                "Movie",
-                "End",
-                "Reveal",
-                "Story",
-                "Warning"
-              ],
-              "difficulty": "medium"
+                "Ride",
+                "Fast",
+                "Theme Park",
+                "Scary",
+                "Track"
+              ]
             },
             {
-              "word": "Doppelganger",
+              "word": "Birthday Cake",
               "forbidden": [
-                "Look Alike",
-                "Person",
-                "Twin",
-                "Another",
-                "Double"
-              ],
-              "difficulty": "medium"
+                "Candle",
+                "Party",
+                "Happy",
+                "Wish",
+                "Frosting"
+              ]
             },
             {
-              "word": "Fictional Character",
+              "word": "Sunglasses",
               "forbidden": [
-                "Book",
-                "Movie",
-                "Story",
-                "Person",
-                "Imagine"
-              ],
-              "difficulty": "medium"
+                "Sun",
+                "Eye",
+                "Shade",
+                "Cool",
+                "Wear"
+              ]
             },
             {
-              "word": "Ghostwriter",
+              "word": "Lemonade",
               "forbidden": [
-                "Book",
-                "Write",
-                "Author",
-                "Invisible",
-                "Uncredited"
-              ],
-              "difficulty": "medium"
+                "Lemon",
+                "Drink",
+                "Sweet",
+                "Sour",
+                "Summer"
+              ]
             },
             {
-              "word": "Inflection Point",
+              "word": "Jigsaw Puzzle",
               "forbidden": [
-                "Change",
-                "Turning",
-                "Moment",
-                "Significant",
-                "Event"
-              ],
-              "difficulty": "medium"
+                "Piece",
+                "Fit",
+                "Picture",
+                "Game",
+                "Together"
+              ]
             },
             {
-              "word": "Serendipity",
+              "word": "Hammock",
               "forbidden": [
-                "Luck",
-                "Discovery",
-                "Chance",
-                "Accidental",
-                "Fortunate"
-              ],
-              "difficulty": "medium"
+                "Hang",
+                "Sleep",
+                "Tree",
+                "Relax",
+                "Sway"
+              ]
             },
             {
-              "word": "Nostalgia",
+              "word": "Compass",
               "forbidden": [
-                "Past",
-                "Memory",
-                "Old",
-                "Feeling",
-                "Longing"
-              ],
-              "difficulty": "medium"
+                "Direction",
+                "North",
+                "Navigate",
+                "Needle",
+                "Map"
+              ]
             },
             {
-              "word": "Metaphor",
+              "word": "Binoculars",
               "forbidden": [
-                "Figure",
-                "Speech",
-                "Compare",
-                "Symbol",
-                "Meaning"
-              ],
-              "difficulty": "medium"
+                "See",
+                "Far",
+                "Look",
+                "Bird",
+                "Zoom"
+              ]
             },
             {
-              "word": "Conspiracy Theory",
+              "word": "Treadmill",
               "forbidden": [
-                "Secret",
-                "Government",
-                "Believe",
-                "Plot",
-                "Evidence"
-              ],
-              "difficulty": "medium"
+                "Run",
+                "Exercise",
+                "Walk",
+                "Gym",
+                "Machine"
+              ]
             },
             {
-              "word": "Vanguard",
+              "word": "Lighthouse",
               "forbidden": [
-                "Front",
-                "Leader",
-                "Advance",
-                "Group",
-                "Position"
-              ],
-              "difficulty": "medium"
+                "Light",
+                "Ship",
+                "Sea",
+                "Guide",
+                "Tower"
+              ]
             },
             {
-              "word": "Ephemeral",
+              "word": "Fireworks",
               "forbidden": [
-                "Short",
-                "Lasting",
-                "Time",
-                "Fleeting",
-                "Momentary"
-              ],
-              "difficulty": "medium"
+                "Explode",
+                "Sky",
+                "Color",
+                "July",
+                "New Year"
+              ]
             },
             {
-              "word": "Ubiquitous",
+              "word": "Dandelion",
               "forbidden": [
-                "Everywhere",
-                "Common",
-                "Found",
-                "Present",
-                "Pervasive"
-              ],
-              "difficulty": "medium"
+                "Flower",
+                "Wish",
+                "Blow",
+                "Yellow",
+                "Weed"
+              ]
             },
             {
-              "word": "Red Herring",
+              "word": "Tadpole",
               "forbidden": [
-                "Distraction",
+                "Frog",
+                "Baby",
+                "Water",
+                "Tail",
+                "Swim"
+              ]
+            },
+            {
+              "word": "Beeswax",
+              "forbidden": [
+                "Bee",
+                "Honey",
+                "Candle",
+                "Wax",
+                "Hive"
+              ]
+            },
+            {
+              "word": "Quicksand",
+              "forbidden": [
+                "Sink",
+                "Sand",
+                "Stuck",
+                "Danger",
+                "Movie"
+              ]
+            },
+            {
+              "word": "Doorbell",
+              "forbidden": [
+                "Ring",
+                "Door",
+                "Press",
+                "Visitor",
+                "Sound"
+              ]
+            },
+            {
+              "word": "Blindfold",
+              "forbidden": [
+                "Eye",
+                "Cover",
+                "See",
+                "Dark",
+                "Cloth"
+              ]
+            },
+            {
+              "word": "Crossword",
+              "forbidden": [
+                "Puzzle",
+                "Word",
                 "Clue",
-                "Mislead",
-                "Detective",
-                "Story"
-              ],
-              "difficulty": "medium"
+                "Across",
+                "Down"
+              ]
             },
             {
-              "word": "Cognitive Dissonance",
+              "word": "Greenhouse",
               "forbidden": [
-                "Conflict",
-                "Mind",
-                "Belief",
-                "Thought",
-                "Uncomfortable"
-              ],
-              "difficulty": "medium"
+                "Plant",
+                "Glass",
+                "Grow",
+                "Warm",
+                "Garden"
+              ]
             },
             {
-              "word": "Epiphany",
+              "word": "Mattress",
               "forbidden": [
-                "Realization",
-                "Moment",
-                "Insight",
-                "Understand",
-                "Discover"
-              ],
-              "difficulty": "medium"
+                "Bed",
+                "Sleep",
+                "Soft",
+                "Spring",
+                "Foam"
+              ]
             },
             {
-              "word": "Synergy",
+              "word": "Lullaby",
               "forbidden": [
-                "Team",
-                "Work",
-                "Together",
-                "More",
-                "Combined"
-              ],
-              "difficulty": "medium"
+                "Sing",
+                "Baby",
+                "Sleep",
+                "Song",
+                "Night"
+              ]
             },
             {
-              "word": "Paradigm Shift",
+              "word": "Thermos",
               "forbidden": [
-                "Change",
-                "Fundamental",
-                "Thinking",
-                "Model",
-                "New"
-              ],
-              "difficulty": "medium"
+                "Hot",
+                "Cold",
+                "Drink",
+                "Keep",
+                "Bottle"
+              ]
             },
             {
-              "word": "Zeitgeist",
+              "word": "Postcard",
               "forbidden": [
-                "Spirit",
-                "Time",
-                "Era",
-                "Culture",
-                "Prevailing"
-              ],
-              "difficulty": "medium"
+                "Write",
+                "Mail",
+                "Travel",
+                "Picture",
+                "Send"
+              ]
             },
             {
-              "word": "Quid Pro Quo",
+              "word": "Windmill",
               "forbidden": [
-                "Favor",
-                "Exchange",
-                "Something",
+                "Wind",
+                "Spin",
+                "Farm",
+                "Energy",
+                "Blade"
+              ]
+            },
+            {
+              "word": "Horseshoe",
+              "forbidden": [
+                "Horse",
+                "Luck",
+                "Metal",
+                "Shoe",
+                "Nail"
+              ]
+            },
+            {
+              "word": "Scarecrow",
+              "forbidden": [
+                "Bird",
+                "Farm",
+                "Field",
+                "Scare",
+                "Straw"
+              ]
+            },
+            {
+              "word": "Marshmallow",
+              "forbidden": [
+                "Soft",
+                "White",
+                "Fire",
+                "Sweet",
+                "Roast"
+              ]
+            },
+            {
+              "word": "Telescope",
+              "forbidden": [
+                "Star",
+                "Space",
+                "Look",
+                "Far",
+                "Moon"
+              ]
+            },
+            {
+              "word": "Corkscrew",
+              "forbidden": [
+                "Wine",
+                "Bottle",
+                "Open",
+                "Twist",
+                "Cork"
+              ]
+            },
+            {
+              "word": "Speedboat",
+              "forbidden": [
+                "Fast",
+                "Water",
+                "Boat",
+                "Motor",
+                "Lake"
+              ]
+            },
+            {
+              "word": "Boomerang",
+              "forbidden": [
+                "Throw",
                 "Return",
-                "Give"
-              ],
-              "difficulty": "medium"
+                "Australia",
+                "Come back",
+                "Stick"
+              ]
+            },
+            {
+              "word": "Jellyfish",
+              "forbidden": [
+                "Sting",
+                "Ocean",
+                "Tentacle",
+                "Float",
+                "Jelly"
+              ]
+            },
+            {
+              "word": "Chopsticks",
+              "forbidden": [
+                "Eat",
+                "Asian",
+                "Stick",
+                "Food",
+                "Pair"
+              ]
+            },
+            {
+              "word": "Bookmark",
+              "forbidden": [
+                "Book",
+                "Page",
+                "Read",
+                "Mark",
+                "Save"
+              ]
+            },
+            {
+              "word": "Hopscotch",
+              "forbidden": [
+                "Jump",
+                "Game",
+                "Numbers",
+                "Play",
+                "Ground"
+              ]
+            },
+            {
+              "word": "Kaleidoscope",
+              "forbidden": [
+                "Color",
+                "Pattern",
+                "Tube",
+                "Twist",
+                "Look"
+              ]
+            },
+            {
+              "word": "Handshake",
+              "forbidden": [
+                "Hand",
+                "Meet",
+                "Greet",
+                "Business",
+                "Shake"
+              ]
+            },
+            {
+              "word": "Voicemail",
+              "forbidden": [
+                "Phone",
+                "Message",
+                "Call",
+                "Leave",
+                "Record"
+              ]
+            },
+            {
+              "word": "Lollipop",
+              "forbidden": [
+                "Candy",
+                "Stick",
+                "Sweet",
+                "Lick",
+                "Sucker"
+              ]
+            },
+            {
+              "word": "Mousetrap",
+              "forbidden": [
+                "Mouse",
+                "Catch",
+                "Cheese",
+                "Trap",
+                "Spring"
+              ]
+            },
+            {
+              "word": "Pillowcase",
+              "forbidden": [
+                "Pillow",
+                "Bed",
+                "Cover",
+                "Sleep",
+                "Fabric"
+              ]
+            },
+            {
+              "word": "Skateboard",
+              "forbidden": [
+                "Board",
+                "Ride",
+                "Wheel",
+                "Trick",
+                "Skate"
+              ]
+            },
+            {
+              "word": "Spiderweb",
+              "forbidden": [
+                "Spider",
+                "Web",
+                "Silk",
+                "Insect",
+                "Catch"
+              ]
+            },
+            {
+              "word": "Waterfall",
+              "forbidden": [
+                "Water",
+                "Fall",
+                "River",
+                "Cliff",
+                "Nature"
+              ]
+            },
+            {
+              "word": "Bubblegum",
+              "forbidden": [
+                "Chew",
+                "Bubble",
+                "Gum",
+                "Pop",
+                "Stick"
+              ]
+            },
+            {
+              "word": "Sandcastle",
+              "forbidden": [
+                "Sand",
+                "Beach",
+                "Build",
+                "Castle",
+                "Water"
+              ]
+            },
+            {
+              "word": "Campfire",
+              "forbidden": [
+                "Fire",
+                "Camp",
+                "Wood",
+                "Marshmallow",
+                "Night"
+              ]
+            },
+            {
+              "word": "Volleyball",
+              "forbidden": [
+                "Ball",
+                "Net",
+                "Beach",
+                "Team",
+                "Hit"
+              ]
+            },
+            {
+              "word": "Dishwasher",
+              "forbidden": [
+                "Dish",
+                "Clean",
+                "Machine",
+                "Kitchen",
+                "Wash"
+              ]
+            },
+            {
+              "word": "Sleepwalking",
+              "forbidden": [
+                "Sleep",
+                "Walk",
+                "Night",
+                "Bed",
+                "Unconscious"
+              ]
+            },
+            {
+              "word": "Backstroke",
+              "forbidden": [
+                "Swim",
+                "Back",
+                "Pool",
+                "Water",
+                "Arm"
+              ]
+            },
+            {
+              "word": "Eggshell",
+              "forbidden": [
+                "Egg",
+                "Shell",
+                "Crack",
+                "Fragile",
+                "Chicken"
+              ]
+            },
+            {
+              "word": "Earthquake",
+              "forbidden": [
+                "Shake",
+                "Ground",
+                "Disaster",
+                "Richter",
+                "Fault"
+              ]
+            },
+            {
+              "word": "Flashmob",
+              "forbidden": [
+                "Dance",
+                "Surprise",
+                "Group",
+                "Public",
+                "Perform"
+              ]
+            },
+            {
+              "word": "Skydiving",
+              "forbidden": [
+                "Jump",
+                "Plane",
+                "Fall",
+                "Parachute",
+                "Sky"
+              ]
+            },
+            {
+              "word": "Sunflower",
+              "forbidden": [
+                "Sun",
+                "Flower",
+                "Yellow",
+                "Seed",
+                "Tall"
+              ]
+            },
+            {
+              "word": "Treehouse",
+              "forbidden": [
+                "Tree",
+                "House",
+                "Kids",
+                "Build",
+                "Climb"
+              ]
+            },
+            {
+              "word": "Tightrope",
+              "forbidden": [
+                "Balance",
+                "Walk",
+                "Circus",
+                "High",
+                "Rope"
+              ]
+            },
+            {
+              "word": "Whirlpool",
+              "forbidden": [
+                "Water",
+                "Spin",
+                "Circle",
+                "Pool",
+                "Drain"
+              ]
+            },
+            {
+              "word": "Snowboard",
+              "forbidden": [
+                "Snow",
+                "Board",
+                "Mountain",
+                "Ride",
+                "Winter"
+              ]
+            },
+            {
+              "word": "Zipline",
+              "forbidden": [
+                "Fly",
+                "Wire",
+                "Fast",
+                "Adventure",
+                "Hang"
+              ]
+            },
+            {
+              "word": "Countdown",
+              "forbidden": [
+                "Number",
+                "Down",
+                "Zero",
+                "Start",
+                "Launch"
+              ]
+            },
+            {
+              "word": "Sunscreen",
+              "forbidden": [
+                "Sun",
+                "Skin",
+                "Protect",
+                "Beach",
+                "SPF"
+              ]
+            },
+            {
+              "word": "Beanbag",
+              "forbidden": [
+                "Bean",
+                "Bag",
+                "Sit",
+                "Chair",
+                "Throw"
+              ]
+            },
+            {
+              "word": "Catapult",
+              "forbidden": [
+                "Throw",
+                "Launch",
+                "Medieval",
+                "Weapon",
+                "Fling"
+              ]
+            },
+            {
+              "word": "Slingshot",
+              "forbidden": [
+                "Shoot",
+                "Rubber",
+                "Band",
+                "Stone",
+                "Pull"
+              ]
+            },
+            {
+              "word": "Pinwheel",
+              "forbidden": [
+                "Spin",
+                "Wind",
+                "Pin",
+                "Toy",
+                "Color"
+              ]
+            },
+            {
+              "word": "Stopwatch",
+              "forbidden": [
+                "Time",
+                "Stop",
+                "Start",
+                "Second",
+                "Race"
+              ]
+            },
+            {
+              "word": "Cobweb",
+              "forbidden": [
+                "Spider",
+                "Web",
+                "Old",
+                "Dust",
+                "Corner"
+              ]
+            },
+            {
+              "word": "Firefly",
+              "forbidden": [
+                "Light",
+                "Fly",
+                "Night",
+                "Glow",
+                "Bug"
+              ]
+            },
+            {
+              "word": "Daydream",
+              "forbidden": [
+                "Dream",
+                "Think",
+                "Awake",
+                "Imagine",
+                "Mind"
+              ]
+            },
+            {
+              "word": "Starfish",
+              "forbidden": [
+                "Star",
+                "Fish",
+                "Ocean",
+                "Five",
+                "Arm"
+              ]
+            },
+            {
+              "word": "Wishbone",
+              "forbidden": [
+                "Wish",
+                "Bone",
+                "Chicken",
+                "Break",
+                "Luck"
+              ]
+            },
+            {
+              "word": "Paperclip",
+              "forbidden": [
+                "Paper",
+                "Clip",
+                "Metal",
+                "Hold",
+                "Office"
+              ]
             }
           ]
         },
@@ -1899,554 +4199,754 @@
           "icon": "Sparkles",
           "items": [
             {
-              "word": "Existentialism",
+              "word": "Gravity",
               "forbidden": [
-                "Being",
-                "Freedom",
-                "Choice",
-                "Meaning",
-                "Life"
-              ],
-              "difficulty": "hard"
+                "Fall",
+                "Newton",
+                "Force",
+                "Earth",
+                "Pull"
+              ]
             },
             {
-              "word": "Cognitive Dissonance",
+              "word": "WiFi",
               "forbidden": [
-                "Beliefs",
-                "Conflict",
-                "Mind",
-                "Inconsistency",
-                "Unpleasant"
-              ],
-              "difficulty": "hard"
+                "Internet",
+                "Wireless",
+                "Connect",
+                "Router",
+                "Signal"
+              ]
             },
             {
-              "word": "Machiavelli",
+              "word": "DNA",
               "forbidden": [
-                "Prince",
-                "Politics",
-                "Italy",
-                "Power",
-                "Ends"
-              ],
-              "difficulty": "hard"
+                "Gene",
+                "Cell",
+                "Helix",
+                "Biology",
+                "Code"
+              ]
             },
             {
-              "word": "Verisimilitude",
+              "word": "Inflation",
               "forbidden": [
-                "Truth",
-                "Reality",
-                "Appearance",
-                "Seem",
-                "Life-like"
-              ],
-              "difficulty": "hard"
+                "Price",
+                "Money",
+                "Rise",
+                "Economy",
+                "Cost"
+              ]
             },
             {
-              "word": "Pyrrhic Victory",
+              "word": "Algorithm",
               "forbidden": [
-                "Win",
-                "Loss",
-                "Costly",
-                "Success",
-                "Battle"
-              ],
-              "difficulty": "hard"
+                "Computer",
+                "Code",
+                "Steps",
+                "Program",
+                "Math"
+              ]
             },
             {
-              "word": "Paradigm Shift",
+              "word": "Blockchain",
               "forbidden": [
-                "Change",
-                "Model",
-                "Way",
-                "Thinking",
-                "Science"
-              ],
-              "difficulty": "hard"
+                "Bitcoin",
+                "Crypto",
+                "Digital",
+                "Ledger",
+                "Chain"
+              ]
             },
             {
-              "word": "Foucault",
+              "word": "Déjà Vu",
               "forbidden": [
-                "Power",
-                "Discipline",
-                "Knowledge",
-                "History",
-                "Prisons"
-              ],
-              "difficulty": "hard"
+                "Memory",
+                "Again",
+                "Seen",
+                "Feel",
+                "Before"
+              ]
             },
             {
-              "word": "Solipsism",
+              "word": "Black Hole",
               "forbidden": [
-                "Self",
-                "Only",
-                "Mind",
-                "Reality",
-                "Existence"
-              ],
-              "difficulty": "hard"
+                "Space",
+                "Gravity",
+                "Star",
+                "Light",
+                "Dark"
+              ]
             },
             {
-              "word": "Anomie",
+              "word": "Placebo",
               "forbidden": [
-                "Norms",
-                "Society",
-                "Lack",
-                "Breakdown",
-                "Rules"
-              ],
-              "difficulty": "hard"
+                "Fake",
+                "Medicine",
+                "Sugar",
+                "Pill",
+                "Effect"
+              ]
             },
             {
-              "word": "Esoteric",
+              "word": "Photosynthesis",
               "forbidden": [
-                "Secret",
-                "Knowledge",
-                "Few",
-                "Understand",
-                "Hidden"
-              ],
-              "difficulty": "hard"
+                "Sun",
+                "Plant",
+                "Light",
+                "Green",
+                "Energy"
+              ]
             },
             {
-              "word": "Hegemony",
+              "word": "Karma",
               "forbidden": [
-                "Dominance",
-                "Power",
-                "Control",
-                "State",
-                "Influence"
-              ],
-              "difficulty": "hard"
+                "Good",
+                "Bad",
+                "Action",
+                "Fate",
+                "What goes around"
+              ]
             },
             {
-              "word": "Serendipity",
+              "word": "Irony",
               "forbidden": [
-                "Chance",
-                "Luck",
-                "Discovery",
-                "Accident",
-                "Happy"
-              ],
-              "difficulty": "hard"
+                "Opposite",
+                "Expect",
+                "Sarcasm",
+                "Mean",
+                "Funny"
+              ]
             },
             {
-              "word": "Nihilism",
+              "word": "Metabolism",
               "forbidden": [
-                "Nothing",
-                "Meaning",
-                "Life",
-                "Believe",
-                "Values"
-              ],
-              "difficulty": "hard"
+                "Body",
+                "Energy",
+                "Food",
+                "Burn",
+                "Fast"
+              ]
             },
             {
-              "word": "Epistemology",
+              "word": "Democracy",
               "forbidden": [
-                "Knowledge",
-                "Study",
-                "How",
-                "Know",
-                "Philosophy"
-              ],
-              "difficulty": "hard"
-            },
-            {
-              "word": "Deconstruction",
-              "forbidden": [
-                "Text",
-                "Meaning",
-                "Derrida",
-                "Break",
-                "Analysis"
-              ],
-              "difficulty": "hard"
-            },
-            {
-              "word": "Ostentatious",
-              "forbidden": [
-                "Showy",
-                "Flashy",
-                "Display",
-                "Wealth",
-                "Attract"
-              ],
-              "difficulty": "hard"
-            },
-            {
-              "word": "Equivocation",
-              "forbidden": [
-                "Ambiguous",
-                "Lie",
-                "Speak",
-                "Avoid",
-                "Truth"
-              ],
-              "difficulty": "hard"
-            },
-            {
-              "word": "Sophistry",
-              "forbidden": [
-                "Argument",
-                "False",
-                "Reason",
-                "Persuade",
-                "Clever"
-              ],
-              "difficulty": "hard"
-            },
-            {
-              "word": "Obfuscation",
-              "forbidden": [
-                "Confuse",
-                "Unclear",
-                "Dark",
-                "Deliberate",
-                "Hide"
-              ],
-              "difficulty": "hard"
-            },
-            {
-              "word": "Pernicious",
-              "forbidden": [
-                "Harmful",
-                "Subtle",
-                "Destructive",
-                "Evil",
-                "Gradual"
-              ],
-              "difficulty": "hard"
-            },
-            {
-              "word": "Ineffable",
-              "forbidden": [
-                "Express",
-                "Words",
-                "Describe",
-                "Beyond",
-                "Speak"
-              ],
-              "difficulty": "hard"
-            },
-            {
-              "word": "Lachrymose",
-              "forbidden": [
-                "Tearful",
-                "Crying",
-                "Sad",
-                "Weep",
-                "Sentimental"
-              ],
-              "difficulty": "hard"
-            },
-            {
-              "word": "Quixotic",
-              "forbidden": [
-                "Idealistic",
-                "Impractical",
-                "Dream",
-                "Don",
-                "Folly"
-              ],
-              "difficulty": "hard"
-            },
-            {
-              "word": "Misanthrope",
-              "forbidden": [
+                "Vote",
                 "People",
-                "Hate",
-                "Human",
-                "Society",
-                "Dislike"
-              ],
-              "difficulty": "hard"
+                "Government",
+                "Election",
+                "Free"
+              ]
             },
             {
-              "word": "Iconoclast",
+              "word": "Franchise",
               "forbidden": [
-                "Idols",
-                "Break",
-                "Tradition",
-                "Challenge",
-                "Beliefs"
-              ],
-              "difficulty": "hard"
+                "Business",
+                "Brand",
+                "Owner",
+                "Chain",
+                "License"
+              ]
             },
             {
-              "word": "Anachronism",
+              "word": "Autopilot",
               "forbidden": [
+                "Fly",
+                "Automatic",
+                "Plane",
+                "Drive",
+                "Self"
+              ]
+            },
+            {
+              "word": "Stereotype",
+              "forbidden": [
+                "Judge",
+                "Group",
+                "Assume",
+                "Type",
+                "Label"
+              ]
+            },
+            {
+              "word": "Diplomacy",
+              "forbidden": [
+                "Peace",
+                "Country",
+                "Talk",
+                "Negotiate",
+                "Ambassador"
+              ]
+            },
+            {
+              "word": "Nostalgia",
+              "forbidden": [
+                "Past",
+                "Memory",
+                "Miss",
+                "Old",
+                "Remember"
+              ]
+            },
+            {
+              "word": "Propaganda",
+              "forbidden": [
+                "Media",
+                "Lie",
+                "Government",
+                "Influence",
+                "Message"
+              ]
+            },
+            {
+              "word": "Sarcasm",
+              "forbidden": [
+                "Joke",
+                "Mean",
+                "Tone",
+                "Opposite",
+                "Humor"
+              ]
+            },
+            {
+              "word": "Adrenaline",
+              "forbidden": [
+                "Rush",
+                "Fear",
+                "Hormone",
+                "Excited",
+                "Heart"
+              ]
+            },
+            {
+              "word": "Claustrophobia",
+              "forbidden": [
+                "Fear",
+                "Small",
+                "Space",
+                "Closed",
+                "Scared"
+              ]
+            },
+            {
+              "word": "Camouflage",
+              "forbidden": [
+                "Hide",
+                "Army",
+                "Color",
+                "Blend",
+                "Pattern"
+              ]
+            },
+            {
+              "word": "Biodegradable",
+              "forbidden": [
+                "Nature",
+                "Decompose",
+                "Plastic",
+                "Environment",
+                "Break down"
+              ]
+            },
+            {
+              "word": "Cryptocurrency",
+              "forbidden": [
+                "Bitcoin",
+                "Digital",
+                "Money",
+                "Blockchain",
+                "Mining"
+              ]
+            },
+            {
+              "word": "Insomnia",
+              "forbidden": [
+                "Sleep",
+                "Night",
+                "Awake",
+                "Tired",
+                "Bed"
+              ]
+            },
+            {
+              "word": "Jet Lag",
+              "forbidden": [
+                "Travel",
                 "Time",
-                "Out",
-                "Error",
-                "Place",
-                "Period"
-              ],
-              "difficulty": "hard"
+                "Fly",
+                "Tired",
+                "Zone"
+              ]
             },
             {
-              "word": "Juxtaposition",
+              "word": "Hallucination",
               "forbidden": [
-                "Contrast",
-                "Place",
-                "Side",
-                "Compare",
-                "Opposite"
-              ],
-              "difficulty": "hard"
+                "See",
+                "Real",
+                "Imagine",
+                "Mind",
+                "Vision"
+              ]
             },
             {
-              "word": "Dichotomy",
+              "word": "Monopoly",
               "forbidden": [
-                "Two",
-                "Parts",
-                "Split",
-                "Division",
-                "Opposite"
-              ],
-              "difficulty": "hard"
+                "Game",
+                "Board",
+                "Money",
+                "Property",
+                "One"
+              ]
             },
             {
-              "word": "Chicanery",
+              "word": "Renaissance",
               "forbidden": [
-                "Deception",
-                "Trickery",
-                "Fraud",
-                "Legal",
-                "Clever"
-              ],
-              "difficulty": "hard"
+                "Art",
+                "Europe",
+                "Rebirth",
+                "Period",
+                "Italy"
+              ]
             },
             {
-              "word": "Perfunctory",
+              "word": "Quarantine",
               "forbidden": [
-                "Duty",
-                "Hasty",
-                "Careless",
-                "Minimum",
-                "Routine"
-              ],
-              "difficulty": "hard"
+                "Sick",
+                "Isolate",
+                "COVID",
+                "Home",
+                "Separate"
+              ]
             },
             {
-              "word": "Specious",
+              "word": "Boycott",
               "forbidden": [
-                "Appear",
-                "Plausible",
+                "Refuse",
+                "Buy",
+                "Protest",
+                "Stop",
+                "Against"
+              ]
+            },
+            {
+              "word": "Conspiracy",
+              "forbidden": [
+                "Theory",
+                "Secret",
+                "Plot",
+                "Government",
+                "Hidden"
+              ]
+            },
+            {
+              "word": "Empathy",
+              "forbidden": [
+                "Feel",
+                "Others",
+                "Understand",
+                "Emotion",
+                "Compassion"
+              ]
+            },
+            {
+              "word": "Paradox",
+              "forbidden": [
+                "Opposite",
+                "Contradiction",
+                "True",
                 "False",
-                "Misleading",
-                "Sound"
-              ],
-              "difficulty": "hard"
+                "Logic"
+              ]
             },
             {
-              "word": "Clandestine",
+              "word": "Fossil",
+              "forbidden": [
+                "Bone",
+                "Dinosaur",
+                "Old",
+                "Rock",
+                "Ancient"
+              ]
+            },
+            {
+              "word": "Charisma",
+              "forbidden": [
+                "Charm",
+                "Leader",
+                "Attract",
+                "Personality",
+                "Magnetic"
+              ]
+            },
+            {
+              "word": "Embargo",
+              "forbidden": [
+                "Trade",
+                "Ban",
+                "Country",
+                "Import",
+                "Stop"
+              ]
+            },
+            {
+              "word": "Paparazzi",
+              "forbidden": [
+                "Photo",
+                "Celebrity",
+                "Camera",
+                "Follow",
+                "Famous"
+              ]
+            },
+            {
+              "word": "Sabbatical",
+              "forbidden": [
+                "Break",
+                "Work",
+                "Year",
+                "Leave",
+                "Rest"
+              ]
+            },
+            {
+              "word": "Tsunami",
+              "forbidden": [
+                "Wave",
+                "Water",
+                "Ocean",
+                "Earthquake",
+                "Disaster"
+              ]
+            },
+            {
+              "word": "Vertigo",
+              "forbidden": [
+                "Dizzy",
+                "Height",
+                "Spin",
+                "Balance",
+                "Fear"
+              ]
+            },
+            {
+              "word": "Pandemic",
+              "forbidden": [
+                "COVID",
+                "Virus",
+                "World",
+                "Spread",
+                "Disease"
+              ]
+            },
+            {
+              "word": "Plagiarism",
+              "forbidden": [
+                "Copy",
+                "Steal",
+                "Write",
+                "Original",
+                "Cheat"
+              ]
+            },
+            {
+              "word": "Hibernation",
+              "forbidden": [
+                "Sleep",
+                "Winter",
+                "Bear",
+                "Animal",
+                "Cold"
+              ]
+            },
+            {
+              "word": "Ventriloquist",
+              "forbidden": [
+                "Puppet",
+                "Talk",
+                "Voice",
+                "Mouth",
+                "Dummy"
+              ]
+            },
+            {
+              "word": "Philanthropy",
+              "forbidden": [
+                "Give",
+                "Money",
+                "Charity",
+                "Help",
+                "Donate"
+              ]
+            },
+            {
+              "word": "Ecosystem",
+              "forbidden": [
+                "Nature",
+                "Animal",
+                "Plant",
+                "Environment",
+                "System"
+              ]
+            },
+            {
+              "word": "Censorship",
+              "forbidden": [
+                "Ban",
+                "Media",
+                "Government",
+                "Block",
+                "Speech"
+              ]
+            },
+            {
+              "word": "Filibuster",
+              "forbidden": [
+                "Senate",
+                "Talk",
+                "Delay",
+                "Politics",
+                "Block"
+              ]
+            },
+            {
+              "word": "Ponzi Scheme",
+              "forbidden": [
+                "Fraud",
+                "Money",
+                "Invest",
+                "Scam",
+                "Pyramid"
+              ]
+            },
+            {
+              "word": "Gentrification",
+              "forbidden": [
+                "Neighborhood",
+                "Rich",
+                "Poor",
+                "Property",
+                "Change"
+              ]
+            },
+            {
+              "word": "Inflation Rate",
+              "forbidden": [
+                "Price",
+                "Percent",
+                "Economy",
+                "Rise",
+                "Cost"
+              ]
+            },
+            {
+              "word": "Carbon Footprint",
+              "forbidden": [
+                "Environment",
+                "Pollution",
+                "CO2",
+                "Climate",
+                "Green"
+              ]
+            },
+            {
+              "word": "Stockholm Syndrome",
+              "forbidden": [
+                "Hostage",
+                "Captor",
+                "Love",
+                "Kidnap",
+                "Psychology"
+              ]
+            },
+            {
+              "word": "Whistleblower",
               "forbidden": [
                 "Secret",
-                "Hidden",
-                "Undercover",
-                "Covert",
-                "Private"
-              ],
-              "difficulty": "hard"
+                "Report",
+                "Company",
+                "Expose",
+                "Wrong"
+              ]
             },
             {
-              "word": "Redundant",
+              "word": "Cryptocurrency Mining",
               "forbidden": [
-                "Unnecessary",
-                "Repeat",
-                "Extra",
-                "Superfluous",
-                "More"
-              ],
-              "difficulty": "hard"
+                "Bitcoin",
+                "Computer",
+                "Digital",
+                "Solve",
+                "Energy"
+              ]
             },
             {
-              "word": "Euphemism",
+              "word": "Ambidextrous",
               "forbidden": [
-                "Soften",
-                "Word",
-                "Phrase",
-                "Unpleasant",
-                "Indirect"
-              ],
-              "difficulty": "hard"
+                "Hand",
+                "Both",
+                "Left",
+                "Right",
+                "Write"
+              ]
             },
             {
-              "word": "Metonymy",
+              "word": "Procrastination",
               "forbidden": [
-                "Figure",
-                "Speech",
-                "Part",
-                "Whole",
-                "Substitute"
-              ],
-              "difficulty": "hard"
+                "Delay",
+                "Later",
+                "Work",
+                "Avoid",
+                "Time"
+              ]
             },
             {
-              "word": "Synecdoche",
+              "word": "Sibling Rivalry",
               "forbidden": [
-                "Part",
-                "Whole",
-                "Represent",
-                "Thing",
-                "Figure"
-              ],
-              "difficulty": "hard"
+                "Brother",
+                "Sister",
+                "Fight",
+                "Family",
+                "Compete"
+              ]
             },
             {
-              "word": "Allegory",
+              "word": "Culture Shock",
               "forbidden": [
-                "Story",
-                "Symbol",
-                "Meaning",
-                "Hidden",
-                "Moral"
-              ],
-              "difficulty": "hard"
+                "Country",
+                "Different",
+                "Travel",
+                "New",
+                "Surprise"
+              ]
             },
             {
-              "word": "Parable",
+              "word": "Peer Pressure",
               "forbidden": [
-                "Short",
-                "Story",
-                "Moral",
-                "Lesson",
-                "Teach"
-              ],
-              "difficulty": "hard"
+                "Friends",
+                "Influence",
+                "Group",
+                "Force",
+                "Conform"
+              ]
             },
             {
-              "word": "Oxymoron",
+              "word": "Optical Illusion",
               "forbidden": [
-                "Contradictory",
-                "Terms",
-                "Figures",
-                "Speech",
-                "Together"
-              ],
-              "difficulty": "hard"
+                "Eye",
+                "See",
+                "Trick",
+                "Image",
+                "Brain"
+              ]
             },
             {
-              "word": "Litotes",
+              "word": "Souvenir",
               "forbidden": [
-                "Understatement",
-                "Negate",
-                "Affirm",
-                "Double",
-                "Opposite"
-              ],
-              "difficulty": "hard"
+                "Gift",
+                "Travel",
+                "Remember",
+                "Buy",
+                "Trip"
+              ]
             },
             {
-              "word": "Hyperbole",
+              "word": "Etiquette",
               "forbidden": [
-                "Exaggeration",
-                "Overstate",
-                "Figure",
-                "Speech",
-                "Stretch"
-              ],
-              "difficulty": "hard"
+                "Manners",
+                "Polite",
+                "Rule",
+                "Behavior",
+                "Social"
+              ]
             },
             {
-              "word": "Conundrum",
+              "word": "Amnesia",
               "forbidden": [
-                "Puzzle",
-                "Problem",
-                "Difficult",
-                "Riddle",
-                "Question"
-              ],
-              "difficulty": "hard"
+                "Memory",
+                "Forget",
+                "Brain",
+                "Lost",
+                "Remember"
+              ]
             },
             {
-              "word": "Labyrinthine",
+              "word": "Origami",
               "forbidden": [
-                "Maze",
-                "Complex",
-                "Confusing",
-                "Intricate",
-                "Path"
-              ],
-              "difficulty": "hard"
+                "Paper",
+                "Fold",
+                "Japan",
+                "Crane",
+                "Art"
+              ]
             },
             {
-              "word": "Byzantine",
+              "word": "Acrophobia",
               "forbidden": [
-                "Empire",
-                "Complex",
-                "Intricate",
-                "Bureaucracy",
-                "Eastern"
-              ],
-              "difficulty": "hard"
+                "Fear",
+                "Height",
+                "Scared",
+                "Tall",
+                "Phobia"
+              ]
             },
             {
-              "word": "Gordian Knot",
+              "word": "Superstition",
               "forbidden": [
-                "Problem",
-                "Untie",
-                "Alexander",
-                "Solution",
-                "Difficult"
-              ],
-              "difficulty": "hard"
+                "Luck",
+                "Believe",
+                "Black Cat",
+                "Unlucky",
+                "Myth"
+              ]
             },
             {
-              "word": "Zeitgeist",
+              "word": "Limousine",
               "forbidden": [
-                "Spirit",
-                "Age",
-                "Time",
-                "Era",
-                "Mood"
-              ],
-              "difficulty": "hard"
+                "Car",
+                "Long",
+                "Luxury",
+                "Driver",
+                "Celebrity"
+              ]
             },
             {
-              "word": "Catharsis",
+              "word": "Ventilation",
               "forbidden": [
-                "Release",
-                "Emotion",
-                "Purge",
-                "Relief",
-                "Play"
-              ],
-              "difficulty": "hard"
+                "Air",
+                "Fan",
+                "Breathe",
+                "Window",
+                "Flow"
+              ]
             },
             {
-              "word": "Altruism",
+              "word": "GPS",
               "forbidden": [
-                "Selfless",
-                "Others",
-                "Help",
-                "Benevolent",
-                "Good"
-              ],
-              "difficulty": "hard"
+                "Map",
+                "Navigate",
+                "Location",
+                "Satellite",
+                "Direction"
+              ]
             },
             {
-              "word": "Hedonism",
+              "word": "Autobiography",
               "forbidden": [
-                "Pleasure",
-                "Pursuit",
+                "Book",
                 "Life",
-                "Enjoyment",
-                "Self"
-              ],
-              "difficulty": "hard"
+                "Write",
+                "Self",
+                "Story"
+              ]
             },
             {
-              "word": "Stoicism",
+              "word": "Artificial Intelligence",
               "forbidden": [
-                "Emotion",
-                "Endure",
-                "Pain",
-                "Calm",
-                "Control"
-              ],
-              "difficulty": "hard"
+                "Computer",
+                "Robot",
+                "Machine",
+                "Learn",
+                "AI"
+              ]
             }
           ]
         }
