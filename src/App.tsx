@@ -15,6 +15,7 @@ import { NeverHaveIEverGame } from './components/games/NeverHaveIEverGame';
 import { MiniMafiaGame } from './components/games/MiniMafiaGame';
 import { FactOrFictionGame } from './components/games/FactOrFictionGame';
 import { CompatibilityTestGame } from './components/games/CompatibilityTestGame';
+import { TruthOrDrinkGame } from './components/games/TruthOrDrinkGame';
 
 const SplashScreen = () => (
   <div className="fixed inset-0 z-[100] bg-party-dark flex items-center justify-center overflow-hidden font-sans">
@@ -87,6 +88,8 @@ const App = () => {
         return <FactOrFictionGame onExit={() => setActiveGame(GameType.HOME)} />;
       case GameType.COMPATIBILITY_TEST:
         return <CompatibilityTestGame onExit={() => setActiveGame(GameType.HOME)} />;
+      case GameType.TRUTH_OR_DRINK:
+        return <TruthOrDrinkGame onExit={() => setActiveGame(GameType.HOME)} />;
       default:
         return <HomeMenu onSelectGame={setActiveGame} />;
     }
@@ -111,7 +114,6 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
     GameType.ICEBREAKERS,
     GameType.WOULD_YOU_RATHER,
     GameType.NEVER_HAVE_I_EVER,
-    GameType.TRUTH_OR_DRINK,
   ];
 
   const activeGames = GAMES.filter(g => !comingSoonGameIds.includes(g.id));
