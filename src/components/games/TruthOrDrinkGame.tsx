@@ -308,7 +308,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     Pick a deck. Answer honestly — or take a sip.
                 </p>
                 <div className="flex-1 overflow-y-auto pb-8">
-                    <div className="grid gap-2 max-w-[340px] mx-auto w-full">
+                    <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}
