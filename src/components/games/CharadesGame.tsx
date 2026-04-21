@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Button, Card, ScreenHeader } from '../ui/Layout';
 import { Timer, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { generateCharadesWords } from '../../services/geminiService';
-// import { useContent } from '../../contexts/ContentContext'; // Unused for now, maybe later
 import { useContent } from '../../contexts/ContentContext';
 import { CHARADES_CATEGORIES } from '../../constants';
 import gamesDataRaw from '../../data/games_data.json';
