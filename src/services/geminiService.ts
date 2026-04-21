@@ -1,5 +1,10 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { TriviaQuestion, TabooCard } from "../types";
+import {
+    generateCustomMostLikelyToClaude,
+    generateCustomTruthOrDrinkClaude,
+    isClaudeConfigured,
+} from "./claudeService";
 
 // Helper to get AI instance safely
 const getAI = () => {
@@ -770,7 +775,32 @@ export const generateMostLikelyTo = async (category: string, count: number = 10)
     }
 };
 
+/**
+ * Public entry point for custom Truth or Drink generation.
+ * Prefers Claude (Haiku 4.5, structured JSON output); falls back to Gemini if
+ * the Anthropic key is absent or the call returns nothing. Both providers
+ * return the same shape: a plain array of question strings.
+ */
 export const generateCustomTruthOrDrink = async (
+    groupType: string,
+    customContext: string,
+    playerNames: string[],
+    count: number = 15,
+    tone: string = ''
+): Promise<string[]> => {
+    if (isClaudeConfigured()) {
+        const viaClaude = await generateCustomTruthOrDrinkClaude(
+            groupType, customContext, playerNames, count, tone
+        );
+        if (viaClaude.length > 0) return viaClaude;
+        console.warn('[CustomTOD] Claude returned no cards — falling back to Gemini.');
+    }
+    return generateCustomTruthOrDrinkViaGemini(
+        groupType, customContext, playerNames, count, tone
+    );
+};
+
+const generateCustomTruthOrDrinkViaGemini = async (
     groupType: string,
     customContext: string,
     playerNames: string[],
@@ -845,7 +875,27 @@ Return ONLY the questions as a JSON array of strings. No numbering.`;
     }
 };
 
+/**
+ * Public entry point for custom Most Likely To generation.
+ * Prefers Claude; falls back to Gemini on empty/missing-key.
+ */
 export const generateCustomMostLikelyTo = async (
+    groupType: string,
+    customContext: string,
+    count: number = 15,
+    tone: string = ''
+): Promise<string[]> => {
+    if (isClaudeConfigured()) {
+        const viaClaude = await generateCustomMostLikelyToClaude(
+            groupType, customContext, count, tone
+        );
+        if (viaClaude.length > 0) return viaClaude;
+        console.warn('[CustomMLT] Claude returned no cards — falling back to Gemini.');
+    }
+    return generateCustomMostLikelyToViaGemini(groupType, customContext, count, tone);
+};
+
+const generateCustomMostLikelyToViaGemini = async (
     groupType: string,
     customContext: string,
     count: number = 15,
