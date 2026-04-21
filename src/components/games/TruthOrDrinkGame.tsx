@@ -249,7 +249,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
             );
 
             if (cards.length === 0) {
-                setCustomError('AI generation failed. Try tweaking your description or try again.');
+                setCustomError('AI generation returned no cards. Try tweaking the description or toning down spicy language. Check the browser console for details.');
                 setGameState('CUSTOM_SETUP');
                 return;
             }

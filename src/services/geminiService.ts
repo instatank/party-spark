@@ -779,10 +779,13 @@ export const generateCustomTruthOrDrink = async (
 ): Promise<string[]> => {
     try {
         const ai = getAI();
-        if (!ai) return [];
+        if (!ai) {
+            console.warn('[CustomTOD] No API key configured — returning empty deck.');
+            return [];
+        }
 
         const toneInstruction = tone
-            ? `- TONE/RATING: ${tone}. Calibrate the humor, edginess, and subject matter accordingly.`
+            ? `- TONE/RATING: ${tone}. Calibrate the humor and subject matter accordingly.`
             : `- Keep it PG-13 unless the context clearly implies otherwise.`;
 
         const namesClause = playerNames.length
@@ -791,7 +794,7 @@ export const generateCustomTruthOrDrink = async (
 
         const prompt = `You are a party game writer creating "Truth or Drink" prompts for a specific group.
 
-In Truth or Drink, each player is handed a personal question on their turn. They either ANSWER honestly or TAKE A DRINK to skip. Questions should be DIRECTED, personal, and probe something interesting about the player.
+In Truth or Drink, each player is handed a personal question on their turn. They either answer honestly or skip the question. Questions should be directed, personal, and probe something interesting about the player.
 
 GROUP TYPE: ${groupType}
 ${namesClause}
@@ -802,14 +805,9 @@ INSTRUCTIONS:
 - Write in SECOND person ("you") so any player can be asked — but you may reference named players by first name when the context calls for it (e.g. "What's the first thing you noticed about Priya?").
 - USE the specifics they gave you — names, places, shared history, inside jokes, situations. Weave them in naturally.
 - Questions should feel personally written for THIS group. Avoid generic questions like "What's your biggest fear?" unless the context twists it.
-- Mix playful teasing, curious probing, and deeper reveals. Every question should be something a sober person might actually hesitate to answer.
+- Mix playful teasing, curious probing, and deeper reveals. Keep things fun rather than cruel.
 - Each question must end with a "?".
 ${toneInstruction}
-
-SAFETY:
-- No questions that are defamatory or sexually explicit about specific named real people.
-- Spicy/adult tones can include suggestive themes but not graphic descriptions.
-- Avoid questions about real trauma, medical conditions, or criminal history.
 
 Return ONLY the questions as a JSON array of strings. No numbering.`;
 
@@ -825,10 +823,22 @@ Return ONLY the questions as a JSON array of strings. No numbering.`;
             }
         });
 
-        if (response.text) {
-            return JSON.parse(response.text) as string[];
+        if (!response.text) {
+            console.warn('[CustomTOD] Empty response from Gemini. Full response:', response);
+            return [];
         }
-        return [];
+
+        try {
+            const parsed = JSON.parse(response.text) as string[];
+            if (!Array.isArray(parsed)) {
+                console.warn('[CustomTOD] Response is not an array:', response.text);
+                return [];
+            }
+            return parsed.filter(q => typeof q === 'string' && q.trim().length > 0);
+        } catch (parseErr) {
+            console.error('[CustomTOD] JSON parse failed. Raw text:', response.text, 'Error:', parseErr);
+            return [];
+        }
     } catch (error) {
         console.error("Custom Truth or Drink Error:", error);
         return [];
