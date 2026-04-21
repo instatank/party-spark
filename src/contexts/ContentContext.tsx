@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useState, type ReactNode } from 'react';
-import { generateCharadesWords, generateTabooCards, generateTriviaQuestions, generateIcebreaker } from '../services/geminiService';
-import type { TabooCard, TriviaQuestion } from '../types';
+import { generateCharadesWords, generateTabooCards, generateIcebreaker } from '../services/geminiService';
+import type { TabooCard } from '../types';
 
 interface ContentContextType {
     charadesBuffer: string[];
     tabooBuffer: TabooCard[];
-    triviaBuffer: TriviaQuestion[];
     icebreakerBuffer: string[];
     isPrefetching: Record<string, boolean>;
     prefetchGameContent: (gameType: string, category: string) => Promise<void>;
@@ -17,7 +16,6 @@ const ContentContext = createContext<ContentContextType | undefined>(undefined);
 export const ContentProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [charadesBuffer, setCharadesBuffer] = useState<string[]>([]);
     const [tabooBuffer, setTabooBuffer] = useState<TabooCard[]>([]);
-    const [triviaBuffer, setTriviaBuffer] = useState<TriviaQuestion[]>([]);
     const [icebreakerBuffer, setIcebreakerBuffer] = useState<string[]>([]);
 
     // Track loading state per key "gameType:category"
@@ -41,8 +39,6 @@ export const ContentProvider: React.FC<{ children: ReactNode }> = ({ children })
                         return await generateCharadesWords(category); // Assume service updated to return more
                     case 'TABOO':
                         return await generateTabooCards(category, BATCH_SIZE);
-                    case 'TRIVIA':
-                        return await generateTriviaQuestions(category, BATCH_SIZE);
                     case 'ICEBREAKERS':
                         // Icebreakers are usually single fetch, we'll need to update service or just loop
                         const p1 = await generateIcebreaker('fun');
@@ -77,9 +73,6 @@ export const ContentProvider: React.FC<{ children: ReactNode }> = ({ children })
             case 'TABOO':
                 setTabooBuffer(prev => [...prev, ...data]);
                 break;
-            case 'TRIVIA':
-                setTriviaBuffer(prev => [...prev, ...data]);
-                break;
             case 'ICEBREAKERS':
                 setIcebreakerBuffer(prev => [...prev, ...data]);
                 break;
@@ -101,12 +94,6 @@ export const ContentProvider: React.FC<{ children: ReactNode }> = ({ children })
                     setTabooBuffer(prev => prev.slice(1));
                 }
                 break;
-            case 'TRIVIA':
-                if (triviaBuffer.length > 0) {
-                    item = triviaBuffer[0];
-                    setTriviaBuffer(prev => prev.slice(1));
-                }
-                break;
             case 'ICEBREAKERS':
                 if (icebreakerBuffer.length > 0) {
                     item = icebreakerBuffer[0];
@@ -121,7 +108,6 @@ export const ContentProvider: React.FC<{ children: ReactNode }> = ({ children })
         <ContentContext.Provider value={{
             charadesBuffer,
             tabooBuffer,
-            triviaBuffer,
             icebreakerBuffer,
             isPrefetching,
             prefetchGameContent,

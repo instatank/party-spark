@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import type { TriviaQuestion, TabooCard } from "../types";
+import type { TabooCard } from "../types";
 import {
     generateCustomMostLikelyToClaude,
     generateCustomTruthOrDrinkClaude,
@@ -132,54 +132,6 @@ export const generateNeverHaveIEver = async (category: string, count: number = 5
         return [];
     } catch (error) {
         console.error("Never Have I Ever Generation Error:", error);
-        return [];
-    }
-};
-
-export const generateTriviaQuestions = async (category: string, count: number = 5): Promise<TriviaQuestion[]> => {
-    try {
-        const ai = getAI();
-        if (!ai) return [];
-
-        let prompt = `Generate ${count} engaging, intermediate difficulty trivia questions about "${category}".
-    Ensure the options are distinct and the answer is correct.
-    Include a short, interesting fun fact for each.`;
-
-        if (category === 'agra_trip') {
-            prompt = `Generate ${count} awe-inspiring, fun, and informative trivia questions about the Taj Mahal, the Mughal Dynasty, and Agra's history. 
-            CRITICAL: The false options must be highly plausible, clever historical decoys that could easily be true, making the question challenging. Avoid obvious joke options that give away the answer.
-            The tone should be witty, educational, and spark curiosity. 
-            Ensure the correct answer is factually accurate. 
-            Include a short, surprising or mind-blowing 'fun fact' for each question that delves into the incredible, lesser-known details of Mughal history.`;
-        }
-
-        const response = await ai.models.generateContent({
-            model: modelFlash,
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: Type.ARRAY,
-                    items: {
-                        type: Type.OBJECT,
-                        properties: {
-                            question: { type: Type.STRING },
-                            options: { type: Type.ARRAY, items: { type: Type.STRING } },
-                            answer: { type: Type.STRING },
-                            funFact: { type: Type.STRING }
-                        },
-                        required: ["question", "options", "answer"]
-                    }
-                }
-            }
-        });
-
-        if (response.text) {
-            return JSON.parse(response.text) as TriviaQuestion[];
-        }
-        return [];
-    } catch (error) {
-        console.error("Trivia batch error:", error);
         return [];
     }
 };

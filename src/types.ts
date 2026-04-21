@@ -9,9 +9,7 @@ export enum GameType {
     HOME = 'HOME',
     CHARADES = 'CHARADES',
     TABOO = 'TABOO',
-    TRIVIA = 'TRIVIA',
     ICEBREAKERS = 'ICEBREAKERS',
-    SIMPLE_SELFIE = 'SIMPLE_SELFIE',
     ROAST = 'ROAST',
     IMPOSTER = 'IMPOSTER',
     WOULD_YOU_RATHER = 'WOULD_YOU_RATHER',
@@ -19,7 +17,6 @@ export enum GameType {
     WOULD_I_LIE_TO_YOU = 'WOULD_I_LIE_TO_YOU',
     NEVER_HAVE_I_EVER = 'NEVER_HAVE_I_EVER',
     MINI_MAFIA = 'MINI_MAFIA',
-    AGRA_QUEST = 'AGRA_QUEST',
     FACT_OR_FICTION = 'FACT_OR_FICTION',
     TRUTH_OR_DRINK = 'TRUTH_OR_DRINK',
     COMPATIBILITY_TEST = 'COMPATIBILITY_TEST'
@@ -41,13 +38,6 @@ export interface GameMeta {
     icon: string;
     color: string;
     minPlayers: number;
-}
-
-export interface TriviaQuestion {
-    question: string;
-    options: string[];
-    answer: string; // The correct answer text
-    funFact?: string;
 }
 
 export interface TabooCard {

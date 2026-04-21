@@ -98,17 +98,9 @@ This bit us several times. If you add a new accent color, verify it in the compi
 | The Forecast (Compatibility Test) | `COMPATIBILITY_TEST` | Player A predicts Player B's answers | Static (`compatibility_test.json`) | Adult-gated. Modes: Couples / Friends / Bunny. Known issue: deeper screens use dynamic Tailwind classes — see Known Issues. |
 | **Truth or Drink** | `TRUTH_OR_DRINK` | Confess or sip | **Claude → Gemini fallback** | Adult-gated. 5 decks (Classic/Spicy/Deep Cuts/Ex Files/Chaos) + "Create Your Vibe" AI custom deck. 2-10 players, 10 rounds. |
 
-### Orphaned (component exists, GameType enum entry exists, NOT routed)
+### Previously orphaned (deleted 2026-04-21)
 
-These three compile but are not in the `App.tsx` switch and not in the `GAMES` constant — they can't be reached from the home menu.
-
-| Game | File | GameType | Status |
-|---|---|---|---|
-| Trivia | `src/components/games/TriviaGame.tsx` | `TRIVIA` | Full state machine, Gemini-backed. Just needs routing. |
-| Simple Selfie | `src/components/games/SimpleSelfieGame.tsx` | `SIMPLE_SELFIE` | Full camera flow, AI-backed roast/toast. Camera-denied path has no fallback UI (will show a blank video if permission refused). |
-| Agra Quest | `src/components/games/AgraQuestGame.tsx` | `AGRA_QUEST` | Partial — vault/riddle logic unfinished. |
-
-**Decision needed:** route them, finish them, or delete them. Leaving unrouted code rots.
+Three components — Trivia, Simple Selfie, Agra Quest — used to exist as unrouted files. They were deleted along with their GameType enum entries, their TRIVIA_CATEGORIES and TriviaQuestion type, the `generateTriviaQuestions` service function, and the trivia buffer path in `ContentContext`. If you want any of them back, start from scratch rather than restoring old code.
 
 ## 🤖 AI Services
 
@@ -195,25 +187,21 @@ Flagged during the 2026-04-21 audit. None blocking, but worth cleaning up when y
 
 1. **The Forecast has 7 dynamic Tailwind classes** in `CompatibilityTestGame.tsx` at lines 273, 284, 339, 360, 375, 378, 403 — template literals like `text-${accentColor}-400` that Tailwind v4's JIT won't reliably compile. The MODE_SELECT screen is clean; the PREDICT / ANSWER / PASS_TO_* states may be rendering without accent colors on mobile. Replace with static class maps following the Slim Row pattern.
 
-2. **Three orphan game components** (Trivia, Simple Selfie, Agra Quest) — see Game Roster table above. Route them, finish them, or delete them.
-
-3. **`comingSoonGameIds` in `App.tsx`** (~line 113) is stale — lists WILTY / Icebreakers / WYR / NHIE as "coming soon" but all four are routed and playable. Audit and correct.
+2. **`comingSoonGameIds` in `App.tsx`** (~line 113) is stale — lists WILTY / Icebreakers / WYR / NHIE as "coming soon" but all four are routed and playable. Audit and correct.
 
 ### Medium
 
-4. **`RoastGame.tsx` line ~156** — LOADING state has `onBack={() => {}}`. User is stuck during image generation. Change to `onExit` or a state-specific handler.
+3. **`RoastGame.tsx` line ~156** — LOADING state has `onBack={() => {}}`. User is stuck during image generation. Change to `onExit` or a state-specific handler.
 
-5. **NHIE has no Claude fallback yet.** `generateNeverHaveIEver` is Gemini-only. Same quota vulnerability TOD/MLT had before the port.
-
-6. **`SimpleSelfieGame` camera-denied path** — error is logged to console but no fallback UI is shown; user sees a blank video element. If we route this game, fix first.
+4. **NHIE has no Claude fallback yet.** `generateNeverHaveIEver` is Gemini-only. Same quota vulnerability TOD/MLT had before the port.
 
 ### Low
 
-7. **Leftover `console.log`s** in production code — `CharadesGame` (3x), `TabooGame` (1x). Remove or demote to `console.debug`.
+5. **Leftover `console.log`s** in production code — `CharadesGame` (3x), `TabooGame` (1x). Remove or demote to `console.debug`.
 
-8. **Duplicate `useContent` import** in `CharadesGame.tsx` around line 5-6.
+6. **Duplicate `useContent` import** in `CharadesGame.tsx` around line 5-6.
 
-9. **API keys are in client JS** (both Gemini and Claude). Fine for testing, but before merging to production-facing work, proxy through a backend. Anyone can inspect the bundle and pull the keys.
+7. **API keys are in client JS** (both Gemini and Claude). Fine for testing, but before merging to production-facing work, proxy through a backend. Anyone can inspect the bundle and pull the keys.
 
 ## 📁 Key files
 

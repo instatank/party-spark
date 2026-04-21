@@ -1,6 +1,6 @@
 import { GameType, type GameMeta } from './types';
 
-import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, Globe, Film, Plane, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart } from 'lucide-react';
+import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart } from 'lucide-react';
 
 export const GAMES: GameMeta[] = [
     {
@@ -159,15 +159,6 @@ export const NEVER_HAVE_I_EVER_CATEGORIES = [
     { id: 'bbf', label: 'For BBF', description: 'For the core family crew.', color: 'bg-purple-600' },
     { id: 'classic', label: 'Classic Party', description: 'Fun, relatable scenarios.', color: 'bg-emerald-500' },
     { id: 'guilty_pleasures', label: 'Guilty Pleasures', description: 'Slightly embarrassing stuff.', color: 'bg-pink-600' }
-];
-
-export const TRIVIA_CATEGORIES = [
-    { id: 'agra_trip', label: 'Taj & Mughals 🕌', icon: <Compass size={24} />, color: 'text-amber-400' },
-    { id: 'Hollywood', label: 'Hollywood', icon: <Film size={24} />, color: 'text-purple-400' },
-    { id: 'Bollywood', label: 'Bollywood', icon: <Film size={24} />, color: 'text-pink-400' },
-    { id: 'Travel', label: 'Travel', icon: <Plane size={24} />, color: 'text-blue-400' },
-    { id: 'General Knowledge', label: 'General Knowledge', icon: <Globe size={24} />, color: 'text-emerald-400' },
-    { id: 'mix', label: 'All / Mix', icon: <Sparkles size={24} />, color: 'text-white' }
 ];
 
 export const IMPOSTER_CATEGORIES = [
