@@ -770,6 +770,71 @@ export const generateMostLikelyTo = async (category: string, count: number = 10)
     }
 };
 
+export const generateCustomTruthOrDrink = async (
+    groupType: string,
+    customContext: string,
+    playerNames: string[],
+    count: number = 15,
+    tone: string = ''
+): Promise<string[]> => {
+    try {
+        const ai = getAI();
+        if (!ai) return [];
+
+        const toneInstruction = tone
+            ? `- TONE/RATING: ${tone}. Calibrate the humor, edginess, and subject matter accordingly.`
+            : `- Keep it PG-13 unless the context clearly implies otherwise.`;
+
+        const namesClause = playerNames.length
+            ? `PLAYER NAMES (these are the people playing — you may reference them by first name): ${playerNames.join(', ')}.`
+            : '';
+
+        const prompt = `You are a party game writer creating "Truth or Drink" prompts for a specific group.
+
+In Truth or Drink, each player is handed a personal question on their turn. They either ANSWER honestly or TAKE A DRINK to skip. Questions should be DIRECTED, personal, and probe something interesting about the player.
+
+GROUP TYPE: ${groupType}
+${namesClause}
+CONTEXT FROM THE PLAYERS: "${customContext}"
+
+INSTRUCTIONS:
+- Generate exactly ${count} Truth or Drink questions SPECIFICALLY tailored to this group.
+- Write in SECOND person ("you") so any player can be asked — but you may reference named players by first name when the context calls for it (e.g. "What's the first thing you noticed about Priya?").
+- USE the specifics they gave you — names, places, shared history, inside jokes, situations. Weave them in naturally.
+- Questions should feel personally written for THIS group. Avoid generic questions like "What's your biggest fear?" unless the context twists it.
+- Mix playful teasing, curious probing, and deeper reveals. Every question should be something a sober person might actually hesitate to answer.
+- Each question must end with a "?".
+${toneInstruction}
+
+SAFETY:
+- No questions that are defamatory or sexually explicit about specific named real people.
+- Spicy/adult tones can include suggestive themes but not graphic descriptions.
+- Avoid questions about real trauma, medical conditions, or criminal history.
+
+Return ONLY the questions as a JSON array of strings. No numbering.`;
+
+        const response = await ai.models.generateContent({
+            model: modelFlash,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.ARRAY,
+                    items: { type: Type.STRING }
+                }
+            }
+        });
+
+        if (response.text) {
+            return JSON.parse(response.text) as string[];
+        }
+        return [];
+    } catch (error) {
+        console.error("Custom Truth or Drink Error:", error);
+        return [];
+    }
+};
+
 export const generateCustomMostLikelyTo = async (
     groupType: string,
     customContext: string,

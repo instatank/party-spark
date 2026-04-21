@@ -1,17 +1,45 @@
 import React, { useState, useMemo } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
 import type { LucideIcon } from 'lucide-react';
-import { Wine, Sparkles, Flame, ArrowRight, ChevronRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap } from 'lucide-react';
+import { Wine, Sparkles, Flame, ArrowRight, ChevronRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2 } from 'lucide-react';
 import questionData from '../../data/truth_or_drink.json';
+import { generateCustomTruthOrDrink } from '../../services/geminiService';
 
-type Category = 'classic' | 'spicy' | 'deep' | 'exes' | 'chaos';
+type Category = 'classic' | 'spicy' | 'deep' | 'exes' | 'chaos' | 'custom';
 type GameState =
     | 'CATEGORY_SELECT'
     | 'SETUP'
+    | 'CUSTOM_SETUP'
+    | 'LOADING'
     | 'PASS'
     | 'PROMPT'
     | 'RESULT'
     | 'END';
+
+const GROUP_TYPES = [
+    { id: 'friends', label: '🍻 Friends', description: 'Your crew' },
+    { id: 'couple', label: '💕 Couple', description: 'Just the two of you' },
+    { id: 'family', label: '👨‍👩‍👧‍👦 Family', description: 'Relatives, generations' },
+    { id: 'colleagues', label: '💼 Colleagues', description: 'Work people, off-duty' },
+    { id: 'mixed', label: '🎉 Mixed', description: 'All sorts' },
+];
+
+const TONE_OPTIONS = [
+    { id: 'clean', label: '😇 Keep it Clean', hint: 'PG — safe for all ages' },
+    { id: 'cheeky', label: '😏 Cheeky', hint: 'PG-13 — light teasing, innuendo OK' },
+    { id: 'spicy', label: '🔥 Spicy', hint: 'R-rated — bold, flirty, no filter' },
+];
+
+const WORD_LIMIT = 150;
+
+const PLACEHOLDER_EXAMPLES = [
+    `e.g. "3 college friends reuniting in Lisbon after 5 years. Ana just got engaged, Miguel is between jobs, Sofia has been ghosting everyone since Christmas."`,
+    `e.g. "A couple's 2-year anniversary weekend. She still doesn't know about the surprise trip. He's terrified of her reaction to the in-laws."`,
+    `e.g. "4 work colleagues stuck on a delayed flight. Two of them secretly hate each other. One just got promoted over the rest."`,
+    `e.g. "Siblings who haven't lived together in 8 years. Big brother thinks he's the favorite. Little sister has receipts."`,
+];
+
+const CUSTOM_DECK_SIZE = 15;
 
 type Choice = 'truth' | 'drink';
 
@@ -30,6 +58,19 @@ interface CategoryMeta {
 }
 
 const CATEGORIES: CategoryMeta[] = [
+    {
+        id: 'custom',
+        title: 'Create Your Vibe',
+        tagline: 'AI-tailored questions for YOUR group.',
+        emoji: '✨',
+        gradient: 'from-violet-600 to-fuchsia-500',
+        shadow: 'shadow-violet-900/30',
+        accentText: 'text-fuchsia-400',
+        accentBorderFocus: 'focus:border-fuchsia-500',
+        accentBorderLeft: 'border-l-fuchsia-500',
+        accentBorderBottom: 'border-b-fuchsia-500',
+        Icon: Wand2,
+    },
     {
         id: 'classic',
         title: 'Classic',
@@ -118,13 +159,26 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     const [roundIndex, setRoundIndex] = useState(0);
     const [lastChoice, setLastChoice] = useState<Choice | null>(null);
 
+    // Custom-deck state
+    const [customGroupType, setCustomGroupType] = useState('friends');
+    const [customTone, setCustomTone] = useState<string | null>(null);
+    const [customContext, setCustomContext] = useState('');
+    const [customError, setCustomError] = useState('');
+    const [placeholderIdx] = useState(Math.floor(Math.random() * PLACEHOLDER_EXAMPLES.length));
+    const [customDeck, setCustomDeck] = useState<string[] | null>(null);
+
     const categoryMeta = CATEGORIES.find(c => c.id === category)!;
 
-    // Shuffle the deck when entering SETUP (keyed by category + player count so replays re-roll)
+    // Shuffle the deck on entry. For 'custom', use the AI-generated cards instead of the static pool.
     const deck = useMemo(() => {
-        const pool = questionData[category] || [];
+        if (category === 'custom') {
+            return customDeck ? customDeck.slice(0, TOTAL_ROUNDS) : [];
+        }
+        const pool = (questionData as Record<string, string[]>)[category] || [];
         return shuffle(pool).slice(0, TOTAL_ROUNDS);
-    }, [category, players.length, gameState === 'CATEGORY_SELECT']);
+    }, [category, customDeck, players.length, gameState === 'CATEGORY_SELECT']);
+
+    const wordCount = customContext.trim().split(/\s+/).filter(Boolean).length;
 
     const trimmedPlayers = players.map(p => p.trim()).filter(Boolean);
     const canStart = trimmedPlayers.length >= MIN_PLAYERS;
@@ -161,7 +215,51 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setTurnIndex(0);
         setRoundIndex(0);
         setLastChoice(null);
+
+        // Custom deck: collect context before generating.
+        if (category === 'custom' && !customDeck) {
+            setGameState('CUSTOM_SETUP');
+            return;
+        }
+
         setGameState('PASS');
+    };
+
+    const handleGenerateCustom = async () => {
+        if (customContext.trim().length < 10) {
+            setCustomError('Give us a bit more detail — at least a sentence or two.');
+            return;
+        }
+        if (wordCount > WORD_LIMIT) {
+            setCustomError(`Keep it under ${WORD_LIMIT} words — shorter context = sharper cards.`);
+            return;
+        }
+        setCustomError('');
+        setGameState('LOADING');
+
+        try {
+            const groupLabel = GROUP_TYPES.find(g => g.id === customGroupType)?.label || 'Friends';
+            const toneHint = customTone ? TONE_OPTIONS.find(t => t.id === customTone)?.hint || '' : '';
+            const cards = await generateCustomTruthOrDrink(
+                groupLabel,
+                customContext.trim(),
+                trimmedPlayers,
+                CUSTOM_DECK_SIZE,
+                toneHint
+            );
+
+            if (cards.length === 0) {
+                setCustomError('AI generation failed. Try tweaking your description or try again.');
+                setGameState('CUSTOM_SETUP');
+                return;
+            }
+            setCustomDeck(cards);
+            setGameState('PASS');
+        } catch (e) {
+            console.error('Custom TOD generation failed', e);
+            setCustomError('Something went wrong. Please try again.');
+            setGameState('CUSTOM_SETUP');
+        }
     };
 
     const handleReady = () => setGameState('PROMPT');
@@ -190,6 +288,10 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setTurnIndex(0);
         setRoundIndex(0);
         setLastChoice(null);
+        setCustomDeck(null);
+        setCustomContext('');
+        setCustomTone(null);
+        setCustomError('');
     };
 
     // ========================
@@ -293,6 +395,157 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     >
                         Start Drinking <ArrowRight className="inline ml-2" size={20} />
                     </Button>
+                </div>
+            </div>
+        );
+    }
+
+    // CUSTOM_SETUP — Describe your group for AI generation
+    if (gameState === 'CUSTOM_SETUP') {
+        const canGenerate = customContext.trim().length >= 10 && wordCount <= WORD_LIMIT;
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Create Your Vibe" onBack={() => setGameState('SETUP')} onHome={onExit} />
+                <div className="flex-1 overflow-y-auto pb-8 px-1">
+                    <div className="text-center mb-6">
+                        <div className="inline-flex bg-gradient-to-r from-violet-600/20 to-fuchsia-500/20 border border-violet-500/30 rounded-2xl p-4 mb-3">
+                            <Wand2 size={28} className="text-violet-400" />
+                        </div>
+                        <h2 className="text-lg font-bold text-white mb-1">AI-Tailored Questions</h2>
+                        <p className="text-gray-400 text-sm max-w-sm mx-auto">
+                            Tell us about this group and the AI will write Truth-or-Drink questions that feel personal.
+                        </p>
+                    </div>
+
+                    {/* Step 1: Group Type */}
+                    <div className="mb-5">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">
+                            1. Who's playing?
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                            {GROUP_TYPES.map(g => (
+                                <button
+                                    key={g.id}
+                                    onClick={() => setCustomGroupType(g.id)}
+                                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border
+                                        ${customGroupType === g.id
+                                            ? 'bg-violet-600/30 border-violet-500 text-violet-300 shadow-lg shadow-violet-500/20'
+                                            : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                                        }`}
+                                >
+                                    {g.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Step 2: Tone */}
+                    <div className="mb-5">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">
+                            2. Set the tone <span className="text-gray-600 normal-case tracking-normal font-medium">(optional)</span>
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                            {TONE_OPTIONS.map(t => (
+                                <button
+                                    key={t.id}
+                                    onClick={() => setCustomTone(customTone === t.id ? null : t.id)}
+                                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border
+                                        ${customTone === t.id
+                                            ? 'bg-violet-600/30 border-violet-500 text-violet-300 shadow-lg shadow-violet-500/20'
+                                            : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                                        }`}
+                                >
+                                    {t.label}
+                                </button>
+                            ))}
+                        </div>
+                        {customTone && (
+                            <p className="text-xs text-gray-500 mt-2 pl-1">
+                                {TONE_OPTIONS.find(t => t.id === customTone)?.hint}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Step 3: Context */}
+                    <div className="mb-5">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">
+                            3. Tell us about this group
+                        </label>
+                        <div className="bg-white/5 border border-white/10 rounded-2xl p-1 focus-within:border-violet-500/50 transition-colors">
+                            <textarea
+                                value={customContext}
+                                onChange={(e) => {
+                                    setCustomContext(e.target.value);
+                                    setCustomError('');
+                                }}
+                                placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
+                                rows={5}
+                                className="w-full bg-transparent p-3 text-white placeholder-gray-600 text-sm leading-relaxed resize-none focus:outline-none"
+                            />
+                            <div className="flex justify-between items-center px-3 py-2 border-t border-white/5">
+                                <span className={`text-xs font-bold ${wordCount > WORD_LIMIT ? 'text-red-400' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-400' : 'text-gray-500'}`}>
+                                    {wordCount}/{WORD_LIMIT} words
+                                </span>
+                                {trimmedPlayers.length > 0 && (
+                                    <span className="text-[10px] text-violet-400/80">
+                                        Players: {trimmedPlayers.slice(0, 3).join(', ')}{trimmedPlayers.length > 3 ? '…' : ''}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Pro Tips */}
+                    <div className="bg-violet-900/20 border border-violet-500/20 rounded-xl p-3 mb-5">
+                        <p className="text-[10px] text-violet-300 font-bold uppercase tracking-widest mb-2">💡 Write sharper questions</p>
+                        <ul className="text-xs text-gray-400 space-y-1">
+                            <li>• <strong className="text-gray-300">Name names</strong> — "Aisha hates confrontation" → gold</li>
+                            <li>• <strong className="text-gray-300">Be specific</strong> — "Goa trip where Priya lost her passport"</li>
+                            <li>• <strong className="text-gray-300">Mention dynamics</strong> — exes, rivalries, running jokes</li>
+                        </ul>
+                    </div>
+
+                    {customError && (
+                        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4 text-center">
+                            <p className="text-red-400 text-sm font-medium">{customError}</p>
+                        </div>
+                    )}
+
+                    <button
+                        onClick={handleGenerateCustom}
+                        disabled={!canGenerate}
+                        className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2
+                            ${canGenerate
+                                ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:from-violet-500 hover:to-fuchsia-400 text-white shadow-lg shadow-violet-600/30 active:scale-[0.98]'
+                                : 'bg-white/5 text-gray-500 cursor-not-allowed'
+                            }`}
+                    >
+                        <Sparkles size={20} />
+                        Generate My Deck
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // LOADING — AI generation in flight
+    if (gameState === 'LOADING') {
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Brewing…" onBack={() => setGameState('CUSTOM_SETUP')} onHome={onExit} />
+                <div className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
+                    <div className="relative">
+                        <div className="w-20 h-20 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+                        <Wand2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-violet-400 animate-pulse" size={28} />
+                    </div>
+                    <div className="text-center">
+                        <p className="text-xl font-bold text-white mb-1">
+                            Crafting your custom deck…
+                        </p>
+                        <p className="text-gray-500 text-sm">
+                            Weaving in names, places, and inside jokes.
+                        </p>
+                    </div>
                 </div>
             </div>
         );
