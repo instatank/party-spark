@@ -61,7 +61,6 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
             selectedCards = [...availableLocal].sort(() => 0.5 - Math.random());
         } else {
             // Pool nearly exhausted — reset session tracking for this category and reshuffle from full set
-            console.log("Taboo deck nearly exhausted, reshuffling full pool...");
             // Reshuffle from ALL local cards since the filtered pool is nearly empty
             selectedCards = [...allLocalCards].sort(() => 0.5 - Math.random());
         }

@@ -43,7 +43,6 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                 const bollywood = charadesData.categories.find((c: any) => c.id === 'bollywood_movies')?.items || [];
                 const mixUnique = charadesData.categories.find((c: any) => c.id === 'mix_movies')?.items || [];
                 allLocalWords = Array.from(new Set([...hollywood, ...bollywood, ...mixUnique]));
-                console.log(`Movie Mix loaded: ${allLocalWords.length} unique titles`);
             } else if (category === 'family_mix') {
                 // Combine all family-friendly sub-categories
                 const everyday = charadesData.categories.find((c: any) => c.id === 'everyday_actions')?.items || [];
@@ -51,7 +50,6 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                 const zoo = charadesData.categories.find((c: any) => c.id === 'the_zoo')?.items || [];
                 const familyBase = charadesData.categories.find((c: any) => c.id === 'family_mix')?.items || [];
                 allLocalWords = Array.from(new Set([...familyBase, ...everyday, ...house, ...zoo]));
-                console.log(`Family Mix loaded: ${allLocalWords.length} unique words`);
             } else {
                 // Standard category behavior
                 const categoryData = charadesData.categories.find((c: any) => c.id === category);
@@ -77,7 +75,6 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                 // Not enough local, use what's left + generate
                 selectedWords = [...availableLocal];
                 const needed = INITIAL_BATCH_SIZE - selectedWords.length;
-                console.log(`Local charades exhausted. Generating ${needed} words...`);
                 try {
                     const generated = await generateCharadesWords(category, needed);
                     selectedWords = [...selectedWords, ...generated];
@@ -133,7 +130,6 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
 
         // Check buffer and fetch more if needed
         if (words.length - currentIndex < 5) {
-            console.log("Buffer low, fetching more charades...");
             try {
                 const moreWords = await generateCharadesWords(category, 10);
                 setWords(prev => [...prev, ...moreWords]);
