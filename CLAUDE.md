@@ -104,59 +104,67 @@ Three components — Trivia, Simple Selfie, Agra Quest — used to exist as unro
 
 ## 🤖 AI Services
 
-There are two providers in play. The default for **custom generation** (user-described group content) is Claude; everything else is Gemini. Do not mix SDKs in a single file.
+**All AI calls go through `/api/ai` — a Vercel Serverless Function.** The API keys live server-side only. They are **NEVER** shipped in the client bundle.
 
-### Claude — custom generation (Haiku 4.5)
-
-- **SDK:** `@anthropic-ai/sdk`
-- **Model:** `claude-haiku-4-5` (cheap, fast, great for single-shot JSON)
-- **Why Haiku 4.5:** user-approved tradeoff — these are short JSON list generations, Haiku is the right tier
-- **Structured output:** use `output_config.format` with a `json_schema` — no prompt-engineering the JSON shape
-- **Browser usage:** `dangerouslyAllowBrowser: true` (matches the existing Gemini SDK pattern). **TODO for production:** proxy through a backend so the key isn't in client JS.
-- **Env var:** `VITE_ANTHROPIC_API_KEY` (required for Claude path; fallback to Gemini if unset)
-- **Service file:** `src/services/claudeService.ts`
-- **Functions currently using Claude:**
-  - `generateCustomMostLikelyToClaude` — MLT "Create Your Vibe"
-  - `generateCustomTruthOrDrinkClaude` — TOD "Create Your Vibe"
-
-### Gemini — legacy + image generation
-
-- **SDK:** `@google/genai`
-- **Model:** `gemini-2.0-flash-001` (via `modelFlash`)
-- **Still used for:** image generation (Roast Me), charades/taboo/trivia generation, all non-custom card generation
-- **Env var:** `VITE_API_KEY`
-- **Service file:** `src/services/geminiService.ts`
-- **Known quota issue:** Google's free-tier Gemini limits are low (~15 RPM, ~1500/day). If you see `RESOURCE_EXHAUSTED` 429s, the project has hit its quota. Either wait, enable Gemini billing, or port more features to Claude.
-
-### Claude-first, Gemini-fallback pattern
-
-In `geminiService.ts`, the public functions `generateCustomMostLikelyTo` and `generateCustomTruthOrDrink` orchestrate:
+### Architecture
 
 ```
-if (isClaudeConfigured()) {
-  const viaClaude = await ...Claude(...);
-  if (viaClaude.length > 0) return viaClaude;
-  // else fall through to Gemini
-}
-return ...ViaGemini(...);
+Browser ─── fetch('/api/ai', {type, ...}) ───► Vercel Serverless Function
+                                               (api/ai.ts)
+                                               │
+                                               ├── handlers-custom.ts  (Claude-first, Gemini-fallback)
+                                               ├── handlers-gemini.ts  (Gemini-only)
+                                               ├── handlers-image.ts   (image analysis + edit)
+                                               │
+                                               └── SDK clients hold keys from process.env
+                                                   (GEMINI_API_KEY, ANTHROPIC_API_KEY)
 ```
 
-The Gemini-only implementations are kept as `...ViaGemini` helpers. If Claude is not configured (no key) OR returns empty (error, empty response), we fall through. Component callers see the unchanged public name and never know which provider served them.
+### Key files
 
-### Adding Claude to another game
+| File | Purpose |
+|---|---|
+| `api/ai.ts` | Dispatcher. Reads `body.type`, routes to the right handler. Returns `{ ok, data }` or `{ ok: false, error }`. |
+| `api/_lib/clients.ts` | Lazy SDK singletons (one GoogleGenAI + one Anthropic per cold start). |
+| `api/_lib/handlers-custom.ts` | Custom MLT + custom TOD. Tries Claude first, falls back to Gemini. |
+| `api/_lib/handlers-gemini.ts` | Charades, Taboo, NHIE, WILTY, Mafia, WYR, Imposter, MLT, contextual lies. |
+| `api/_lib/handlers-image.ts` | `generate_roast` (image → roast text), `edit_image` (image → caricature), `roast_or_toast`. |
+| `src/services/aiClient.ts` | Single `callAI<T>(type, params)` helper that POSTs to `/api/ai`. |
+| `src/services/geminiService.ts` | **Despite the filename,** this file no longer calls Google directly. It's thin fetch wrappers around `callAI`. Filenames + exports preserved so no component imports break. |
+| `src/services/claudeService.ts` | Same pattern — fetch wrappers. Kept for backwards-compat with imports. |
 
-Copy the pattern from `generateCustomTruthOrDrink`:
-1. Add `generateCustom{Game}Claude` to `claudeService.ts` with a game-specific system prompt
-2. Rename the existing Gemini implementation to `...ViaGemini`
-3. Wrap it in the if-Claude-else-Gemini orchestrator
+### Models
 
-Candidates for porting (ranked): **Never Have I Ever custom** → Would You Rather custom → (Forecast is complex, defer).
+- **Claude Haiku 4.5** (`claude-haiku-4-5`) — custom generation paths. Cheap, fast, structured output via `output_config.format`.
+- **Gemini 2.0 Flash** (`gemini-2.0-flash-001`) — all other text generation + Roast Me text captions.
+- **Gemini 3 Pro Image Preview** (`gemini-3-pro-image-preview`) — image editing for Roast Me caricatures.
+
+### Claude-first, Gemini-fallback (custom flows)
+
+In `api/_lib/handlers-custom.ts`:
+1. If `ANTHROPIC_API_KEY` is set, call Claude with structured JSON output schema
+2. If Claude returns a non-empty array, return it
+3. Otherwise fall through to Gemini with the same prompt
+4. The client never sees which provider answered
+
+### Adding a new AI-backed feature
+
+1. Add a handler function in `api/_lib/handlers-gemini.ts` (or `handlers-custom.ts` if it needs Claude-first logic)
+2. Register its type in `api/ai.ts`'s `DISPATCH` table
+3. Add a thin wrapper in `src/services/geminiService.ts` that calls `callAI('your_type', {...})`
+4. Call the wrapper from your component
+
+### Gotchas
+
+- **Local dev:** `npm run dev` (Vite) does NOT run `/api/*` functions. Use `vercel dev` instead. Or build + `vercel deploy --prod=false` and test on the preview URL.
+- **Vercel plan limits:** Hobby tier has 10s max duration per serverless function. Image generation via `edit_image` can take 15-30s and may time out on Hobby. If that happens, either upgrade to Pro (60s) or convert that one route to an Edge Function.
+- **Cold starts:** first request after 15+ minutes of idle has ~300-500ms SDK-init overhead. Warm requests are fast.
 
 ## 🚀 Build & Deployment Pipeline
 
 **We use Vercel's GitHub integration.** Each git push to a branch triggers a Vercel preview build. Merges to `main` trigger the production deploy.
 
-- **Local dev:** `npm run dev`
+- **Local dev:** `vercel dev` (runs both Vite AND serverless functions). Or `npm run dev` if you're only touching client UI.
 - **Local build:** `npm run build` (runs `tsc -b && vite build`)
 - **Deployment target:** Vercel, auto-triggered by `git push`
 - **Preview URL format:** `party-spark-git-{branch-slug}-{scope}.vercel.app` (has "Deployment Protection" enabled — you'll see a 401 on manifest.json that can be ignored)
@@ -164,20 +172,22 @@ Candidates for porting (ranked): **Never Have I Ever custom** → Would You Rath
 
 ### Environment variables (CRITICAL — Vercel)
 
-Vite bakes env vars into the JS bundle at build time. Since Vercel is the one building, env vars must be set in **Vercel's dashboard**, not in your local `.env.local`.
+Server-side env vars (no `VITE_` prefix) are read by `api/*.ts` serverless functions. They are **never** bundled into the client JS.
 
 **Location:** Vercel dashboard → project → Settings → Environment Variables
 
 | Variable | Scope | Purpose |
 |---|---|---|
-| `VITE_API_KEY` | Production + Preview + Development | Google Gemini API key |
-| `VITE_ANTHROPIC_API_KEY` | Production + Preview + Development | Anthropic Claude API key |
+| `GEMINI_API_KEY` | Production + Preview + Development | Google Gemini API key (server-side only) |
+| `ANTHROPIC_API_KEY` | Production + Preview + Development | Anthropic Claude API key (server-side only) |
 
-**Tick all three environments**, not just Production — preview branch deploys need them too. After adding or changing a var, **redeploy without build cache** (Deployments → ⋯ → Redeploy → uncheck "Use existing Build Cache"). Env var changes don't apply to existing builds.
+**Tick all three environments**, not just Production — preview branch deploys need them too. After adding or changing a var, **redeploy without build cache** (Deployments → ⋯ → Redeploy → uncheck "Use existing Build Cache").
 
-### Local `.env.local` (for `npm run dev` only)
+**Migration note:** The old `VITE_API_KEY` and `VITE_ANTHROPIC_API_KEY` variables are no longer used and should be deleted from Vercel. Those were client-exposed — the whole point of this refactor was to remove them.
 
-Copy `.env.example` → `.env.local` in the repo root and fill in both keys. `.env.local` is gitignored. This is ONLY used when running `npm run dev` locally — Vercel ignores it completely.
+### Local `.env.local` (for `vercel dev`)
+
+Copy `.env.example` → `.env.local` in the repo root and fill in both keys. `.env.local` is gitignored. Without Vercel CLI (`npm run dev` alone), the `/api/*` endpoints don't run — you'll hit 404s on any AI-backed feature.
 
 ## 🛠️ Known Issues / Technical Debt
 
