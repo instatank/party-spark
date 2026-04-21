@@ -47,6 +47,35 @@ const VERDICTS = [
     { min: 0, emoji: '😬', title: 'Strangers?', subtitle: 'Were you even at the same dinner table?' },
 ];
 
+// Static class map — Tailwind v4 JIT only detects complete literal class strings,
+// so every accent variant must appear as a full static string somewhere in source.
+// Don't switch this back to `text-${color}-400` template literals — it won't compile.
+const ACCENT_CLASSES: Record<GameMode, {
+    text400: string;
+    focusBorder500: string;
+    hoverBorder500: string;
+    groupHoverBg600: string;
+}> = {
+    couples: {
+        text400: 'text-pink-400',
+        focusBorder500: 'focus:border-pink-500',
+        hoverBorder500: 'hover:border-pink-500',
+        groupHoverBg600: 'group-hover:bg-pink-600',
+    },
+    friends: {
+        text400: 'text-violet-400',
+        focusBorder500: 'focus:border-violet-500',
+        hoverBorder500: 'hover:border-violet-500',
+        groupHoverBg600: 'group-hover:bg-violet-600',
+    },
+    bunny: {
+        text400: 'text-rose-400',
+        focusBorder500: 'focus:border-rose-500',
+        hoverBorder500: 'hover:border-rose-500',
+        groupHoverBg600: 'group-hover:bg-rose-600',
+    },
+};
+
 const QUESTIONS_PER_ROUND = 5;
 
 interface RoundResult {
@@ -98,7 +127,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
     const questionText = currentQuestion?.text.replace('{name}', answererName) || '';
 
     const roundTheme = ROUND_THEMES[mode];
-    const accentColor = mode === 'bunny' ? 'rose' : mode === 'couples' ? 'pink' : 'violet';
+    const accent = ACCENT_CLASSES[mode];
 
     // Handlers
     const handleModeSelect = (m: GameMode) => {
@@ -256,7 +285,6 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
 
     // SETUP — Name entry
     if (gameState === 'SETUP') {
-        const modeColor = accentColor;
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
                 <ScreenHeader title="Who's Playing?" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
@@ -270,7 +298,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                                 onChange={e => setPlayerA(e.target.value)}
                                 placeholder="Enter name..."
                                 maxLength={15}
-                                className={`w-full bg-slate-800 border border-slate-700 focus:border-${modeColor}-500 rounded-xl p-4 text-white text-lg font-medium placeholder-gray-600 outline-none transition-colors`}
+                                className={`w-full bg-slate-800 border border-slate-700 ${accent.focusBorder500} rounded-xl p-4 text-white text-lg font-medium placeholder-gray-600 outline-none transition-colors`}
                             />
                         </div>
                         <div>
@@ -281,7 +309,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                                 onChange={e => setPlayerB(e.target.value)}
                                 placeholder="Enter name..."
                                 maxLength={15}
-                                className={`w-full bg-slate-800 border border-slate-700 focus:border-${modeColor}-500 rounded-xl p-4 text-white text-lg font-medium placeholder-gray-600 outline-none transition-colors`}
+                                className={`w-full bg-slate-800 border border-slate-700 ${accent.focusBorder500} rounded-xl p-4 text-white text-lg font-medium placeholder-gray-600 outline-none transition-colors`}
                             />
                         </div>
                     </div>
@@ -336,7 +364,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                     <div>
                         <p className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">Prediction Time</p>
                         <h2 className="text-2xl font-serif font-bold text-white mb-2">
-                            Pass the phone to <span className={`text-${accentColor}-400`}>{predictorName}</span>
+                            Pass the phone to <span className={accent.text400}>{predictorName}</span>
                         </h2>
                         <p className="text-gray-400 text-sm">
                             You'll predict what <span className="text-white font-medium">{answererName}</span> will choose.
@@ -357,7 +385,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                 <ScreenHeader title={`${predictorName}'s Prediction`} onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
                 <div className="px-2 pb-4 flex-1 flex flex-col">
                     <div className="flex items-center gap-2 mb-4">
-                        <Target size={16} className={`text-${accentColor}-400`} />
+                        <Target size={16} className={accent.text400} />
                         <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
                             What will {answererName} choose?
                         </span>
@@ -372,10 +400,10 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                             <button
                                 key={i}
                                 onClick={() => handlePrediction(option)}
-                                className={`w-full text-left bg-slate-800 border border-slate-700 hover:border-${accentColor}-500 rounded-xl p-4 transition-all active:scale-[0.97] group`}
+                                className={`w-full text-left bg-slate-800 border border-slate-700 ${accent.hoverBorder500} rounded-xl p-4 transition-all active:scale-[0.97] group`}
                             >
                                 <div className="flex items-center gap-3">
-                                    <span className={`w-8 h-8 rounded-full bg-slate-700 group-hover:bg-${accentColor}-600 flex items-center justify-center text-sm font-bold text-gray-400 group-hover:text-white transition-colors`}>
+                                    <span className={`w-8 h-8 rounded-full bg-slate-700 ${accent.groupHoverBg600} flex items-center justify-center text-sm font-bold text-gray-400 group-hover:text-white transition-colors`}>
                                         {String.fromCharCode(65 + i)}
                                     </span>
                                     <span className="text-white font-medium">{option}</span>
@@ -400,7 +428,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                     <div>
                         <p className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">Your Turn</p>
                         <h2 className="text-2xl font-serif font-bold text-white mb-2">
-                            Now pass the phone to <span className={`text-${accentColor}-400`}>{answererName}</span>
+                            Now pass the phone to <span className={accent.text400}>{answererName}</span>
                         </h2>
                         <p className="text-gray-400 text-sm">
                             Answer honestly. {predictorName}'s prediction is hidden.
