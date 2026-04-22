@@ -235,3 +235,34 @@ src/
 │   └── SessionManager.ts            # sessionStorage wrapper (used content tracking)
 └── index.css                        # Tailwind v4 @theme (custom props + keyframes only)
 ```
+
+## 🎓 End of Session Learning Recap
+
+When the user types the session recap commands, generate a session recap using this exact structure.
+Keep it brief, plain English, no jargon without explanation.
+The user is a non-technical founder learning by building — prioritize conceptual understanding over syntax.
+
+### Session Recap Commands
+
+#### `wrap and teach`
+Generate a structured session recap. Plain English only — no jargon without a brief explanation. User is a non-technical founder learning by building.
+
+**SESSION WRAP — [date]**
+
+**What we built**
+- [2–4 bullets: what actually shipped today]
+
+**Key concepts encountered**
+- [concept]: [one plain-English sentence — what it is, why it matters]
+- [repeat for 2–4 concepts max — only what was genuinely touched today]
+
+**One thing worth remembering**
+- [Single most transferable insight from this session]
+
+**Friction point** *(only if something broke or took unexpectedly long)*
+- [What it was and why]
+
+---
+
+#### `summarize learnings`
+3–5 bullet points. What was built, what was learned. One line each. No headers, no padding.
