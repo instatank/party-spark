@@ -242,6 +242,8 @@ When the user types the session recap commands, generate a session recap using t
 Keep it brief, plain English, no jargon without explanation.
 The user is a non-technical founder learning by building — prioritize conceptual understanding over syntax.
 
+**Scope — read carefully.** Both commands below cover **only the current working session** (the conversation since the last recap, or since the session started). They are NOT a summary of the whole chat history, the whole branch, or the whole project. If nothing substantive happened this session, say so plainly rather than padding with prior work.
+
 ### Session Recap Commands
 
 #### `wrap and teach`
