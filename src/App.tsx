@@ -106,7 +106,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-party-dark text-white p-4 md:p-6 lg:max-w-md lg:mx-auto shadow-2xl overflow-hidden">
+    <div className="min-h-screen bg-party-dark text-ink p-4 md:p-6 lg:max-w-md lg:mx-auto shadow-2xl overflow-hidden">
       {renderContent()}
       {showPinGate && (
         <PinGateModal
