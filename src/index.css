@@ -21,8 +21,10 @@
   --color-surface: #334155;               /* Card bg — slate-700 */
   --color-surface-alt: #2C3B52;           /* Secondary surface (inputs, tab bar) */
 
-  /* Text */
-  --color-ink: #FFFFFF;                   /* Primary text */
+  /* Text — paired color scheme: dark-mode ink is the light-mode bg (Azure
+     Mist), light-mode ink is the dark-mode bg (Slate-800 navy). Softer than
+     stark white-on-navy / black-on-mist, and thematically consistent. */
+  --color-ink: #F3F6FA;                   /* Primary text (Azure Mist on navy) */
   --color-ink-soft: #E2E8F0;              /* Secondary text — slate-200 */
   --color-muted: #94A3B8;                 /* Meta + placeholder — slate-400 */
   --color-muted-deep: #64748B;            /* Icons low emphasis — slate-500 */
@@ -80,8 +82,8 @@
   --color-surface: #FFFFFF;
   --color-surface-alt: #F8FAFD;
 
-  /* Text */
-  --color-ink: #0F1E33;
+  /* Text — paired: light-mode ink is the dark-mode bg (slate-800 navy) */
+  --color-ink: #1E293B;
   --color-ink-soft: #344660;
   --color-muted: #7A8BA3;
   --color-muted-deep: #AEB8C7;
