@@ -28,11 +28,14 @@ const SplashScreen = () => (
     </div>
 
     <div className="relative z-10 text-center px-6 flex flex-col items-center animate-slide-up">
-      <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-white mb-2 font-serif text-party-secondary flex items-center gap-3">
+      {/* Title — matches HomeMenu's gold Playfair treatment, just scaled up */}
+      <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-party-secondary mb-2 font-serif flex items-center gap-3">
         PartySpark <span className="text-3xl md:text-5xl">✨</span>
       </h1>
-      <p className="text-gray-300 text-lg md:text-xl font-medium tracking-wide max-w-xs mx-auto mb-12">
-        <span className="text-party-secondary font-bold">A</span>lways <span className="text-party-secondary font-bold">I</span>nvited
+      {/* "Always Invited" — same gold A/I + muted rest pattern as HomeMenu */}
+      <p className="text-muted text-lg md:text-xl max-w-xs mx-auto mb-12">
+        <span className="text-party-secondary font-bold">A</span>lways{' '}
+        <span className="text-party-secondary font-bold">I</span>nvited
       </p>
 
       <div className="flex gap-3">

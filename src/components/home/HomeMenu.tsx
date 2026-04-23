@@ -110,7 +110,7 @@ export const HomeMenu: React.FC<Props> = ({ onSelectGame }) => {
 
             {/* Search bar + filter chips */}
             <div className="flex flex-col gap-2.5">
-                <div className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5">
+                <div className="flex items-center gap-2.5 bg-white/5 border border-border rounded-xl px-3.5 py-2.5">
                     <Search size={16} className="text-muted flex-shrink-0" />
                     <input
                         type="text"
