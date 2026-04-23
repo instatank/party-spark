@@ -20,8 +20,11 @@ const SplashScreen = () => (
   <div className="fixed inset-0 z-[100] bg-party-dark flex items-center justify-center overflow-hidden font-sans">
     <div className="absolute inset-0 z-0">
       <div className="absolute inset-0 bg-party-dark" />
+      {/* Splash bg image — renders at ~50% opacity in both themes. The old
+          mix-blend-overlay was tuned for dark bg only and made the image
+          invisible against the Azure Mist light-mode background. */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay"
+        className="absolute inset-0 bg-cover bg-center opacity-50"
         style={{ backgroundImage: 'url("/splash-bg.jpg")' }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-party-dark via-transparent to-party-dark/50" />
