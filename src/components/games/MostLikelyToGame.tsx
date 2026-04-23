@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ScreenHeader } from '../ui/Layout';
 import { generateMostLikelyTo, generateCustomMostLikelyTo } from '../../services/geminiService';
 import { MOST_LIKELY_TO_CATEGORIES } from '../../constants';
-import { Users, ChevronRight, AlertTriangle, Sparkles, Flame, Zap, Wand2, ArrowLeft, Home, ArrowRight } from 'lucide-react';
+import { Users, ChevronRight, AlertTriangle, Sparkles, Flame, Zap, Wand2, ArrowLeft, Home, Hand } from 'lucide-react';
 import MOST_LIKELY_TO_DATA from '../../data/most_likely_to.json';
 import { sessionService } from '../../services/SessionManager';
 import { GameType } from '../../types';
@@ -308,62 +308,41 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
     }
 
     if (gameState === 'CATEGORY') {
-        // V1 Editorial List — design-refresh Phase 3.
-        // Each tile gets a per-category solid + tint hex pair (solid colors the
-        // 3px left accent bar + the icon glyph; tint backs the 44x44 icon chip).
-        // Inline styles are intentional here — the colors are data, not utility
-        // classes, and they need to carry through dark/light themes the same way.
-        const TILES: Record<string, { solid: string; tint: string }> = {
-            custom_vibe:     { solid: '#8B5CE0', tint: 'rgba(139, 92, 224, 0.18)' },
-            family_friendly: { solid: '#35B4C8', tint: 'rgba(53, 180, 200, 0.18)' },
-            fun:             { solid: '#6D72DD', tint: 'rgba(109, 114, 221, 0.18)' },
-            scandalous:      { solid: '#E66AA3', tint: 'rgba(230, 106, 163, 0.18)' },
-            adult:           { solid: '#EF4444', tint: 'rgba(239, 68, 68, 0.18)' },
-            chaos:           { solid: '#A855F7', tint: 'rgba(168, 85, 247, 0.18)' },
-            bbf:             { solid: '#9333EA', tint: 'rgba(147, 51, 234, 0.18)' },
+        // Original "Slim Row" category picker — restored per user feedback.
+        // Reused Tailwind v4 static class maps (JIT can't compile dynamic template
+        // strings, so every accent variant must appear as a complete literal).
+        const ACCENT_BORDER: Record<string, string> = {
+            custom_vibe: 'border-l-violet-500',
+            family_friendly: 'border-l-emerald-500',
+            fun: 'border-l-blue-500',
+            scandalous: 'border-l-pink-500',
+            adult: 'border-l-red-500',
+            chaos: 'border-l-purple-500',
+            bbf: 'border-l-purple-500',
         };
-        const ICON_FOR: Record<string, React.ReactNode> = {
-            custom_vibe:     <Wand2 size={22} />,
-            family_friendly: <Users size={22} />,
-            fun:             <Sparkles size={22} />,
-            scandalous:      <Zap size={22} />,
-            adult:           <Flame size={22} />,
-            chaos:           <AlertTriangle size={22} />,
-            bbf:             <Users size={22} />,
+        const ACCENT_BORDER_BOTTOM: Record<string, string> = {
+            custom_vibe: 'border-b-violet-500',
+            family_friendly: 'border-b-emerald-500',
+            fun: 'border-b-blue-500',
+            scandalous: 'border-b-pink-500',
+            adult: 'border-b-red-500',
+            chaos: 'border-b-purple-500',
+            bbf: 'border-b-purple-500',
+        };
+        const ICON_ACCENT: Record<string, string> = {
+            custom_vibe: 'text-violet-400',
+            family_friendly: 'text-emerald-400',
+            fun: 'text-blue-400',
+            scandalous: 'text-pink-400',
+            adult: 'text-red-400',
+            chaos: 'text-purple-400',
+            bbf: 'text-purple-400',
         };
         const isAdultCat = (id: string) => ADULT_CATEGORY_IDS.includes(id);
-        const isCustomCat = (id: string) => id === 'custom_vibe';
 
         return (
-            <div className="h-full flex flex-col animate-fade-in -mx-4 md:-mx-6 -mt-4 md:-mt-6">
-                {/* V1 top bar — back left, home right (32x32 surface-alt button) */}
-                <div className="flex items-center justify-between px-4 pt-4 pb-2">
-                    <button
-                        onClick={onExit}
-                        aria-label="Back"
-                        className="p-1.5 -ml-1.5 text-ink-soft hover:text-ink transition-colors"
-                    >
-                        <ArrowLeft size={22} strokeWidth={2.2} />
-                    </button>
-                    <button
-                        onClick={onExit}
-                        aria-label="Home"
-                        className="w-8 h-8 rounded-[10px] bg-surface-alt border border-border text-ink-soft hover:text-ink hover:bg-surface transition-colors flex items-center justify-center"
-                    >
-                        <Home size={18} strokeWidth={2} />
-                    </button>
-                </div>
-
-                {/* Title block — Playfair 28, "Pick a category…" sub */}
-                <div className="px-5 pt-1 pb-4">
-                    <h1 className="font-serif font-bold text-[28px] tracking-[-0.015em] text-ink leading-tight">
-                        Most Likely To…
-                    </h1>
-                    <p className="mt-1.5 text-[13px] text-muted leading-[1.5]">
-                        Pick a category to begin. Swap anytime.
-                    </p>
-                </div>
-
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Most Likely To..." onBack={onExit} onHome={onExit} />
                 {showPinGate && (
                     <PinGateModal
                         onSuccess={() => {
@@ -377,54 +356,48 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                         }}
                     />
                 )}
-
-                {/* Category list — surface cards with accent bar + icon chip */}
-                <div className="flex-1 overflow-y-auto px-4 pb-5">
-                    <div className="flex flex-col gap-2.5">
-                        {MOST_LIKELY_TO_CATEGORIES.map((cat: any) => {
-                            const tile = TILES[cat.id] || TILES.fun;
-                            const adult = isAdultCat(cat.id);
-                            const custom = isCustomCat(cat.id);
-                            const icon = custom ? <Wand2 size={22} /> : adult ? <Flame size={22} /> : ICON_FOR[cat.id];
-                            return (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => !cat.disabled && startGame(cat)}
-                                    disabled={cat.disabled}
-                                    className={`relative w-full text-left flex items-center gap-3.5 pl-3 pr-3.5 py-3.5 rounded-[14px] bg-surface border border-border overflow-hidden transition-colors hover:bg-surface-alt active:scale-[0.99] ${cat.disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
-                                    style={custom ? { borderColor: `${tile.solid}99`, borderWidth: 1.5 } : undefined}
-                                >
-                                    {/* 3px vertical accent bar, inset top/bottom */}
-                                    <span
-                                        className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]"
-                                        style={{ background: tile.solid }}
-                                    />
-                                    {/* 44x44 icon chip — tint bg, solid-colored icon */}
-                                    <span
-                                        className="ml-1.5 w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                                        style={{ background: tile.tint, color: tile.solid }}
-                                    >
-                                        {icon}
-                                    </span>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-1.5 mb-0.5">
-                                            <h3 className="text-[15.5px] font-bold tracking-[-0.005em] text-ink truncate">
-                                                {cat.label}
+                <p className="text-gray-400 mb-4 text-sm text-center">
+                    Pick a vibe. Read the card. Everyone points on 3!
+                </p>
+                <div className="flex-1 overflow-y-auto pb-8">
+                    <div className="grid gap-2 max-w-[340px] mx-auto w-full">
+                        {MOST_LIKELY_TO_CATEGORIES.map((cat: any) => (
+                            <button
+                                key={cat.id}
+                                onClick={() => !cat.disabled && startGame(cat)}
+                                disabled={cat.disabled}
+                                className={`group relative w-full text-left transition-all duration-200
+                                    ${cat.disabled ? 'opacity-40 cursor-not-allowed' : 'active:scale-[0.99] cursor-pointer'}
+                                `}
+                            >
+                                <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${ACCENT_BORDER[cat.id] || 'border-l-white/20'} border-b-2 ${ACCENT_BORDER_BOTTOM[cat.id] || 'border-b-white/20'} hover:bg-white/[0.08] hover:border-t-white/20 hover:border-r-white/20 rounded-xl py-3 px-4 transition-colors`}>
+                                    <div className="flex items-center gap-3">
+                                        <span className={`${ICON_ACCENT[cat.id] || 'text-white'} flex-shrink-0`}>
+                                            {cat.id === 'custom_vibe'     && <Wand2 size={16} />}
+                                            {cat.id === 'family_friendly' && <Users size={16} />}
+                                            {cat.id === 'fun'             && <Sparkles size={16} />}
+                                            {cat.id === 'scandalous'      && <Zap size={16} />}
+                                            {cat.id === 'adult'           && <Flame size={16} />}
+                                            {cat.id === 'chaos'           && <AlertTriangle size={16} />}
+                                            {cat.id === 'bbf'             && <Users size={16} />}
+                                        </span>
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="text-base font-bold text-white leading-tight flex items-center gap-2">
+                                                <span className="truncate">{cat.label}</span>
+                                                {isAdultCat(cat.id) && (
+                                                    <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-400 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
+                                                        18+
+                                                    </span>
+                                                )}
+                                                {cat.disabled && <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-neutral-400 font-medium flex-shrink-0">Soon</span>}
                                             </h3>
-                                            {adult && (
-                                                <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-400 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
-                                                    18+
-                                                </span>
-                                            )}
+                                            <p className="text-xs text-gray-400 leading-snug truncate">{cat.description}</p>
                                         </div>
-                                        <p className="text-[12.5px] text-muted leading-[1.35] line-clamp-2">
-                                            {cat.description}
-                                        </p>
+                                        <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
                                     </div>
-                                    <ChevronRight size={18} className="text-muted flex-shrink-0" />
-                                </button>
-                            );
-                        })}
+                                </div>
+                            </button>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -454,7 +427,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
-    // PLAYING State — V1 Portrait Card (design-refresh Phase 3)
+    // PLAYING State — V1 top + card (kept), original bottom (restored per feedback).
     // Solid + tint colors live alongside the card. Custom vibe uses violet,
     // adult uses red, everything else picks from a small palette.
     const PLAY_TILES: Record<string, { solid: string; tint: string }> = {
@@ -471,41 +444,56 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
 
     return (
         <div className="h-full flex flex-col animate-fade-in -mx-4 md:-mx-6 -mt-4 md:-mt-6">
-            {/* V1 top bar — back left, center 2-line label, counter right */}
-            <div className="flex items-center justify-between px-4 pt-4 pb-2.5">
+            {/*
+             * V1 top bar — back left, center 2-line label (BIGGER bolder per
+             * feedback), home button right. Counter moves above progress dots
+             * so the home button can occupy the traditional top-right slot and
+             * the rule "home available at all times" is satisfied on every screen.
+             */}
+            <div className="flex items-center justify-between px-4 pt-4 pb-2">
                 <button
                     onClick={() => setGameState('CATEGORY')}
                     aria-label="Back to categories"
-                    className="p-1.5 -ml-1.5 text-ink-soft hover:text-ink transition-colors"
+                    className="p-1.5 -ml-1.5 text-ink-soft hover:text-ink transition-colors disabled:opacity-50"
                     disabled={countingDown}
                 >
                     <ArrowLeft size={22} strokeWidth={2.2} />
                 </button>
-                <div className="text-center">
-                    <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
+                <div className="text-center flex-1 px-2 min-w-0">
+                    <div className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-ink-soft truncate">
                         Most Likely To
                     </div>
-                    <div className="text-[11.5px] font-semibold mt-0.5" style={{ color: playTile.solid }}>
+                    <div className="text-[13px] font-semibold mt-0.5 truncate" style={{ color: playTile.solid }}>
                         {category?.label}
                     </div>
                 </div>
-                <div className="text-[12px] font-bold text-ink-soft min-w-[44px] text-right">
-                    {currentIndex + 1}<span className="font-medium text-muted">/{total}</span>
+                <button
+                    onClick={onExit}
+                    aria-label="Home"
+                    className="w-8 h-8 rounded-[10px] bg-surface-alt border border-border text-ink-soft hover:text-ink hover:bg-surface transition-colors flex items-center justify-center flex-shrink-0"
+                    disabled={countingDown}
+                >
+                    <Home size={18} strokeWidth={2} />
+                </button>
+            </div>
+
+            {/* Counter + progress dots row */}
+            <div className="px-5 pb-3.5">
+                <div className="text-[11px] text-muted text-center mb-1.5">
+                    Card {currentIndex + 1} of {total}
+                </div>
+                <div className="flex justify-center gap-[5px]">
+                    {Array.from({ length: total }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="h-[3px] flex-1 max-w-[32px] rounded-[2px] transition-colors"
+                            style={{ background: i <= currentIndex ? playTile.solid : 'var(--color-border)' }}
+                        />
+                    ))}
                 </div>
             </div>
 
-            {/* Progress dots — one slim pill per card, filled up to the current */}
-            <div className="flex justify-center gap-[5px] px-5 pt-1 pb-3.5">
-                {Array.from({ length: total }).map((_, i) => (
-                    <div
-                        key={i}
-                        className="h-[3px] flex-1 max-w-[32px] rounded-[2px] transition-colors"
-                        style={{ background: i <= currentIndex ? playTile.solid : 'var(--color-border)' }}
-                    />
-                ))}
-            </div>
-
-            {/* Portrait 3:4 prompt card */}
+            {/* Portrait 3:4 prompt card — kept from V1 */}
             <div className="flex-1 flex items-center justify-center px-4 pb-4 relative">
                 <div
                     className="w-full aspect-[3/4] max-h-[460px] bg-surface border border-border rounded-[22px] p-7 flex flex-col relative overflow-hidden"
@@ -538,14 +526,14 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                     </div>
                 </div>
 
-                {/* Countdown Overlay (preserved game mechanic) */}
+                {/* Countdown Overlay (original game mechanic, preserved) */}
                 {countingDown && (
-                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
                         <div className="text-center">
                             <div className="text-[120px] font-black text-white animate-bounce leading-none">
                                 {count === 0 ? "👉 POINT!" : count}
                             </div>
-                            <p className="text-2xl font-bold mt-4" style={{ color: playTile.solid }}>
+                            <p className="text-2xl font-bold mt-4 text-party-accent">
                                 {count === 0 ? "" : "Get Ready to Point..."}
                             </p>
                         </div>
@@ -553,23 +541,38 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                 )}
             </div>
 
-            {/* Bottom actions — Skip (1) | Reveal & Next (2) */}
-            <div className="flex gap-2.5 px-4 pb-5">
+            {/*
+             * Bottom actions — RESTORED original layout:
+             *   • Big "3-2-1 Vote!" gradient button (primary mechanic)
+             *   • Secondary row with [Skip] (renamed from "Change Topic" per
+             *     user feedback — Skip advances without voting) + [Next Card →]
+             */}
+            <div className="px-4 pb-5 flex flex-col gap-3">
                 <button
-                    onClick={nextCard}
+                    onClick={handleVote}
                     disabled={countingDown}
-                    className="flex-1 px-5 py-3.5 bg-surface-alt text-ink-soft border border-border rounded-[14px] font-semibold text-[14px] hover:bg-surface transition-colors disabled:opacity-50"
+                    className="w-full py-5 rounded-lg font-bold text-xl tracking-wide bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-900/40 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                    Skip
+                    <Hand size={24} />
+                    3-2-1 Vote!
                 </button>
-                <button
-                    onClick={countingDown ? undefined : (count === 0 ? nextCard : handleVote)}
-                    disabled={countingDown}
-                    className="flex-[2] px-5 py-3.5 bg-ink text-bg rounded-[14px] font-bold text-[14px] tracking-[0.02em] flex items-center justify-center gap-2 disabled:opacity-50 transition-opacity"
-                >
-                    {count === 0 && !countingDown ? 'Next Card' : 'Reveal & Vote'}
-                    <ArrowRight size={16} strokeWidth={2.5} />
-                </button>
+                <div className="flex gap-3">
+                    <button
+                        onClick={nextCard}
+                        disabled={countingDown}
+                        className="flex-1 py-3 rounded-lg font-medium text-sm bg-party-surface text-white border border-white/5 hover:bg-slate-600 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Skip
+                    </button>
+                    <button
+                        onClick={nextCard}
+                        disabled={countingDown}
+                        className="flex-1 py-3 rounded-lg font-bold text-sm bg-party-secondary text-slate-900 hover:bg-yellow-400 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                    >
+                        Next Card
+                        <ChevronRight size={18} />
+                    </button>
+                </div>
             </div>
         </div>
     );
