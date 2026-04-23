@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>PartySpark · Shell Variations</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #0a0a0a; font-family: 'Inter', system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: rgba(127,127,127,0.35); border-radius: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+</style>
+
+<!-- React -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Canvas + frame primitives (reused from prior exploration) -->
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+
+<!-- Shared shell data + tokens -->
+<script type="text/babel" src="shared/tokens.jsx"></script>
+<script type="text/babel" src="shared/data.jsx"></script>
+<script type="text/babel" src="shared/icons.jsx"></script>
+<script type="text/babel" src="shared/shell-tokens.jsx"></script>
+
+<!-- Shell direction components -->
+<script type="text/babel" src="shared/shell-01-hero.jsx"></script>
+<script type="text/babel" src="shared/shell-02-searchgrid.jsx"></script>
+<script type="text/babel" src="shared/shell-03-editorial.jsx"></script>
+<script type="text/babel" src="shared/shell-04-discovery.jsx"></script>
+<script type="text/babel" src="shared/shell-05-hybrid.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect } = React;
+
+// Persistable defaults for the Tweaks panel.
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "visibleMode": "both",
+  "deviceFrame": "iphone",
+  "showHybrid": true
+}/*EDITMODE-END*/;
+
+// Wrap a shell component in an iOS device frame (or a minimal bezel-less frame)
+function FramedShell({ children, mode, bare = false }) {
+  const T = SHELL_TOKENS[mode];
+  if (bare) {
+    return (
+      <div style={{
+        width: 390, height: 820, background: T.bg,
+        borderRadius: 32, overflow: 'hidden',
+        border: mode === 'dark' ? '1px solid #222' : '1px solid #DDE4EC',
+        boxShadow: mode === 'dark'
+          ? '0 20px 60px rgba(0,0,0,0.4)'
+          : '0 20px 60px rgba(20,50,90,0.08)',
+      }}>
+        {children}
+      </div>
+    );
+  }
+  return (
+    <IOSDevice width={390} height={820} dark={mode === 'dark'}>
+      <div style={{ paddingTop: 54, height: '100%', background: T.bg }}>
+        <div style={{ height: '100%', overflow: 'hidden' }}>
+          {children}
+        </div>
+      </div>
+    </IOSDevice>
+  );
+}
+
+// ------ Tweaks panel ------
+function TweaksPanel({ open, state, onChange, onClose }) {
+  if (!open) return null;
+  const Group = ({ label, children }) => (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{
+        fontSize: 10.5, fontWeight: 700, letterSpacing: '0.1em',
+        color: '#8A8578', textTransform: 'uppercase', marginBottom: 8,
+      }}>{label}</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>{children}</div>
+    </div>
+  );
+  const Opt = ({ active, onClick, title, desc }) => (
+    <button onClick={onClick} style={{
+      display: 'flex', alignItems: 'center', gap: 10,
+      padding: '9px 11px',
+      background: active ? '#F8F6EF' : '#FFFFFF',
+      border: active ? '1.5px solid #1C1B17' : '1px solid #E6E4DC',
+      borderRadius: 10, cursor: 'pointer', textAlign: 'left',
+      width: '100%', fontFamily: 'inherit',
+    }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#1C1B17' }}>{title}</div>
+        {desc && <div style={{ fontSize: 11, color: '#8A8578', marginTop: 1, lineHeight: 1.3 }}>{desc}</div>}
+      </div>
+      {active && (
+        <div style={{
+          width: 16, height: 16, borderRadius: '50%', background: '#1C1B17',
+          color: '#fff', fontSize: 10, fontWeight: 700,
+          display: 'grid', placeItems: 'center', flexShrink: 0,
+        }}>✓</div>
+      )}
+    </button>
+  );
+  const Toggle = ({ on, onClick, title, desc }) => (
+    <button onClick={onClick} style={{
+      display: 'flex', alignItems: 'center', gap: 10,
+      padding: '10px 11px',
+      background: '#FFFFFF',
+      border: '1px solid #E6E4DC',
+      borderRadius: 10, cursor: 'pointer', textAlign: 'left',
+      width: '100%', fontFamily: 'inherit',
+    }}>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#1C1B17' }}>{title}</div>
+        {desc && <div style={{ fontSize: 11, color: '#8A8578', marginTop: 1, lineHeight: 1.3 }}>{desc}</div>}
+      </div>
+      <div style={{
+        width: 34, height: 20, borderRadius: 999,
+        background: on ? '#1C1B17' : '#D9D4C5',
+        position: 'relative', flexShrink: 0, transition: 'background 0.15s',
+      }}>
+        <div style={{
+          position: 'absolute', top: 2, left: on ? 16 : 2,
+          width: 16, height: 16, borderRadius: '50%', background: '#FFFFFF',
+          transition: 'left 0.15s', boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+        }} />
+      </div>
+    </button>
+  );
+
+  return (
+    <div style={{
+      position: 'fixed', right: 16, bottom: 16, width: 320,
+      maxHeight: 'calc(100vh - 120px)', background: '#FFFFFF',
+      border: '1px solid #E6E4DC', borderRadius: 18,
+      boxShadow: '0 8px 24px rgba(0,0,0,0.08), 0 20px 60px rgba(0,0,0,0.12)',
+      padding: 18, zIndex: 9999,
+      fontFamily: "'Inter', system-ui, sans-serif",
+      overflow: 'auto',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <h3 style={{
+          margin: 0, fontFamily: "'Playfair Display', serif",
+          fontSize: 22, fontWeight: 700, color: '#1C1B17', letterSpacing: '-0.015em',
+        }}>Tweaks</h3>
+        <button onClick={onClose} style={{
+          background: '#F4F2EC', border: 'none', borderRadius: 8,
+          width: 28, height: 28, cursor: 'pointer', color: '#6A6458',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
+        }}>✕</button>
+      </div>
+
+      <Group label="Show modes">
+        <Opt active={state.visibleMode === 'both'}  onClick={() => onChange({ visibleMode: 'both' })}  title="Dark + Light"  desc="Compare side-by-side (default)" />
+        <Opt active={state.visibleMode === 'dark'}  onClick={() => onChange({ visibleMode: 'dark' })}  title="Dark only"     desc="Focus on the current production look" />
+        <Opt active={state.visibleMode === 'light'} onClick={() => onChange({ visibleMode: 'light' })} title="Light only"    desc="Focus on Azure Mist" />
+      </Group>
+
+      <Group label="Device frame">
+        <Opt active={state.deviceFrame === 'iphone'} onClick={() => onChange({ deviceFrame: 'iphone' })} title="iPhone bezel" desc="Full device chrome" />
+        <Opt active={state.deviceFrame === 'bare'}   onClick={() => onChange({ deviceFrame: 'bare' })}   title="Bare artboard" desc="Phone-sized, no bezel — easier to read details" />
+      </Group>
+
+      <Group label="Extra variations">
+        <Toggle on={state.showHybrid} onClick={() => onChange({ showHybrid: !state.showHybrid })}
+                title="Direction 05 — Hybrid"
+                desc="Dir 02 chrome (search + chips) + Dir 03 editorial list rendering" />
+      </Group>
+
+      <div style={{ marginTop: 6, padding: '10px 12px', background: '#F8F6EF', borderRadius: 10, fontSize: 11, color: '#6A6458', lineHeight: 1.4 }}>
+        Changes persist across reloads. Toggle the Tweaks button in the toolbar to hide this panel.
+      </div>
+    </div>
+  );
+}
+
+// ------ Section helper ------
+function DirSection({ id, title, subtitle, Component, state }) {
+  const bare = state.deviceFrame === 'bare';
+  const showDark = state.visibleMode !== 'light';
+  const showLight = state.visibleMode !== 'dark';
+  return (
+    <DCSection id={id} title={title} subtitle={subtitle}>
+      {showDark && (
+        <DCArtboard id={`${id}-dark`} label="Dark" width={390} height={820}>
+          <FramedShell mode="dark" bare={bare}><Component mode="dark" /></FramedShell>
+        </DCArtboard>
+      )}
+      {showLight && (
+        <DCArtboard id={`${id}-light`} label="Azure Mist · Light" width={390} height={820}>
+          <FramedShell mode="light" bare={bare}><Component mode="light" /></FramedShell>
+        </DCArtboard>
+      )}
+    </DCSection>
+  );
+}
+
+function App() {
+  const [state, setState] = useState(TWEAK_DEFAULTS);
+  const [tweaksOpen, setTweaksOpen] = useState(false);
+
+  // Edit-mode protocol — register listener, then announce availability
+  useEffect(() => {
+    const onMessage = (e) => {
+      const msg = e.data;
+      if (!msg || typeof msg !== 'object') return;
+      if (msg.type === '__activate_edit_mode')   setTweaksOpen(true);
+      if (msg.type === '__deactivate_edit_mode') setTweaksOpen(false);
+    };
+    window.addEventListener('message', onMessage);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
+
+  const applyChange = (patch) => {
+    setState((s) => ({ ...s, ...patch }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: patch }, '*');
+  };
+
+  return (
+    <>
+      <DesignCanvas
+        title="PartySpark · Shell & Navigation Explorations"
+        subtitle="4 directions × dark + Azure Mist light + optional hybrid. Toggle modes and frames via Tweaks."
+      >
+        <DirSection
+          id="dir-01"
+          title="Direction 01 · Hero + Bottom Nav"
+          subtitle="Big featured pick, dense list below, 4-slot bottom tab bar. Discovery-leaning, playful."
+          Component={ShellHeroBottomNav}
+          state={state}
+        />
+        <DirSection
+          id="dir-02"
+          title="Direction 02 · Search-First · 2-col Grid"
+          subtitle="Minimal chrome, search + filter chips, bold colored tiles. For users who know what they want."
+          Component={ShellSearchGrid}
+          state={state}
+        />
+        <DirSection
+          id="dir-03"
+          title="Direction 03 · Editorial List · Segmented Control"
+          subtitle="Magazine-style index with rich metadata. Most restrained, most minimal. Reads like a menu."
+          Component={ShellEditorialList}
+          state={state}
+        />
+        <DirSection
+          id="dir-04"
+          title="Direction 04 · Discovery Rails"
+          subtitle="App-Store-style horizontal rows grouped by occasion. Browse by mood, not by name."
+          Component={ShellDiscoveryRails}
+          state={state}
+        />
+        {state.showHybrid && (
+          <DirSection
+            id="dir-05"
+            title="Direction 05 · Hybrid — Search Chrome + Editorial List"
+            subtitle="Dir 02 navigation (wordmark, search, filter chips) applied over Dir 03 rendering (numeric index, color dot, metadata). Try the chips — they filter the list live."
+            Component={ShellHybridSearchList}
+            state={state}
+          />
+        )}
+      </DesignCanvas>
+
+      <TweaksPanel
+        open={tweaksOpen}
+        state={state}
+        onChange={applyChange}
+        onClose={() => setTweaksOpen(false)}
+      />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

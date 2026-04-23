@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>PartySpark · Game Variations</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #0a0a0a; font-family: 'Inter', system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: rgba(127,127,127,0.35); border-radius: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Canvas + frame primitives -->
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+
+<!-- Shared tokens + data -->
+<script type="text/babel" src="shared/icons.jsx"></script>
+<script type="text/babel" src="shared/shell-tokens.jsx"></script>
+<script type="text/babel" src="shared/games-data.jsx"></script>
+
+<!-- Variation components -->
+<script type="text/babel" src="shared/games-v1.jsx"></script>
+<script type="text/babel" src="shared/games-v2.jsx"></script>
+<script type="text/babel" src="shared/games-v3.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "visibleMode": "both",
+  "deviceFrame": "iphone",
+  "playCardIndex": 0
+}/*EDITMODE-END*/;
+
+function FramedScreen({ children, mode, bare = false }) {
+  const T = SHELL_TOKENS[mode];
+  if (bare) {
+    return (
+      <div style={{
+        width: 390, height: 820, background: T.bg,
+        borderRadius: 32, overflow: 'hidden',
+        border: mode === 'dark' ? '1px solid #222' : '1px solid #DDE4EC',
+        boxShadow: mode === 'dark'
+          ? '0 20px 60px rgba(0,0,0,0.4)'
+          : '0 20px 60px rgba(20,50,90,0.08)',
+      }}>{children}</div>
+    );
+  }
+  return (
+    <IOSDevice width={390} height={820} dark={mode === 'dark'}>
+      <div style={{ paddingTop: 54, height: '100%', background: T.bg }}>
+        <div style={{ height: '100%', overflow: 'hidden' }}>{children}</div>
+      </div>
+    </IOSDevice>
+  );
+}
+
+const VARIATIONS = [
+  { id: 'v1', title: 'V1 · Editorial List',     note: 'Stacked horizontal cards with accent bar. Ink-on-paper restraint.',      Cat: V1Category, Play: V1Play },
+  { id: 'v2', title: 'V2 · Tactile Deck',        note: '2-col colored tiles + a physical card-deck play view with offset backs.', Cat: V2Category, Play: V2Play },
+  { id: 'v3', title: 'V3 · Bold Poster',         note: 'Big-type numbered list + full-bleed colored poster prompt.',            Cat: V3Category, Play: V3Play },
+];
+
+const GAMES_LIST = [
+  { key: 'mostLikely', title: 'Most Likely To…',     blurb: 'Point & expose. 3+ players, 15 min. Six categories from PG to 18+.' },
+  { key: 'never',      title: 'Never Have I Ever',   blurb: 'Drink if you have. Six packs from Classic to After Hours.' },
+  { key: 'wyr',        title: 'Would You Rather',    blurb: 'Dilemmas from silly to ethical. Defend your pick.' },
+  { key: 'forecast',   title: 'The Forecast',        blurb: 'Couples-only prompts. Date Night, Moving In, Deep Dive.' },
+];
+
+function GameSection({ game, state }) {
+  const bare = state.deviceFrame === 'bare';
+  const showDark = state.visibleMode !== 'light';
+  const showLight = state.visibleMode !== 'dark';
+  const sampleCat = GAME_CATEGORIES[game.key].find(c => c.tone !== 'custom')?.label || 'Fun';
+
+  const artboards = VARIATIONS.flatMap(V => {
+    const boards = [];
+    if (showDark) {
+      boards.push(
+        <DCArtboard key={`${V.id}-cat-dark`} id={`${game.key}-${V.id}-cat-dark`} label={`${V.title} · Category · Dark`} width={390} height={820}>
+          <FramedScreen mode="dark" bare={bare}><V.Cat mode="dark" gameKey={game.key} /></FramedScreen>
+        </DCArtboard>,
+        <DCArtboard key={`${V.id}-play-dark`} id={`${game.key}-${V.id}-play-dark`} label={`${V.title} · Playing · Dark`} width={390} height={820}>
+          <FramedScreen mode="dark" bare={bare}>
+            <V.Play mode="dark" gameKey={game.key} categoryLabel={sampleCat} cardIndex={state.playCardIndex} />
+          </FramedScreen>
+        </DCArtboard>
+      );
+    }
+    if (showLight) {
+      boards.push(
+        <DCArtboard key={`${V.id}-cat-light`} id={`${game.key}-${V.id}-cat-light`} label={`${V.title} · Category · Light`} width={390} height={820}>
+          <FramedScreen mode="light" bare={bare}><V.Cat mode="light" gameKey={game.key} /></FramedScreen>
+        </DCArtboard>,
+        <DCArtboard key={`${V.id}-play-light`} id={`${game.key}-${V.id}-play-light`} label={`${V.title} · Playing · Light`} width={390} height={820}>
+          <FramedScreen mode="light" bare={bare}>
+            <V.Play mode="light" gameKey={game.key} categoryLabel={sampleCat} cardIndex={state.playCardIndex} />
+          </FramedScreen>
+        </DCArtboard>
+      );
+    }
+    return boards;
+  });
+
+  return (
+    <DCSection id={`game-${game.key}`} title={game.title} subtitle={game.blurb}>
+      {artboards}
+    </DCSection>
+  );
+}
+
+// ---------- Tweaks panel ----------
+function TweaksPanel({ open, state, onChange, onClose }) {
+  if (!open) return null;
+  const Group = ({ label, children }) => (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.1em', color: '#8A8578', textTransform: 'uppercase', marginBottom: 8 }}>{label}</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>{children}</div>
+    </div>
+  );
+  const Opt = ({ active, onClick, title, desc }) => (
+    <button onClick={onClick} style={{
+      display: 'flex', alignItems: 'center', gap: 10, padding: '9px 11px',
+      background: active ? '#F8F6EF' : '#FFFFFF',
+      border: active ? '1.5px solid #1C1B17' : '1px solid #E6E4DC',
+      borderRadius: 10, cursor: 'pointer', textAlign: 'left', width: '100%', fontFamily: 'inherit',
+    }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#1C1B17' }}>{title}</div>
+        {desc && <div style={{ fontSize: 11, color: '#8A8578', marginTop: 1, lineHeight: 1.3 }}>{desc}</div>}
+      </div>
+      {active && <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#1C1B17', color: '#fff', fontSize: 10, fontWeight: 700, display: 'grid', placeItems: 'center', flexShrink: 0 }}>✓</div>}
+    </button>
+  );
+
+  return (
+    <div style={{
+      position: 'fixed', right: 16, bottom: 16, width: 320,
+      maxHeight: 'calc(100vh - 120px)', background: '#FFFFFF',
+      border: '1px solid #E6E4DC', borderRadius: 18,
+      boxShadow: '0 8px 24px rgba(0,0,0,0.08), 0 20px 60px rgba(0,0,0,0.12)',
+      padding: 18, zIndex: 9999, fontFamily: "'Inter', system-ui, sans-serif", overflow: 'auto',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <h3 style={{ margin: 0, fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: '#1C1B17', letterSpacing: '-0.015em' }}>Tweaks</h3>
+        <button onClick={onClose} style={{ background: '#F4F2EC', border: 'none', borderRadius: 8, width: 28, height: 28, cursor: 'pointer', color: '#6A6458', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>✕</button>
+      </div>
+
+      <Group label="Show modes">
+        <Opt active={state.visibleMode === 'both'}  onClick={() => onChange({ visibleMode: 'both' })}  title="Dark + Light"  desc="Compare side-by-side" />
+        <Opt active={state.visibleMode === 'dark'}  onClick={() => onChange({ visibleMode: 'dark' })}  title="Dark only"     desc="Production look" />
+        <Opt active={state.visibleMode === 'light'} onClick={() => onChange({ visibleMode: 'light' })} title="Light only"    desc="Azure Mist" />
+      </Group>
+
+      <Group label="Device frame">
+        <Opt active={state.deviceFrame === 'iphone'} onClick={() => onChange({ deviceFrame: 'iphone' })} title="iPhone bezel" desc="Full device chrome" />
+        <Opt active={state.deviceFrame === 'bare'}   onClick={() => onChange({ deviceFrame: 'bare' })}   title="Bare artboard" desc="Phone-sized, no bezel" />
+      </Group>
+
+      <Group label="Playing-card index">
+        {[0,1,2,3].map(i => (
+          <Opt key={i} active={state.playCardIndex === i} onClick={() => onChange({ playCardIndex: i })}
+               title={`Card ${i + 1}`} desc={`Preview prompt #${i + 1}`} />
+        ))}
+      </Group>
+
+      <div style={{ marginTop: 6, padding: '10px 12px', background: '#F8F6EF', borderRadius: 10, fontSize: 11, color: '#6A6458', lineHeight: 1.4 }}>
+        Changes persist across reloads. Toggle the Tweaks button in the toolbar to hide this panel.
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [state, setState] = useState(TWEAK_DEFAULTS);
+  const [tweaksOpen, setTweaksOpen] = useState(false);
+
+  useEffect(() => {
+    const onMessage = (e) => {
+      const msg = e.data;
+      if (!msg || typeof msg !== 'object') return;
+      if (msg.type === '__activate_edit_mode')   setTweaksOpen(true);
+      if (msg.type === '__deactivate_edit_mode') setTweaksOpen(false);
+    };
+    window.addEventListener('message', onMessage);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
+
+  const applyChange = (patch) => {
+    setState((s) => ({ ...s, ...patch }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: patch }, '*');
+  };
+
+  return (
+    <>
+      <DesignCanvas
+        title="PartySpark · Game Screens — Category & Playing"
+        subtitle="Four games × three visual variations × category picker + play view. Each row = one game. Tweaks control modes, frame, and which card index is shown on play screens."
+      >
+        {/* Variation-style legend row at top */}
+        <DCSection id="legend" title="The three variation styles" subtitle="Each game below uses all three. Pick the style per-game, or apply one globally.">
+          <DCArtboard id="legend-v1" label="V1 · Editorial List" width={300} height={200}>
+            <LegendCard
+              title="V1 — Editorial List"
+              headline="Stacked cards, accent bar, serif title."
+              body="Quietest of the three. Reads like a menu. Good when the catalog grows past six."
+              swatch="#8B5CE0" />
+          </DCArtboard>
+          <DCArtboard id="legend-v2" label="V2 · Tactile Deck" width={300} height={200}>
+            <LegendCard
+              title="V2 — Tactile Deck"
+              headline="Colored tiles + physical deck metaphor."
+              body="Loudest. Cards feel like objects. Pack numbers + offset back cards."
+              swatch="#E84A82" />
+          </DCArtboard>
+          <DCArtboard id="legend-v3" label="V3 · Bold Poster" width={300} height={200}>
+            <LegendCard
+              title="V3 — Bold Poster"
+              headline="Numbered list + full-bleed colored prompt."
+              body="Editorial but louder than V1. Big display serif, white-on-color."
+              swatch="#35B4C8" />
+          </DCArtboard>
+        </DCSection>
+
+        {GAMES_LIST.map(g => (
+          <GameSection key={g.key} game={g} state={state} />
+        ))}
+      </DesignCanvas>
+
+      <TweaksPanel
+        open={tweaksOpen}
+        state={state}
+        onChange={applyChange}
+        onClose={() => setTweaksOpen(false)}
+      />
+    </>
+  );
+}
+
+function LegendCard({ title, headline, body, swatch }) {
+  return (
+    <div style={{
+      width: '100%', height: '100%', background: '#FFFFFF',
+      border: '1px solid #E6E4DC', borderRadius: 14,
+      padding: '18px 18px 16px', display: 'flex', flexDirection: 'column', gap: 8,
+      fontFamily: "'Inter', system-ui, sans-serif",
+    }}>
+      <div style={{ width: 40, height: 6, borderRadius: 3, background: swatch }} />
+      <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.14em', color: '#8A8578', textTransform: 'uppercase' }}>
+        {title}
+      </div>
+      <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, color: '#1C1B17', letterSpacing: '-0.01em', lineHeight: 1.15 }}>
+        {headline}
+      </div>
+      <p style={{ margin: 0, fontSize: 12, color: '#6A6458', lineHeight: 1.45 }}>{body}</p>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
