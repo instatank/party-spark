@@ -10,18 +10,26 @@ interface Props {
 }
 
 // =============================================================================
-// HomeMenu — the restored original tile-grid design with two Phase-2 additions:
-//   • Search bar (filters by title, vibe, tags)
-//   • Filter chips (All / Quick / Couples / Crowd / Spicy)
+// HomeMenu — original tile-grid design with two Phase-2 additions (search bar
+// and filter chips). Restored after Phase 2's editorial-list experiment was
+// reverted per user feedback.
 //
-// The "Play Now / Coming Soon" tab split stays; search + chips narrow the
-// currently-active tab. Tile visual language (colored icon chip + gradient
-// blob + title + min-players pill + description) is unchanged from the
-// production home.
+// Color tokens in use:
+//   text-ink         — primary text (switches with theme)
+//   text-ink-soft    — secondary text / active tabs hover
+//   text-muted       — inactive labels, descriptions, placeholder
+//   text-muted-deep  — footer fine print
+//   bg-party-secondary / text-party-accent — aliased accents
+//
+// Hardcoded color classes are intentional in exactly three places:
+//   1. Game icon tiles (text-white on the game.color bubble) — the bubble is
+//      always a saturated color in both themes, so white icons read either way.
+//   2. bg-white/5, border-white/10 — semi-transparent overlays behave well in
+//      both dark (add highlight) and light (add subtle contrast) modes.
+//   3. bg-party-secondary (gold) on the active filter chip — contrast is
+//      intentionally fixed; gold + slate-900 text reads in every mode.
 // =============================================================================
 
-// Games treated as "coming soon" — surfaced under the second tab.
-// Keep this list curated by the product owner; don't derive from state.
 const COMING_SOON_GAME_IDS: GameType[] = [
     GameType.WOULD_I_LIE_TO_YOU,
     GameType.ICEBREAKERS,
@@ -59,17 +67,17 @@ export const HomeMenu: React.FC<Props> = ({ onSelectGame }) => {
             <button
                 onClick={toggleTheme}
                 aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-                className="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center shadow-sm"
+                className="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-white/5 border border-white/10 text-ink-soft hover:text-ink hover:bg-white/10 transition-colors flex items-center justify-center shadow-sm"
             >
                 {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
-            {/* Header (title + Play Now / Coming Soon tabs) — unchanged from original */}
+            {/* Header (title + Play Now / Coming Soon tabs) */}
             <header className="pt-1 pb-1 text-center">
                 <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-party-secondary mb-1 font-serif flex items-center justify-center gap-2">
                     PartySpark <span className="text-2xl sm:text-3xl">✨</span>
                 </h1>
-                <p className="text-gray-400 text-sm sm:text-base mb-4">
+                <p className="text-muted text-sm sm:text-base mb-4">
                     <span className="text-party-secondary font-bold">A</span>lways{' '}
                     <span className="text-party-secondary font-bold">I</span>nvited
                 </p>
@@ -78,7 +86,7 @@ export const HomeMenu: React.FC<Props> = ({ onSelectGame }) => {
                     <button
                         onClick={() => setActiveTab('active')}
                         className={`col-span-2 text-center pb-3 px-2 text-lg font-medium transition-colors relative ${
-                            activeTab === 'active' ? 'text-white' : 'text-gray-500 hover:text-gray-300'
+                            activeTab === 'active' ? 'text-ink' : 'text-muted hover:text-ink-soft'
                         }`}
                     >
                         Play Now
@@ -89,7 +97,7 @@ export const HomeMenu: React.FC<Props> = ({ onSelectGame }) => {
                     <button
                         onClick={() => setActiveTab('comingSoon')}
                         className={`col-span-1 text-center pb-3 px-2 text-sm sm:text-base font-medium transition-colors relative flex items-center justify-center ${
-                            activeTab === 'comingSoon' ? 'text-white' : 'text-gray-500 hover:text-gray-300'
+                            activeTab === 'comingSoon' ? 'text-ink' : 'text-muted hover:text-ink-soft'
                         }`}
                     >
                         <span className="truncate w-full pr-1">Coming Soon</span>
@@ -100,16 +108,16 @@ export const HomeMenu: React.FC<Props> = ({ onSelectGame }) => {
                 </div>
             </header>
 
-            {/* Search bar + filter chips — NEW in Phase 2 (narrow the active tab) */}
+            {/* Search bar + filter chips */}
             <div className="flex flex-col gap-2.5">
                 <div className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5">
-                    <Search size={16} className="text-gray-400 flex-shrink-0" />
+                    <Search size={16} className="text-muted flex-shrink-0" />
                     <input
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Search games, vibes, or players…"
-                        className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 outline-none min-w-0"
+                        className="flex-1 bg-transparent text-sm text-ink placeholder:text-muted outline-none min-w-0"
                     />
                 </div>
 
@@ -123,7 +131,7 @@ export const HomeMenu: React.FC<Props> = ({ onSelectGame }) => {
                                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                                     active
                                         ? 'bg-party-secondary text-slate-900 border-party-secondary'
-                                        : 'bg-transparent text-gray-400 border-white/15 hover:border-white/30 hover:text-gray-200'
+                                        : 'bg-transparent text-muted border-border hover:border-ink-soft hover:text-ink-soft'
                                 }`}
                             >
                                 {f.label}
@@ -133,10 +141,10 @@ export const HomeMenu: React.FC<Props> = ({ onSelectGame }) => {
                 </div>
             </div>
 
-            {/* Games grid — original Card-based tiles */}
+            {/* Games grid */}
             <div className="grid gap-2.5 pb-6">
                 {filteredGames.length === 0 && (
-                    <div className="text-center text-gray-500 text-sm py-8">
+                    <div className="text-center text-muted text-sm py-8">
                         No games match. Try a different filter or search.
                     </div>
                 )}
@@ -149,17 +157,19 @@ export const HomeMenu: React.FC<Props> = ({ onSelectGame }) => {
                         <div className={`absolute top-0 right-0 w-32 h-32 opacity-20 rounded-full blur-3xl -mr-10 -mt-10 ${game.color}`} />
 
                         <div className="flex items-center gap-3 relative z-10">
+                            {/* Icon bubble: intentionally text-white — rides on a saturated
+                                game-color bg that stays saturated in both themes. */}
                             <div className={`p-3 rounded-2xl ${game.color} shadow-sm text-white`}>
                                 {getIcon(game.icon, 24)}
                             </div>
                             <div className="flex-1 w-full overflow-hidden">
                                 <div className="flex items-center justify-between mb-0.5 mt-0.5">
-                                    <h3 className="text-lg font-bold leading-none">{game.title}</h3>
+                                    <h3 className="text-lg font-bold leading-none text-ink">{game.title}</h3>
                                     <span className="bg-white/5 px-2 py-0.5 rounded text-[10px] font-medium text-party-accent uppercase tracking-wider shrink-0 ml-2">
                                         {game.minPlayers}+ Players
                                     </span>
                                 </div>
-                                <p className="text-[13px] text-gray-400 leading-snug truncate whitespace-nowrap overflow-hidden pr-2">
+                                <p className="text-[13px] text-muted leading-snug truncate whitespace-nowrap overflow-hidden pr-2">
                                     {game.description}
                                 </p>
                             </div>
@@ -168,7 +178,7 @@ export const HomeMenu: React.FC<Props> = ({ onSelectGame }) => {
                 ))}
             </div>
 
-            <footer className="text-center text-xs text-gray-600 mt-auto pb-4">
+            <footer className="text-center text-xs text-muted-deep mt-auto pb-4">
                 Powered by Google Gemini 3 Suite
             </footer>
         </div>
