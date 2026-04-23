@@ -16,6 +16,8 @@ import { MiniMafiaGame } from './components/games/MiniMafiaGame';
 import { FactOrFictionGame } from './components/games/FactOrFictionGame';
 import { CompatibilityTestGame } from './components/games/CompatibilityTestGame';
 import { TruthOrDrinkGame } from './components/games/TruthOrDrinkGame';
+import { useTheme } from './contexts/ThemeContext';
+import { Sun, Moon } from 'lucide-react';
 
 const SplashScreen = () => (
   <div className="fixed inset-0 z-[100] bg-party-dark flex items-center justify-center overflow-hidden font-sans">
@@ -106,6 +108,21 @@ const App = () => {
   );
 };
 
+// Temporary theme toggle for Phase 1 testing. Will move to a proper
+// Profile/Settings area in a later phase.
+const ThemeToggle: React.FC = () => {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    <button
+      onClick={toggleTheme}
+      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+      className="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-surface-alt border border-border text-ink-soft hover:text-ink hover:bg-surface transition-colors flex items-center justify-center shadow-sm"
+    >
+      {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+    </button>
+  );
+};
+
 const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelectGame }) => {
   const [activeTab, setActiveTab] = useState<'active' | 'comingSoon'>('active');
 
@@ -136,7 +153,8 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
   const displayGames = activeTab === 'active' ? activeGames : comingSoonGames;
 
   return (
-    <div className="flex flex-col gap-4 animate-slide-up min-h-[80vh]">
+    <div className="flex flex-col gap-4 animate-slide-up min-h-[80vh] relative">
+      <ThemeToggle />
       <header className="pt-1 pb-1 text-center">
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-party-secondary mb-1 font-serif flex items-center justify-center gap-2">
           PartySpark <span className="text-2xl sm:text-3xl">✨</span>

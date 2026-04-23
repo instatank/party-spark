@@ -1,30 +1,60 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap');
-@theme {
-  /* Slate & Colorful Palette (Reference Match) */
-  --color-party-dark: #1e293b;
-  /* Slate 800 - Deep Navy Base */
-  --color-party-primary: #FFFFFF;
-  /* White Primary Text */
-  --color-party-secondary: #EFC050;
-  /* Gold Accent */
-  --color-party-accent: #65B7F0;
-  /* Sky Blue Accent */
-  --color-party-surface: #334155;
-  /* Slate 700 - Card Surface */
 
+@theme {
+  /* =========================================================================
+   * Design-refresh tokens (2026-04-23 handoff)
+   *
+   * Dark mode values live here as defaults. Light-mode ("Azure Mist") overrides
+   * the same variable names in a :root[data-theme="light"] block below.
+   * Tailwind v4 exposes each --color-* as a matching utility class, so
+   * bg-bg / text-ink / border-border-soft all work out of the box.
+   *
+   * Legacy --color-party-* aliases at the bottom are kept to avoid breaking
+   * any component that still uses bg-party-dark, text-party-secondary, etc.
+   * ===================================================================== */
+
+  /* Surfaces */
+  --color-bg: #1E293B;                    /* App background — slate-800 */
+  --color-bg-elev: #263449;               /* Elevated (scrolled header) */
+  --color-bg-inset: #1a2332;              /* Inset / search bg */
+  --color-surface: #334155;               /* Card bg — slate-700 */
+  --color-surface-alt: #2C3B52;           /* Secondary surface (inputs, tab bar) */
+
+  /* Text */
+  --color-ink: #FFFFFF;                   /* Primary text */
+  --color-ink-soft: #E2E8F0;              /* Secondary text — slate-200 */
+  --color-muted: #94A3B8;                 /* Meta + placeholder — slate-400 */
+  --color-muted-deep: #64748B;            /* Icons low emphasis — slate-500 */
+
+  /* Borders */
+  --color-border: #3E4C64;                /* Card/row borders */
+  --color-border-soft: #2C3B52;           /* Divider lines */
+
+  /* Accents */
+  --color-accent: #EFC050;                /* Gold */
+  --color-accent-soft: rgba(239,192,80,0.15);
+  --color-sparkle: #EFC050;
+
+  /* Per-game tile colors (dark) */
+  --color-tile-mlt: #8B5CE0;              /* Most Likely To — purple */
+  --color-tile-nhie: #35B4C8;             /* Never Have I Ever — cyan */
+  --color-tile-wyr: #6D72DD;              /* Would You Rather — indigo */
+  --color-tile-forecast: #E66AA3;         /* The Forecast — pink */
+
+  /* Legacy aliases — kept so existing components don't break during migration */
+  --color-party-dark: #1E293B;
+  --color-party-primary: #FFFFFF;
+  --color-party-secondary: #EFC050;
+  --color-party-accent: #65B7F0;
+  --color-party-surface: #334155;
+
+  /* Animations */
   --animate-slide-up: slideUp 0.3s ease-out forwards;
 
   @keyframes slideUp {
-    0% {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-
-    100% {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
   }
 
   @keyframes shake {
@@ -36,18 +66,61 @@
   }
 }
 
+/* =========================================================================
+ * Light mode — Azure Mist
+ * Activates when ThemeProvider sets data-theme="light" on <html>.
+ * Overrides the token values; Tailwind utility classes pick up the change
+ * automatically via var() indirection.
+ * ===================================================================== */
+:root[data-theme="light"] {
+  /* Surfaces */
+  --color-bg: #F3F6FA;
+  --color-bg-elev: #FFFFFF;
+  --color-bg-inset: #E9EDF3;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F8FAFD;
+
+  /* Text */
+  --color-ink: #0F1E33;
+  --color-ink-soft: #344660;
+  --color-muted: #7A8BA3;
+  --color-muted-deep: #AEB8C7;
+
+  /* Borders */
+  --color-border: #DDE4EC;
+  --color-border-soft: #EAEEF4;
+
+  /* Accents */
+  --color-accent: #2C7CD4;
+  --color-accent-soft: #D7E6F6;
+  --color-sparkle: #C99A26;
+
+  /* Per-game tile colors (light) */
+  --color-tile-mlt: #9266D2;
+  --color-tile-nhie: #4CBDCE;
+  --color-tile-wyr: #7781DB;
+  --color-tile-forecast: #E56AA0;
+
+  /* Legacy aliases remapped to light palette */
+  --color-party-dark: #F3F6FA;
+  --color-party-primary: #0F1E33;
+  --color-party-secondary: #C99A26;
+  --color-party-accent: #2C7CD4;
+  --color-party-surface: #FFFFFF;
+}
+
 .animate-shake {
   animation: shake 0.5s ease-in-out;
 }
 
 body {
-  background-color: var(--color-party-dark);
-  color: white;
+  background-color: var(--color-bg);
+  color: var(--color-ink);
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
-/* Specific class for the main Logo/Title */
 .font-serif {
   font-family: 'Playfair Display', serif;
 }
