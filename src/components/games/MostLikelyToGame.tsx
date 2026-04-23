@@ -308,41 +308,62 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
     }
 
     if (gameState === 'CATEGORY') {
-        // Original "Slim Row" category picker — restored per user feedback.
-        // Reused Tailwind v4 static class maps (JIT can't compile dynamic template
-        // strings, so every accent variant must appear as a complete literal).
-        const ACCENT_BORDER: Record<string, string> = {
-            custom_vibe: 'border-l-violet-500',
-            family_friendly: 'border-l-emerald-500',
-            fun: 'border-l-blue-500',
-            scandalous: 'border-l-pink-500',
-            adult: 'border-l-red-500',
-            chaos: 'border-l-purple-500',
-            bbf: 'border-l-purple-500',
+        // V1 Editorial List — restored per user request. Each tile carries a
+        // per-category solid + tint hex pair: solid colors the 3px left accent
+        // bar + the icon glyph; tint backs the 44x44 icon chip.
+        // Inline styles are intentional — these are data (hex values), not
+        // utility classes, and they carry through dark/light the same way.
+        const TILES: Record<string, { solid: string; tint: string }> = {
+            custom_vibe:     { solid: '#8B5CE0', tint: 'rgba(139, 92, 224, 0.18)' },
+            family_friendly: { solid: '#35B4C8', tint: 'rgba(53, 180, 200, 0.18)' },
+            fun:             { solid: '#6D72DD', tint: 'rgba(109, 114, 221, 0.18)' },
+            scandalous:      { solid: '#E66AA3', tint: 'rgba(230, 106, 163, 0.18)' },
+            adult:           { solid: '#EF4444', tint: 'rgba(239, 68, 68, 0.18)' },
+            chaos:           { solid: '#A855F7', tint: 'rgba(168, 85, 247, 0.18)' },
+            bbf:             { solid: '#9333EA', tint: 'rgba(147, 51, 234, 0.18)' },
         };
-        const ACCENT_BORDER_BOTTOM: Record<string, string> = {
-            custom_vibe: 'border-b-violet-500',
-            family_friendly: 'border-b-emerald-500',
-            fun: 'border-b-blue-500',
-            scandalous: 'border-b-pink-500',
-            adult: 'border-b-red-500',
-            chaos: 'border-b-purple-500',
-            bbf: 'border-b-purple-500',
-        };
-        const ICON_ACCENT: Record<string, string> = {
-            custom_vibe: 'text-violet-400',
-            family_friendly: 'text-emerald-400',
-            fun: 'text-blue-400',
-            scandalous: 'text-pink-400',
-            adult: 'text-red-400',
-            chaos: 'text-purple-400',
-            bbf: 'text-purple-400',
+        const ICON_FOR: Record<string, React.ReactNode> = {
+            custom_vibe:     <Wand2 size={22} />,
+            family_friendly: <Users size={22} />,
+            fun:             <Sparkles size={22} />,
+            scandalous:      <Zap size={22} />,
+            adult:           <Flame size={22} />,
+            chaos:           <AlertTriangle size={22} />,
+            bbf:             <Users size={22} />,
         };
         const isAdultCat = (id: string) => ADULT_CATEGORY_IDS.includes(id);
+        const isCustomCat = (id: string) => id === 'custom_vibe';
 
         return (
-            <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="Most Likely To..." onBack={onExit} onHome={onExit} />
+            <div className="h-full flex flex-col animate-fade-in -mx-4 md:-mx-6 -mt-4 md:-mt-6">
+                {/* V1 top bar — back chevron left, 32x32 home button right */}
+                <div className="flex items-center justify-between px-4 pt-4 pb-2">
+                    <button
+                        onClick={onExit}
+                        aria-label="Back"
+                        className="p-1.5 -ml-1.5 text-ink-soft hover:text-ink transition-colors"
+                    >
+                        <ArrowLeft size={22} strokeWidth={2.2} />
+                    </button>
+                    <button
+                        onClick={onExit}
+                        aria-label="Home"
+                        className="w-8 h-8 rounded-[10px] bg-surface-alt border border-border text-ink-soft hover:text-ink hover:bg-surface transition-colors flex items-center justify-center"
+                    >
+                        <Home size={18} strokeWidth={2} />
+                    </button>
+                </div>
+
+                {/* Title block — Playfair 28px title + subtitle */}
+                <div className="px-5 pt-1 pb-4">
+                    <h1 className="font-serif font-bold text-[28px] tracking-[-0.015em] text-ink leading-tight">
+                        Most Likely To…
+                    </h1>
+                    <p className="mt-1.5 text-[13px] text-muted leading-[1.5]">
+                        Pick a category to begin. Swap anytime.
+                    </p>
+                </div>
+
                 {showPinGate && (
                     <PinGateModal
                         onSuccess={() => {
@@ -356,48 +377,59 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                         }}
                     />
                 )}
-                <p className="text-gray-400 mb-4 text-sm text-center">
-                    Pick a vibe. Read the card. Everyone points on 3!
-                </p>
-                <div className="flex-1 overflow-y-auto pb-8">
-                    <div className="grid gap-2 max-w-[340px] mx-auto w-full">
-                        {MOST_LIKELY_TO_CATEGORIES.map((cat: any) => (
-                            <button
-                                key={cat.id}
-                                onClick={() => !cat.disabled && startGame(cat)}
-                                disabled={cat.disabled}
-                                className={`group relative w-full text-left transition-all duration-200
-                                    ${cat.disabled ? 'opacity-40 cursor-not-allowed' : 'active:scale-[0.99] cursor-pointer'}
-                                `}
-                            >
-                                <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${ACCENT_BORDER[cat.id] || 'border-l-white/20'} border-b-2 ${ACCENT_BORDER_BOTTOM[cat.id] || 'border-b-white/20'} hover:bg-white/[0.08] hover:border-t-white/20 hover:border-r-white/20 rounded-xl py-3 px-4 transition-colors`}>
-                                    <div className="flex items-center gap-3">
-                                        <span className={`${ICON_ACCENT[cat.id] || 'text-white'} flex-shrink-0`}>
-                                            {cat.id === 'custom_vibe'     && <Wand2 size={16} />}
-                                            {cat.id === 'family_friendly' && <Users size={16} />}
-                                            {cat.id === 'fun'             && <Sparkles size={16} />}
-                                            {cat.id === 'scandalous'      && <Zap size={16} />}
-                                            {cat.id === 'adult'           && <Flame size={16} />}
-                                            {cat.id === 'chaos'           && <AlertTriangle size={16} />}
-                                            {cat.id === 'bbf'             && <Users size={16} />}
-                                        </span>
-                                        <div className="flex-1 min-w-0">
-                                            <h3 className="text-base font-bold text-white leading-tight flex items-center gap-2">
-                                                <span className="truncate">{cat.label}</span>
-                                                {isAdultCat(cat.id) && (
-                                                    <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-400 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
-                                                        18+
-                                                    </span>
-                                                )}
-                                                {cat.disabled && <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-neutral-400 font-medium flex-shrink-0">Soon</span>}
+
+                {/* Category list — surface cards with 3px accent bar + 44x44 icon chip */}
+                <div className="flex-1 overflow-y-auto px-4 pb-5">
+                    <div className="flex flex-col gap-2.5">
+                        {MOST_LIKELY_TO_CATEGORIES.map((cat: any) => {
+                            const tile = TILES[cat.id] || TILES.fun;
+                            const adult = isAdultCat(cat.id);
+                            const custom = isCustomCat(cat.id);
+                            const icon = custom ? <Wand2 size={22} /> : adult ? <Flame size={22} /> : ICON_FOR[cat.id];
+                            return (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => !cat.disabled && startGame(cat)}
+                                    disabled={cat.disabled}
+                                    className={`relative w-full text-left flex items-center gap-3.5 pl-3 pr-3.5 py-3.5 rounded-[14px] bg-surface border border-border overflow-hidden transition-colors hover:bg-surface-alt active:scale-[0.99] ${cat.disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
+                                    style={custom ? { borderColor: `${tile.solid}99`, borderWidth: 1.5 } : undefined}
+                                >
+                                    {/* 3px vertical accent bar, inset top/bottom */}
+                                    <span
+                                        className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]"
+                                        style={{ background: tile.solid }}
+                                    />
+                                    {/* 44x44 icon chip — tint bg, solid-colored icon */}
+                                    <span
+                                        className="ml-1.5 w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                                        style={{ background: tile.tint, color: tile.solid }}
+                                    >
+                                        {icon}
+                                    </span>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-1.5 mb-0.5">
+                                            <h3 className="text-[15.5px] font-bold tracking-[-0.005em] text-ink truncate">
+                                                {cat.label}
                                             </h3>
-                                            <p className="text-xs text-gray-400 leading-snug truncate">{cat.description}</p>
+                                            {adult && (
+                                                <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-400 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
+                                                    18+
+                                                </span>
+                                            )}
+                                            {cat.disabled && (
+                                                <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-muted font-medium flex-shrink-0">
+                                                    Soon
+                                                </span>
+                                            )}
                                         </div>
-                                        <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
+                                        <p className="text-[12.5px] text-muted leading-[1.35] line-clamp-2">
+                                            {cat.description}
+                                        </p>
                                     </div>
-                                </div>
-                            </button>
-                        ))}
+                                    <ChevronRight size={18} className="text-muted flex-shrink-0" />
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
