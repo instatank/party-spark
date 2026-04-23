@@ -113,6 +113,15 @@
   animation: shake 0.5s ease-in-out;
 }
 
+/* Hide horizontal scrollbar on filter-chip rows that scroll on overflow */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   background-color: var(--color-bg);
   color: var(--color-ink);

@@ -109,6 +109,60 @@ export const GAMES: GameMeta[] = [
     },
 ];
 
+// =============================================================================
+// Rich metadata per game (design-refresh 2026-04-23)
+// Used by the new editorial-list home shell for the vibe / duration / players
+// tags under each game title. tileColor maps to the CSS var for the colored
+// dot and any per-game accent surfaces on the game flow screens.
+// =============================================================================
+
+export interface GameRichMeta {
+    vibe: string;                        // one-word mood descriptor
+    duration: string;                    // "5 min" / "15 min"
+    players: string;                     // "2+" / "3–8" / "Solo"
+    tileColor: string;                   // hex, used for the 8px colored dot
+    tileColorLight?: string;             // optional light-mode override
+    tags: string[];                      // filter/search keywords
+}
+
+export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
+    [GameType.HOME]:                { vibe: '',          duration: '',      players: '',     tileColor: '#94A3B8', tags: [] },
+    [GameType.ROAST]:               { vibe: 'Wild',      duration: '2 min',  players: 'Solo',  tileColor: '#F0656D', tags: ['ai', 'quick', 'solo'] },
+    [GameType.IMPOSTER]:            { vibe: 'Strategy',  duration: '10 min', players: '3–8',   tileColor: '#DC2626', tags: ['social', 'deduction', 'crowd', 'spicy'] },
+    [GameType.TABOO]:               { vibe: 'Classic',   duration: '5 min',  players: '4+',    tileColor: '#F0656D', tags: ['teams', 'fast', 'crowd'] },
+    [GameType.FACT_OR_FICTION]:     { vibe: 'Trivia',    duration: '5 min',  players: '2+',    tileColor: '#F43F5E', tags: ['quick', 'learn'] },
+    [GameType.MOST_LIKELY_TO]:      { vibe: 'Gossip',    duration: '15 min', players: '3+',    tileColor: '#8B5CE0', tileColorLight: '#9266D2', tags: ['point', 'expose', 'crowd', 'spicy'] },
+    [GameType.CHARADES]:            { vibe: 'Classic',   duration: '10 min', players: '4+',    tileColor: '#EFC050', tags: ['teams', 'active', 'crowd'] },
+    [GameType.MINI_MAFIA]:          { vibe: 'Strategy',  duration: '20 min', players: '5+',    tileColor: '#334155', tags: ['betrayal', 'long', 'crowd', 'spicy'] },
+    [GameType.NEVER_HAVE_I_EVER]:   { vibe: 'Confess',   duration: '10 min', players: '3+',    tileColor: '#35B4C8', tileColorLight: '#4CBDCE', tags: ['classic', 'reveal', 'crowd'] },
+    [GameType.WOULD_YOU_RATHER]:    { vibe: 'Debate',    duration: '10 min', players: '1+',    tileColor: '#6D72DD', tileColorLight: '#7781DB', tags: ['quick', 'any'] },
+    [GameType.ICEBREAKERS]:         { vibe: 'Warm-up',   duration: '5 min',  players: '2+',    tileColor: '#65F096', tags: ['quick', 'meet', 'gentle'] },
+    [GameType.WOULD_I_LIE_TO_YOU]:  { vibe: 'Bluff',     duration: '10 min', players: '3+',    tileColor: '#14B8A6', tags: ['story', 'read', 'crowd'] },
+    [GameType.TRUTH_OR_DRINK]:      { vibe: 'Deep',      duration: '15 min', players: '2+',    tileColor: '#EF4444', tags: ['adult', 'honest', 'spicy', 'couples'] },
+    [GameType.COMPATIBILITY_TEST]:  { vibe: 'Connect',   duration: '15 min', players: '2',     tileColor: '#E66AA3', tileColorLight: '#E56AA0', tags: ['couple', 'know', 'couples'] },
+};
+
+// Filter chip definitions for the editorial-list home shell.
+export const HOME_FILTERS = [
+    { id: 'all',     label: 'All' },
+    { id: 'quick',   label: 'Quick' },
+    { id: 'couples', label: 'Couples' },
+    { id: 'crowd',   label: 'Crowd' },
+    { id: 'spicy',   label: 'Spicy' },
+] as const;
+
+export type HomeFilter = typeof HOME_FILTERS[number]['id'];
+
+// Predicate — decides whether a game matches the currently-selected chip.
+// Uses tags + player counts; "quick" is the duration-based one.
+export const gameMatchesFilter = (gameId: GameType, filter: HomeFilter): boolean => {
+    if (filter === 'all') return true;
+    const meta = GAME_RICH_META[gameId];
+    if (!meta) return false;
+    if (filter === 'quick') return meta.duration === '2 min' || meta.duration === '5 min';
+    return meta.tags.includes(filter);
+};
+
 export const getIcon = (name: string, size: number = 24) => {
     switch (name) {
         case 'drama': return <Sparkles size={size} />;

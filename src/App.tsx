@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { GameType } from './types';
-import { GAMES, getIcon } from './constants';
-import { Card } from './components/ui/Layout';
 import { PinGateModal, isAdultUnlocked } from './components/ui/PinGate';
 import { CharadesGame } from './components/games/CharadesGame';
 import { TabooGame } from './components/games/TabooGame';
@@ -16,8 +14,7 @@ import { MiniMafiaGame } from './components/games/MiniMafiaGame';
 import { FactOrFictionGame } from './components/games/FactOrFictionGame';
 import { CompatibilityTestGame } from './components/games/CompatibilityTestGame';
 import { TruthOrDrinkGame } from './components/games/TruthOrDrinkGame';
-import { useTheme } from './contexts/ThemeContext';
-import { Sun, Moon } from 'lucide-react';
+import { HomeShell } from './components/home/HomeShell';
 
 const SplashScreen = () => (
   <div className="fixed inset-0 z-[100] bg-party-dark flex items-center justify-center overflow-hidden font-sans">
@@ -50,6 +47,44 @@ const SplashScreen = () => (
   </div>
 );
 
+// Adult-gated games — require PIN before entering
+const ADULT_GAME_IDS = [GameType.COMPATIBILITY_TEST, GameType.TRUTH_OR_DRINK];
+
+// HomeShellContainer wraps the new editorial-list home with the adult PIN gate.
+// Kept small and colocated with App.tsx so the routing logic stays in one place.
+const HomeShellContainer: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelectGame }) => {
+  const [showPinGate, setShowPinGate] = useState(false);
+  const [pendingGameId, setPendingGameId] = useState<GameType | null>(null);
+
+  const handleSelectGame = (gameId: GameType) => {
+    if (ADULT_GAME_IDS.includes(gameId) && !isAdultUnlocked()) {
+      setPendingGameId(gameId);
+      setShowPinGate(true);
+      return;
+    }
+    onSelectGame(gameId);
+  };
+
+  return (
+    <>
+      <HomeShell onSelectGame={handleSelectGame} />
+      {showPinGate && (
+        <PinGateModal
+          onSuccess={() => {
+            setShowPinGate(false);
+            if (pendingGameId) onSelectGame(pendingGameId);
+            setPendingGameId(null);
+          }}
+          onCancel={() => {
+            setShowPinGate(false);
+            setPendingGameId(null);
+          }}
+        />
+      )}
+    </>
+  );
+};
+
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [activeGame, setActiveGame] = useState<GameType>(GameType.HOME);
@@ -63,8 +98,22 @@ const App = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Simple Router Switch
-  const renderContent = () => {
+  if (showSplash) {
+    return <SplashScreen />;
+  }
+
+  // HomeShell manages its own full-width layout (edge-to-edge masthead,
+  // bottom tab bar). Games render inside a constrained, padded container.
+  if (activeGame === GameType.HOME) {
+    return (
+      <div className="lg:max-w-md lg:mx-auto shadow-2xl overflow-hidden">
+        <HomeShellContainer onSelectGame={setActiveGame} />
+      </div>
+    );
+  }
+
+  // Per-game router. Games keep the existing padded container.
+  const renderGame = () => {
     switch (activeGame) {
       case GameType.ROAST:
         return <RoastGame onExit={() => setActiveGame(GameType.HOME)} />;
@@ -93,155 +142,13 @@ const App = () => {
       case GameType.TRUTH_OR_DRINK:
         return <TruthOrDrinkGame onExit={() => setActiveGame(GameType.HOME)} />;
       default:
-        return <HomeMenu onSelectGame={setActiveGame} />;
+        return null;
     }
   };
-
-  if (showSplash) {
-    return <SplashScreen />;
-  }
 
   return (
     <div className="min-h-screen bg-party-dark text-white p-4 md:p-6 lg:max-w-md lg:mx-auto shadow-2xl overflow-hidden">
-      {renderContent()}
-    </div>
-  );
-};
-
-// Temporary theme toggle for Phase 1 testing. Will move to a proper
-// Profile/Settings area in a later phase.
-const ThemeToggle: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
-  return (
-    <button
-      onClick={toggleTheme}
-      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-      className="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-surface-alt border border-border text-ink-soft hover:text-ink hover:bg-surface transition-colors flex items-center justify-center shadow-sm"
-    >
-      {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-    </button>
-  );
-};
-
-const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelectGame }) => {
-  const [activeTab, setActiveTab] = useState<'active' | 'comingSoon'>('active');
-
-  const comingSoonGameIds = [
-    GameType.WOULD_I_LIE_TO_YOU,
-    GameType.ICEBREAKERS,
-    GameType.WOULD_YOU_RATHER,
-    GameType.NEVER_HAVE_I_EVER,
-  ];
-
-  const activeGames = GAMES.filter(g => !comingSoonGameIds.includes(g.id));
-  const comingSoonGames = GAMES.filter(g => comingSoonGameIds.includes(g.id));
-
-  // Adult-gated games — require PIN before entering
-  const ADULT_GAME_IDS = [GameType.COMPATIBILITY_TEST, GameType.TRUTH_OR_DRINK];
-  const [showPinGate, setShowPinGate] = useState(false);
-  const [pendingGameId, setPendingGameId] = useState<GameType | null>(null);
-
-  const handleSelectGame = (gameId: GameType) => {
-    if (ADULT_GAME_IDS.includes(gameId) && !isAdultUnlocked()) {
-      setPendingGameId(gameId);
-      setShowPinGate(true);
-      return;
-    }
-    onSelectGame(gameId);
-  };
-
-  const displayGames = activeTab === 'active' ? activeGames : comingSoonGames;
-
-  return (
-    <div className="flex flex-col gap-4 animate-slide-up min-h-[80vh] relative">
-      <ThemeToggle />
-      <header className="pt-1 pb-1 text-center">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-party-secondary mb-1 font-serif flex items-center justify-center gap-2">
-          PartySpark <span className="text-2xl sm:text-3xl">✨</span>
-        </h1>
-        <p className="text-gray-400 text-sm sm:text-base mb-4">
-          <span className="text-party-secondary font-bold">A</span>lways <span className="text-party-secondary font-bold">I</span>nvited
-        </p>
-
-        {/* Tab Navigation */}
-        <div className="grid grid-cols-3 border-b border-white/10 pb-0">
-          <button
-            onClick={() => setActiveTab('active')}
-            className={`col-span-2 text-center pb-3 px-2 text-lg font-medium transition-colors relative ${
-              activeTab === 'active' 
-                ? 'text-white' 
-                : 'text-gray-500 hover:text-gray-300'
-            }`}
-          >
-            Play Now
-            {activeTab === 'active' && (
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-party-secondary rounded-t-sm" />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab('comingSoon')}
-            className={`col-span-1 text-center pb-3 px-2 text-sm sm:text-base font-medium transition-colors relative flex items-center justify-center ${
-              activeTab === 'comingSoon' 
-                ? 'text-white' 
-                : 'text-gray-500 hover:text-gray-300'
-            }`}
-          >
-            <span className="truncate w-full pr-1">Coming Soon</span>
-            {activeTab === 'comingSoon' && (
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-party-secondary rounded-t-sm" />
-            )}
-          </button>
-        </div>
-      </header>
-
-      {/* Adult content PIN gate */}
-      {showPinGate && (
-        <PinGateModal
-          onSuccess={() => {
-            setShowPinGate(false);
-            if (pendingGameId) onSelectGame(pendingGameId);
-            setPendingGameId(null);
-          }}
-          onCancel={() => {
-            setShowPinGate(false);
-            setPendingGameId(null);
-          }}
-        />
-      )}
-
-      <div className="grid gap-2.5 pb-6">
-        {displayGames.map((game) => (
-          <Card
-            key={game.id}
-            onClick={() => handleSelectGame(game.id)}
-            className="!p-4 group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95"
-          >
-            {/* Background Gradient Blob */}
-            <div className={`absolute top-0 right-0 w-32 h-32 opacity-20 rounded-full blur-3xl -mr-10 -mt-10 ${game.color}`} />
-
-            <div className="flex items-center gap-3 relative z-10">
-              <div className={`p-3 rounded-2xl ${game.color} shadow-sm text-white`}>
-                {getIcon(game.icon, 24)}
-              </div>
-              <div className="flex-1 w-full overflow-hidden">
-                <div className="flex items-center justify-between mb-0.5 mt-0.5">
-                  <h3 className="text-lg font-bold leading-none">{game.title}</h3>
-                  <span className="bg-white/5 px-2 py-0.5 rounded text-[10px] font-medium text-party-accent uppercase tracking-wider shrink-0 ml-2">
-                    {game.minPlayers}+ Players
-                  </span>
-                </div>
-                <p className="text-[13px] text-gray-400 leading-snug truncate whitespace-nowrap overflow-hidden pr-2">
-                   {game.description}
-                </p>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      <footer className="text-center text-xs text-gray-600 mt-auto pb-4">
-        Powered by Google Gemini 3 Suite
-      </footer>
+      {renderGame()}
     </div>
   );
 };
