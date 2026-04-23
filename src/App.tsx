@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { GameType } from './types';
-import { PinGateModal, isAdultUnlocked } from './components/ui/PinGate';
 import { CharadesGame } from './components/games/CharadesGame';
 import { TabooGame } from './components/games/TabooGame';
 import { IcebreakerGame } from './components/games/IcebreakerGame';
@@ -14,11 +13,11 @@ import { MiniMafiaGame } from './components/games/MiniMafiaGame';
 import { FactOrFictionGame } from './components/games/FactOrFictionGame';
 import { CompatibilityTestGame } from './components/games/CompatibilityTestGame';
 import { TruthOrDrinkGame } from './components/games/TruthOrDrinkGame';
-import { HomeShell } from './components/home/HomeShell';
+import { PinGateModal, isAdultUnlocked } from './components/ui/PinGate';
+import { HomeMenu } from './components/home/HomeMenu';
 
 const SplashScreen = () => (
   <div className="fixed inset-0 z-[100] bg-party-dark flex items-center justify-center overflow-hidden font-sans">
-    {/* Background Gradient Layer (No Image) */}
     <div className="absolute inset-0 z-0">
       <div className="absolute inset-0 bg-party-dark" />
       <div
@@ -28,7 +27,6 @@ const SplashScreen = () => (
       <div className="absolute inset-0 bg-gradient-to-t from-party-dark via-transparent to-party-dark/50" />
     </div>
 
-    {/* Content Layer */}
     <div className="relative z-10 text-center px-6 flex flex-col items-center animate-slide-up">
       <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-white mb-2 font-serif text-party-secondary flex items-center gap-3">
         PartySpark <span className="text-3xl md:text-5xl">✨</span>
@@ -37,7 +35,6 @@ const SplashScreen = () => (
         <span className="text-party-secondary font-bold">A</span>lways <span className="text-party-secondary font-bold">I</span>nvited
       </p>
 
-      {/* Loading Dots */}
       <div className="flex gap-3">
         <div className="w-3 h-3 bg-party-accent rounded-full animate-bounce [animation-delay:-0.3s]" />
         <div className="w-3 h-3 bg-party-accent rounded-full animate-bounce [animation-delay:-0.15s]" />
@@ -47,73 +44,31 @@ const SplashScreen = () => (
   </div>
 );
 
-// Adult-gated games — require PIN before entering
-const ADULT_GAME_IDS = [GameType.COMPATIBILITY_TEST, GameType.TRUTH_OR_DRINK];
+// Games that require the adult PIN (0438) before entering.
+const ADULT_GAME_IDS: GameType[] = [GameType.COMPATIBILITY_TEST, GameType.TRUTH_OR_DRINK];
 
-// HomeShellContainer wraps the new editorial-list home with the adult PIN gate.
-// Kept small and colocated with App.tsx so the routing logic stays in one place.
-const HomeShellContainer: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelectGame }) => {
+const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+  const [activeGame, setActiveGame] = useState<GameType>(GameType.HOME);
   const [showPinGate, setShowPinGate] = useState(false);
   const [pendingGameId, setPendingGameId] = useState<GameType | null>(null);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Gated navigation — adult games show the PIN modal first.
   const handleSelectGame = (gameId: GameType) => {
     if (ADULT_GAME_IDS.includes(gameId) && !isAdultUnlocked()) {
       setPendingGameId(gameId);
       setShowPinGate(true);
       return;
     }
-    onSelectGame(gameId);
+    setActiveGame(gameId);
   };
 
-  return (
-    <>
-      <HomeShell onSelectGame={handleSelectGame} />
-      {showPinGate && (
-        <PinGateModal
-          onSuccess={() => {
-            setShowPinGate(false);
-            if (pendingGameId) onSelectGame(pendingGameId);
-            setPendingGameId(null);
-          }}
-          onCancel={() => {
-            setShowPinGate(false);
-            setPendingGameId(null);
-          }}
-        />
-      )}
-    </>
-  );
-};
-
-const App = () => {
-  const [showSplash, setShowSplash] = useState(true);
-  const [activeGame, setActiveGame] = useState<GameType>(GameType.HOME);
-
-  useEffect(() => {
-    // Show splash screen for 5 seconds then transition to home
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (showSplash) {
-    return <SplashScreen />;
-  }
-
-  // HomeShell manages its own full-width layout (edge-to-edge masthead,
-  // bottom tab bar). Games render inside a constrained, padded container.
-  if (activeGame === GameType.HOME) {
-    return (
-      <div className="lg:max-w-md lg:mx-auto shadow-2xl overflow-hidden">
-        <HomeShellContainer onSelectGame={setActiveGame} />
-      </div>
-    );
-  }
-
-  // Per-game router. Games keep the existing padded container.
-  const renderGame = () => {
+  const renderContent = () => {
     switch (activeGame) {
       case GameType.ROAST:
         return <RoastGame onExit={() => setActiveGame(GameType.HOME)} />;
@@ -142,13 +97,30 @@ const App = () => {
       case GameType.TRUTH_OR_DRINK:
         return <TruthOrDrinkGame onExit={() => setActiveGame(GameType.HOME)} />;
       default:
-        return null;
+        return <HomeMenu onSelectGame={handleSelectGame} />;
     }
   };
 
+  if (showSplash) {
+    return <SplashScreen />;
+  }
+
   return (
     <div className="min-h-screen bg-party-dark text-white p-4 md:p-6 lg:max-w-md lg:mx-auto shadow-2xl overflow-hidden">
-      {renderGame()}
+      {renderContent()}
+      {showPinGate && (
+        <PinGateModal
+          onSuccess={() => {
+            setShowPinGate(false);
+            if (pendingGameId) setActiveGame(pendingGameId);
+            setPendingGameId(null);
+          }}
+          onCancel={() => {
+            setShowPinGate(false);
+            setPendingGameId(null);
+          }}
+        />
+      )}
     </div>
   );
 };
