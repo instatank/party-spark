@@ -10,6 +10,18 @@ interface GameProps {
     onExit: () => void;
 }
 
+// Per-category palette shared by the SELECT screen tile accents and the PLAY
+// screen card body (decorative blob, header pill, italic PartySpark footer).
+// Hex stays as solid; rgba 18% gives the tint variant.
+const CATEGORY_PALETTE: Record<string, { Icon: LucideIcon; solid: string; tint: string }> = {
+    rehaan:           { Icon: MessageCircle, solid: '#06B6D4', tint: 'rgba(6, 182, 212, 0.18)' },   // cyan-500
+    rehaan_asks:      { Icon: Flame,         solid: '#F97316', tint: 'rgba(249, 115, 22, 0.18)' },  // orange-500
+    agra:             { Icon: Landmark,      solid: '#D97706', tint: 'rgba(217, 119, 6, 0.18)' },   // amber-600
+    bbf:              { Icon: Users,         solid: '#9333EA', tint: 'rgba(147, 51, 234, 0.18)' },  // purple-600
+    classic:          { Icon: Hand,          solid: '#10B981', tint: 'rgba(16, 185, 129, 0.18)' },  // emerald-500
+    guilty_pleasures: { Icon: Lock,          solid: '#EC4899', tint: 'rgba(236, 72, 153, 0.18)' },  // pink-500
+};
+
 export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     const [gameState, setGameState] = useState<'SELECT' | 'PLAY'>('SELECT');
     const [category, setCategory] = useState<string>('');
@@ -53,15 +65,6 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     if (gameState === 'SELECT') {
         // Same design pattern as MLT/TOD: 3px inset left bar + 33% center
         // bottom line. NHIE has no AI custom-vibe deck so no ring/glow tile.
-        const TILES: Record<string, { Icon: LucideIcon; color: string }> = {
-            rehaan:           { Icon: MessageCircle, color: '#06B6D4' }, // cyan-500
-            rehaan_asks:      { Icon: Flame,         color: '#F97316' }, // orange-500
-            agra:             { Icon: Landmark,      color: '#D97706' }, // amber-600
-            bbf:              { Icon: Users,         color: '#9333EA' }, // purple-600
-            classic:          { Icon: Hand,          color: '#10B981' }, // emerald-500
-            guilty_pleasures: { Icon: Lock,          color: '#EC4899' }, // pink-500
-        };
-
         return (
             <div className="flex flex-col h-full animate-fade-in relative">
                 <ScreenHeader title="Never Have I Ever" onBack={onExit} onHome={onExit} />
@@ -73,9 +76,9 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
 
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {NEVER_HAVE_I_EVER_CATEGORIES.map((cat) => {
-                            const meta = TILES[cat.id];
+                            const meta = CATEGORY_PALETTE[cat.id];
                             const Icon = meta?.Icon || Sparkles;
-                            const color = meta?.color || '#94A3B8';
+                            const color = meta?.solid || '#94A3B8';
                             return (
                                 <button
                                     key={cat.id}
@@ -143,17 +146,42 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                     <div className="absolute bottom-10 right-10 w-40 h-40 bg-pink-600 rounded-full blur-3xl mix-blend-screen" />
                 </div>
 
-                <div className="w-full max-w-sm relative z-10 perspective-1000">
-                    <div className={`w-full bg-neutral-900 border-2 ${category === 'rehaan' ? 'border-cyan-500/50' : category === 'guilty_pleasures' ? 'border-pink-500/50' : 'border-emerald-500/50'} rounded-3xl p-8 shadow-2xl transform transition-all duration-500 min-h-[300px] flex flex-col justify-center`}>
-                        <div className="absolute -top-4 -right-4 bg-neutral-800 border border-neutral-700 w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm text-neutral-400">
-                            {currentIndex + 1}
+                {/* Card body — same MLT play-screen styling as Charades / Taboo /
+                    MLT itself. Portrait 3:4, surface bg, decorative tinted blob,
+                    header pill in the category color, Playfair prompt centered,
+                    counter + italic PartySpark footer (replaces the old floating
+                    number badge). */}
+                {(() => {
+                    const palette = CATEGORY_PALETTE[category] || { solid: '#94A3B8', tint: 'rgba(148, 163, 184, 0.18)' };
+                    return (
+                        <div className="w-full max-w-sm relative z-10 perspective-1000">
+                            <div
+                                className="w-full aspect-[3/4] max-h-[460px] bg-party-surface border border-white/10 rounded-[22px] p-7 flex flex-col relative overflow-hidden"
+                                style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}
+                            >
+                                <div
+                                    className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none"
+                                    style={{ background: palette.tint }}
+                                />
+                                <div
+                                    className="self-start text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md relative z-10"
+                                    style={{ background: palette.tint, color: palette.solid }}
+                                >
+                                    Never Have I Ever
+                                </div>
+                                <div className="flex-1 flex items-center justify-center relative z-10">
+                                    <p className="font-serif font-semibold text-[24px] leading-[1.2] tracking-[-0.015em] text-white text-center whitespace-pre-wrap">
+                                        {cards[currentIndex]}
+                                    </p>
+                                </div>
+                                <div className="text-[11px] text-gray-400 flex items-center justify-between relative z-10">
+                                    <span>Card {currentIndex + 1} of {cards.length}</span>
+                                    <span className="font-serif italic text-[12px]" style={{ color: palette.solid }}>PartySpark</span>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <p className="text-2xl md:text-3xl font-black text-center text-white leading-tight font-serif whitespace-pre-wrap">
-                            {cards[currentIndex]}
-                        </p>
-                    </div>
-                </div>
+                    );
+                })()}
 
                 <div className="w-full max-w-sm mt-12 grid grid-cols-1 gap-4">
                     <button
