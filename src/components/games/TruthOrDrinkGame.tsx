@@ -446,13 +446,14 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         Start Drinking <ArrowRight className="inline ml-2" size={20} />
                     </Button>
 
-                    {/* Just-Play escape hatch — skip names, no pass-and-play, no
-                        scoring. Just cards one at a time. */}
+                    {/* Just-Play escape hatch — bumped up to a green outlined
+                        CTA so it doesn't feel like a tertiary footer link. */}
                     <button
                         onClick={handleJustPlay}
-                        className="w-full mt-3 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white border border-white/10 hover:border-white/30 transition-colors"
+                        className="w-full mt-3 py-4 rounded-xl font-bold text-base text-emerald-300 bg-emerald-500/10 border-2 border-emerald-500/60 hover:bg-emerald-500/20 hover:border-emerald-400 hover:text-emerald-200 transition-colors flex items-center justify-center gap-2"
                     >
-                        Or, Just Play — no names, no fuss
+                        <Zap size={18} />
+                        Just Play — Skip the Setup
                     </button>
                 </div>
             </div>
