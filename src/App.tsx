@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Search } from 'lucide-react';
 import { GameType } from './types';
-import { GAMES, getIcon } from './constants';
+import { GAMES, getIcon, GAME_RICH_META, HOME_FILTERS, gameMatchesFilter, type HomeFilter } from './constants';
 import { Card } from './components/ui/Layout';
 import { PinGateModal, isAdultUnlocked } from './components/ui/PinGate';
 import { CharadesGame } from './components/games/CharadesGame';
@@ -31,11 +32,14 @@ const SplashScreen = () => (
 
     {/* Content Layer */}
     <div className="relative z-10 text-center px-6 flex flex-col items-center animate-slide-up">
-      <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-white mb-2 font-serif text-party-secondary flex items-center gap-3">
+      {/* Title — matches HomeMenu's gold Playfair treatment, scaled up */}
+      <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-party-secondary mb-2 font-serif flex items-center gap-3">
         PartySpark <span className="text-3xl md:text-5xl">✨</span>
       </h1>
-      <p className="text-gray-300 text-lg md:text-xl font-medium tracking-wide max-w-xs mx-auto mb-12">
-        <span className="text-party-secondary font-bold">A</span>lways <span className="text-party-secondary font-bold">I</span>nvited
+      {/* Subtitle — matches HomeMenu's "Always Invited" styling */}
+      <p className="text-gray-400 text-lg md:text-xl max-w-xs mx-auto mb-12">
+        <span className="text-party-secondary font-bold">A</span>lways{' '}
+        <span className="text-party-secondary font-bold">I</span>nvited
       </p>
 
       {/* Loading Dots */}
@@ -108,6 +112,8 @@ const App = () => {
 
 const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelectGame }) => {
   const [activeTab, setActiveTab] = useState<'active' | 'comingSoon'>('active');
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<HomeFilter>('all');
 
   const comingSoonGameIds = [
     GameType.WOULD_I_LIE_TO_YOU,
@@ -115,9 +121,6 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
     GameType.WOULD_YOU_RATHER,
     GameType.NEVER_HAVE_I_EVER,
   ];
-
-  const activeGames = GAMES.filter(g => !comingSoonGameIds.includes(g.id));
-  const comingSoonGames = GAMES.filter(g => comingSoonGameIds.includes(g.id));
 
   // Adult-gated games — require PIN before entering
   const ADULT_GAME_IDS = [GameType.COMPATIBILITY_TEST, GameType.TRUTH_OR_DRINK];
@@ -133,7 +136,25 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
     onSelectGame(gameId);
   };
 
-  const displayGames = activeTab === 'active' ? activeGames : comingSoonGames;
+  // Filter chain: tab → chip → search query.
+  // Search matches title, description, vibe, and tags.
+  const displayGames = useMemo(() => {
+    const inTab = activeTab === 'active'
+      ? GAMES.filter(g => !comingSoonGameIds.includes(g.id))
+      : GAMES.filter(g => comingSoonGameIds.includes(g.id));
+    const q = query.trim().toLowerCase();
+    return inTab
+      .filter(g => gameMatchesFilter(g.id, filter))
+      .filter(g => {
+        if (!q) return true;
+        const meta = GAME_RICH_META[g.id];
+        const haystack = [
+          g.title, g.description, meta?.vibe || '', ...(meta?.tags || []),
+        ].join(' ').toLowerCase();
+        return haystack.includes(q);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, query, filter]);
 
   return (
     <div className="flex flex-col gap-4 animate-slide-up min-h-[80vh]">
@@ -191,7 +212,44 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         />
       )}
 
+      {/* Search bar + filter chips — narrow the games shown in the active tab */}
+      <div className="flex flex-col gap-2.5">
+        <div className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5">
+          <Search size={16} className="text-gray-400 flex-shrink-0" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search games, vibes, or players…"
+            className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 outline-none min-w-0"
+          />
+        </div>
+        <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1 no-scrollbar">
+          {HOME_FILTERS.map(f => {
+            const active = filter === f.id;
+            return (
+              <button
+                key={f.id}
+                onClick={() => setFilter(f.id)}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+                  active
+                    ? 'bg-party-secondary text-slate-900 border-party-secondary'
+                    : 'bg-transparent text-gray-400 border-white/15 hover:border-white/30 hover:text-gray-200'
+                }`}
+              >
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="grid gap-2.5 pb-6">
+        {displayGames.length === 0 && (
+          <div className="text-center text-gray-500 text-sm py-8">
+            No games match. Try a different filter or search.
+          </div>
+        )}
         {displayGames.map((game) => (
           <Card
             key={game.id}

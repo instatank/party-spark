@@ -109,6 +109,54 @@ export const GAMES: GameMeta[] = [
     },
 ];
 
+// =============================================================================
+// Rich metadata + filter chips for the Home Menu search/filter feature.
+// =============================================================================
+
+export interface GameRichMeta {
+    vibe: string;        // one-word mood (Wild, Strategy, Confess, …)
+    duration: string;    // "2 min" / "5 min" / "10 min" / "15 min" / "20 min"
+    players: string;     // "2+" / "3–8" / "Solo" — display only
+    tags: string[];      // searchable + chip-filter keywords
+}
+
+export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
+    [GameType.HOME]:                { vibe: '',         duration: '',       players: '',     tags: [] },
+    [GameType.ROAST]:               { vibe: 'Wild',     duration: '2 min',  players: 'Solo', tags: ['ai', 'quick', 'solo'] },
+    [GameType.IMPOSTER]:            { vibe: 'Strategy', duration: '10 min', players: '3–8',  tags: ['social', 'deduction', 'crowd', 'spicy'] },
+    [GameType.TABOO]:               { vibe: 'Classic',  duration: '5 min',  players: '4+',   tags: ['teams', 'fast', 'crowd'] },
+    [GameType.FACT_OR_FICTION]:     { vibe: 'Trivia',   duration: '5 min',  players: '2+',   tags: ['quick', 'learn'] },
+    [GameType.MOST_LIKELY_TO]:      { vibe: 'Gossip',   duration: '15 min', players: '3+',   tags: ['point', 'expose', 'crowd', 'spicy'] },
+    [GameType.CHARADES]:            { vibe: 'Classic',  duration: '10 min', players: '4+',   tags: ['teams', 'active', 'crowd'] },
+    [GameType.MINI_MAFIA]:          { vibe: 'Strategy', duration: '20 min', players: '5+',   tags: ['betrayal', 'long', 'crowd', 'spicy'] },
+    [GameType.NEVER_HAVE_I_EVER]:   { vibe: 'Confess',  duration: '10 min', players: '3+',   tags: ['classic', 'reveal', 'crowd'] },
+    [GameType.WOULD_YOU_RATHER]:    { vibe: 'Debate',   duration: '10 min', players: '1+',   tags: ['quick', 'any'] },
+    [GameType.ICEBREAKERS]:         { vibe: 'Warm-up',  duration: '5 min',  players: '2+',   tags: ['quick', 'meet', 'gentle'] },
+    [GameType.WOULD_I_LIE_TO_YOU]:  { vibe: 'Bluff',    duration: '10 min', players: '3+',   tags: ['story', 'read', 'crowd'] },
+    [GameType.TRUTH_OR_DRINK]:      { vibe: 'Deep',     duration: '15 min', players: '2+',   tags: ['adult', 'honest', 'spicy', 'couples'] },
+    [GameType.COMPATIBILITY_TEST]:  { vibe: 'Connect',  duration: '15 min', players: '2',    tags: ['couple', 'know', 'couples'] },
+};
+
+export const HOME_FILTERS = [
+    { id: 'all',     label: 'All' },
+    { id: 'quick',   label: 'Quick' },
+    { id: 'couples', label: 'Couples' },
+    { id: 'crowd',   label: 'Crowd' },
+    { id: 'spicy',   label: 'Spicy' },
+] as const;
+
+export type HomeFilter = typeof HOME_FILTERS[number]['id'];
+
+// Decides whether a game matches the currently-selected chip.
+// "quick" matches by short duration; everything else by tag.
+export const gameMatchesFilter = (gameId: GameType, filter: HomeFilter): boolean => {
+    if (filter === 'all') return true;
+    const meta = GAME_RICH_META[gameId];
+    if (!meta) return false;
+    if (filter === 'quick') return meta.duration === '2 min' || meta.duration === '5 min';
+    return meta.tags.includes(filter);
+};
+
 export const getIcon = (name: string, size: number = 24) => {
     switch (name) {
         case 'drama': return <Sparkles size={size} />;
