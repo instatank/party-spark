@@ -491,11 +491,12 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     {/* Just-Play escape hatch — bumped up to a green outlined
                         CTA so it doesn't feel like a tertiary footer link.
                         Hidden for the custom deck since AI generation needs
-                        names + context. */}
+                        names + context. Outline-only by default; tint
+                        appears on hover for feedback. */}
                     {category !== 'custom' && (
                         <button
                             onClick={handleJustPlay}
-                            className="w-full mt-3 py-4 rounded-xl font-bold text-base text-emerald-300 bg-emerald-500/10 border-2 border-emerald-500/60 hover:bg-emerald-500/20 hover:border-emerald-400 hover:text-emerald-200 transition-colors flex items-center justify-center gap-2"
+                            className="w-full mt-3 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors flex items-center justify-center gap-2"
                         >
                             <Zap size={18} />
                             Just Play — Skip the Setup
@@ -705,19 +706,20 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     </div>
 
                     {/* Truth / Drink — color-coded outlined CTAs in the same
-                        formatting as the Just Play tab. Emerald for truths and
-                        amber for drinks, matching the wrap-screen leaderboard. */}
+                        formatting as the Just Play tab. Outline-only by
+                        default, tint on hover. Emerald for truths, amber for
+                        drinks, matching the wrap-screen leaderboard. */}
                     <div className="flex gap-3">
                         <button
                             onClick={() => handleChoice('truth')}
-                            className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-300 bg-emerald-500/10 border-2 border-emerald-500/60 hover:bg-emerald-500/20 hover:border-emerald-400 hover:text-emerald-200 transition-colors flex items-center justify-center gap-2"
+                            className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors flex items-center justify-center gap-2"
                         >
                             <MessageCircleHeart size={18} />
                             Tell the Truth
                         </button>
                         <button
                             onClick={() => handleChoice('drink')}
-                            className="flex-1 py-4 rounded-xl font-bold text-base text-amber-300 bg-amber-500/10 border-2 border-amber-500/60 hover:bg-amber-500/20 hover:border-amber-400 hover:text-amber-200 transition-colors flex items-center justify-center gap-2"
+                            className="flex-1 py-4 rounded-xl font-bold text-base text-amber-600 bg-transparent border-2 border-amber-500/60 hover:bg-amber-500/10 hover:border-amber-500 transition-colors flex items-center justify-center gap-2"
                         >
                             <GlassWater size={18} />
                             Take a Drink
