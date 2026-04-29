@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, ScreenHeader } from '../ui/Layout';
-import { Timer, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles } from 'lucide-react';
 import { generateCharadesWords } from '../../services/geminiService';
 import { useContent } from '../../contexts/ContentContext';
 import { CHARADES_CATEGORIES } from '../../constants';
@@ -25,24 +25,29 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     // const categories = ["Movies", "Animals", "Actions", "Celebrities", "Objects"]; // Replaced by constant
     const categories = CHARADES_CATEGORIES;
 
-    const startGame = async () => {
+    // Optional `selectedCat` lets a tile tap immediately start with the tapped
+    // category (avoids a stale-state read since setCategory is async and the
+    // function would otherwise see the previous value).
+    const startGame = async (selectedCat?: string) => {
+        const cat = selectedCat ?? category;
+        if (selectedCat) setCategory(selectedCat);
         setLoading(true);
 
         // Prefetch for background to keep buffer full
-        prefetchGameContent('CHARADES', category);
+        prefetchGameContent('CHARADES', cat);
 
         try {
             // 1. Get all local words for this category
             const charadesData = (gamesDataRaw as any).games.charades;
             let allLocalWords: string[] = [];
 
-            if (category === 'mix_movies') {
+            if (cat === 'mix_movies') {
                 // Combine ALL movie categories for the mix
                 const hollywood = charadesData.categories.find((c: any) => c.id === 'hollywood_movies')?.items || [];
                 const bollywood = charadesData.categories.find((c: any) => c.id === 'bollywood_movies')?.items || [];
                 const mixUnique = charadesData.categories.find((c: any) => c.id === 'mix_movies')?.items || [];
                 allLocalWords = Array.from(new Set([...hollywood, ...bollywood, ...mixUnique]));
-            } else if (category === 'family_mix') {
+            } else if (cat === 'family_mix') {
                 // Combine all family-friendly sub-categories
                 const everyday = charadesData.categories.find((c: any) => c.id === 'everyday_actions')?.items || [];
                 const house = charadesData.categories.find((c: any) => c.id === 'around_the_house')?.items || [];
@@ -51,14 +56,14 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                 allLocalWords = Array.from(new Set([...familyBase, ...everyday, ...house, ...zoo]));
             } else {
                 // Standard category behavior
-                const categoryData = charadesData.categories.find((c: any) => c.id === category);
+                const categoryData = charadesData.categories.find((c: any) => c.id === cat);
                 allLocalWords = categoryData ? categoryData.items : [];
             }
 
             // 2. Filter used words
             const availableLocal = sessionService.filterContent(
                 GameType.CHARADES,
-                category,
+                cat,
                 allLocalWords,
                 (w) => w
             );
@@ -75,7 +80,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                 selectedWords = [...availableLocal];
                 const needed = INITIAL_BATCH_SIZE - selectedWords.length;
                 try {
-                    const generated = await generateCharadesWords(category, needed);
+                    const generated = await generateCharadesWords(cat, needed);
                     selectedWords = [...selectedWords, ...generated];
                 } catch (e) {
                     console.error("Failed to generate charades", e);
@@ -146,29 +151,73 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     };
 
     if (gameState === 'SETUP') {
-        return (
-            <div className="h-full flex flex-col">
-                <ScreenHeader title="Charades Setup" onBack={onExit} onHome={onExit} />
+        // Same design pattern as MLT/TOD/NHIE/WYR/Forecast: 3px inset left bar
+        // + 33% center bottom line. Tap-to-start (no separate Start button).
+        // Charades has no AI custom-vibe deck so no ring/glow tile.
+        const TILES: Record<string, { Icon: typeof Sparkles; color: string; description: string }> = {
+            mix_movies:        { Icon: Shuffle, color: '#94A3B8', description: 'Hollywood + Bollywood + arthouse. Pure chaos.' },
+            family_mix:        { Icon: Users,   color: '#EFC050', description: 'Wholesome titles only. PG vibes.' },
+            bollywood_movies:  { Icon: Film,    color: '#EC4899', description: 'All Hindi cinema. Iconic to underrated.' },
+            hollywood_movies:  { Icon: Star,    color: '#65B7F0', description: 'American studio + indie. Big-budget energy.' },
+        };
 
-                <div className="space-y-6">
-                    <Card>
-                        <h3 className="text-lg font-semibold mb-4 text-gray-300">Choose Category</h3>
-                        <div className="grid grid-cols-2 gap-3">
-                            {categories.map(c => (
+        // Loading state — full-screen spinner while words are being fetched.
+        if (loading) {
+            return (
+                <div className="h-full flex flex-col">
+                    <ScreenHeader title="Charades" onBack={onExit} onHome={onExit} />
+                    <div className="flex-1 flex flex-col items-center justify-center gap-6">
+                        <div className="relative">
+                            <div className="w-16 h-16 border-4 border-party-accent/30 border-t-party-accent rounded-full animate-spin" />
+                            <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-party-accent animate-pulse" size={24} />
+                        </div>
+                        <p className="text-xl font-bold text-white">Brewing your words…</p>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Charades" onBack={onExit} onHome={onExit} />
+                <p className="text-gray-400 mb-4 text-sm text-center">
+                    Pick a category. 60-second round, act them out silently.
+                </p>
+                <div className="flex-1 overflow-y-auto pb-8">
+                    <div className="grid gap-3 max-w-[340px] mx-auto w-full">
+                        {categories.map(c => {
+                            const meta = TILES[c.id] || { Icon: Sparkles, color: '#94A3B8', description: '' };
+                            const Icon = meta.Icon;
+                            return (
                                 <button
                                     key={c.id}
-                                    onClick={() => setCategory(c.id)}
-                                    className={`p-3 rounded-lg text-sm font-medium transition-all ${category === c.id ? 'bg-party-accent text-white shadow-lg' : 'bg-white/5 text-gray-400'}`}
+                                    onClick={() => startGame(c.id)}
+                                    className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                                 >
-                                    {c.label}
+                                    <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden">
+                                        <span
+                                            className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]"
+                                            style={{ background: meta.color }}
+                                        />
+                                        <span
+                                            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]"
+                                            style={{ background: meta.color }}
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex-shrink-0" style={{ color: meta.color }}>
+                                                <Icon size={16} />
+                                            </span>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-base font-bold text-white leading-tight truncate">{c.label}</h3>
+                                                <p className="text-xs text-gray-400 leading-snug truncate">{meta.description}</p>
+                                            </div>
+                                            <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
+                                        </div>
+                                    </div>
                                 </button>
-                            ))}
-                        </div>
-                    </Card>
-
-                    <Button fullWidth onClick={startGame} disabled={loading}>
-                        {loading ? "Generating..." : "Start Game"}
-                    </Button>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         );
