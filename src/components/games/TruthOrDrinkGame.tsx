@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import type { LucideIcon } from 'lucide-react';
-import { Wine, Sparkles, Flame, ArrowRight, ChevronRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2 } from 'lucide-react';
+import { Sparkles, Flame, ArrowRight, ChevronRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2 } from 'lucide-react';
 import questionData from '../../data/truth_or_drink.json';
 import { generateCustomTruthOrDrink } from '../../services/geminiService';
 
@@ -11,9 +11,7 @@ type GameState =
     | 'SETUP'
     | 'CUSTOM_SETUP'
     | 'LOADING'
-    | 'PASS'
     | 'PROMPT'
-    | 'RESULT'
     | 'END';
 
 const GROUP_TYPES = [
@@ -171,9 +169,10 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     const [turnIndex, setTurnIndex] = useState(0);
     const [roundIndex, setRoundIndex] = useState(0);
     const [lastChoice, setLastChoice] = useState<Choice | null>(null);
-    // 'named' = pass-and-play with PASS / RESULT screens.
-    // 'just_play' = simplified — straight from CATEGORY_SELECT through PROMPT
-    // → next PROMPT, no player names, no pass screens, no result screens.
+    // Cosmetic only post-flatten — both modes share the same flow (choice
+    // advances directly to the next prompt). 'named' shows player turns in
+    // the header; 'just_play' shows the category instead and skips player
+    // setup entirely.
     const [playMode, setPlayMode] = useState<PlayMode>('named');
 
     // Custom-deck state
@@ -242,7 +241,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
             return;
         }
 
-        setGameState('PASS');
+        setGameState('PROMPT');
     };
 
     const handleGenerateCustom = async () => {
@@ -274,7 +273,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                 return;
             }
             setCustomDeck(cards);
-            setGameState('PASS');
+            setGameState('PROMPT');
         } catch (e) {
             console.error('Custom TOD generation failed', e);
             setCustomError('Something went wrong. Please try again.');
@@ -282,10 +281,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         }
     };
 
-    const handleReady = () => setGameState('PROMPT');
-
-    // Just-Play kickoff — bypass player setup and the PASS handoff screen.
-    // Reuses the existing deck/category logic; just lands on PROMPT directly.
+    // Just-Play kickoff — bypass player setup. Lands directly on PROMPT.
     const handleJustPlay = () => {
         setPlayMode('just_play');
         setTurnIndex(0);
@@ -294,25 +290,10 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setGameState('PROMPT');
     };
 
+    // Choice is flavor only — no scoring or tracking. Either we wrap up
+    // (last round) or we advance straight to the next prompt.
     const handleChoice = (choice: Choice) => {
         setLastChoice(choice);
-        // Just-Play skips the RESULT confirmation screen — choice is purely
-        // flavor here, no scoring/tracking. Advance straight to next prompt.
-        if (playMode === 'just_play') {
-            if (isLastRound) {
-                setGameState('END');
-                return;
-            }
-            setRoundIndex(i => i + 1);
-            setTurnIndex(i => i + 1);
-            setLastChoice(null);
-            // Stay on PROMPT — no PASS screen in just_play
-            return;
-        }
-        setGameState('RESULT');
-    };
-
-    const handleNext = () => {
         if (isLastRound) {
             setGameState('END');
             return;
@@ -320,7 +301,6 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setRoundIndex(i => i + 1);
         setTurnIndex(i => i + 1);
         setLastChoice(null);
-        setGameState('PASS');
     };
 
     const handleEndEarly = () => setGameState('END');
@@ -630,41 +610,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         );
     }
 
-    // PASS TO PLAYER
-    if (gameState === 'PASS') {
-        return (
-            <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title={`Round ${roundIndex + 1} of ${deck.length}`} onBack={() => setGameState('CATEGORY_SELECT')} onHome={onExit} />
-                <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-8">
-                    <div className={`w-24 h-24 bg-gradient-to-br ${categoryMeta.gradient} rounded-full flex items-center justify-center shadow-lg ${categoryMeta.shadow}`}>
-                        <Wine size={40} className="text-white" />
-                    </div>
-                    <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">You're up</p>
-                        <h2 className="text-3xl font-serif font-bold text-white mb-2">
-                            Pass to <span className={categoryMeta.accentText}>{currentPlayer}</span>
-                        </h2>
-                        <p className="text-gray-400 text-sm">
-                            Take the phone. Brace yourself.
-                        </p>
-                    </div>
-                    <div className="w-full space-y-3">
-                        <Button onClick={handleReady} className="w-full py-4 text-lg">
-                            I'm {currentPlayer} — Show Me
-                        </Button>
-                        <button
-                            onClick={handleEndEarly}
-                            className="w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-500 hover:text-gray-300 transition-colors"
-                        >
-                            <DoorClosed size={14} /> End game early
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // PROMPT — Truth or Drink
+    // PROMPT — Truth or Drink. Single screen for both modes — choice
+    // advances directly to the next prompt (no PASS, no RESULT).
     if (gameState === 'PROMPT') {
         const palette = DECK_PALETTE[category] || { solid: '#94A3B8', tint: 'rgba(148, 163, 184, 0.18)' };
         const isJustPlay = playMode === 'just_play';
@@ -672,7 +619,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
             <div className="flex flex-col h-full animate-fade-in relative z-10">
                 <ScreenHeader
                     title={isJustPlay ? `${categoryMeta.title} ${categoryMeta.emoji}` : `${currentPlayer}'s Turn`}
-                    onBack={() => setGameState(isJustPlay ? 'CATEGORY_SELECT' : 'PASS')}
+                    onBack={() => setGameState('CATEGORY_SELECT')}
                     onHome={onExit}
                 />
                 <div className="px-2 pb-4 flex-1 flex flex-col">
@@ -708,7 +655,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     </div>
 
                     {/* Truth / Drink — slim side-by-side row, MLT Skip/Next sizing.
-                        Choice is flavor only in just_play (no scoring). */}
+                        Choice is purely flavor — both buttons advance to the
+                        next prompt. */}
                     <div className="flex gap-3">
                         <button
                             onClick={() => handleChoice('truth')}
@@ -725,41 +673,13 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                             Take a Drink 🥃
                         </button>
                     </div>
-                </div>
-            </div>
-        );
-    }
 
-    // RESULT — brief confirmation
-    if (gameState === 'RESULT') {
-        const truthTold = lastChoice === 'truth';
-        return (
-            <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title="Locked In" onBack={() => setGameState('PROMPT')} onHome={onExit} />
-                <div className="flex-1 flex flex-col items-center justify-center px-4 gap-6 text-center">
-                    <div className={`w-28 h-28 rounded-full flex items-center justify-center ${truthTold ? 'bg-emerald-500 shadow-[0_0_50px_rgba(16,185,129,0.4)]' : 'bg-gradient-to-br from-amber-500 to-red-500 shadow-[0_0_50px_rgba(239,68,68,0.4)]'}`}>
-                        <span className="text-5xl">{truthTold ? '🗣️' : '🥃'}</span>
-                    </div>
-
-                    <div>
-                        <h2 className={`text-4xl font-serif font-black mb-2 ${truthTold ? 'text-emerald-400' : 'text-amber-400'}`}>
-                            {truthTold ? 'Truth Told!' : 'Bottoms Up!'}
-                        </h2>
-                        <p className="text-gray-400 text-base max-w-xs">
-                            {truthTold
-                                ? `${currentPlayer} came clean. The group is watching.`
-                                : `${currentPlayer} takes the L and the sip.`}
-                        </p>
-                    </div>
-
-                    <div className="bg-slate-800/60 p-4 rounded-xl border border-white/5 w-full">
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">The Question</p>
-                        <p className="text-white/90 text-sm italic leading-snug">"{currentQuestion}"</p>
-                    </div>
-
-                    <Button onClick={handleNext} className="w-full py-4 text-lg">
-                        {isLastRound ? 'See the Wrap-Up' : 'Next Round'} <ArrowRight className="inline ml-2" size={20} />
-                    </Button>
+                    <button
+                        onClick={handleEndEarly}
+                        className="w-full mt-3 flex items-center justify-center gap-1.5 py-2 text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                    >
+                        <DoorClosed size={12} /> End game early
+                    </button>
                 </div>
             </div>
         );
@@ -787,7 +707,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                 <p className="text-xs text-gray-500 uppercase tracking-wider">Rounds Played</p>
                             </div>
                             <div>
-                                <p className="text-3xl font-black text-white">{trimmedPlayers.length}</p>
+                                <p className="text-3xl font-black text-white">{playMode === 'named' ? trimmedPlayers.length : '—'}</p>
                                 <p className="text-xs text-gray-500 uppercase tracking-wider">Players</p>
                             </div>
                         </div>
