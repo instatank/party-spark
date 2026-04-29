@@ -4,6 +4,7 @@ import { GameType } from './types';
 import { GAMES, getIcon, GAME_RICH_META, HOME_FILTERS, gameMatchesFilter, type HomeFilter } from './constants';
 import { Card } from './components/ui/Layout';
 import { PinGateModal, isAdultUnlocked } from './components/ui/PinGate';
+import { ThemeToggle } from './components/ui/ThemeToggle';
 import { CharadesGame } from './components/games/CharadesGame';
 import { TabooGame } from './components/games/TabooGame';
 import { IcebreakerGame } from './components/games/IcebreakerGame';
@@ -19,34 +20,31 @@ import { CompatibilityTestGame } from './components/games/CompatibilityTestGame'
 import { TruthOrDrinkGame } from './components/games/TruthOrDrinkGame';
 
 const SplashScreen = () => (
-  <div className="fixed inset-0 z-[100] bg-party-dark flex items-center justify-center overflow-hidden font-sans">
-    {/* Background Gradient Layer (No Image) */}
+  <div className="fixed inset-0 z-[100] bg-app flex items-center justify-center overflow-hidden font-sans">
+    {/* Background layer — bg image is dark-tuned, so we drop its opacity in
+        light mode via the .splash-bg helper to keep things airy. */}
     <div className="absolute inset-0 z-0">
-      <div className="absolute inset-0 bg-party-dark" />
+      <div className="absolute inset-0 bg-app" />
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay"
+        className="splash-bg absolute inset-0 bg-cover bg-center mix-blend-overlay"
         style={{ backgroundImage: 'url("/splash-bg.jpg")' }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-party-dark via-transparent to-party-dark/50" />
+      <div className="absolute inset-0 bg-gradient-to-t from-app via-transparent to-app/50" />
     </div>
 
-    {/* Content Layer */}
     <div className="relative z-10 text-center px-6 flex flex-col items-center animate-slide-up">
-      {/* Title — matches HomeMenu's gold Playfair treatment, scaled up */}
-      <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-party-secondary mb-2 font-serif flex items-center gap-3">
+      <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-gold mb-2 font-serif flex items-center gap-3">
         PartySpark <span className="text-3xl md:text-5xl">✨</span>
       </h1>
-      {/* Subtitle — matches HomeMenu's "Always Invited" styling */}
-      <p className="text-gray-400 text-lg md:text-xl max-w-xs mx-auto mb-12">
-        <span className="text-party-secondary font-bold">A</span>lways{' '}
-        <span className="text-party-secondary font-bold">I</span>nvited
+      <p className="text-muted text-lg md:text-xl max-w-xs mx-auto mb-12">
+        <span className="text-gold font-bold">A</span>lways{' '}
+        <span className="text-gold font-bold">I</span>nvited
       </p>
 
-      {/* Loading Dots */}
       <div className="flex gap-3">
-        <div className="w-3 h-3 bg-party-accent rounded-full animate-bounce [animation-delay:-0.3s]" />
-        <div className="w-3 h-3 bg-party-accent rounded-full animate-bounce [animation-delay:-0.15s]" />
-        <div className="w-3 h-3 bg-party-accent rounded-full animate-bounce" />
+        <div className="w-3 h-3 bg-accent rounded-full animate-bounce [animation-delay:-0.3s]" />
+        <div className="w-3 h-3 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]" />
+        <div className="w-3 h-3 bg-accent rounded-full animate-bounce" />
       </div>
     </div>
   </div>
@@ -104,7 +102,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-party-dark text-white p-4 md:p-6 lg:max-w-md lg:mx-auto shadow-2xl overflow-hidden">
+    <div className="min-h-screen bg-app text-ink p-4 md:p-6 lg:max-w-md lg:mx-auto shadow-2xl overflow-hidden">
       {renderContent()}
     </div>
   );
@@ -159,40 +157,41 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
 
   return (
     <div className="flex flex-col gap-4 animate-slide-up min-h-[80vh]">
-      <header className="pt-1 pb-1 text-center">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-party-secondary mb-1 font-serif flex items-center justify-center gap-2">
+      <header className="pt-1 pb-1 text-center relative">
+        <ThemeToggle className="absolute top-1 right-0" />
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gold mb-1 font-serif flex items-center justify-center gap-2">
           PartySpark <span className="text-2xl sm:text-3xl">✨</span>
         </h1>
-        <p className="text-gray-400 text-sm sm:text-base mb-4">
-          <span className="text-party-secondary font-bold">A</span>lways <span className="text-party-secondary font-bold">I</span>nvited
+        <p className="text-muted text-sm sm:text-base mb-4">
+          <span className="text-gold font-bold">A</span>lways <span className="text-gold font-bold">I</span>nvited
         </p>
 
         {/* Tab Navigation */}
-        <div className="grid grid-cols-3 border-b border-white/10 pb-0">
+        <div className="grid grid-cols-3 border-b border-divider pb-0">
           <button
             onClick={() => setActiveTab('active')}
             className={`col-span-2 text-center pb-3 px-2 text-lg font-medium transition-colors relative ${
-              activeTab === 'active' 
-                ? 'text-white' 
-                : 'text-gray-500 hover:text-gray-300'
+              activeTab === 'active'
+                ? 'text-ink'
+                : 'text-muted hover:text-ink-soft'
             }`}
           >
             Play Now
             {activeTab === 'active' && (
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-party-secondary rounded-t-sm" />
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gold rounded-t-sm" />
             )}
           </button>
           <button
             onClick={() => setActiveTab('comingSoon')}
             className={`col-span-1 text-center pb-3 px-2 text-sm sm:text-base font-medium transition-colors relative flex items-center justify-center ${
-              activeTab === 'comingSoon' 
-                ? 'text-white' 
-                : 'text-gray-500 hover:text-gray-300'
+              activeTab === 'comingSoon'
+                ? 'text-ink'
+                : 'text-muted hover:text-ink-soft'
             }`}
           >
             <span className="truncate w-full pr-1">Coming Soon</span>
             {activeTab === 'comingSoon' && (
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-party-secondary rounded-t-sm" />
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gold rounded-t-sm" />
             )}
           </button>
         </div>
@@ -215,14 +214,14 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
 
       {/* Search bar + filter chips — narrow the games shown in the active tab */}
       <div className="flex flex-col gap-2.5">
-        <div className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5">
-          <Search size={16} className="text-gray-400 flex-shrink-0" />
+        <div className="flex items-center gap-2.5 bg-surface-alt border border-divider rounded-xl px-3.5 py-2.5">
+          <Search size={16} className="text-muted flex-shrink-0" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search games, vibes, or players…"
-            className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 outline-none min-w-0"
+            className="flex-1 bg-transparent text-sm text-ink placeholder:text-muted outline-none min-w-0"
           />
         </div>
         <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1 no-scrollbar">
@@ -234,8 +233,8 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
                 onClick={() => setFilter(f.id)}
                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                   active
-                    ? 'bg-party-secondary text-slate-900 border-party-secondary'
-                    : 'bg-transparent text-gray-400 border-white/15 hover:border-white/30 hover:text-gray-200'
+                    ? 'bg-gold text-app border-gold'
+                    : 'bg-transparent text-muted border-divider hover:border-ink-soft hover:text-ink-soft'
                 }`}
               >
                 {f.label}
@@ -247,7 +246,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
 
       <div className="grid gap-2.5 pb-6">
         {displayGames.length === 0 && (
-          <div className="text-center text-gray-500 text-sm py-8">
+          <div className="text-center text-muted text-sm py-8">
             No games match. Try a different filter or search.
           </div>
         )}
@@ -266,12 +265,12 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
               </div>
               <div className="flex-1 w-full overflow-hidden">
                 <div className="flex items-center justify-between mb-0.5 mt-0.5">
-                  <h3 className="text-lg font-bold leading-none">{game.title}</h3>
-                  <span className="bg-white/5 px-2 py-0.5 rounded text-[10px] font-medium text-party-accent uppercase tracking-wider shrink-0 ml-2">
+                  <h3 className="text-lg font-bold leading-none text-ink">{game.title}</h3>
+                  <span className="bg-accent-soft px-2 py-0.5 rounded text-[10px] font-medium text-accent uppercase tracking-wider shrink-0 ml-2">
                     {game.minPlayers}+ Players
                   </span>
                 </div>
-                <p className="text-[13px] text-gray-400 leading-snug truncate whitespace-nowrap overflow-hidden pr-2">
+                <p className="text-[13px] text-muted leading-snug truncate whitespace-nowrap overflow-hidden pr-2">
                    {game.description}
                 </p>
               </div>
@@ -280,7 +279,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         ))}
       </div>
 
-      <footer className="text-center text-xs text-gray-600 mt-auto pb-4">
+      <footer className="text-center text-xs text-muted mt-auto pb-4">
         Powered by Google Gemini 3 Suite
       </footer>
     </div>

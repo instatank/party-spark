@@ -97,23 +97,23 @@ export const PinGateModal: React.FC<PinGateProps> = ({ onSuccess, onCancel }) =>
     // Locked out screen
     if (locked) {
         return (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200 p-4">
-                <div className="bg-neutral-900 border border-red-800/50 rounded-2xl p-8 w-full max-w-sm shadow-2xl relative">
-                    <button onClick={onCancel} className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
+            <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 p-4">
+                <div className="bg-surface border border-red-500/40 rounded-2xl p-8 w-full max-w-sm relative" style={{ boxShadow: 'var(--shadow-card)' }}>
+                    <button onClick={onCancel} className="absolute top-4 right-4 text-muted hover:text-ink transition-colors">
                         <X size={20} />
                     </button>
 
                     <div className="flex justify-center mb-4">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center shadow-lg shadow-red-900/50">
-                            <ShieldX size={28} className="text-red-300" />
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-lg">
+                            <ShieldX size={28} className="text-white" />
                         </div>
                     </div>
 
-                    <h3 className="text-xl font-bold text-red-400 text-center mb-2">Access Locked</h3>
-                    <p className="text-sm text-gray-400 text-center mb-2">
+                    <h3 className="text-xl font-bold text-red-500 text-center mb-2">Access Locked</h3>
+                    <p className="text-sm text-ink-soft text-center mb-2">
                         Too many incorrect attempts.
                     </p>
-                    <p className="text-xs text-gray-500 text-center">
+                    <p className="text-xs text-muted text-center">
                         Close and reopen the app to try again.
                     </p>
                 </div>
@@ -124,20 +124,20 @@ export const PinGateModal: React.FC<PinGateProps> = ({ onSuccess, onCancel }) =>
     const remaining = MAX_ATTEMPTS - attempts;
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200 p-4">
-            <div className={`bg-neutral-900 border border-neutral-700 rounded-2xl p-8 w-full max-w-sm shadow-2xl relative ${shake ? 'animate-shake' : ''}`}>
-                <button onClick={onCancel} className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 p-4">
+            <div className={`bg-surface border border-divider rounded-2xl p-8 w-full max-w-sm relative ${shake ? 'animate-shake' : ''}`} style={{ boxShadow: 'var(--shadow-card)' }}>
+                <button onClick={onCancel} className="absolute top-4 right-4 text-muted hover:text-ink transition-colors">
                     <X size={20} />
                 </button>
 
                 <div className="flex justify-center mb-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg shadow-red-900/30">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg">
                         <Lock size={28} className="text-white" />
                     </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-white text-center mb-1">Adults Only</h3>
-                <p className="text-sm text-gray-400 text-center mb-6">Enter the 4-digit PIN to access this content</p>
+                <h3 className="text-xl font-bold text-ink text-center mb-1">Adults Only</h3>
+                <p className="text-sm text-muted text-center mb-6">Enter the 4-digit PIN to access this content</p>
 
                 <div className="flex justify-center gap-3 mb-4">
                     {digits.map((digit, i) => (
@@ -152,15 +152,15 @@ export const PinGateModal: React.FC<PinGateProps> = ({ onSuccess, onCancel }) =>
                             onKeyDown={e => handleKeyDown(i, e)}
                             className={`w-14 h-16 text-center text-2xl font-bold rounded-xl border-2 outline-none transition-all
                                 ${error
-                                    ? 'border-red-500 bg-red-950/30 text-red-400'
-                                    : 'border-neutral-600 bg-neutral-800 text-white focus:border-pink-500 focus:bg-neutral-800'
+                                    ? 'border-red-500 bg-red-500/10 text-red-500'
+                                    : 'border-divider bg-surface-alt text-ink focus:border-accent'
                                 }`}
                         />
                     ))}
                 </div>
 
                 {error && (
-                    <p className="text-red-400 text-sm text-center animate-in fade-in">
+                    <p className="text-red-500 text-sm text-center animate-in fade-in">
                         Wrong PIN. {remaining} {remaining === 1 ? 'attempt' : 'attempts'} remaining.
                     </p>
                 )}

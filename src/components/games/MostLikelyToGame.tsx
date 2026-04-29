@@ -7,6 +7,39 @@ import MOST_LIKELY_TO_DATA from '../../data/most_likely_to.json';
 import { sessionService } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
+import { useTheme } from '../../contexts/ThemeContext';
+
+// Per-category accent colors. Dark values are the original hues; light values
+// are darkened/saturated so they read against #EEF4FA. Tint opacity bumps in
+// light because rgba(...,0.18) blobs disappear against white surfaces.
+type TileEntry = { solid: string; tintAlpha: number };
+const TILES_DARK: Record<string, TileEntry> = {
+    custom_vibe:     { solid: '#8B5CE0', tintAlpha: 0.18 },
+    family_friendly: { solid: '#35B4C8', tintAlpha: 0.18 },
+    fun:             { solid: '#6D72DD', tintAlpha: 0.18 },
+    scandalous:      { solid: '#E66AA3', tintAlpha: 0.18 },
+    adult:           { solid: '#EF4444', tintAlpha: 0.18 },
+    chaos:           { solid: '#A855F7', tintAlpha: 0.18 },
+    bbf:             { solid: '#9333EA', tintAlpha: 0.18 },
+};
+const TILES_LIGHT: Record<string, TileEntry> = {
+    // custom_vibe matches Azure Sky tiles.mostLikely.solid; the rest are
+    // darkened ~20% from dark mode so they hit AA contrast on #FFFFFF surface.
+    custom_vibe:     { solid: '#9266D2', tintAlpha: 0.30 },
+    family_friendly: { solid: '#1F94A6', tintAlpha: 0.28 },
+    fun:             { solid: '#4A50C0', tintAlpha: 0.26 },
+    scandalous:      { solid: '#C84F87', tintAlpha: 0.26 },
+    adult:           { solid: '#C03737', tintAlpha: 0.24 },
+    chaos:           { solid: '#7B2EBF', tintAlpha: 0.24 },
+    bbf:             { solid: '#7B27C9', tintAlpha: 0.24 },
+};
+const hexToRgba = (hex: string, alpha: number): string => {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 interface Props {
     onExit: () => void;
@@ -36,6 +69,12 @@ const PLACEHOLDER_EXAMPLES = [
 ];
 
 export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
+    const { theme } = useTheme();
+    const TILES_MAP = theme === 'light' ? TILES_LIGHT : TILES_DARK;
+    const tilePalette = (id: string) => {
+        const entry = TILES_MAP[id] || { solid: '#94A3B8', tintAlpha: 0.18 };
+        return { solid: entry.solid, tint: hexToRgba(entry.solid, entry.tintAlpha) };
+    };
     const [gameState, setGameState] = useState<'CATEGORY' | 'CUSTOM_SETUP' | 'LOADING' | 'PLAYING'>('CATEGORY');
     const [category, setCategory] = useState<any>(null);
     const [cards, setCards] = useState<string[]>([]);
@@ -187,18 +226,18 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                 <div className="flex-1 overflow-y-auto pb-8 px-1">
                     {/* Intro */}
                     <div className="text-center mb-6">
-                        <div className="inline-flex bg-gradient-to-r from-violet-600/20 to-fuchsia-500/20 border border-violet-500/30 rounded-2xl p-4 mb-3">
-                            <Wand2 size={32} className="text-violet-400" />
+                        <div className="inline-flex bg-accent-soft border border-accent/30 rounded-2xl p-4 mb-3">
+                            <Wand2 size={32} className="text-accent" />
                         </div>
-                        <h2 className="text-xl font-bold text-white mb-1">Personalised Cards</h2>
-                        <p className="text-gray-400 text-sm max-w-sm mx-auto">
+                        <h2 className="text-xl font-bold text-ink mb-1">Personalised Cards</h2>
+                        <p className="text-muted text-sm max-w-sm mx-auto">
                             Tell us about your group and AI will generate "Most Likely To" cards that feel like they were written just for you.
                         </p>
                     </div>
 
                     {/* Step 1: Group Type Chips */}
                     <div className="mb-6">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
+                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
                             1. Who's playing?
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -208,8 +247,8 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                                     onClick={() => setSelectedGroupType(g.id)}
                                     className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
                                         ${selectedGroupType === g.id
-                                            ? 'bg-violet-600/30 border-violet-500 text-violet-300 shadow-lg shadow-violet-500/20'
-                                            : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                                            ? 'bg-accent-soft border-accent text-accent'
+                                            : 'bg-surface-alt border-divider text-muted hover:border-ink-soft hover:text-ink-soft'
                                         }`}
                                 >
                                     {g.label}
@@ -220,8 +259,8 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
 
                     {/* Step 2: Tone Chips (optional) */}
                     <div className="mb-6">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
-                            2. Set the tone <span className="text-gray-600 normal-case tracking-normal font-medium">(optional)</span>
+                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
+                            2. Set the tone <span className="text-muted/70 normal-case tracking-normal font-medium">(optional)</span>
                         </label>
                         <div className="flex flex-wrap gap-2">
                             {TONE_OPTIONS.map(t => (
@@ -230,8 +269,8 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                                     onClick={() => setSelectedTone(selectedTone === t.id ? null : t.id)}
                                     className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
                                         ${selectedTone === t.id
-                                            ? 'bg-violet-600/30 border-violet-500 text-violet-300 shadow-lg shadow-violet-500/20'
-                                            : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                                            ? 'bg-accent-soft border-accent text-accent'
+                                            : 'bg-surface-alt border-divider text-muted hover:border-ink-soft hover:text-ink-soft'
                                         }`}
                                 >
                                     {t.label}
@@ -239,7 +278,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                             ))}
                         </div>
                         {selectedTone && (
-                            <p className="text-xs text-gray-500 mt-2 pl-1">
+                            <p className="text-xs text-muted mt-2 pl-1">
                                 {TONE_OPTIONS.find(t => t.id === selectedTone)?.hint}
                             </p>
                         )}
@@ -247,10 +286,10 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
 
                     {/* Step 3: Context Text Box */}
                     <div className="mb-6">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
+                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
                             3. The secret sauce — describe your group
                         </label>
-                        <div className="bg-white/5 border border-white/10 rounded-2xl p-1 focus-within:border-violet-500/50 transition-colors">
+                        <div className="bg-surface-alt border border-divider rounded-2xl p-1 focus-within:border-accent transition-colors">
                             <textarea
                                 value={customContext}
                                 onChange={(e) => {
@@ -259,44 +298,45 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                                 }}
                                 placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
                                 rows={5}
-                                className="w-full bg-transparent p-4 text-white placeholder-gray-600 text-sm leading-relaxed resize-none focus:outline-none"
+                                className="w-full bg-transparent p-4 text-ink placeholder:text-muted text-sm leading-relaxed resize-none focus:outline-none"
                             />
-                            <div className="flex justify-between items-center px-4 py-2 border-t border-white/5">
-                                <span className={`text-xs font-bold ${wordCount > WORD_LIMIT ? 'text-red-400' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-400' : 'text-gray-500'}`}>
+                            <div className="flex justify-between items-center px-4 py-2 border-t border-divider-soft">
+                                <span className={`text-xs font-bold ${wordCount > WORD_LIMIT ? 'text-red-500' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-500' : 'text-muted'}`}>
                                     {wordCount}/{WORD_LIMIT} words
                                 </span>
                                 {wordCount > 0 && wordCount <= 15 && (
-                                    <span className="text-xs text-amber-400 font-medium">A bit more detail will help!</span>
+                                    <span className="text-xs text-amber-500 font-medium">A bit more detail will help!</span>
                                 )}
                             </div>
                         </div>
                     </div>
 
                     {/* Tips */}
-                    <div className="bg-violet-900/20 border border-violet-500/20 rounded-xl p-4 mb-6">
-                        <p className="text-xs text-violet-300 font-bold uppercase tracking-widest mb-2">💡 Pro Tips for Better Cards</p>
-                        <ul className="text-xs text-gray-400 space-y-1.5">
-                            <li>• <strong className="text-gray-300">Name names:</strong> "Rahul always burns the food" → hilarious card</li>
-                            <li>• <strong className="text-gray-300">Be specific:</strong> "Goa trip" → "Goa trip where Priya lost her passport"</li>
-                            <li>• <strong className="text-gray-300">Add dynamics:</strong> "One person is vegetarian, one snores..."</li>
+                    <div className="bg-accent-soft border border-accent/30 rounded-xl p-4 mb-6">
+                        <p className="text-xs text-accent font-bold uppercase tracking-widest mb-2">💡 Pro Tips for Better Cards</p>
+                        <ul className="text-xs text-ink-soft space-y-1.5">
+                            <li>• <strong className="text-ink">Name names:</strong> "Rahul always burns the food" → hilarious card</li>
+                            <li>• <strong className="text-ink">Be specific:</strong> "Goa trip" → "Goa trip where Priya lost her passport"</li>
+                            <li>• <strong className="text-ink">Add dynamics:</strong> "One person is vegetarian, one snores..."</li>
                         </ul>
                     </div>
 
                     {/* Error */}
                     {customError && (
                         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4 text-center">
-                            <p className="text-red-400 text-sm font-medium">{customError}</p>
+                            <p className="text-red-500 text-sm font-medium">{customError}</p>
                         </div>
                     )}
 
-                    {/* Generate Button */}
+                    {/* Generate Button — keeps the violet→fuchsia gradient as a
+                        brand moment that works on both backgrounds. */}
                     <button
                         onClick={startCustomGame}
                         disabled={customContext.trim().length < 10 || wordCount > WORD_LIMIT}
                         className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2
                             ${customContext.trim().length >= 10 && wordCount <= WORD_LIMIT
-                                ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:from-violet-500 hover:to-fuchsia-400 text-white shadow-lg shadow-violet-600/30 active:scale-[0.98]'
-                                : 'bg-white/5 text-gray-500 cursor-not-allowed'
+                                ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:from-violet-500 hover:to-fuchsia-400 text-white active:scale-[0.98] shadow-lg shadow-violet-600/30'
+                                : 'bg-surface-alt text-muted cursor-not-allowed border border-divider'
                             }`}
                     >
                         <Sparkles size={20} />
@@ -308,17 +348,6 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
     }
 
     if (gameState === 'CATEGORY') {
-        // Per-category tile color (hex). Inline styles are used for the accents
-        // because the colors are data, not utility classes.
-        const TILES: Record<string, string> = {
-            custom_vibe:     '#8B5CE0',
-            family_friendly: '#35B4C8',
-            fun:             '#6D72DD',
-            scandalous:      '#E66AA3',
-            adult:           '#EF4444',
-            chaos:           '#A855F7',
-            bbf:             '#9333EA',
-        };
         const ICON_FOR: Record<string, React.ReactNode> = {
             custom_vibe:     <Wand2 size={16} />,
             family_friendly: <Users size={16} />,
@@ -346,13 +375,13 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                         }}
                     />
                 )}
-                <p className="text-gray-400 mb-4 text-sm text-center">
+                <p className="text-muted mb-4 text-sm text-center">
                     Pick a vibe. Read the card. Everyone points on 3!
                 </p>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {MOST_LIKELY_TO_CATEGORIES.map((cat: any) => {
-                            const color = TILES[cat.id] || '#94A3B8';
+                            const color = tilePalette(cat.id).solid;
                             const adult = isAdultCat(cat.id);
                             const isCustom = cat.id === 'custom_vibe';
                             return (
@@ -363,19 +392,13 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                                     className={`group relative w-full text-left transition-all duration-200 ${cat.disabled ? 'opacity-40 cursor-not-allowed' : 'active:scale-[0.99] cursor-pointer'}`}
                                 >
                                     <div
-                                        className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden"
+                                        className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden"
                                         style={isCustom ? {
-                                            // Custom: 2px colored ring + soft outer glow.
-                                            // No partial accents — the ring covers all 4 edges.
                                             borderColor: color,
                                             borderWidth: 2,
                                             boxShadow: `0 0 18px ${color}55, inset 0 0 0 1px ${color}33`,
                                         } : undefined}
                                     >
-                                        {/* Non-custom accents: 3px inset-vertical left bar +
-                                            33% center-aligned 2px bottom line. Both via
-                                            absolutely-positioned spans so the rounded corners
-                                            clip cleanly via overflow-hidden on the parent. */}
                                         {!isCustom && (
                                             <>
                                                 <span
@@ -394,24 +417,24 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                                                 {ICON_FOR[cat.id]}
                                             </span>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="text-base font-bold text-white leading-tight flex items-center gap-1.5">
+                                                <h3 className="text-base font-bold text-ink leading-tight flex items-center gap-1.5">
                                                     <span className="truncate">{cat.label}</span>
                                                     {adult && (
-                                                        <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-400 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
+                                                        <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-500 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
                                                             18+
                                                         </span>
                                                     )}
                                                     {cat.disabled && (
-                                                        <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-neutral-400 font-medium flex-shrink-0">
+                                                        <span className="text-[9px] bg-surface-alt px-1.5 py-0.5 rounded uppercase tracking-wider text-muted font-medium flex-shrink-0">
                                                             Soon
                                                         </span>
                                                     )}
                                                 </h3>
-                                                <p className="text-xs text-gray-400 leading-snug truncate">
+                                                <p className="text-xs text-muted leading-snug truncate">
                                                     {cat.description}
                                                 </p>
                                             </div>
-                                            <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
+                                            <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
                                         </div>
                                     </div>
                                 </button>
@@ -430,15 +453,15 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                 <ScreenHeader title="Generating..." onBack={() => setGameState('CATEGORY')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center gap-6">
                     <div className="relative">
-                        <div className="w-16 h-16 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
-                        <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-violet-400 animate-pulse" size={24} />
+                        <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
+                        <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-accent animate-pulse" size={24} />
                     </div>
                     <div className="text-center">
-                        <p className="text-xl font-bold text-white mb-1">
+                        <p className="text-xl font-bold text-ink mb-1">
                             {category?.id === 'custom_vibe' ? 'Crafting your personalised cards...' : `Brewing ${category?.label} questions...`}
                         </p>
                         {category?.id === 'custom_vibe' && (
-                            <p className="text-gray-500 text-sm">AI is reading your context and writing cards just for you</p>
+                            <p className="text-muted text-sm">AI is reading your context and writing cards just for you</p>
                         )}
                     </div>
                 </div>
@@ -447,34 +470,23 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
     }
 
     // PLAYING State — V1 top + portrait card, original 3-2-1 / Skip / Next bottom.
-    const PLAY_TILES: Record<string, { solid: string; tint: string }> = {
-        custom_vibe:     { solid: '#8B5CE0', tint: 'rgba(139, 92, 224, 0.18)' },
-        family_friendly: { solid: '#35B4C8', tint: 'rgba(53, 180, 200, 0.18)' },
-        fun:             { solid: '#6D72DD', tint: 'rgba(109, 114, 221, 0.18)' },
-        scandalous:      { solid: '#E66AA3', tint: 'rgba(230, 106, 163, 0.18)' },
-        adult:           { solid: '#EF4444', tint: 'rgba(239, 68, 68, 0.18)' },
-        chaos:           { solid: '#A855F7', tint: 'rgba(168, 85, 247, 0.18)' },
-        bbf:             { solid: '#9333EA', tint: 'rgba(147, 51, 234, 0.18)' },
-    };
-    const playTile = PLAY_TILES[category?.id as string] || PLAY_TILES.fun;
+    const playTile = tilePalette((category?.id as string) || 'fun');
     const total = cards.length;
 
     return (
         <div className="h-full flex flex-col animate-fade-in -mx-4 md:-mx-6 -mt-4 md:-mt-6">
-            {/* Top bar — back left, 2-line title center (bigger + bolder), home right.
-                Counter moves above progress dots so the home button can occupy the
-                top-right slot for the "home reachable everywhere" rule. */}
+            {/* Top bar — back left, 2-line title center, home right. */}
             <div className="flex items-center justify-between px-4 pt-4 pb-2">
                 <button
                     onClick={() => setGameState('CATEGORY')}
                     aria-label="Back to categories"
-                    className="p-1.5 -ml-1.5 text-gray-300 hover:text-white transition-colors disabled:opacity-50"
+                    className="p-1.5 -ml-1.5 text-ink-soft hover:text-ink transition-colors disabled:opacity-50"
                     disabled={countingDown}
                 >
                     <ArrowLeft size={22} strokeWidth={2.2} />
                 </button>
                 <div className="text-center flex-1 px-2 min-w-0">
-                    <div className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-gray-200 truncate">
+                    <div className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-ink-soft truncate">
                         Most Likely To
                     </div>
                     <div className="text-[13px] font-semibold mt-0.5 truncate" style={{ color: playTile.solid }}>
@@ -484,7 +496,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                 <button
                     onClick={onExit}
                     aria-label="Home"
-                    className="w-8 h-8 rounded-[10px] bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center flex-shrink-0"
+                    className="w-8 h-8 rounded-[10px] bg-surface-alt border border-divider text-ink-soft hover:text-ink hover:bg-app-tint transition-colors flex items-center justify-center flex-shrink-0"
                     disabled={countingDown}
                 >
                     <Home size={18} strokeWidth={2} />
@@ -493,7 +505,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
 
             {/* Counter + progress dots */}
             <div className="px-5 pb-3.5">
-                <div className="text-[11px] text-gray-400 text-center mb-1.5">
+                <div className="text-[11px] text-muted text-center mb-1.5">
                     Card {currentIndex + 1} of {total}
                 </div>
                 <div className="flex justify-center gap-[5px]">
@@ -501,7 +513,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                         <div
                             key={i}
                             className="h-[3px] flex-1 max-w-[32px] rounded-[2px] transition-colors"
-                            style={{ background: i <= currentIndex ? playTile.solid : 'rgba(255,255,255,0.12)' }}
+                            style={{ background: i <= currentIndex ? playTile.solid : 'var(--c-border)' }}
                         />
                     ))}
                 </div>
@@ -510,8 +522,8 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
             {/* Portrait 3:4 prompt card */}
             <div className="flex-1 flex items-center justify-center px-4 pb-4 relative">
                 <div
-                    className="w-full aspect-[3/4] max-h-[460px] bg-party-surface border border-white/10 rounded-[22px] p-7 flex flex-col relative overflow-hidden"
-                    style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}
+                    className="w-full aspect-[3/4] max-h-[460px] bg-surface border border-divider rounded-[22px] p-7 flex flex-col relative overflow-hidden"
+                    style={{ boxShadow: 'var(--shadow-card)' }}
                 >
                     {/* Decorative blob top-right */}
                     <div
@@ -527,12 +539,12 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                     </div>
                     {/* Prompt — Playfair, centered vertically */}
                     <div className="flex-1 flex items-center relative z-10">
-                        <p className="font-serif font-semibold text-[24px] leading-[1.2] tracking-[-0.015em] text-white">
+                        <p className="font-serif font-semibold text-[24px] leading-[1.2] tracking-[-0.015em] text-ink">
                             {cards[currentIndex]}
                         </p>
                     </div>
                     {/* Footer — verb left, italic "PartySpark" right */}
-                    <div className="text-[11px] text-gray-400 flex items-center justify-between relative z-10">
+                    <div className="text-[11px] text-muted flex items-center justify-between relative z-10">
                         <span>Point to who fits.</span>
                         <span className="font-serif italic text-[12px]" style={{ color: playTile.solid }}>
                             PartySpark
@@ -540,14 +552,16 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                     </div>
                 </div>
 
-                {/* Countdown Overlay (original game mechanic, preserved) */}
+                {/* Countdown Overlay — keep dark to maximize legibility of the
+                    huge centered count. Works against either theme bg since
+                    it's a full-screen scrim with white text on top. */}
                 {countingDown && (
                     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
                         <div className="text-center">
                             <div className="text-[120px] font-black text-white animate-bounce leading-none">
                                 {count === 0 ? "👉 POINT!" : count}
                             </div>
-                            <p className="text-2xl font-bold mt-4 text-party-accent">
+                            <p className="text-2xl font-bold mt-4 text-accent">
                                 {count === 0 ? "" : "Get Ready to Point..."}
                             </p>
                         </div>
@@ -555,8 +569,9 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                 )}
             </div>
 
-            {/* Bottom actions — original 3-2-1 Vote layout, "Skip" replaces
-                "Change Topic" per user preference. */}
+            {/* Bottom actions — keep the violet→pink gradient on the hero CTA
+                as a brand moment that reads on either bg. Skip / Next route
+                through semantic tokens. */}
             <div className="px-4 pb-5 flex flex-col gap-3">
                 <button
                     onClick={handleVote}
@@ -570,14 +585,14 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                     <button
                         onClick={nextCard}
                         disabled={countingDown}
-                        className="flex-1 py-3 rounded-lg font-medium text-sm bg-party-surface text-white border border-white/5 hover:bg-slate-600 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 py-3 rounded-lg font-medium text-sm bg-surface text-ink border border-divider hover:bg-surface-alt transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Skip
                     </button>
                     <button
                         onClick={nextCard}
                         disabled={countingDown}
-                        className="flex-1 py-3 rounded-lg font-bold text-sm bg-party-secondary text-slate-900 hover:bg-yellow-400 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                        className="flex-1 py-3 rounded-lg font-bold text-sm bg-gold text-slate-900 hover:brightness-110 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
                     >
                         Next Card
                         <ChevronRight size={18} />

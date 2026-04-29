@@ -15,10 +15,14 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
     const baseStyles = "py-3 px-6 rounded-lg font-medium transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed tracking-wide shadow-sm";
 
+    // Primary uses gold + dark-on-gold text. The fixed slate-900 reads on
+    // both gold variants (#EFC050 dark / #B8922F light) at AA contrast.
+    // Secondary, ghost, danger all route through semantic tokens so they
+    // flip cleanly with the theme.
     const variants = {
-        primary: "bg-party-secondary text-slate-900 hover:bg-yellow-400 font-bold",
-        secondary: "bg-party-surface text-white border border-white/5 hover:bg-slate-600",
-        ghost: "bg-transparent hover:bg-white/5 text-slate-400 hover:text-white",
+        primary: "bg-gold text-slate-900 hover:brightness-110 font-bold",
+        secondary: "bg-surface text-ink border border-divider-soft hover:bg-surface-alt",
+        ghost: "bg-transparent hover:bg-surface-alt text-muted hover:text-ink",
         danger: "bg-red-500 hover:bg-red-600 text-white"
     };
     return (
@@ -38,7 +42,8 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(({ children, className = '', ...props }, ref) => (
     <div
         ref={ref}
-        className={`bg-party-surface rounded-xl p-6 shadow-lg border border-white/5 ${props.onClick ? 'cursor-pointer hover:bg-slate-600/80 transition-all duration-200 hover:-translate-y-1' : ''} ${className}`}
+        className={`bg-surface rounded-xl p-6 border border-divider-soft ${props.onClick ? 'cursor-pointer hover:bg-surface-alt transition-all duration-200 hover:-translate-y-1' : ''} ${className}`}
+        style={{ boxShadow: 'var(--shadow-card)', ...((props as any).style || {}) }}
         {...props}
     >
         {children}
@@ -50,18 +55,18 @@ export const ScreenHeader: React.FC<{ title: string, onBack?: () => void, onHome
     <div className="flex items-center justify-between mb-6 pt-4">
         <div className="flex items-center gap-2">
             {onBack && (
-                <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors text-gray-300">
+                <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-surface-alt transition-colors text-ink-soft">
                     <ChevronLeft className="w-6 h-6" />
                 </button>
             )}
-            <h1 className="text-2xl font-bold text-white font-serif tracking-wide">
+            <h1 className="text-2xl font-bold text-ink font-serif tracking-wide">
                 {title}
             </h1>
         </div>
         {onHome && (
-            <button 
-                onClick={onHome} 
-                className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-party-secondary/50 transition-all duration-300 text-gray-300 hover:text-party-secondary shadow-sm hover:shadow-party-secondary/20 overflow-hidden group" 
+            <button
+                onClick={onHome}
+                className="p-2.5 rounded-xl bg-surface-alt border border-divider hover:bg-app-tint hover:border-gold/50 transition-all duration-300 text-ink-soft hover:text-gold shadow-sm overflow-hidden group"
                 aria-label="Home"
             >
                 <Home className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" strokeWidth={2.25} />

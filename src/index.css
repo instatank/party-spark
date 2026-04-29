@@ -1,30 +1,52 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap');
+
+/*
+ * THEME SYSTEM
+ *
+ * Tailwind v4 @theme registers utility names (bg-app, text-ink, etc) that
+ * resolve via CSS variables. Switching `data-theme` on <html> swaps the var
+ * values in the cascade — no component re-render needed, no hardcoded
+ * dark-only fallbacks left dangling.
+ *
+ * Light values come from design_handoff_partyspark_refresh/references/
+ * shared/tokens.jsx → DIRECTIONS.azure (Azure Sky / Sky variant).
+ *
+ * Adding a new token: define a --c-* var in BOTH :root and [data-theme="light"],
+ * then expose it in @theme as --color-<name>: var(--c-...).
+ */
+
 @theme {
-  /* Slate & Colorful Palette (Reference Match) */
-  --color-party-dark: #1e293b;
-  /* Slate 800 - Deep Navy Base */
-  --color-party-primary: #FFFFFF;
-  /* White Primary Text */
-  --color-party-secondary: #EFC050;
-  /* Gold Accent */
-  --color-party-accent: #65B7F0;
-  /* Sky Blue Accent */
-  --color-party-surface: #334155;
-  /* Slate 700 - Card Surface */
+  /* Legacy / brand color names — mapped to themable vars. Existing code that
+     uses bg-party-dark / text-party-secondary keeps working in dark mode and
+     lights up correctly when light mode flips the underlying var. */
+  --color-party-dark: var(--c-app);
+  --color-party-primary: var(--c-ink);
+  --color-party-secondary: var(--c-gold);
+  --color-party-accent: var(--c-accent);
+  --color-party-surface: var(--c-surface);
+
+  /* Semantic tokens — preferred for new code. Map directly to Azure Sky names. */
+  --color-app: var(--c-app);
+  --color-app-tint: var(--c-app-tint);
+  --color-surface: var(--c-surface);
+  --color-surface-alt: var(--c-surface-alt);
+  --color-ink: var(--c-ink);
+  --color-ink-soft: var(--c-ink-soft);
+  --color-muted: var(--c-muted);
+  --color-divider: var(--c-border);
+  --color-divider-soft: var(--c-border-soft);
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-gold: var(--c-gold);
+  --color-gold-soft: var(--c-gold-soft);
+  --color-sparkle: var(--c-sparkle);
 
   --animate-slide-up: slideUp 0.3s ease-out forwards;
 
   @keyframes slideUp {
-    0% {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-
-    100% {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
   }
 
   @keyframes shake {
@@ -36,9 +58,80 @@
   }
 }
 
+/* DARK MODE (default) — preserves the existing palette so nothing breaks. */
+:root,
+[data-theme="dark"] {
+  --c-app:          #1e293b;                /* slate-800 */
+  --c-app-tint:     rgba(255, 255, 255, 0.04);
+  --c-surface:      #334155;                /* slate-700 */
+  --c-surface-alt:  rgba(255, 255, 255, 0.05);
+  --c-ink:          #FFFFFF;
+  --c-ink-soft:     #cbd5e1;                /* slate-300 */
+  --c-muted:        #94a3b8;                /* slate-400 */
+  --c-border:       rgba(255, 255, 255, 0.10);
+  --c-border-soft:  rgba(255, 255, 255, 0.05);
+  --c-accent:       #65B7F0;                /* sky */
+  --c-accent-soft:  rgba(101, 183, 240, 0.18);
+  --c-gold:         #EFC050;
+  --c-gold-soft:    rgba(239, 192, 80, 0.18);
+  --c-sparkle:      #EFC050;
+
+  /* Per-game tile palette (dark mode). Components reference these via
+     var(--tile-<game>-solid) etc instead of hardcoded hex literals. */
+  --tile-mlt-solid: #8B5CE0;  --tile-mlt-tint: rgba(139, 92, 224, 0.18);  --tile-mlt-ink: #FFFFFF;
+  --tile-tod-solid: #C026D3;  --tile-tod-tint: rgba(192, 38, 211, 0.18);  --tile-tod-ink: #FFFFFF;
+  --tile-nhie-solid: #4CBDCE; --tile-nhie-tint: rgba(76, 189, 206, 0.18); --tile-nhie-ink: #FFFFFF;
+  --tile-charades-solid: #EFC050; --tile-charades-tint: rgba(239, 192, 80, 0.18); --tile-charades-ink: #FFFFFF;
+  --tile-taboo-solid: #E5707A; --tile-taboo-tint: rgba(229, 112, 122, 0.18); --tile-taboo-ink: #FFFFFF;
+  --tile-roast-solid: #F08B3A; --tile-roast-tint: rgba(240, 139, 58, 0.18); --tile-roast-ink: #FFFFFF;
+
+  /* Shadows — heavy for dark backgrounds. Light mode overrides to subtle. */
+  --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.5);
+  --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* LIGHT MODE — Azure Sky / Sky variant. Token values copied verbatim from
+   tokens.jsx → DIRECTIONS.azure. Do not invent new colors here. */
+[data-theme="light"] {
+  --c-app:          #EEF4FA;
+  --c-app-tint:     #E0EAF4;
+  --c-surface:      #FFFFFF;
+  --c-surface-alt:  #F5F9FD;
+  --c-ink:          #0F1E33;
+  --c-ink-soft:     #344660;
+  --c-muted:        #7A8BA3;
+  --c-border:       #D7E3F1;
+  --c-border-soft:  #E8EFF8;
+  --c-accent:       #2C7CD4;
+  --c-accent-soft:  #D7E6F6;
+  --c-gold:         #B8922F;
+  --c-gold-soft:    #F2E4B8;
+  --c-sparkle:      #C99A26;
+
+  /* Azure Sky tile palette. Each game's tile gets a solid hue, a tint
+     variant for backgrounds/blobs, and an ink color for high-contrast text
+     placed directly on the solid swatch. */
+  --tile-mlt-solid: #9266D2;  --tile-mlt-tint: #E5DAF5;  --tile-mlt-ink: #2F1A58;
+  --tile-tod-solid: #D94D4B;  --tile-tod-tint: #F9DBDB;  --tile-tod-ink: #5A1716;
+  --tile-nhie-solid: #4CBDCE; --tile-nhie-tint: #D8F0F4; --tile-nhie-ink: #10454D;
+  --tile-charades-solid: #E5B547; --tile-charades-tint: #F9EDC6; --tile-charades-ink: #503B0A;
+  --tile-taboo-solid: #E5707A; --tile-taboo-tint: #F9DEE1; --tile-taboo-ink: #5A1E25;
+  --tile-roast-solid: #F08B3A; --tile-roast-tint: #FCE6D2; --tile-roast-ink: #5A2C0A;
+
+  /* Light-mode shadows — soft and tinted with a slight ink hue so they read
+     as elevation rather than smudge against #EEF4FA. */
+  --shadow-card: 0 1px 2px rgba(15, 30, 51, 0.06), 0 4px 12px rgba(15, 30, 51, 0.04);
+  --shadow-button: 0 1px 2px rgba(15, 30, 51, 0.05);
+}
+
 .animate-shake {
   animation: shake 0.5s ease-in-out;
 }
+
+/* Splash bg image is dark-tuned. Stays subtle in dark, almost invisible in
+   light so the airy bg stays clean. */
+.splash-bg { opacity: 0.40; }
+[data-theme="light"] .splash-bg { opacity: 0.10; }
 
 /* Hide horizontal scrollbar on filter-chip rows that scroll on overflow */
 .no-scrollbar {
@@ -50,8 +143,8 @@
 }
 
 body {
-  background-color: var(--color-party-dark);
-  color: white;
+  background-color: var(--c-app);
+  color: var(--c-ink);
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
