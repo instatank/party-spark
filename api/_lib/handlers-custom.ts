@@ -245,3 +245,107 @@ Return ONLY the questions as a JSON array of strings. No numbering.`;
         return [];
     }
 };
+
+// =============================================================================
+// Never Have I Ever — Custom
+// =============================================================================
+
+export interface CustomNHIEParams {
+    groupType: string;
+    customContext: string;
+    count?: number;
+    tone?: string;
+}
+
+export const handleCustomNeverHaveIEver = async (params: CustomNHIEParams): Promise<string[]> => {
+    const { groupType, customContext, count = 15, tone = '' } = params;
+
+    if (isClaudeConfigured()) {
+        const viaClaude = await generateCustomNHIEClaude(groupType, customContext, count, tone);
+        if (viaClaude.length > 0) return viaClaude;
+        console.warn('[ai/custom_nhie] Claude returned empty — falling through to Gemini.');
+    }
+    return generateCustomNHIEGemini(groupType, customContext, count, tone);
+};
+
+const generateCustomNHIEClaude = async (groupType: string, customContext: string, count: number, tone: string): Promise<string[]> => {
+    const claude = getClaude();
+    if (!claude) return [];
+
+    const toneHint = tone
+        ? `TONE/RATING: ${tone}. Calibrate humor and subject matter accordingly.`
+        : 'Keep it PG-13 unless the context clearly implies otherwise.';
+
+    const system = `You are a party game writer creating "Never Have I Ever" statements for a specific group of people.
+
+In Never Have I Ever, a statement is read aloud, and anyone in the group who HAS done it stands up (or takes a sip). Statements should feel real, personal, and reveal something interesting about the people in the room.
+
+Your job: generate statements that feel personally written for THIS group — referencing their shared history, inside jokes, places they've been, and dynamics. Mix mundane confessions with juicier reveals. Keep things fun rather than cruel.`;
+
+    const user = `GROUP TYPE: ${groupType}
+CONTEXT FROM THE PLAYERS: "${customContext}"
+
+Generate exactly ${count} "Never Have I Ever" statements specifically tailored to this group.
+
+Rules:
+- Each statement must start with "Never have I ever..."
+- Write in FIRST person.
+- USE the specifics they gave you — names, places, shared history, inside jokes, situations.
+- Avoid generic statements unless the context twists them.
+- Mix lighthearted confessions with juicier reveals.
+- ${toneHint}
+
+Return a JSON array of exactly ${count} statement strings.`;
+
+    try {
+        const message = await claude.messages.create({
+            model: CLAUDE_MODEL,
+            max_tokens: 4096,
+            system,
+            messages: [{ role: 'user', content: user }],
+            output_config: { format: { type: 'json_schema', schema: STRING_ARRAY_SCHEMA } },
+        });
+        return parseClaudeJson(message);
+    } catch (err) {
+        console.error('[ai/custom_nhie] Claude error:', err);
+        return [];
+    }
+};
+
+const generateCustomNHIEGemini = async (groupType: string, customContext: string, count: number, tone: string): Promise<string[]> => {
+    const gemini = getGemini();
+    if (!gemini) return [];
+
+    const toneInstruction = tone
+        ? `- TONE/RATING: ${tone}. Calibrate humor, edginess, and subject matter accordingly.`
+        : `- Keep it PG-13 unless the context clearly implies otherwise.`;
+
+    const prompt = `You are a party game writer creating "Never Have I Ever" statements for a specific group.
+
+GROUP TYPE: ${groupType}
+CONTEXT FROM THE PLAYERS: "${customContext}"
+
+INSTRUCTIONS:
+- Generate exactly ${count} "Never Have I Ever" statements SPECIFICALLY tailored to this group.
+- Each statement must start with "Never have I ever..." and be in FIRST person.
+- USE the specifics they gave you — names, places, shared history, inside jokes.
+- Mix lighthearted confessions with juicier reveals. Keep things fun rather than cruel.
+${toneInstruction}
+
+Return ONLY the statements as a JSON array of strings. No numbering.`;
+
+    try {
+        const response = await gemini.models.generateContent({
+            model: GEMINI_MODEL,
+            contents: prompt,
+            config: {
+                responseMimeType: 'application/json',
+                responseSchema: { type: Type.ARRAY, items: { type: Type.STRING } },
+            },
+        });
+        return response.text ? (JSON.parse(response.text) as string[]) : [];
+    } catch (err) {
+        console.error('[ai/custom_nhie] Gemini error:', err);
+        return [];
+    }
+};

@@ -189,6 +189,20 @@ export const generateCustomTruthOrDrink = async (
 };
 
 // =============================================================================
+// Custom NHIE — same pattern, no player names
+// =============================================================================
+
+export const generateCustomNeverHaveIEver = async (
+    groupType: string,
+    customContext: string,
+    count: number = 15,
+    tone: string = ''
+): Promise<string[]> => {
+    const data = await callAI<string[]>('custom_nhie', { groupType, customContext, count, tone });
+    return data ?? [];
+};
+
+// =============================================================================
 // Contextual Lies (Two Truths and a Lie)
 // =============================================================================
 

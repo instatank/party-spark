@@ -201,6 +201,7 @@ export const MOST_LIKELY_TO_CATEGORIES = [
 ];
 
 export const NEVER_HAVE_I_EVER_CATEGORIES = [
+    { id: 'custom_vibe', label: 'Create Your Vibe', description: 'Personalised statements, powered by AI.', color: 'bg-gradient-to-r from-violet-600 to-fuchsia-500', isCustom: true },
     { id: 'rehaan', label: 'Rehaan Answers', description: 'Rehaan in the hot seat.', color: 'bg-cyan-600' },
     { id: 'rehaan_asks', label: 'Rehaan Asks', description: 'Rehaan grills the adults.', color: 'bg-orange-500' },
     { id: 'agra', label: 'Agra Confessions', description: 'Mughal secrets & Agra history.', color: 'bg-amber-600' },

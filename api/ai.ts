@@ -10,7 +10,7 @@
 // Types are validated by the dispatch table below; unknown types 400.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleCustomMostLikelyTo, handleCustomTruthOrDrink } from './_lib/handlers-custom';
+import { handleCustomMostLikelyTo, handleCustomTruthOrDrink, handleCustomNeverHaveIEver } from './_lib/handlers-custom';
 import {
     handleCharadesWords,
     handleWouldILieToYou,
@@ -34,6 +34,7 @@ import {
 type AIRequestType =
     | 'custom_mlt'
     | 'custom_tod'
+    | 'custom_nhie'
     | 'charades_words'
     | 'wilty'
     | 'nhie'
@@ -54,6 +55,7 @@ type AIRequestType =
 const DISPATCH: Record<AIRequestType, (params: Record<string, unknown>) => Promise<unknown>> = {
     custom_mlt: (p) => handleCustomMostLikelyTo(p as Parameters<typeof handleCustomMostLikelyTo>[0]),
     custom_tod: (p) => handleCustomTruthOrDrink(p as Parameters<typeof handleCustomTruthOrDrink>[0]),
+    custom_nhie: (p) => handleCustomNeverHaveIEver(p as Parameters<typeof handleCustomNeverHaveIEver>[0]),
     charades_words: (p) => handleCharadesWords(p as Parameters<typeof handleCharadesWords>[0]),
     wilty: (p) => handleWouldILieToYou(p as Parameters<typeof handleWouldILieToYou>[0]),
     nhie: (p) => handleNeverHaveIEver(p as Parameters<typeof handleNeverHaveIEver>[0]),
