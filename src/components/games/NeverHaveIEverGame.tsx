@@ -440,17 +440,18 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                     );
                 })()}
 
-                {/* I've Never / I Have — same outlined-CTA treatment as the
+                {/* I've Never / I Have — outline-only CTAs matching the
                     TOD Truth/Drink row. Emerald for the innocent claim,
-                    rose for the confession. Both buttons advance to the
-                    next statement (NHIE has no per-player turn so the
-                    declaration is purely flavor). */}
+                    rose for the confession. Tint only appears on hover.
+                    Both buttons advance to the next statement (NHIE has
+                    no per-player turn so the declaration is purely
+                    flavor). */}
                 <div className="w-full max-w-sm mt-12 flex flex-col gap-3">
                     <div className="flex gap-3">
                         <button
                             onClick={handleNextCard}
                             disabled={isLoading}
-                            className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-300 bg-emerald-500/10 border-2 border-emerald-500/60 hover:bg-emerald-500/20 hover:border-emerald-400 hover:text-emerald-200 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <ShieldCheck size={18} />
                             I've Never
@@ -458,7 +459,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                         <button
                             onClick={handleNextCard}
                             disabled={isLoading}
-                            className="flex-1 py-4 rounded-xl font-bold text-base text-rose-300 bg-rose-500/10 border-2 border-rose-500/60 hover:bg-rose-500/20 hover:border-rose-400 hover:text-rose-200 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 py-4 rounded-xl font-bold text-base text-rose-600 bg-transparent border-2 border-rose-500/60 hover:bg-rose-500/10 hover:border-rose-500 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Hand size={18} />
                             I Have
