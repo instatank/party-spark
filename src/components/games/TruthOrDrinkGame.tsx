@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Card, ScreenHeader, Button } from '../ui/Layout';
+import { ScreenHeader, Button } from '../ui/Layout';
 import type { LucideIcon } from 'lucide-react';
 import { Wine, Sparkles, Flame, ArrowRight, ChevronRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2 } from 'lucide-react';
 import questionData from '../../data/truth_or_drink.json';
@@ -41,7 +41,20 @@ const PLACEHOLDER_EXAMPLES = [
 
 const CUSTOM_DECK_SIZE = 15;
 
+// Per-deck palette — solid (hex) colors the category-screen accents AND the
+// new prompt-card decorative blob + header pill. tint (rgba 18%) backs the
+// blob and pill bg. Single source of truth shared across the two screens.
+const DECK_PALETTE: Record<Category, { solid: string; tint: string }> = {
+    custom:  { solid: '#C026D3', tint: 'rgba(192, 38, 211, 0.18)' }, // fuchsia-600
+    classic: { solid: '#8B5CE0', tint: 'rgba(139, 92, 224, 0.18)' }, // violet
+    spicy:   { solid: '#F43F5E', tint: 'rgba(244, 63, 94, 0.18)' },  // rose-500
+    deep:    { solid: '#10B981', tint: 'rgba(16, 185, 129, 0.18)' }, // emerald-500
+    exes:    { solid: '#EC4899', tint: 'rgba(236, 72, 153, 0.18)' }, // pink-500
+    chaos:   { solid: '#A855F7', tint: 'rgba(168, 85, 247, 0.18)' }, // purple-500
+};
+
 type Choice = 'truth' | 'drink';
+type PlayMode = 'named' | 'just_play';
 
 interface CategoryMeta {
     id: Category;
@@ -158,6 +171,10 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     const [turnIndex, setTurnIndex] = useState(0);
     const [roundIndex, setRoundIndex] = useState(0);
     const [lastChoice, setLastChoice] = useState<Choice | null>(null);
+    // 'named' = pass-and-play with PASS / RESULT screens.
+    // 'just_play' = simplified — straight from CATEGORY_SELECT through PROMPT
+    // → next PROMPT, no player names, no pass screens, no result screens.
+    const [playMode, setPlayMode] = useState<PlayMode>('named');
 
     // Custom-deck state
     const [customGroupType, setCustomGroupType] = useState('friends');
@@ -191,6 +208,9 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     // ========================
     const handleCategorySelect = (c: Category) => {
         setCategory(c);
+        // Always reset to named mode at category select — Just Play is opt-in
+        // from the SETUP screen, not the default.
+        setPlayMode('named');
         setGameState('SETUP');
     };
 
@@ -264,8 +284,31 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
 
     const handleReady = () => setGameState('PROMPT');
 
+    // Just-Play kickoff — bypass player setup and the PASS handoff screen.
+    // Reuses the existing deck/category logic; just lands on PROMPT directly.
+    const handleJustPlay = () => {
+        setPlayMode('just_play');
+        setTurnIndex(0);
+        setRoundIndex(0);
+        setLastChoice(null);
+        setGameState('PROMPT');
+    };
+
     const handleChoice = (choice: Choice) => {
         setLastChoice(choice);
+        // Just-Play skips the RESULT confirmation screen — choice is purely
+        // flavor here, no scoring/tracking. Advance straight to next prompt.
+        if (playMode === 'just_play') {
+            if (isLastRound) {
+                setGameState('END');
+                return;
+            }
+            setRoundIndex(i => i + 1);
+            setTurnIndex(i => i + 1);
+            setLastChoice(null);
+            // Stay on PROMPT — no PASS screen in just_play
+            return;
+        }
         setGameState('RESULT');
     };
 
@@ -292,6 +335,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setCustomContext('');
         setCustomTone(null);
         setCustomError('');
+        setPlayMode('named');
     };
 
     // ========================
@@ -302,15 +346,6 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     // Custom Vibe gets a 2px ring + glow; the other decks get a 3px inset
     // left bar + a 33% center-aligned bottom line in the deck color.
     if (gameState === 'CATEGORY_SELECT') {
-        const TILES: Record<Category, string> = {
-            custom:  '#C026D3', // fuchsia-600
-            classic: '#8B5CE0', // violet
-            spicy:   '#F43F5E', // rose-500
-            deep:    '#10B981', // emerald-500
-            exes:    '#EC4899', // pink-500
-            chaos:   '#A855F7', // purple-500
-        };
-
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Truth or Drink" onBack={onExit} onHome={onExit} />
@@ -320,7 +355,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {CATEGORIES.map(cat => {
-                            const color = TILES[cat.id] || '#94A3B8';
+                            const color = DECK_PALETTE[cat.id]?.solid || '#94A3B8';
                             const isCustom = cat.id === 'custom';
                             return (
                                 <button
@@ -430,6 +465,15 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     >
                         Start Drinking <ArrowRight className="inline ml-2" size={20} />
                     </Button>
+
+                    {/* Just-Play escape hatch — skip names, no pass-and-play, no
+                        scoring. Just cards one at a time. */}
+                    <button
+                        onClick={handleJustPlay}
+                        className="w-full mt-3 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white border border-white/10 hover:border-white/30 transition-colors"
+                    >
+                        Or, Just Play — no names, no fuss
+                    </button>
                 </div>
             </div>
         );
@@ -622,50 +666,63 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
 
     // PROMPT — Truth or Drink
     if (gameState === 'PROMPT') {
+        const palette = DECK_PALETTE[category] || { solid: '#94A3B8', tint: 'rgba(148, 163, 184, 0.18)' };
+        const isJustPlay = playMode === 'just_play';
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title={`${currentPlayer}'s Turn`} onBack={() => setGameState('PASS')} onHome={onExit} />
+                <ScreenHeader
+                    title={isJustPlay ? `${categoryMeta.title} ${categoryMeta.emoji}` : `${currentPlayer}'s Turn`}
+                    onBack={() => setGameState(isJustPlay ? 'CATEGORY_SELECT' : 'PASS')}
+                    onHome={onExit}
+                />
                 <div className="px-2 pb-4 flex-1 flex flex-col">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className={`text-xs font-bold ${categoryMeta.accentText} uppercase tracking-widest`}>
-                            {categoryMeta.title} • Round {roundIndex + 1}/{deck.length}
-                        </span>
-                        <span className="text-xs font-medium text-gray-500">
-                            {categoryMeta.emoji}
-                        </span>
+                    {/* Card body — same MLT play-screen styling as MLT/Charades/
+                        Taboo/NHIE. Portrait 3:4, surface bg, decorative blob,
+                        deck-color header pill, Playfair prompt centered, footer
+                        with round counter + italic PartySpark. */}
+                    <div className="flex-1 flex items-center justify-center pt-2 pb-4">
+                        <div
+                            className="w-full aspect-[3/4] max-h-[460px] bg-party-surface border border-white/10 rounded-[22px] p-6 flex flex-col relative overflow-hidden"
+                            style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}
+                        >
+                            <div
+                                className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none"
+                                style={{ background: palette.tint }}
+                            />
+                            <div
+                                className="self-start text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md relative z-10"
+                                style={{ background: palette.tint, color: palette.solid }}
+                            >
+                                Truth or Drink · {categoryMeta.title}
+                            </div>
+                            <div className="flex-1 flex items-center justify-center relative z-10 px-1">
+                                <p className="font-serif font-semibold text-[24px] leading-[1.2] tracking-[-0.015em] text-white text-center">
+                                    {currentQuestion}
+                                </p>
+                            </div>
+                            <div className="text-[11px] text-gray-400 flex items-center justify-between relative z-10">
+                                <span>Round {roundIndex + 1} of {deck.length}</span>
+                                <span className="font-serif italic text-[12px]" style={{ color: palette.solid }}>PartySpark</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <Card className="mb-6 p-6 border-white/10 relative overflow-hidden">
-                        <div className={`absolute top-0 right-0 w-40 h-40 opacity-10 rounded-full blur-3xl -mr-10 -mt-10 bg-gradient-to-br ${categoryMeta.gradient}`} />
-                        <div className="relative z-10">
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">The Question</p>
-                            <p className="text-xl font-serif font-bold text-white leading-snug">{currentQuestion}</p>
-                        </div>
-                    </Card>
-
-                    <div className="space-y-3 flex-1 flex flex-col justify-end">
+                    {/* Truth / Drink — slim side-by-side row, MLT Skip/Next sizing.
+                        Choice is flavor only in just_play (no scoring). */}
+                    <div className="flex gap-3">
                         <button
                             onClick={() => handleChoice('truth')}
-                            className="w-full bg-gradient-to-r from-emerald-600 to-teal-500 text-white p-5 rounded-2xl flex items-center gap-4 active:scale-95 transition-all shadow-lg shadow-emerald-900/30 group"
+                            className="flex-1 py-3 rounded-lg font-medium text-sm bg-party-surface text-white border border-white/5 hover:bg-slate-600 transition-all active:scale-95 flex items-center justify-center gap-1.5"
                         >
-                            <MessageCircleHeart size={28} className="text-white shrink-0" />
-                            <div className="text-left flex-1">
-                                <h3 className="font-bold text-lg">Tell the Truth</h3>
-                                <p className="text-sm text-emerald-100/80">Spill it. No take-backs.</p>
-                            </div>
-                            <ArrowRight size={22} className="text-white/80 shrink-0 group-active:translate-x-1 transition-transform" />
+                            <MessageCircleHeart size={16} />
+                            Tell the Truth
                         </button>
-
                         <button
                             onClick={() => handleChoice('drink')}
-                            className="w-full bg-gradient-to-r from-amber-600 to-red-500 text-white p-5 rounded-2xl flex items-center gap-4 active:scale-95 transition-all shadow-lg shadow-red-900/30 group"
+                            className="flex-1 py-3 rounded-lg font-medium text-sm bg-party-surface text-white border border-white/5 hover:bg-slate-600 transition-all active:scale-95 flex items-center justify-center gap-1.5"
                         >
-                            <GlassWater size={28} className="text-white shrink-0" />
-                            <div className="text-left flex-1">
-                                <h3 className="font-bold text-lg">Take a Drink 🥃</h3>
-                                <p className="text-sm text-amber-100/80">Secrets stay secret. Bottoms up.</p>
-                            </div>
-                            <ArrowRight size={22} className="text-white/80 shrink-0 group-active:translate-x-1 transition-transform" />
+                            <GlassWater size={16} />
+                            Take a Drink 🥃
                         </button>
                     </div>
                 </div>
