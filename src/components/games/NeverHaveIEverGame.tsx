@@ -5,22 +5,40 @@ import neverHaveIEverData from '../../data/never_have_i_ever.json';
 import { generateNeverHaveIEver, generateCustomNeverHaveIEver } from '../../services/geminiService';
 import type { LucideIcon } from 'lucide-react';
 import { Sparkles, Lock, ChevronRight, Hand, MessageCircle, Flame, Landmark, Users, Wand2, ShieldCheck } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface GameProps {
     onExit: () => void;
 }
 
 // Per-category palette shared by the SELECT screen tile accents and the PLAY
-// screen card body (decorative blob, header pill, italic PartySpark footer).
-// Hex stays as solid; rgba 18% gives the tint variant.
-const CATEGORY_PALETTE: Record<string, { Icon: LucideIcon; solid: string; tint: string }> = {
-    custom_vibe:      { Icon: Wand2,         solid: '#8B5CE0', tint: 'rgba(139, 92, 224, 0.18)' }, // violet
-    rehaan:           { Icon: MessageCircle, solid: '#06B6D4', tint: 'rgba(6, 182, 212, 0.18)' },   // cyan-500
-    rehaan_asks:      { Icon: Flame,         solid: '#F97316', tint: 'rgba(249, 115, 22, 0.18)' },  // orange-500
-    agra:             { Icon: Landmark,      solid: '#D97706', tint: 'rgba(217, 119, 6, 0.18)' },   // amber-600
-    bbf:              { Icon: Users,         solid: '#9333EA', tint: 'rgba(147, 51, 234, 0.18)' },  // purple-600
-    classic:          { Icon: Hand,          solid: '#10B981', tint: 'rgba(16, 185, 129, 0.18)' },  // emerald-500
-    guilty_pleasures: { Icon: Lock,          solid: '#EC4899', tint: 'rgba(236, 72, 153, 0.18)' },  // pink-500
+// screen card body. Two variants — light values darkened ~20% and tint
+// alpha bumped so blobs read against #FFFFFF surfaces.
+type Pal = { Icon: LucideIcon; solid: string; tintAlpha: number };
+const CATEGORY_DARK: Record<string, Pal> = {
+    custom_vibe:      { Icon: Wand2,         solid: '#8B5CE0', tintAlpha: 0.18 },
+    rehaan:           { Icon: MessageCircle, solid: '#06B6D4', tintAlpha: 0.18 },
+    rehaan_asks:      { Icon: Flame,         solid: '#F97316', tintAlpha: 0.18 },
+    agra:             { Icon: Landmark,      solid: '#D97706', tintAlpha: 0.18 },
+    bbf:              { Icon: Users,         solid: '#9333EA', tintAlpha: 0.18 },
+    classic:          { Icon: Hand,          solid: '#10B981', tintAlpha: 0.18 },
+    guilty_pleasures: { Icon: Lock,          solid: '#EC4899', tintAlpha: 0.18 },
+};
+const CATEGORY_LIGHT: Record<string, Pal> = {
+    custom_vibe:      { Icon: Wand2,         solid: '#9266D2', tintAlpha: 0.30 }, // Azure tiles.mostLikely
+    rehaan:           { Icon: MessageCircle, solid: '#0891B2', tintAlpha: 0.26 },
+    rehaan_asks:      { Icon: Flame,         solid: '#D9531B', tintAlpha: 0.26 },
+    agra:             { Icon: Landmark,      solid: '#A35804', tintAlpha: 0.26 },
+    bbf:              { Icon: Users,         solid: '#7B27C9', tintAlpha: 0.26 },
+    classic:          { Icon: Hand,          solid: '#0E8C66', tintAlpha: 0.26 },
+    guilty_pleasures: { Icon: Lock,          solid: '#C72D7F', tintAlpha: 0.26 },
+};
+const hexToRgba = (hex: string, alpha: number): string => {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
 // Custom-vibe configuration mirrors MLT/TOD — same group/tone chips,
@@ -49,6 +67,12 @@ const PLACEHOLDER_EXAMPLES = [
 ];
 
 export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
+    const { theme } = useTheme();
+    const PALETTE_MAP = theme === 'light' ? CATEGORY_LIGHT : CATEGORY_DARK;
+    const catPalette = (id: string) => {
+        const e = PALETTE_MAP[id] || { Icon: Sparkles as LucideIcon, solid: '#94A3B8', tintAlpha: 0.18 };
+        return { Icon: e.Icon, solid: e.solid, tint: hexToRgba(e.solid, e.tintAlpha) };
+    };
     const [gameState, setGameState] = useState<'SELECT' | 'CUSTOM_SETUP' | 'LOADING' | 'PLAY'>('SELECT');
     const [category, setCategory] = useState<string>('');
     const [cards, setCards] = useState<string[]>([]);
@@ -142,15 +166,15 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                 <ScreenHeader title="Never Have I Ever" onBack={onExit} onHome={onExit} />
 
                 <div className="flex-1 overflow-y-auto pb-8">
-                    <p className="text-gray-400 mb-4 text-sm text-center">
+                    <p className="text-muted mb-4 text-sm text-center">
                         Pick a category. Stand up if you've done it. Last one sitting wins.
                     </p>
 
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {NEVER_HAVE_I_EVER_CATEGORIES.map((cat) => {
-                            const meta = CATEGORY_PALETTE[cat.id];
-                            const Icon = meta?.Icon || Sparkles;
-                            const color = meta?.solid || '#94A3B8';
+                            const meta = catPalette(cat.id);
+                            const Icon = meta.Icon;
+                            const color = meta.solid;
                             const isCustom = cat.id === 'custom_vibe';
                             return (
                                 <button
@@ -162,7 +186,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                     className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                                 >
                                     <div
-                                        className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden"
+                                        className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden"
                                         style={isCustom ? {
                                             borderColor: color,
                                             borderWidth: 2,
@@ -186,10 +210,10 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                                 <Icon size={16} />
                                             </span>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="text-base font-bold text-white leading-tight truncate">{cat.label}</h3>
-                                                <p className="text-xs text-gray-400 leading-snug truncate">{cat.description}</p>
+                                                <h3 className="text-base font-bold text-ink leading-tight truncate">{cat.label}</h3>
+                                                <p className="text-xs text-muted leading-snug truncate">{cat.description}</p>
                                             </div>
-                                            <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
+                                            <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
                                         </div>
                                     </div>
                                 </button>
@@ -213,17 +237,17 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                     {/* Intro */}
                     <div className="text-center mb-6">
                         <div className="inline-flex bg-gradient-to-r from-violet-600/20 to-fuchsia-500/20 border border-violet-500/30 rounded-2xl p-4 mb-3">
-                            <Wand2 size={32} className="text-violet-400" />
+                            <Wand2 size={32} className="text-vibe" />
                         </div>
-                        <h2 className="text-xl font-bold text-white mb-1">Personalised Statements</h2>
-                        <p className="text-gray-400 text-sm max-w-sm mx-auto">
+                        <h2 className="text-xl font-bold text-ink mb-1">Personalised Statements</h2>
+                        <p className="text-muted text-sm max-w-sm mx-auto">
                             Tell us about your group and AI will write "Never Have I Ever" statements that feel like they were written just for you.
                         </p>
                     </div>
 
                     {/* Step 1: Group Type Chips */}
                     <div className="mb-6">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
+                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
                             1. Who's playing?
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -233,8 +257,8 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                     onClick={() => setSelectedGroupType(g.id)}
                                     className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
                                         ${selectedGroupType === g.id
-                                            ? 'bg-violet-600/30 border-violet-500 text-violet-300 shadow-lg shadow-violet-500/20'
-                                            : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                                            ? 'bg-violet-600/30 border-violet-500 text-vibe shadow-lg shadow-violet-500/20'
+                                            : 'bg-surface-alt border-divider text-muted hover:border-ink-soft/40'
                                         }`}
                                 >
                                     {g.label}
@@ -245,8 +269,8 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
 
                     {/* Step 2: Tone Chips (optional) */}
                     <div className="mb-6">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
-                            2. Set the tone <span className="text-gray-600 normal-case tracking-normal font-medium">(optional)</span>
+                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
+                            2. Set the tone <span className="text-muted normal-case tracking-normal font-medium">(optional)</span>
                         </label>
                         <div className="flex flex-wrap gap-2">
                             {TONE_OPTIONS.map(t => (
@@ -255,8 +279,8 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                     onClick={() => setSelectedTone(selectedTone === t.id ? null : t.id)}
                                     className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
                                         ${selectedTone === t.id
-                                            ? 'bg-violet-600/30 border-violet-500 text-violet-300 shadow-lg shadow-violet-500/20'
-                                            : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                                            ? 'bg-violet-600/30 border-violet-500 text-vibe shadow-lg shadow-violet-500/20'
+                                            : 'bg-surface-alt border-divider text-muted hover:border-ink-soft/40'
                                         }`}
                                 >
                                     {t.label}
@@ -264,7 +288,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                             ))}
                         </div>
                         {selectedTone && (
-                            <p className="text-xs text-gray-500 mt-2 pl-1">
+                            <p className="text-xs text-muted mt-2 pl-1">
                                 {TONE_OPTIONS.find(t => t.id === selectedTone)?.hint}
                             </p>
                         )}
@@ -272,10 +296,10 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
 
                     {/* Step 3: Context Text Box */}
                     <div className="mb-6">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
+                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
                             3. The secret sauce — describe your group
                         </label>
-                        <div className="bg-white/5 border border-white/10 rounded-2xl p-1 focus-within:border-violet-500/50 transition-colors">
+                        <div className="bg-surface-alt border border-divider rounded-2xl p-1 focus-within:border-violet-500/50 transition-colors">
                             <textarea
                                 value={customContext}
                                 onChange={(e) => {
@@ -284,14 +308,14 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                 }}
                                 placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
                                 rows={5}
-                                className="w-full bg-transparent p-4 text-white placeholder-gray-600 text-sm leading-relaxed resize-none focus:outline-none"
+                                className="w-full bg-transparent p-4 text-ink placeholder:text-muted text-sm leading-relaxed resize-none focus:outline-none"
                             />
-                            <div className="flex justify-between items-center px-4 py-2 border-t border-white/5">
-                                <span className={`text-xs font-bold ${wordCount > WORD_LIMIT ? 'text-red-400' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-400' : 'text-gray-500'}`}>
+                            <div className="flex justify-between items-center px-4 py-2 border-t border-divider-soft">
+                                <span className={`text-xs font-bold ${wordCount > WORD_LIMIT ? 'text-red-500' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-500' : 'text-muted'}`}>
                                     {wordCount}/{WORD_LIMIT} words
                                 </span>
                                 {wordCount > 0 && wordCount <= 15 && (
-                                    <span className="text-xs text-amber-400 font-medium">A bit more detail will help!</span>
+                                    <span className="text-xs text-amber-500 font-medium">A bit more detail will help!</span>
                                 )}
                             </div>
                         </div>
@@ -299,18 +323,18 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
 
                     {/* Pro Tips */}
                     <div className="bg-violet-900/20 border border-violet-500/20 rounded-xl p-4 mb-6">
-                        <p className="text-xs text-violet-300 font-bold uppercase tracking-widest mb-2">💡 Pro Tips for Better Cards</p>
-                        <ul className="text-xs text-gray-400 space-y-1.5">
-                            <li>• <strong className="text-gray-300">Name names:</strong> "Aisha hates confrontation" → gold</li>
-                            <li>• <strong className="text-gray-300">Be specific:</strong> "Goa trip where Priya lost her passport"</li>
-                            <li>• <strong className="text-gray-300">Add dynamics:</strong> exes, rivalries, running jokes</li>
+                        <p className="text-xs text-vibe font-bold uppercase tracking-widest mb-2">💡 Pro Tips for Better Cards</p>
+                        <ul className="text-xs text-muted space-y-1.5">
+                            <li>• <strong className="text-ink-soft">Name names:</strong> "Aisha hates confrontation" → gold</li>
+                            <li>• <strong className="text-ink-soft">Be specific:</strong> "Goa trip where Priya lost her passport"</li>
+                            <li>• <strong className="text-ink-soft">Add dynamics:</strong> exes, rivalries, running jokes</li>
                         </ul>
                     </div>
 
                     {/* Error */}
                     {customError && (
                         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4 text-center">
-                            <p className="text-red-400 text-sm font-medium">{customError}</p>
+                            <p className="text-red-500 text-sm font-medium">{customError}</p>
                         </div>
                     )}
 
@@ -321,7 +345,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                         className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2
                             ${canGenerate
                                 ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:from-violet-500 hover:to-fuchsia-400 text-white shadow-lg shadow-violet-600/30 active:scale-[0.98]'
-                                : 'bg-white/5 text-gray-500 cursor-not-allowed'
+                                : 'bg-surface-alt text-muted cursor-not-allowed'
                             }`}
                     >
                         <Sparkles size={20} />
@@ -339,11 +363,11 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                 <div className="flex-1 flex flex-col items-center justify-center gap-6">
                     <div className="relative">
                         <div className="w-16 h-16 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
-                        <Wand2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-violet-400 animate-pulse" size={24} />
+                        <Wand2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-vibe animate-pulse" size={24} />
                     </div>
                     <div className="text-center">
-                        <p className="text-xl font-bold text-white mb-1">Crafting your personalised statements…</p>
-                        <p className="text-gray-500 text-sm">AI is reading your context and writing cards just for you.</p>
+                        <p className="text-xl font-bold text-ink mb-1">Crafting your personalised statements…</p>
+                        <p className="text-muted text-sm">AI is reading your context and writing cards just for you.</p>
                     </div>
                 </div>
             </div>
@@ -385,12 +409,12 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                     counter + italic PartySpark footer (replaces the old floating
                     number badge). */}
                 {(() => {
-                    const palette = CATEGORY_PALETTE[category] || { solid: '#94A3B8', tint: 'rgba(148, 163, 184, 0.18)' };
+                    const palette = catPalette(category);
                     return (
                         <div className="w-full max-w-sm relative z-10 perspective-1000">
                             <div
-                                className="w-full aspect-[3/4] max-h-[460px] bg-party-surface border border-white/10 rounded-[22px] p-7 flex flex-col relative overflow-hidden"
-                                style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}
+                                className="w-full aspect-[3/4] max-h-[460px] bg-surface border border-divider rounded-[22px] p-7 flex flex-col relative overflow-hidden"
+                                style={{ boxShadow: 'var(--shadow-card)' }}
                             >
                                 <div
                                     className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none"
@@ -403,11 +427,11 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                     Never Have I Ever
                                 </div>
                                 <div className="flex-1 flex items-center justify-center relative z-10">
-                                    <p className="font-serif font-semibold text-[24px] leading-[1.2] tracking-[-0.015em] text-white text-center whitespace-pre-wrap">
+                                    <p className="font-serif font-semibold text-[24px] leading-[1.2] tracking-[-0.015em] text-ink text-center whitespace-pre-wrap">
                                         {cards[currentIndex]}
                                     </p>
                                 </div>
-                                <div className="text-[11px] text-gray-400 flex items-center justify-between relative z-10">
+                                <div className="text-[11px] text-muted flex items-center justify-between relative z-10">
                                     <span>Card {currentIndex + 1} of {cards.length}</span>
                                     <span className="font-serif italic text-[12px]" style={{ color: palette.solid }}>PartySpark</span>
                                 </div>
@@ -441,11 +465,11 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                         </button>
                     </div>
                     {isLoading ? (
-                        <p className="text-center text-xs text-violet-400 font-medium flex items-center justify-center gap-2">
+                        <p className="text-center text-xs text-vibe font-medium flex items-center justify-center gap-2">
                             <Sparkles className="animate-spin" size={14} /> Generating more statements…
                         </p>
                     ) : (
-                        <p className="text-center text-xs text-neutral-500 font-medium">Stand up if you've done it!</p>
+                        <p className="text-center text-xs text-muted font-medium">Stand up if you've done it!</p>
                     )}
                 </div>
             </div>

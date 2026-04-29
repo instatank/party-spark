@@ -4,6 +4,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Sparkles, Flame, ArrowRight, ChevronRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2 } from 'lucide-react';
 import questionData from '../../data/truth_or_drink.json';
 import { generateCustomTruthOrDrink } from '../../services/geminiService';
+import { useTheme } from '../../contexts/ThemeContext';
 
 type Category = 'classic' | 'spicy' | 'deep' | 'exes' | 'chaos' | 'custom';
 type GameState =
@@ -39,16 +40,34 @@ const PLACEHOLDER_EXAMPLES = [
 
 const CUSTOM_DECK_SIZE = 15;
 
-// Per-deck palette — solid (hex) colors the category-screen accents AND the
-// new prompt-card decorative blob + header pill. tint (rgba 18%) backs the
-// blob and pill bg. Single source of truth shared across the two screens.
-const DECK_PALETTE: Record<Category, { solid: string; tint: string }> = {
-    custom:  { solid: '#C026D3', tint: 'rgba(192, 38, 211, 0.18)' }, // fuchsia-600
-    classic: { solid: '#8B5CE0', tint: 'rgba(139, 92, 224, 0.18)' }, // violet
-    spicy:   { solid: '#F43F5E', tint: 'rgba(244, 63, 94, 0.18)' },  // rose-500
-    deep:    { solid: '#10B981', tint: 'rgba(16, 185, 129, 0.18)' }, // emerald-500
-    exes:    { solid: '#EC4899', tint: 'rgba(236, 72, 153, 0.18)' }, // pink-500
-    chaos:   { solid: '#A855F7', tint: 'rgba(168, 85, 247, 0.18)' }, // purple-500
+// Per-deck palette — solid + tint for the category-screen accents + the
+// prompt card's decorative blob and header pill. Two variants so the
+// colors actually read against either bg (dark slate vs Azure Sky).
+type DeckEntry = { solid: string; tintAlpha: number };
+const DECK_PALETTE_DARK: Record<Category, DeckEntry> = {
+    custom:  { solid: '#C026D3', tintAlpha: 0.18 }, // fuchsia-600
+    classic: { solid: '#8B5CE0', tintAlpha: 0.18 }, // violet
+    spicy:   { solid: '#F43F5E', tintAlpha: 0.18 }, // rose-500
+    deep:    { solid: '#10B981', tintAlpha: 0.18 }, // emerald-500
+    exes:    { solid: '#EC4899', tintAlpha: 0.18 }, // pink-500
+    chaos:   { solid: '#A855F7', tintAlpha: 0.18 }, // purple-500
+};
+const DECK_PALETTE_LIGHT: Record<Category, DeckEntry> = {
+    // Darkened ~20% from dark mode + tint alpha bumped so the blob still
+    // reads against #FFFFFF surfaces.
+    custom:  { solid: '#A30FB6', tintAlpha: 0.28 },
+    classic: { solid: '#6B3DB8', tintAlpha: 0.26 },
+    spicy:   { solid: '#D02644', tintAlpha: 0.26 },
+    deep:    { solid: '#0E8C66', tintAlpha: 0.26 },
+    exes:    { solid: '#C72D7F', tintAlpha: 0.26 },
+    chaos:   { solid: '#8635D6', tintAlpha: 0.26 },
+};
+const hexToRgba = (hex: string, alpha: number): string => {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
 type Choice = 'truth' | 'drink';
@@ -76,7 +95,7 @@ const CATEGORIES: CategoryMeta[] = [
         emoji: '✨',
         gradient: 'from-violet-600 to-fuchsia-500',
         shadow: 'shadow-violet-900/30',
-        accentText: 'text-fuchsia-400',
+        accentText: 'text-fuchsia-500',
         accentBorderFocus: 'focus:border-fuchsia-500',
         accentBorderLeft: 'border-l-fuchsia-500',
         accentBorderBottom: 'border-b-fuchsia-500',
@@ -89,7 +108,7 @@ const CATEGORIES: CategoryMeta[] = [
         emoji: '🍷',
         gradient: 'from-violet-600 to-indigo-500',
         shadow: 'shadow-violet-900/30',
-        accentText: 'text-violet-400',
+        accentText: 'text-vibe',
         accentBorderFocus: 'focus:border-violet-500',
         accentBorderLeft: 'border-l-violet-500',
         accentBorderBottom: 'border-b-violet-500',
@@ -102,7 +121,7 @@ const CATEGORIES: CategoryMeta[] = [
         emoji: '🌶️',
         gradient: 'from-rose-600 to-orange-500',
         shadow: 'shadow-rose-900/30',
-        accentText: 'text-rose-400',
+        accentText: 'text-rose-500',
         accentBorderFocus: 'focus:border-rose-500',
         accentBorderLeft: 'border-l-rose-500',
         accentBorderBottom: 'border-b-rose-500',
@@ -115,7 +134,7 @@ const CATEGORIES: CategoryMeta[] = [
         emoji: '🌊',
         gradient: 'from-emerald-600 to-teal-500',
         shadow: 'shadow-emerald-900/30',
-        accentText: 'text-emerald-400',
+        accentText: 'text-emerald-500',
         accentBorderFocus: 'focus:border-emerald-500',
         accentBorderLeft: 'border-l-emerald-500',
         accentBorderBottom: 'border-b-emerald-500',
@@ -128,7 +147,7 @@ const CATEGORIES: CategoryMeta[] = [
         emoji: '💔',
         gradient: 'from-pink-600 to-red-500',
         shadow: 'shadow-pink-900/30',
-        accentText: 'text-pink-400',
+        accentText: 'text-pink-500',
         accentBorderFocus: 'focus:border-pink-500',
         accentBorderLeft: 'border-l-pink-500',
         accentBorderBottom: 'border-b-pink-500',
@@ -141,7 +160,7 @@ const CATEGORIES: CategoryMeta[] = [
         emoji: '🌀',
         gradient: 'from-fuchsia-600 to-purple-500',
         shadow: 'shadow-fuchsia-900/30',
-        accentText: 'text-fuchsia-400',
+        accentText: 'text-fuchsia-500',
         accentBorderFocus: 'focus:border-fuchsia-500',
         accentBorderLeft: 'border-l-fuchsia-500',
         accentBorderBottom: 'border-b-fuchsia-500',
@@ -163,6 +182,12 @@ const shuffle = <T,>(arr: T[]): T[] => {
 };
 
 export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
+    const { theme } = useTheme();
+    const DECK_MAP = theme === 'light' ? DECK_PALETTE_LIGHT : DECK_PALETTE_DARK;
+    const deckPalette = (id: Category): { solid: string; tint: string } => {
+        const e = DECK_MAP[id] || { solid: '#94A3B8', tintAlpha: 0.18 };
+        return { solid: e.solid, tint: hexToRgba(e.solid, e.tintAlpha) };
+    };
     const [gameState, setGameState] = useState<GameState>('CATEGORY_SELECT');
     const [category, setCategory] = useState<Category>('classic');
     const [players, setPlayers] = useState<string[]>(['', '']);
@@ -346,13 +371,13 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Truth or Drink" onBack={onExit} onHome={onExit} />
-                <p className="text-gray-400 mb-4 text-sm text-center">
+                <p className="text-muted mb-4 text-sm text-center">
                     Pick a deck. Answer honestly — or take a sip.
                 </p>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {CATEGORIES.map(cat => {
-                            const color = DECK_PALETTE[cat.id]?.solid || '#94A3B8';
+                            const color = deckPalette(cat.id).solid;
                             const isCustom = cat.id === 'custom';
                             return (
                                 <button
@@ -361,7 +386,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                     className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                                 >
                                     <div
-                                        className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden"
+                                        className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden"
                                         style={isCustom ? {
                                             borderColor: color,
                                             borderWidth: 2,
@@ -385,13 +410,13 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                                 <cat.Icon size={16} />
                                             </span>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="text-base font-bold text-white leading-tight flex items-center gap-1.5">
+                                                <h3 className="text-base font-bold text-ink leading-tight flex items-center gap-1.5">
                                                     <span className="truncate">{cat.title}</span>
                                                     <span className="text-sm flex-shrink-0">{cat.emoji}</span>
                                                 </h3>
-                                                <p className="text-xs text-gray-400 leading-snug truncate">{cat.tagline}</p>
+                                                <p className="text-xs text-muted leading-snug truncate">{cat.tagline}</p>
                                             </div>
-                                            <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
+                                            <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
                                         </div>
                                     </div>
                                 </button>
@@ -413,8 +438,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         <span className={`text-xs font-bold ${categoryMeta.accentText} uppercase tracking-widest`}>
                             {categoryMeta.title} Deck
                         </span>
-                        <span className="text-gray-600">•</span>
-                        <span className="text-xs font-medium text-gray-500">
+                        <span className="text-muted">•</span>
+                        <span className="text-xs font-medium text-muted">
                             {TOTAL_ROUNDS} rounds
                         </span>
                     </div>
@@ -431,12 +456,12 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                     onChange={e => handlePlayerNameChange(i, e.target.value)}
                                     placeholder={`Player ${i + 1}`}
                                     maxLength={15}
-                                    className={`flex-1 bg-slate-800 border border-slate-700 ${categoryMeta.accentBorderFocus} rounded-xl p-3 text-white font-medium placeholder-gray-600 outline-none transition-colors`}
+                                    className={`flex-1 bg-surface-alt border border-divider ${categoryMeta.accentBorderFocus} rounded-xl p-3 text-ink font-medium placeholder:text-muted outline-none transition-colors`}
                                 />
                                 {players.length > MIN_PLAYERS && (
                                     <button
                                         onClick={() => handleRemovePlayer(i)}
-                                        className="p-2 rounded-lg bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-colors"
+                                        className="p-2 rounded-lg bg-surface-alt hover:bg-red-500/20 text-muted hover:text-red-500 transition-colors"
                                         aria-label={`Remove player ${i + 1}`}
                                     >
                                         <X size={18} />
@@ -448,7 +473,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         {players.length < MAX_PLAYERS && (
                             <button
                                 onClick={handleAddPlayer}
-                                className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-white/10 hover:border-white/30 text-gray-400 hover:text-white transition-colors"
+                                className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-divider hover:border-ink-soft text-muted hover:text-ink transition-colors"
                             >
                                 <Plus size={18} /> Add Player
                             </button>
@@ -493,17 +518,17 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     {/* Intro */}
                     <div className="text-center mb-6">
                         <div className="inline-flex bg-gradient-to-r from-violet-600/20 to-fuchsia-500/20 border border-violet-500/30 rounded-2xl p-4 mb-3">
-                            <Wand2 size={32} className="text-violet-400" />
+                            <Wand2 size={32} className="text-vibe" />
                         </div>
-                        <h2 className="text-xl font-bold text-white mb-1">Personalised Questions</h2>
-                        <p className="text-gray-400 text-sm max-w-sm mx-auto">
+                        <h2 className="text-xl font-bold text-ink mb-1">Personalised Questions</h2>
+                        <p className="text-muted text-sm max-w-sm mx-auto">
                             Tell us about your group and AI will write Truth-or-Drink questions that feel like they were written just for you.
                         </p>
                     </div>
 
                     {/* Step 1: Group Type Chips */}
                     <div className="mb-6">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
+                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
                             1. Who's playing?
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -513,8 +538,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                     onClick={() => setCustomGroupType(g.id)}
                                     className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
                                         ${customGroupType === g.id
-                                            ? 'bg-violet-600/30 border-violet-500 text-violet-300 shadow-lg shadow-violet-500/20'
-                                            : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                                            ? 'bg-violet-600/30 border-violet-500 text-vibe shadow-lg shadow-violet-500/20'
+                                            : 'bg-surface-alt border-divider text-muted hover:border-ink-soft/40'
                                         }`}
                                 >
                                     {g.label}
@@ -525,8 +550,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
 
                     {/* Step 2: Tone Chips (optional) */}
                     <div className="mb-6">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
-                            2. Set the tone <span className="text-gray-600 normal-case tracking-normal font-medium">(optional)</span>
+                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
+                            2. Set the tone <span className="text-muted normal-case tracking-normal font-medium">(optional)</span>
                         </label>
                         <div className="flex flex-wrap gap-2">
                             {TONE_OPTIONS.map(t => (
@@ -535,8 +560,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                     onClick={() => setCustomTone(customTone === t.id ? null : t.id)}
                                     className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
                                         ${customTone === t.id
-                                            ? 'bg-violet-600/30 border-violet-500 text-violet-300 shadow-lg shadow-violet-500/20'
-                                            : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                                            ? 'bg-violet-600/30 border-violet-500 text-vibe shadow-lg shadow-violet-500/20'
+                                            : 'bg-surface-alt border-divider text-muted hover:border-ink-soft/40'
                                         }`}
                                 >
                                     {t.label}
@@ -544,7 +569,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                             ))}
                         </div>
                         {customTone && (
-                            <p className="text-xs text-gray-500 mt-2 pl-1">
+                            <p className="text-xs text-muted mt-2 pl-1">
                                 {TONE_OPTIONS.find(t => t.id === customTone)?.hint}
                             </p>
                         )}
@@ -552,10 +577,10 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
 
                     {/* Step 3: Context Text Box */}
                     <div className="mb-6">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
+                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
                             3. The secret sauce — describe your group
                         </label>
-                        <div className="bg-white/5 border border-white/10 rounded-2xl p-1 focus-within:border-violet-500/50 transition-colors">
+                        <div className="bg-surface-alt border border-divider rounded-2xl p-1 focus-within:border-violet-500/50 transition-colors">
                             <textarea
                                 value={customContext}
                                 onChange={(e) => {
@@ -564,14 +589,14 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                 }}
                                 placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
                                 rows={5}
-                                className="w-full bg-transparent p-4 text-white placeholder-gray-600 text-sm leading-relaxed resize-none focus:outline-none"
+                                className="w-full bg-transparent p-4 text-ink placeholder:text-muted text-sm leading-relaxed resize-none focus:outline-none"
                             />
-                            <div className="flex justify-between items-center px-4 py-2 border-t border-white/5">
-                                <span className={`text-xs font-bold ${wordCount > WORD_LIMIT ? 'text-red-400' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-400' : 'text-gray-500'}`}>
+                            <div className="flex justify-between items-center px-4 py-2 border-t border-divider-soft">
+                                <span className={`text-xs font-bold ${wordCount > WORD_LIMIT ? 'text-red-500' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-500' : 'text-muted'}`}>
                                     {wordCount}/{WORD_LIMIT} words
                                 </span>
                                 {wordCount > 0 && wordCount <= 15 && (
-                                    <span className="text-xs text-amber-400 font-medium">A bit more detail will help!</span>
+                                    <span className="text-xs text-amber-500 font-medium">A bit more detail will help!</span>
                                 )}
                             </div>
                         </div>
@@ -579,18 +604,18 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
 
                     {/* Pro Tips */}
                     <div className="bg-violet-900/20 border border-violet-500/20 rounded-xl p-4 mb-6">
-                        <p className="text-xs text-violet-300 font-bold uppercase tracking-widest mb-2">💡 Pro Tips for Better Cards</p>
-                        <ul className="text-xs text-gray-400 space-y-1.5">
-                            <li>• <strong className="text-gray-300">Name names:</strong> "Aisha hates confrontation" → gold</li>
-                            <li>• <strong className="text-gray-300">Be specific:</strong> "Goa trip where Priya lost her passport"</li>
-                            <li>• <strong className="text-gray-300">Add dynamics:</strong> exes, rivalries, running jokes</li>
+                        <p className="text-xs text-vibe font-bold uppercase tracking-widest mb-2">💡 Pro Tips for Better Cards</p>
+                        <ul className="text-xs text-muted space-y-1.5">
+                            <li>• <strong className="text-ink-soft">Name names:</strong> "Aisha hates confrontation" → gold</li>
+                            <li>• <strong className="text-ink-soft">Be specific:</strong> "Goa trip where Priya lost her passport"</li>
+                            <li>• <strong className="text-ink-soft">Add dynamics:</strong> exes, rivalries, running jokes</li>
                         </ul>
                     </div>
 
                     {/* Error */}
                     {customError && (
                         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4 text-center">
-                            <p className="text-red-400 text-sm font-medium">{customError}</p>
+                            <p className="text-red-500 text-sm font-medium">{customError}</p>
                         </div>
                     )}
 
@@ -601,7 +626,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2
                             ${canGenerate
                                 ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:from-violet-500 hover:to-fuchsia-400 text-white shadow-lg shadow-violet-600/30 active:scale-[0.98]'
-                                : 'bg-white/5 text-gray-500 cursor-not-allowed'
+                                : 'bg-surface-alt text-muted cursor-not-allowed'
                             }`}
                     >
                         <Sparkles size={20} />
@@ -620,13 +645,13 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                 <div className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
                     <div className="relative">
                         <div className="w-20 h-20 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
-                        <Wand2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-violet-400 animate-pulse" size={28} />
+                        <Wand2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-vibe animate-pulse" size={28} />
                     </div>
                     <div className="text-center">
-                        <p className="text-xl font-bold text-white mb-1">
+                        <p className="text-xl font-bold text-ink mb-1">
                             Crafting your custom deck…
                         </p>
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-muted text-sm">
                             Weaving in names, places, and inside jokes.
                         </p>
                     </div>
@@ -638,7 +663,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     // PROMPT — Truth or Drink. Single screen for both modes — choice
     // advances directly to the next prompt (no PASS, no RESULT).
     if (gameState === 'PROMPT') {
-        const palette = DECK_PALETTE[category] || { solid: '#94A3B8', tint: 'rgba(148, 163, 184, 0.18)' };
+        const palette = deckPalette(category);
         const isJustPlay = playMode === 'just_play';
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
@@ -654,8 +679,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         with round counter + italic PartySpark. */}
                     <div className="flex-1 flex items-center justify-center pt-2 pb-4">
                         <div
-                            className="w-full aspect-[3/4] max-h-[460px] bg-party-surface border border-white/10 rounded-[22px] p-6 flex flex-col relative overflow-hidden"
-                            style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}
+                            className="w-full aspect-[3/4] max-h-[460px] bg-surface border border-divider rounded-[22px] p-6 flex flex-col relative overflow-hidden"
+                            style={{ boxShadow: 'var(--shadow-card)' }}
                         >
                             <div
                                 className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none"
@@ -668,11 +693,11 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                 Truth or Drink · {categoryMeta.title}
                             </div>
                             <div className="flex-1 flex items-center justify-center relative z-10 px-1">
-                                <p className="font-serif font-semibold text-[24px] leading-[1.2] tracking-[-0.015em] text-white text-center">
+                                <p className="font-serif font-semibold text-[24px] leading-[1.2] tracking-[-0.015em] text-ink text-center">
                                     {currentQuestion}
                                 </p>
                             </div>
-                            <div className="text-[11px] text-gray-400 flex items-center justify-between relative z-10">
+                            <div className="text-[11px] text-muted flex items-center justify-between relative z-10">
                                 <span>Round {roundIndex + 1} of {deck.length}</span>
                                 <span className="font-serif italic text-[12px]" style={{ color: palette.solid }}>PartySpark</span>
                             </div>
@@ -701,7 +726,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
 
                     <button
                         onClick={handleEndEarly}
-                        className="w-full mt-3 flex items-center justify-center gap-1.5 py-2 text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                        className="w-full mt-3 flex items-center justify-center gap-1.5 py-2 text-xs text-muted hover:text-ink-soft transition-colors"
                     >
                         <DoorClosed size={12} /> End game early
                     </button>
@@ -718,17 +743,17 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                 <div className="flex-1 flex flex-col items-center justify-center px-4 gap-6 text-center">
                     <p className="text-8xl">🥂</p>
                     <div>
-                        <h2 className="text-4xl font-serif font-bold text-white mb-2">Cheers to chaos.</h2>
-                        <p className="text-gray-400 text-base max-w-xs mx-auto">
+                        <h2 className="text-4xl font-serif font-bold text-ink mb-2">Cheers to chaos.</h2>
+                        <p className="text-muted text-base max-w-xs mx-auto">
                             Secrets spilled. Drinks taken. Friendships mildly damaged.
                         </p>
                     </div>
 
-                    <div className="bg-slate-800/60 p-5 rounded-2xl border border-white/5 w-full">
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Session Recap</p>
+                    <div className="bg-surface-alt p-5 rounded-2xl border border-divider-soft w-full">
+                        <p className="text-xs font-bold text-muted uppercase tracking-widest mb-3">Session Recap</p>
                         {playMode === 'named' ? (
                             <div className="flex flex-col">
-                                <div className="flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest pb-2 border-b border-white/5">
+                                <div className="flex items-center justify-between text-[10px] font-bold text-muted uppercase tracking-widest pb-2 border-b border-divider-soft">
                                     <span>Player</span>
                                     <div className="flex items-center gap-4">
                                         <span className="w-12 text-right">🗣️ Truths</span>
@@ -738,11 +763,11 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                 {trimmedPlayers.map(name => {
                                     const s = scores[name] || { truths: 0, drinks: 0 };
                                     return (
-                                        <div key={name} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                                            <span className="text-sm font-semibold text-white truncate pr-2">{name}</span>
+                                        <div key={name} className="flex items-center justify-between py-2 border-b border-divider-soft last:border-0">
+                                            <span className="text-sm font-semibold text-ink truncate pr-2">{name}</span>
                                             <div className="flex items-center gap-4 font-mono font-bold text-base">
-                                                <span className="w-12 text-right text-emerald-400">{s.truths}</span>
-                                                <span className="w-12 text-right text-amber-400">{s.drinks}</span>
+                                                <span className="w-12 text-right text-emerald-500">{s.truths}</span>
+                                                <span className="w-12 text-right text-amber-500">{s.drinks}</span>
                                             </div>
                                         </div>
                                     );
@@ -750,8 +775,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                             </div>
                         ) : (
                             <div className="text-center py-1">
-                                <p className="text-3xl font-black text-white">{roundIndex + (lastChoice ? 1 : 0)}</p>
-                                <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">Rounds Played</p>
+                                <p className="text-3xl font-black text-ink">{roundIndex + (lastChoice ? 1 : 0)}</p>
+                                <p className="text-xs text-muted uppercase tracking-wider mt-1">Rounds Played</p>
                             </div>
                         )}
                     </div>

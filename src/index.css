@@ -41,6 +41,10 @@
   --color-gold: var(--c-gold);
   --color-gold-soft: var(--c-gold-soft);
   --color-sparkle: var(--c-sparkle);
+  /* "Vibe" = the violet brand color for AI / Create-Your-Vibe paths.
+     Dark uses violet-300 for soft glow text; light uses violet-700 so
+     the same identity reads on white. */
+  --color-vibe: var(--c-vibe);
 
   --animate-slide-up: slideUp 0.3s ease-out forwards;
 
@@ -75,6 +79,7 @@
   --c-gold:         #EFC050;
   --c-gold-soft:    rgba(239, 192, 80, 0.18);
   --c-sparkle:      #EFC050;
+  --c-vibe:         #C4B5FD;                /* violet-300 */
 
   /* Per-game tile palette (dark mode). Components reference these via
      var(--tile-<game>-solid) etc instead of hardcoded hex literals. */
@@ -107,6 +112,7 @@
   --c-gold:         #B8922F;
   --c-gold-soft:    #F2E4B8;
   --c-sparkle:      #C99A26;
+  --c-vibe:         #6D28D9;                /* violet-700 — readable on white */
 
   /* Azure Sky tile palette. Each game's tile gets a solid hue, a tint
      variant for backgrounds/blobs, and an ink color for high-contrast text

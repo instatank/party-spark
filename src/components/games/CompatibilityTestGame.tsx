@@ -50,26 +50,28 @@ const VERDICTS = [
 // Static class map — Tailwind v4 JIT only detects complete literal class strings,
 // so every accent variant must appear as a full static string somewhere in source.
 // Don't switch this back to `text-${color}-400` template literals — it won't compile.
+// `text500` is bumped from -400 so the same hue reads on both bg's; -400 was
+// invisible against #EEF4FA in light mode.
 const ACCENT_CLASSES: Record<GameMode, {
-    text400: string;
+    text500: string;
     focusBorder500: string;
     hoverBorder500: string;
     groupHoverBg600: string;
 }> = {
     couples: {
-        text400: 'text-pink-400',
+        text500: 'text-pink-500',
         focusBorder500: 'focus:border-pink-500',
         hoverBorder500: 'hover:border-pink-500',
         groupHoverBg600: 'group-hover:bg-pink-600',
     },
     friends: {
-        text400: 'text-violet-400',
+        text500: 'text-violet-500',
         focusBorder500: 'focus:border-violet-500',
         hoverBorder500: 'hover:border-violet-500',
         groupHoverBg600: 'group-hover:bg-violet-600',
     },
     bunny: {
-        text400: 'text-rose-400',
+        text500: 'text-rose-500',
         focusBorder500: 'focus:border-rose-500',
         hoverBorder500: 'hover:border-rose-500',
         groupHoverBg600: 'group-hover:bg-rose-600',
@@ -229,8 +231,8 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                 <ScreenHeader title="The Forecast" onBack={onExit} onHome={onExit} />
                 <div className="text-center mb-4">
                     <p className="text-5xl mb-2">🔮</p>
-                    <h2 className="text-xl font-serif font-bold text-white mb-1">How well do you <em>really</em> know each other?</h2>
-                    <p className="text-gray-400 text-sm">Predict their answers. Discover the truth.</p>
+                    <h2 className="text-xl font-serif font-bold text-ink mb-1">How well do you <em>really</em> know each other?</h2>
+                    <p className="text-muted text-sm">Predict their answers. Discover the truth.</p>
                 </div>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
@@ -240,7 +242,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                                 onClick={() => handleModeSelect(m.id)}
                                 className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                             >
-                                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden">
+                                <div className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-white/[0.08] hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden">
                                     <span
                                         className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]"
                                         style={{ background: m.color }}
@@ -254,17 +256,17 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                                             <m.Icon size={16} />
                                         </span>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="text-base font-bold text-white leading-tight flex items-center gap-1.5">
+                                            <h3 className="text-base font-bold text-ink leading-tight flex items-center gap-1.5">
                                                 <span className="truncate">{m.title}</span>
                                                 {m.adult && (
-                                                    <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-400 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
+                                                    <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-500 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
                                                         18+
                                                     </span>
                                                 )}
                                             </h3>
-                                            <p className="text-xs text-gray-400 leading-snug truncate">{m.tagline}</p>
+                                            <p className="text-xs text-muted leading-snug truncate">{m.tagline}</p>
                                         </div>
-                                        <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
+                                        <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
                                     </div>
                                 </div>
                             </button>
@@ -283,25 +285,25 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                 <div className="flex-1 flex flex-col justify-center px-2 gap-6">
                     <div className="space-y-4">
                         <div>
-                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Player 1</label>
+                            <label className="text-xs font-bold text-muted uppercase tracking-widest mb-2 block">Player 1</label>
                             <input
                                 type="text"
                                 value={playerA}
                                 onChange={e => setPlayerA(e.target.value)}
                                 placeholder="Enter name..."
                                 maxLength={15}
-                                className={`w-full bg-slate-800 border border-slate-700 ${accent.focusBorder500} rounded-xl p-4 text-white text-lg font-medium placeholder-gray-600 outline-none transition-colors`}
+                                className={`w-full bg-surface-alt border border-divider ${accent.focusBorder500} rounded-xl p-4 text-ink text-lg font-medium placeholder:text-muted outline-none transition-colors`}
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Player 2</label>
+                            <label className="text-xs font-bold text-muted uppercase tracking-widest mb-2 block">Player 2</label>
                             <input
                                 type="text"
                                 value={playerB}
                                 onChange={e => setPlayerB(e.target.value)}
                                 placeholder="Enter name..."
                                 maxLength={15}
-                                className={`w-full bg-slate-800 border border-slate-700 ${accent.focusBorder500} rounded-xl p-4 text-white text-lg font-medium placeholder-gray-600 outline-none transition-colors`}
+                                className={`w-full bg-surface-alt border border-divider ${accent.focusBorder500} rounded-xl p-4 text-ink text-lg font-medium placeholder:text-muted outline-none transition-colors`}
                             />
                         </div>
                     </div>
@@ -327,13 +329,13 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                 <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-6">
                     <p className="text-7xl">{roundTheme.emojis[currentRound]}</p>
                     <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">Round {roundNum} of 3</p>
-                        <h2 className="text-4xl font-serif font-bold text-white mb-3">{roundTheme.names[currentRound]}</h2>
-                        <p className="text-gray-400">{roundTheme.descriptions[currentRound]}</p>
+                        <p className="text-xs font-bold text-muted uppercase tracking-[0.2em] mb-2">Round {roundNum} of 3</p>
+                        <h2 className="text-4xl font-serif font-bold text-ink mb-3">{roundTheme.names[currentRound]}</h2>
+                        <p className="text-muted">{roundTheme.descriptions[currentRound]}</p>
                     </div>
-                    <div className="bg-slate-800/60 p-4 rounded-xl border border-white/5 max-w-sm">
-                        <p className="text-sm text-gray-300">
-                            <span className="text-white font-bold">{playerA}</span> and <span className="text-white font-bold">{playerB}</span> will take turns predicting each other's answers.
+                    <div className="bg-surface-alt p-4 rounded-xl border border-divider-soft max-w-sm">
+                        <p className="text-sm text-ink-soft">
+                            <span className="text-ink font-bold">{playerA}</span> and <span className="text-ink font-bold">{playerB}</span> will take turns predicting each other's answers.
                         </p>
                     </div>
                     <Button onClick={handleStartRound} className="w-full py-4 text-lg">
@@ -354,12 +356,12 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                         <Eye size={36} className="text-white" />
                     </div>
                     <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">Prediction Time</p>
-                        <h2 className="text-2xl font-serif font-bold text-white mb-2">
-                            Pass the phone to <span className={accent.text400}>{predictorName}</span>
+                        <p className="text-xs font-bold text-muted uppercase tracking-[0.2em] mb-2">Prediction Time</p>
+                        <h2 className="text-2xl font-serif font-bold text-ink mb-2">
+                            Pass the phone to <span className={accent.text500}>{predictorName}</span>
                         </h2>
-                        <p className="text-gray-400 text-sm">
-                            You'll predict what <span className="text-white font-medium">{answererName}</span> will choose.
+                        <p className="text-muted text-sm">
+                            You'll predict what <span className="text-ink font-medium">{answererName}</span> will choose.
                         </p>
                     </div>
                     <Button onClick={() => setGameState('PREDICT')} className="w-full py-4 text-lg">
@@ -377,14 +379,14 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                 <ScreenHeader title={`${predictorName}'s Prediction`} onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
                 <div className="px-2 pb-4 flex-1 flex flex-col">
                     <div className="flex items-center gap-2 mb-4">
-                        <Target size={16} className={accent.text400} />
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                        <Target size={16} className={accent.text500} />
+                        <span className="text-xs font-bold text-muted uppercase tracking-widest">
                             What will {answererName} choose?
                         </span>
                     </div>
 
-                    <Card className="mb-6 p-5 border-white/10">
-                        <p className="text-xl font-serif font-bold text-white leading-snug">{questionText}</p>
+                    <Card className="mb-6 p-5 border-divider">
+                        <p className="text-xl font-serif font-bold text-ink leading-snug">{questionText}</p>
                     </Card>
 
                     <div className="space-y-3 flex-1">
@@ -392,13 +394,13 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                             <button
                                 key={i}
                                 onClick={() => handlePrediction(option)}
-                                className={`w-full text-left bg-slate-800 border border-slate-700 ${accent.hoverBorder500} rounded-xl p-4 transition-all active:scale-[0.97] group`}
+                                className={`w-full text-left bg-surface-alt border border-divider ${accent.hoverBorder500} rounded-xl p-4 transition-all active:scale-[0.97] group`}
                             >
                                 <div className="flex items-center gap-3">
-                                    <span className={`w-8 h-8 rounded-full bg-slate-700 ${accent.groupHoverBg600} flex items-center justify-center text-sm font-bold text-gray-400 group-hover:text-white transition-colors`}>
+                                    <span className={`w-8 h-8 rounded-full bg-app-tint ${accent.groupHoverBg600} flex items-center justify-center text-sm font-bold text-muted group-hover:text-white transition-colors`}>
                                         {String.fromCharCode(65 + i)}
                                     </span>
-                                    <span className="text-white font-medium">{option}</span>
+                                    <span className="text-ink font-medium">{option}</span>
                                 </div>
                             </button>
                         ))}
@@ -418,11 +420,11 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                         <EyeOff size={36} className="text-white" />
                     </div>
                     <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">Your Turn</p>
-                        <h2 className="text-2xl font-serif font-bold text-white mb-2">
-                            Now pass the phone to <span className={accent.text400}>{answererName}</span>
+                        <p className="text-xs font-bold text-muted uppercase tracking-[0.2em] mb-2">Your Turn</p>
+                        <h2 className="text-2xl font-serif font-bold text-ink mb-2">
+                            Now pass the phone to <span className={accent.text500}>{answererName}</span>
                         </h2>
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-muted text-sm">
                             Answer honestly. {predictorName}'s prediction is hidden.
                         </p>
                     </div>
@@ -441,14 +443,14 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                 <ScreenHeader title={`${answererName}'s Answer`} onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
                 <div className="px-2 pb-4 flex-1 flex flex-col">
                     <div className="flex items-center gap-2 mb-4">
-                        <User size={16} className="text-emerald-400" />
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                        <User size={16} className="text-emerald-500" />
+                        <span className="text-xs font-bold text-muted uppercase tracking-widest">
                             Your honest answer, {answererName}
                         </span>
                     </div>
 
-                    <Card className="mb-6 p-5 border-white/10">
-                        <p className="text-xl font-serif font-bold text-white leading-snug">{questionText}</p>
+                    <Card className="mb-6 p-5 border-divider">
+                        <p className="text-xl font-serif font-bold text-ink leading-snug">{questionText}</p>
                     </Card>
 
                     <div className="space-y-3 flex-1">
@@ -456,13 +458,13 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                             <button
                                 key={i}
                                 onClick={() => handleAnswer(option)}
-                                className="w-full text-left bg-slate-800 border border-slate-700 hover:border-emerald-500 rounded-xl p-4 transition-all active:scale-[0.97] group"
+                                className="w-full text-left bg-surface-alt border border-divider hover:border-emerald-500 rounded-xl p-4 transition-all active:scale-[0.97] group"
                             >
                                 <div className="flex items-center gap-3">
-                                    <span className="w-8 h-8 rounded-full bg-slate-700 group-hover:bg-emerald-600 flex items-center justify-center text-sm font-bold text-gray-400 group-hover:text-white transition-colors">
+                                    <span className="w-8 h-8 rounded-full bg-app-tint group-hover:bg-emerald-600 flex items-center justify-center text-sm font-bold text-muted group-hover:text-white transition-colors">
                                         {String.fromCharCode(65 + i)}
                                     </span>
-                                    <span className="text-white font-medium">{option}</span>
+                                    <span className="text-ink font-medium">{option}</span>
                                 </div>
                             </button>
                         ))}
@@ -484,25 +486,25 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                         <span className="text-4xl">{correct ? '🎯' : '❌'}</span>
                     </div>
 
-                    <h2 className={`text-3xl font-black ${correct ? 'text-emerald-400' : 'text-red-400'}`}>
+                    <h2 className={`text-3xl font-black ${correct ? 'text-emerald-500' : 'text-red-500'}`}>
                         {correct ? 'NAILED IT!' : 'NOT QUITE!'}
                     </h2>
 
                     {/* Comparison */}
                     <div className="w-full space-y-3">
-                        <div className="bg-slate-800/80 p-4 rounded-xl border border-white/5">
-                            <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1">{predictorName}'s Prediction</p>
-                            <p className="text-white font-medium text-lg">{prediction}</p>
+                        <div className="bg-surface-alt p-4 rounded-xl border border-divider-soft">
+                            <p className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1">{predictorName}'s Prediction</p>
+                            <p className="text-ink font-medium text-lg">{prediction}</p>
                         </div>
-                        <div className="bg-slate-800/80 p-4 rounded-xl border border-white/5">
-                            <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">{answererName}'s Answer</p>
-                            <p className="text-white font-medium text-lg">{answer}</p>
+                        <div className="bg-surface-alt p-4 rounded-xl border border-divider-soft">
+                            <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1">{answererName}'s Answer</p>
+                            <p className="text-ink font-medium text-lg">{answer}</p>
                         </div>
                     </div>
 
                     {correct && (
-                        <p className="text-sm text-gray-400 text-center">
-                            <span className="text-white font-bold">+1</span> point for {predictorName}!
+                        <p className="text-sm text-muted text-center">
+                            <span className="text-ink font-bold">+1</span> point for {predictorName}!
                         </p>
                     )}
 
@@ -524,8 +526,8 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                 <div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
                     <p className="text-6xl">{roundTheme.emojis[currentRound]}</p>
                     <div className="text-center">
-                        <h2 className="text-3xl font-serif font-bold text-white mb-2">{roundTheme.names[currentRound]}</h2>
-                        <p className="text-gray-400">
+                        <h2 className="text-3xl font-serif font-bold text-ink mb-2">{roundTheme.names[currentRound]}</h2>
+                        <p className="text-muted">
                             {roundCorrect} of {QUESTIONS_PER_ROUND} predictions correct
                         </p>
                     </div>
@@ -536,15 +538,15 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                             <div key={i} className={`flex items-center gap-3 p-3 rounded-lg ${r.correct ? 'bg-emerald-900/20 border border-emerald-500/20' : 'bg-red-900/10 border border-red-500/10'}`}>
                                 <span className="text-lg">{r.correct ? '🎯' : '❌'}</span>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs text-gray-400 truncate">{r.predictorName} predicted for {r.answererName}</p>
+                                    <p className="text-xs text-muted truncate">{r.predictorName} predicted for {r.answererName}</p>
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                    <div className="bg-slate-800/60 p-4 rounded-xl border border-white/5 w-full text-center">
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Running Total</p>
-                        <p className="text-3xl font-black text-white">{totalScore} <span className="text-lg text-gray-500">/ {allResults.length}</span></p>
+                    <div className="bg-surface-alt p-4 rounded-xl border border-divider-soft w-full text-center">
+                        <p className="text-xs font-bold text-muted uppercase tracking-widest mb-1">Running Total</p>
+                        <p className="text-3xl font-black text-ink">{totalScore} <span className="text-lg text-muted">/ {allResults.length}</span></p>
                     </div>
 
                     <Button onClick={handleNextRound} className="w-full py-4 text-lg">
@@ -563,24 +565,24 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                 <div className="flex-1 flex flex-col items-center justify-center px-4 gap-6 text-center">
                     <p className="text-8xl">{verdict.emoji}</p>
                     <div>
-                        <h2 className="text-4xl font-serif font-bold text-white mb-2">{verdict.title}</h2>
-                        <p className="text-gray-400 text-lg">{verdict.subtitle}</p>
+                        <h2 className="text-4xl font-serif font-bold text-ink mb-2">{verdict.title}</h2>
+                        <p className="text-muted text-lg">{verdict.subtitle}</p>
                     </div>
 
-                    <div className="bg-slate-800/60 p-6 rounded-2xl border border-white/5 w-full">
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Final Score</p>
-                        <p className="text-6xl font-black text-white mb-1">{totalScore} <span className="text-2xl text-gray-500">/ 15</span></p>
+                    <div className="bg-surface-alt p-6 rounded-2xl border border-divider-soft w-full">
+                        <p className="text-xs font-bold text-muted uppercase tracking-widest mb-2">Final Score</p>
+                        <p className="text-6xl font-black text-ink mb-1">{totalScore} <span className="text-2xl text-muted">/ 15</span></p>
                     </div>
 
                     {/* Per-player breakdown */}
                     <div className="grid grid-cols-2 gap-3 w-full">
-                        <div className="bg-slate-800/40 p-4 rounded-xl border border-white/5 text-center">
-                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">{playerA}</p>
-                            <p className="text-2xl font-black text-white">{scoreA} <span className="text-sm text-gray-500">correct</span></p>
+                        <div className="bg-surface-alt/40 p-4 rounded-xl border border-divider-soft text-center">
+                            <p className="text-xs font-bold text-muted uppercase tracking-widest mb-1">{playerA}</p>
+                            <p className="text-2xl font-black text-ink">{scoreA} <span className="text-sm text-muted">correct</span></p>
                         </div>
-                        <div className="bg-slate-800/40 p-4 rounded-xl border border-white/5 text-center">
-                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">{playerB}</p>
-                            <p className="text-2xl font-black text-white">{scoreB} <span className="text-sm text-gray-500">correct</span></p>
+                        <div className="bg-surface-alt/40 p-4 rounded-xl border border-divider-soft text-center">
+                            <p className="text-xs font-bold text-muted uppercase tracking-widest mb-1">{playerB}</p>
+                            <p className="text-2xl font-black text-ink">{scoreB} <span className="text-sm text-muted">correct</span></p>
                         </div>
                     </div>
 
