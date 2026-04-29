@@ -464,39 +464,46 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     </Button>
 
                     {/* Just-Play escape hatch — bumped up to a green outlined
-                        CTA so it doesn't feel like a tertiary footer link. */}
-                    <button
-                        onClick={handleJustPlay}
-                        className="w-full mt-3 py-4 rounded-xl font-bold text-base text-emerald-300 bg-emerald-500/10 border-2 border-emerald-500/60 hover:bg-emerald-500/20 hover:border-emerald-400 hover:text-emerald-200 transition-colors flex items-center justify-center gap-2"
-                    >
-                        <Zap size={18} />
-                        Just Play — Skip the Setup
-                    </button>
+                        CTA so it doesn't feel like a tertiary footer link.
+                        Hidden for the custom deck since AI generation needs
+                        names + context. */}
+                    {category !== 'custom' && (
+                        <button
+                            onClick={handleJustPlay}
+                            className="w-full mt-3 py-4 rounded-xl font-bold text-base text-emerald-300 bg-emerald-500/10 border-2 border-emerald-500/60 hover:bg-emerald-500/20 hover:border-emerald-400 hover:text-emerald-200 transition-colors flex items-center justify-center gap-2"
+                        >
+                            <Zap size={18} />
+                            Just Play — Skip the Setup
+                        </button>
+                    )}
                 </div>
             </div>
         );
     }
 
-    // CUSTOM_SETUP — Describe your group for AI generation
+    // CUSTOM_SETUP — Describe your group for AI generation. Mirrors MLT's
+    // Create-Your-Vibe input page (chip sizing, label scale, section
+    // spacing, pro-tips treatment) so the two custom flows feel identical.
     if (gameState === 'CUSTOM_SETUP') {
         const canGenerate = customContext.trim().length >= 10 && wordCount <= WORD_LIMIT;
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Create Your Vibe" onBack={() => setGameState('SETUP')} onHome={onExit} />
                 <div className="flex-1 overflow-y-auto pb-8 px-1">
+                    {/* Intro */}
                     <div className="text-center mb-6">
                         <div className="inline-flex bg-gradient-to-r from-violet-600/20 to-fuchsia-500/20 border border-violet-500/30 rounded-2xl p-4 mb-3">
-                            <Wand2 size={28} className="text-violet-400" />
+                            <Wand2 size={32} className="text-violet-400" />
                         </div>
-                        <h2 className="text-lg font-bold text-white mb-1">AI-Tailored Questions</h2>
+                        <h2 className="text-xl font-bold text-white mb-1">Personalised Questions</h2>
                         <p className="text-gray-400 text-sm max-w-sm mx-auto">
-                            Tell us about this group and the AI will write Truth-or-Drink questions that feel personal.
+                            Tell us about your group and AI will write Truth-or-Drink questions that feel like they were written just for you.
                         </p>
                     </div>
 
-                    {/* Step 1: Group Type */}
-                    <div className="mb-5">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">
+                    {/* Step 1: Group Type Chips */}
+                    <div className="mb-6">
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
                             1. Who's playing?
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -504,7 +511,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                 <button
                                     key={g.id}
                                     onClick={() => setCustomGroupType(g.id)}
-                                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border
+                                    className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
                                         ${customGroupType === g.id
                                             ? 'bg-violet-600/30 border-violet-500 text-violet-300 shadow-lg shadow-violet-500/20'
                                             : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
@@ -516,9 +523,9 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         </div>
                     </div>
 
-                    {/* Step 2: Tone */}
-                    <div className="mb-5">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">
+                    {/* Step 2: Tone Chips (optional) */}
+                    <div className="mb-6">
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
                             2. Set the tone <span className="text-gray-600 normal-case tracking-normal font-medium">(optional)</span>
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -526,7 +533,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                 <button
                                     key={t.id}
                                     onClick={() => setCustomTone(customTone === t.id ? null : t.id)}
-                                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 border
+                                    className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
                                         ${customTone === t.id
                                             ? 'bg-violet-600/30 border-violet-500 text-violet-300 shadow-lg shadow-violet-500/20'
                                             : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
@@ -543,10 +550,10 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         )}
                     </div>
 
-                    {/* Step 3: Context */}
-                    <div className="mb-5">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">
-                            3. Tell us about this group
+                    {/* Step 3: Context Text Box */}
+                    <div className="mb-6">
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">
+                            3. The secret sauce — describe your group
                         </label>
                         <div className="bg-white/5 border border-white/10 rounded-2xl p-1 focus-within:border-violet-500/50 transition-colors">
                             <textarea
@@ -557,37 +564,37 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                 }}
                                 placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
                                 rows={5}
-                                className="w-full bg-transparent p-3 text-white placeholder-gray-600 text-sm leading-relaxed resize-none focus:outline-none"
+                                className="w-full bg-transparent p-4 text-white placeholder-gray-600 text-sm leading-relaxed resize-none focus:outline-none"
                             />
-                            <div className="flex justify-between items-center px-3 py-2 border-t border-white/5">
+                            <div className="flex justify-between items-center px-4 py-2 border-t border-white/5">
                                 <span className={`text-xs font-bold ${wordCount > WORD_LIMIT ? 'text-red-400' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-400' : 'text-gray-500'}`}>
                                     {wordCount}/{WORD_LIMIT} words
                                 </span>
-                                {trimmedPlayers.length > 0 && (
-                                    <span className="text-[10px] text-violet-400/80">
-                                        Players: {trimmedPlayers.slice(0, 3).join(', ')}{trimmedPlayers.length > 3 ? '…' : ''}
-                                    </span>
+                                {wordCount > 0 && wordCount <= 15 && (
+                                    <span className="text-xs text-amber-400 font-medium">A bit more detail will help!</span>
                                 )}
                             </div>
                         </div>
                     </div>
 
                     {/* Pro Tips */}
-                    <div className="bg-violet-900/20 border border-violet-500/20 rounded-xl p-3 mb-5">
-                        <p className="text-[10px] text-violet-300 font-bold uppercase tracking-widest mb-2">💡 Write sharper questions</p>
-                        <ul className="text-xs text-gray-400 space-y-1">
-                            <li>• <strong className="text-gray-300">Name names</strong> — "Aisha hates confrontation" → gold</li>
-                            <li>• <strong className="text-gray-300">Be specific</strong> — "Goa trip where Priya lost her passport"</li>
-                            <li>• <strong className="text-gray-300">Mention dynamics</strong> — exes, rivalries, running jokes</li>
+                    <div className="bg-violet-900/20 border border-violet-500/20 rounded-xl p-4 mb-6">
+                        <p className="text-xs text-violet-300 font-bold uppercase tracking-widest mb-2">💡 Pro Tips for Better Cards</p>
+                        <ul className="text-xs text-gray-400 space-y-1.5">
+                            <li>• <strong className="text-gray-300">Name names:</strong> "Aisha hates confrontation" → gold</li>
+                            <li>• <strong className="text-gray-300">Be specific:</strong> "Goa trip where Priya lost her passport"</li>
+                            <li>• <strong className="text-gray-300">Add dynamics:</strong> exes, rivalries, running jokes</li>
                         </ul>
                     </div>
 
+                    {/* Error */}
                     {customError && (
                         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4 text-center">
                             <p className="text-red-400 text-sm font-medium">{customError}</p>
                         </div>
                     )}
 
+                    {/* Generate Button */}
                     <button
                         onClick={handleGenerateCustom}
                         disabled={!canGenerate}
@@ -598,7 +605,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                             }`}
                     >
                         <Sparkles size={20} />
-                        Generate My Deck
+                        Generate Your Cards
                     </button>
                 </div>
             </div>
