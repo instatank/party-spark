@@ -113,12 +113,14 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<HomeFilter>('all');
 
+  // Coming-soon list. Order here drives display order in the Coming Soon
+  // tab (the filter below preserves it via comingSoonGameIds.map).
   const comingSoonGameIds = [
     GameType.WOULD_I_LIE_TO_YOU,
     GameType.ICEBREAKERS,
+    GameType.MINI_MAFIA,
     GameType.WOULD_YOU_RATHER,
     GameType.NEVER_HAVE_I_EVER,
-    GameType.MINI_MAFIA,
   ];
 
   // Adult-gated games — require PIN before entering
@@ -140,7 +142,9 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
   const displayGames = useMemo(() => {
     const inTab = activeTab === 'active'
       ? GAMES.filter(g => !comingSoonGameIds.includes(g.id))
-      : GAMES.filter(g => comingSoonGameIds.includes(g.id));
+      : comingSoonGameIds
+          .map(id => GAMES.find(g => g.id === id))
+          .filter((g): g is typeof GAMES[number] => Boolean(g));
     const q = query.trim().toLowerCase();
     return inTab
       .filter(g => gameMatchesFilter(g.id, filter))
