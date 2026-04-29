@@ -672,23 +672,23 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         </div>
                     </div>
 
-                    {/* Truth / Drink — slim side-by-side row, MLT Skip/Next sizing.
-                        Choice is purely flavor — both buttons advance to the
-                        next prompt. */}
+                    {/* Truth / Drink — color-coded outlined CTAs in the same
+                        formatting as the Just Play tab. Emerald for truths and
+                        amber for drinks, matching the wrap-screen leaderboard. */}
                     <div className="flex gap-3">
                         <button
                             onClick={() => handleChoice('truth')}
-                            className="flex-1 py-3 rounded-lg font-medium text-sm bg-party-surface text-white border border-white/5 hover:bg-slate-600 transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                            className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-300 bg-emerald-500/10 border-2 border-emerald-500/60 hover:bg-emerald-500/20 hover:border-emerald-400 hover:text-emerald-200 transition-colors flex items-center justify-center gap-2"
                         >
-                            <MessageCircleHeart size={16} />
+                            <MessageCircleHeart size={18} />
                             Tell the Truth
                         </button>
                         <button
                             onClick={() => handleChoice('drink')}
-                            className="flex-1 py-3 rounded-lg font-medium text-sm bg-party-surface text-white border border-white/5 hover:bg-slate-600 transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                            className="flex-1 py-4 rounded-xl font-bold text-base text-amber-300 bg-amber-500/10 border-2 border-amber-500/60 hover:bg-amber-500/20 hover:border-amber-400 hover:text-amber-200 transition-colors flex items-center justify-center gap-2"
                         >
-                            <GlassWater size={16} />
-                            Take a Drink 🥃
+                            <GlassWater size={18} />
+                            Take a Drink
                         </button>
                     </div>
 
