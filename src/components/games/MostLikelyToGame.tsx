@@ -404,10 +404,17 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                                     <div
                                         className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden"
                                         style={pattern === 'custom' ? {
+                                            // Custom: full 2px colored ring + soft outer glow
                                             borderColor: color,
                                             borderWidth: 2,
                                             boxShadow: `0 0 18px ${color}55, inset 0 0 0 1px ${color}33`,
-                                        } : undefined}
+                                        } : {
+                                            // Non-custom: keep the colored 4px left vertical bar
+                                            // (matches TOD's pattern). Bottom-line variation
+                                            // sits inside the tile via absolute spans below.
+                                            borderLeftWidth: 4,
+                                            borderLeftColor: color,
+                                        }}
                                     >
                                         {/* Pattern: full-width bottom line */}
                                         {pattern === 'full-bottom' && (
