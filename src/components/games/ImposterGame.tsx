@@ -174,44 +174,44 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
                 <ScreenHeader title="Setup Game" onBack={onExit} onHome={onExit} />
                 <Card className="p-6 flex-1 overflow-y-auto">
                     <div className="text-center mb-6">
-                        <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-party-accent border border-party-accent/30 px-3 py-1 bg-white/5 hover:bg-white/10 transition relative z-10 mx-auto block mb-2 rounded shadow-lg uppercase">
+                        <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-party-accent border border-party-accent/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block mb-2 rounded shadow-lg uppercase">
                              {showHowToPlay ? 'Hide Rules' : 'How To Play'}
                         </button>
                         
                         {showHowToPlay && (
-                            <div className="text-left text-xs text-gray-300 bg-black/20 border border-white/10 p-4 mt-2 mb-4 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner">
-                                <p><strong className="text-white">1. SETUP:</strong> All players join. A category and secret word are chosen automatically.</p>
-                                <p><strong className="text-red-400">2. THE SECRET:</strong> Everyone learns the secret word EXCEPT ONE person (the Imposter). The Imposter {isHardMode ? 'gets absolutely NO clues!' : 'only gets the category'}.</p>
-                                <p><strong className="text-emerald-400">3. DISCUSS:</strong> Take turns saying exactly one word related to the secret word to prove you know it. The Imposter must bluff!</p>
-                                <p><strong className="text-blue-400">4. VOTE:</strong> After everyone gives a word, vote on who the Imposter is. If the group guesses right, Civilians win!</p>
+                            <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 mb-4 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner">
+                                <p><strong className="text-ink">1. SETUP:</strong> All players join. A category and secret word are chosen automatically.</p>
+                                <p><strong className="text-red-500">2. THE SECRET:</strong> Everyone learns the secret word EXCEPT ONE person (the Imposter). The Imposter {isHardMode ? 'gets absolutely NO clues!' : 'only gets the category'}.</p>
+                                <p><strong className="text-emerald-500">3. DISCUSS:</strong> Take turns saying exactly one word related to the secret word to prove you know it. The Imposter must bluff!</p>
+                                <p><strong className="text-blue-500">4. VOTE:</strong> After everyone gives a word, vote on who the Imposter is. If the group guesses right, Civilians win!</p>
                             </div>
                         )}
                     </div>
                     {Object.keys(savedGroups).length > 0 && (
                         <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
                             {Object.entries(savedGroups).map(([gName, gPlayers]) => (
-                                <button key={gName} onClick={() => loadGroup(gPlayers)} className="whitespace-nowrap px-4 py-2 bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 rounded-full text-xs font-bold transition">
+                                <button key={gName} onClick={() => loadGroup(gPlayers)} className="whitespace-nowrap px-4 py-2 bg-surface-alt text-ink-soft hover:text-ink hover:bg-app-tint border border-divider rounded-full text-xs font-bold transition">
                                     Load: {gName} ({gPlayers.length})
                                 </button>
                             ))}
                         </div>
                     )}
-                    <div className="mb-6 p-4 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between shadow-inner">
+                    <div className="mb-6 p-4 bg-surface-alt border border-divider rounded-xl flex items-center justify-between shadow-inner">
                         <div>
                             <div className="font-bold text-sm text-party-accent mb-0.5">Hard Mode</div>
-                            <div className="text-xs text-gray-400">Hide category from the Imposter</div>
+                            <div className="text-xs text-muted">Hide category from the Imposter</div>
                         </div>
                         <div 
-                            className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors shadow-inner ${isHardMode ? 'bg-red-500' : 'bg-gray-600'}`}
+                            className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors shadow-inner ${isHardMode ? 'bg-red-500' : 'bg-app-tint'}`}
                             onClick={() => setIsHardMode(!isHardMode)}
                         >
                             <div className={`w-4 h-4 bg-white rounded-full transition-transform shadow-md ${isHardMode ? 'translate-x-6' : ''}`} />
                         </div>
                     </div>
                     <div className="flex justify-between items-end mb-3">
-                        <label className="block text-sm font-medium text-gray-400">Players ({players.length})</label>
+                        <label className="block text-sm font-medium text-muted">Players ({players.length})</label>
                         {players.filter(p => p.name.trim() !== '').length >= 3 && (
-                            <button onClick={saveCurrentGroup} className="text-xs text-party-accent hover:text-cyan-300 font-bold">
+                            <button onClick={saveCurrentGroup} className="text-xs text-party-accent hover:opacity-80 font-bold">
                                 Save Current Group
                             </button>
                         )}
@@ -224,12 +224,12 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
                                     placeholder={`Player ${idx + 1}`}
                                     value={player.name}
                                     onChange={(e) => updateName(player.id, e.target.value)}
-                                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-party-accent focus:ring-1 focus:ring-party-accent"
+                                    className="flex-1 bg-surface-alt border border-divider rounded-xl px-4 py-3 text-ink placeholder:text-muted focus:outline-none focus:border-party-accent focus:ring-1 focus:ring-party-accent"
                                 />
                                 {players.length > 3 && (
                                     <button
                                         onClick={() => handleRemovePlayer(player.id)}
-                                        className="px-3 text-gray-500 hover:text-red-400"
+                                        className="px-3 text-muted hover:text-red-500"
                                     >
                                         ×
                                     </button>
@@ -274,22 +274,22 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
                     <ScreenHeader title="Your Role" onBack={() => setGameState('SETUP')} onHome={onExit} />
                     <Card className="p-6 text-center flex-1 flex flex-col justify-center animate-fade-in">
                         <div className="mb-8">
-                            <div className="uppercase tracking-widest text-sm text-gray-500 mb-2">Your Secret Word</div>
+                            <div className="uppercase tracking-widest text-sm text-muted mb-2">Your Secret Word</div>
                             {currentPlayer.isImposter ? (
                                 <div className="text-red-500">
                                     <VenetianMask size={64} className="mx-auto mb-4" />
                                     <h2 className="text-4xl font-black tracking-tight">YOU ARE THE IMPOSTER</h2>
-                                    <p className="text-gray-400 mt-4 text-sm">Blend in. Don't let them know you don't know the word.</p>
+                                    <p className="text-muted mt-4 text-sm">Blend in. Don't let them know you don't know the word.</p>
                                     {!isHardMode ? (
-                                        <p className="text-gray-500 mt-2 text-xs uppercase tracking-wider font-bold">Category: {category.label}</p>
+                                        <p className="text-muted mt-2 text-xs uppercase tracking-wider font-bold">Category: {category.label}</p>
                                     ) : (
                                         <p className="text-red-500 mt-2 text-xs uppercase tracking-wider font-bold animate-pulse">Category: HIDDEN</p>
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-emerald-400">
+                                <div className="text-emerald-500">
                                     <div className="text-5xl font-black mb-2 tracking-tight">{secretWord}</div>
-                                    <p className="text-gray-400 mt-4 text-sm">Category: {category.label}</p>
+                                    <p className="text-muted mt-4 text-sm">Category: {category.label}</p>
                                 </div>
                             )}
                         </div>
@@ -302,7 +302,7 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
                                     p.id === currentPlayer.id ? { ...p, hasRevealed: true } as any : p
                                 ));
                             }}
-                            className="w-full py-4 bg-white/10 hover:bg-white/20 text-white"
+                            className="w-full py-4 bg-app-tint hover:bg-surface-alt text-ink"
                         >
                             Got it — Hide & Pass Back
                         </Button>
@@ -319,8 +319,8 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
                 <ScreenHeader title="Find Your Name" onBack={() => setGameState('SETUP')} onHome={onExit} />
                 <Card className="p-6 flex-1 flex flex-col">
                     <div className="text-center mb-6">
-                        <p className="text-gray-300 text-sm leading-relaxed">
-                            Pass the phone around. <strong className="text-white">Each person taps their own name</strong> to see their secret role privately, then hides the screen and passes it back.
+                        <p className="text-ink-soft text-sm leading-relaxed">
+                            Pass the phone around. <strong className="text-ink">Each person taps their own name</strong> to see their secret role privately, then hides the screen and passes it back.
                         </p>
                     </div>
 
@@ -339,8 +339,8 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
                                     disabled={hasRevealed}
                                     className={`relative flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all active:scale-95 min-h-[80px] font-bold text-lg
                                         ${hasRevealed
-                                            ? 'bg-white/5 border-white/10 text-gray-600 cursor-default opacity-60'
-                                            : 'bg-white/5 border-white/20 hover:border-party-accent hover:bg-white/10 text-white shadow-md active:shadow-none'
+                                            ? 'bg-surface-alt border-divider text-muted cursor-default opacity-60'
+                                            : 'bg-surface-alt border-divider hover:border-party-accent hover:bg-app-tint text-ink shadow-md active:shadow-none'
                                         }`}
                                 >
                                     {hasRevealed ? (
@@ -348,7 +348,7 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
                                     ) : (
                                         <User size={22} className="text-party-accent" />
                                     )}
-                                    <span className={hasRevealed ? 'line-through text-gray-600' : ''}>{p.name}</span>
+                                    <span className={hasRevealed ? 'line-through text-muted' : ''}>{p.name}</span>
                                 </button>
                             );
                         })}
@@ -375,14 +375,14 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Discussion" onBack={() => setGameState('SETUP')} onHome={onExit} />
                 <Card className="p-6 text-center flex-1">
-                    <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-400">
+                    <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-500">
                         <Eye size={32} />
                     </div>
                     <h2 className="text-2xl font-bold mb-4">Discuss & Deduce!</h2>
-                    <div className="bg-white/5 rounded-xl p-6 mb-8 text-left space-y-3">
-                        <p className="text-gray-300">1. Take turns giving a one-word clue related to <strong>{category.label}</strong>.</p>
-                        <p className="text-gray-300">2. The Imposter must lie and pretend to know the word.</p>
-                        <p className="text-gray-300">3. Discuss who seems suspicious.</p>
+                    <div className="bg-surface-alt rounded-xl p-6 mb-8 text-left space-y-3">
+                        <p className="text-ink-soft">1. Take turns giving a one-word clue related to <strong>{category.label}</strong>.</p>
+                        <p className="text-ink-soft">2. The Imposter must lie and pretend to know the word.</p>
+                        <p className="text-ink-soft">3. Discuss who seems suspicious.</p>
                     </div>
                     <Button onClick={() => setGameState('VOTE')} className="w-full py-4 bg-red-500 hover:bg-red-600 text-white font-bold">
                         Vote Out Imposter
@@ -403,10 +403,10 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
                             <button
                                 key={p.id}
                                 onClick={() => handleVote(p.id)}
-                                className="bg-white/5 hover:bg-white/10 p-4 rounded-xl flex items-center justify-between group transition-all"
+                                className="bg-surface-alt hover:bg-app-tint p-4 rounded-xl flex items-center justify-between group transition-all"
                             >
                                 <span className="font-medium text-lg">{p.name}</span>
-                                <div className="w-6 h-6 rounded-full border-2 border-white/20 group-hover:border-red-500" />
+                                <div className="w-6 h-6 rounded-full border-2 border-divider group-hover:border-red-500" />
                             </button>
                         ))}
                     </div>
@@ -436,10 +436,10 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
                         {winner === 'CIVILIANS' ? 'Civilians Win!' : 'Imposter Wins!'}
                     </h2>
 
-                    <p className="text-xl text-gray-300 mb-8">
-                        The Imposter was <span className="font-bold text-white">{imposterName}</span>
+                    <p className="text-xl text-ink-soft mb-8">
+                        The Imposter was <span className="font-bold text-ink">{imposterName}</span>
                         <br />
-                        The word was <span className="font-bold text-white">{secretWord}</span>
+                        The word was <span className="font-bold text-ink">{secretWord}</span>
                     </p>
 
                     <div className="flex gap-4 w-full">

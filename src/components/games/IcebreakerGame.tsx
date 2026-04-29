@@ -19,29 +19,27 @@ export const IcebreakerGame: React.FC<{ onExit: () => void }> = ({ onExit }) => 
             <ScreenHeader title="Icebreakers" onBack={onExit} onHome={onExit} />
 
             <div className="flex-1 flex items-center justify-center my-8">
-                <Card className="w-full min-h-[200px] flex items-center justify-center bg-party-surface border-white/5 shadow-xl">
-                    <p className="text-2xl md:text-3xl text-center font-bold px-4 leading-tight animate-slide-up text-white font-serif">
+                <Card className="w-full min-h-[200px] flex items-center justify-center bg-surface border-divider-soft">
+                    <p className="text-2xl md:text-3xl text-center font-bold px-4 leading-tight animate-slide-up text-ink font-serif">
                         {loading ? "Thinking..." : prompt}
                     </p>
                 </Card>
             </div>
 
-
-
             <div className="grid grid-cols-2 gap-4">
                 <Button
                     onClick={() => getPrompt('fun')}
-                    className="h-32 flex flex-col items-center justify-center gap-2 bg-party-surface hover:bg-slate-600 border border-white/5"
+                    className="h-32 flex flex-col items-center justify-center gap-2 bg-surface hover:bg-surface-alt text-ink border border-divider-soft"
                 >
-                    <Sparkles size={32} className="text-pink-400" />
-                    <span className="font-bold text-white">Fun & Crazy</span>
+                    <Sparkles size={32} className="text-pink-500" />
+                    <span className="font-bold text-ink">Fun & Crazy</span>
                 </Button>
                 <Button
                     onClick={() => getPrompt('deep')}
-                    className="h-32 flex flex-col items-center justify-center gap-2 bg-party-surface hover:bg-slate-600 border border-white/5"
+                    className="h-32 flex flex-col items-center justify-center gap-2 bg-surface hover:bg-surface-alt text-ink border border-divider-soft"
                 >
-                    <MessageCircle size={32} className="text-indigo-400" />
-                    <span className="font-bold text-white">Deep Questions</span>
+                    <MessageCircle size={32} className="text-indigo-500" />
+                    <span className="font-bold text-ink">Deep Questions</span>
                 </Button>
             </div>
         </div >

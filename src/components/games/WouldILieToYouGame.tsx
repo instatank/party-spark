@@ -64,13 +64,13 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
             <header className="flex items-center justify-between mb-6">
                 <button
                     onClick={onExit}
-                    className="p-2 -ml-2 text-gray-400 hover:text-white transition-colors"
+                    className="p-2 -ml-2 text-muted hover:text-ink transition-colors"
                 >
                     <ChevronLeft size={28} />
                 </button>
                 <div className="flex items-center gap-2">
-                    <Drama className="text-teal-400" size={24} />
-                    <h2 className="text-xl font-bold font-serif text-teal-400">Would I Lie To You?</h2>
+                    <Drama className="text-teal-500" size={24} />
+                    <h2 className="text-xl font-bold font-serif text-teal-500">Would I Lie To You?</h2>
                 </div>
                 <div className="w-8" />
             </header>
@@ -83,30 +83,30 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
                     <div className="space-y-6 animate-fade-in">
 
                         <div className="bg-gradient-to-br from-teal-900/50 to-party-dark border border-teal-500/30 p-6 rounded-2xl text-center shadow-[0_0_30px_rgba(20,184,166,0.1)]">
-                            <span className="text-xs font-bold tracking-widest text-teal-400 uppercase">Your Topic Category: {currentCard.category}</span>
-                            <h3 className="text-2xl font-bold text-white mt-1">{currentCard.topic}</h3>
+                            <span className="text-xs font-bold tracking-widest text-teal-500 uppercase">Your Topic Category: {currentCard.category}</span>
+                            <h3 className="text-2xl font-bold text-ink mt-1">{currentCard.topic}</h3>
                         </div>
 
-                        <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
-                            <div className="flex items-center gap-3 bg-party-dark/50 rounded-xl px-4 py-2 border border-white/5 focus-within:border-teal-400/50 transition-colors">
-                                <User className="text-gray-500" size={16} />
+                        <div className="bg-surface-alt border border-divider p-6 rounded-2xl space-y-4">
+                            <div className="flex items-center gap-3 bg-app-tint rounded-xl px-4 py-2 border border-divider-soft focus-within:border-teal-400/50 transition-colors">
+                                <User className="text-muted" size={16} />
                                 <input
                                     type="text"
                                     value={currentPlayer}
                                     onChange={(e) => setCurrentPlayer(e.target.value)}
                                     placeholder="Storyteller Name (Optional)"
-                                    className="bg-transparent border-none text-sm text-white focus:outline-none w-full placeholder:text-gray-600"
+                                    className="bg-transparent border-none text-sm text-ink focus:outline-none w-full placeholder:text-muted"
                                 />
                             </div>
 
-                            <p className="text-gray-300 font-medium text-center">Think of a <span className="text-white font-bold border-b border-teal-400">TRUE STORY</span> from your life related to "{currentCard.topic}".</p>
+                            <p className="text-ink-soft font-medium text-center">Think of a <span className="text-ink font-bold border-b border-teal-500">TRUE STORY</span> from your life related to "{currentCard.topic}".</p>
                             <textarea
                                 value={truthText}
                                 onChange={(e) => setTruthText(e.target.value)}
                                 placeholder="Briefly type exactly what happened. Include specific details like names or pets (e.g., 'My dog Fonzie stole my steak') for better AI lies!"
-                                className="w-full bg-party-dark border border-white/10 rounded-xl p-4 text-gray-200 focus:outline-none focus:border-teal-500/50 resize-none h-32 text-sm leading-relaxed"
+                                className="w-full bg-surface-alt border border-divider rounded-xl p-4 text-ink focus:outline-none focus:border-teal-500/50 resize-none h-32 text-sm leading-relaxed"
                             />
-                            {errorMsg && <p className="text-red-400 text-sm text-center">{errorMsg}</p>}
+                            {errorMsg && <p className="text-red-500 text-sm text-center">{errorMsg}</p>}
 
                             <button
                                 onClick={handleGenerateLies}
@@ -114,7 +114,7 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
                                 className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-2
                       ${truthText.trim()
                                         ? 'bg-teal-500 hover:bg-teal-400 text-white shadow-[0_0_20px_rgba(20,184,166,0.3)]'
-                                        : 'bg-white/5 text-gray-500 cursor-not-allowed'}`}
+                                        : 'bg-surface-alt text-muted cursor-not-allowed'}`}
                             >
                                 Generate AI Lies <Sparkles size={20} />
                             </button>
@@ -127,8 +127,8 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
                     <div className="flex flex-col items-center justify-center space-y-6 h-64 animate-fade-in">
                         <Loader2 size={48} className="text-teal-500 animate-spin" />
                         <div className="text-center space-y-2">
-                            <h3 className="text-xl font-bold text-white">AI is crafting your lies...</h3>
-                            <p className="text-gray-400 text-sm max-w-[250px]">Analyzing your true story to weave those details into perfectly plausible decoys.</p>
+                            <h3 className="text-xl font-bold text-ink">AI is crafting your lies...</h3>
+                            <p className="text-muted text-sm max-w-[250px]">Analyzing your true story to weave those details into perfectly plausible decoys.</p>
                         </div>
                     </div>
                 )}
@@ -137,51 +137,51 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
                 {gameState === 'strategy-selection' && generatedLies && (
                     <div className="space-y-6 animate-fade-in">
                         <div className="text-center space-y-2 mb-4">
-                            <h1 className="text-2xl font-bold text-white">Choose Your Story</h1>
-                            <p className="text-sm text-gray-400">Select which story you actually want to tell the group out loud.</p>
+                            <h1 className="text-2xl font-bold text-ink">Choose Your Story</h1>
+                            <p className="text-sm text-muted">Select which story you actually want to tell the group out loud.</p>
                         </div>
 
                         <div className="space-y-4">
                             {/* Truth Option (Anonymous to group later) */}
                             <div
                                 onClick={() => handleSelection('truth')}
-                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedOption === 'truth' ? 'border-green-500 bg-green-500/10' : 'border-white/10 bg-white/5 hover:border-white/30'}`}
+                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedOption === 'truth' ? 'border-green-500 bg-green-500/10' : 'border-divider bg-surface-alt hover:border-ink-soft'}`}
                             >
-                                <label className="flex items-center gap-3 font-semibold text-white mb-2 pointer-events-none">
+                                <label className="flex items-center gap-3 font-semibold text-ink mb-2 pointer-events-none">
                                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedOption === 'truth' ? 'border-green-500' : 'border-gray-500'}`}>
                                         {selectedOption === 'truth' && <div className="w-2.5 h-2.5 bg-green-500 rounded-full" />}
                                     </div>
                                     <span className="text-green-400">The Truth</span>
                                 </label>
-                                <p className="text-sm text-gray-300 pl-8 pointer-events-none">"{truthText}"</p>
+                                <p className="text-sm text-ink-soft pl-8 pointer-events-none">"{truthText}"</p>
                             </div>
 
                             {/* Lie Option 1 */}
                             <div
                                 onClick={() => handleSelection('lie1')}
-                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedOption === 'lie1' ? 'border-red-500 bg-red-500/10' : 'border-white/10 bg-white/5 hover:border-white/30'}`}
+                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedOption === 'lie1' ? 'border-red-500 bg-red-500/10' : 'border-divider bg-surface-alt hover:border-ink-soft'}`}
                             >
-                                <label className="flex items-center gap-3 font-semibold text-white mb-2 pointer-events-none">
+                                <label className="flex items-center gap-3 font-semibold text-ink mb-2 pointer-events-none">
                                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedOption === 'lie1' ? 'border-red-500' : 'border-gray-500'}`}>
                                         {selectedOption === 'lie1' && <div className="w-2.5 h-2.5 bg-red-500 rounded-full" />}
                                     </div>
-                                    <span className="text-red-400">AI Generated Lie #1</span>
+                                    <span className="text-red-500">AI Generated Lie #1</span>
                                 </label>
-                                <p className="text-sm text-gray-300 pl-8 pointer-events-none">"{generatedLies[0]}"</p>
+                                <p className="text-sm text-ink-soft pl-8 pointer-events-none">"{generatedLies[0]}"</p>
                             </div>
 
                             {/* Lie Option 2 */}
                             <div
                                 onClick={() => handleSelection('lie2')}
-                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedOption === 'lie2' ? 'border-red-500 bg-red-500/10' : 'border-white/10 bg-white/5 hover:border-white/30'}`}
+                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedOption === 'lie2' ? 'border-red-500 bg-red-500/10' : 'border-divider bg-surface-alt hover:border-ink-soft'}`}
                             >
-                                <label className="flex items-center gap-3 font-semibold text-white mb-2 pointer-events-none">
+                                <label className="flex items-center gap-3 font-semibold text-ink mb-2 pointer-events-none">
                                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedOption === 'lie2' ? 'border-red-500' : 'border-gray-500'}`}>
                                         {selectedOption === 'lie2' && <div className="w-2.5 h-2.5 bg-red-500 rounded-full" />}
                                     </div>
-                                    <span className="text-red-400">AI Generated Lie #2</span>
+                                    <span className="text-red-500">AI Generated Lie #2</span>
                                 </label>
-                                <p className="text-sm text-gray-300 pl-8 pointer-events-none">"{generatedLies[1]}"</p>
+                                <p className="text-sm text-ink-soft pl-8 pointer-events-none">"{generatedLies[1]}"</p>
                             </div>
                         </div>
 
@@ -191,7 +191,7 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
                                 disabled={!selectedOption}
                                 className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300
                      ${!selectedOption
-                                        ? 'bg-white/5 text-gray-500 cursor-not-allowed'
+                                        ? 'bg-surface-alt text-muted cursor-not-allowed'
                                         : 'bg-teal-500 hover:bg-teal-400 text-white shadow-[0_0_20px_rgba(20,184,166,0.3)]'}`}
                             >
                                 Ready? Hide Screen & Start Interrogation
@@ -204,21 +204,21 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
                 {gameState === 'interrogation' && (
                     <div className="space-y-8 animate-slide-up text-center">
                         <div className="bg-teal-500/20 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-                            <HelpCircle className="text-teal-400" size={48} />
+                            <HelpCircle className="text-teal-500" size={48} />
                         </div>
 
                         <div className="space-y-4">
-                            <h2 className="text-3xl font-bold text-white">Interrogation Time!</h2>
-                            <p className="text-gray-300 text-lg">
-                                <span className="font-bold text-teal-400">{currentPlayer || 'The Storyteller'}</span> is telling a story about <span className="text-white font-bold">"{currentCard.topic}"</span>.
+                            <h2 className="text-3xl font-bold text-ink">Interrogation Time!</h2>
+                            <p className="text-ink-soft text-lg">
+                                <span className="font-bold text-teal-500">{currentPlayer || 'The Storyteller'}</span> is telling a story about <span className="text-ink font-bold">"{currentCard.topic}"</span>.
                             </p>
                         </div>
 
-                        <div className="bg-white/5 border border-white/10 p-6 rounded-2xl text-left space-y-3">
-                            <h4 className="font-bold text-white flex items-center gap-2">
-                                <Users size={18} className="text-teal-400" /> Group Instructions:
+                        <div className="bg-surface-alt border border-divider p-6 rounded-2xl text-left space-y-3">
+                            <h4 className="font-bold text-ink flex items-center gap-2">
+                                <Users size={18} className="text-teal-500" /> Group Instructions:
                             </h4>
-                            <ul className="text-gray-400 text-sm space-y-2 list-disc pl-5">
+                            <ul className="text-muted text-sm space-y-2 list-disc pl-5">
                                 <li>Ask specific questions about small details.</li>
                                 <li>Liars often stumble on follow-up questions!</li>
                                 <li>When you've heard enough, proceed to vote.</li>
@@ -238,14 +238,14 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
                 {gameState === 'voting' && (
                     <div className="space-y-8 animate-slide-up text-center">
                         <div className="space-y-4">
-                            <h2 className="text-3xl font-bold text-white">The Verdict</h2>
-                            <p className="text-gray-300 text-lg">
-                                Group, what is your official guess? Is <span className="font-bold text-teal-400">{currentPlayer || 'The Storyteller'}</span> telling the truth, or a bold-faced lie?
+                            <h2 className="text-3xl font-bold text-ink">The Verdict</h2>
+                            <p className="text-ink-soft text-lg">
+                                Group, what is your official guess? Is <span className="font-bold text-teal-500">{currentPlayer || 'The Storyteller'}</span> telling the truth, or a bold-faced lie?
                             </p>
                         </div>
 
-                        <div className="bg-white/5 border border-white/10 p-8 rounded-2xl flex flex-col items-center justify-center gap-6">
-                            <p className="text-gray-400 font-medium">Discuss, then tap below to view the answer.</p>
+                        <div className="bg-surface-alt border border-divider p-8 rounded-2xl flex flex-col items-center justify-center gap-6">
+                            <p className="text-muted font-medium">Discuss, then tap below to view the answer.</p>
                             <button
                                 onClick={() => setGameState('reveal')}
                                 className="w-full py-4 rounded-xl font-bold text-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all flex items-center justify-center gap-2"
@@ -267,11 +267,11 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
                                 </div>
                                 <div>
                                     <h2 className="text-4xl font-black text-green-400 mb-2 uppercase tracking-wider">It's the Truth!</h2>
-                                    <p className="text-gray-300 text-lg mb-6">You can't make this stuff up.</p>
+                                    <p className="text-ink-soft text-lg mb-6">You can't make this stuff up.</p>
                                 </div>
-                                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl text-left">
+                                <div className="bg-surface-alt border border-divider p-6 rounded-2xl text-left">
                                     <p className="text-sm text-green-400 font-bold mb-2 uppercase tracking-wide">What really happened:</p>
-                                    <p className="text-white text-lg">"{truthText}"</p>
+                                    <p className="text-ink text-lg">"{truthText}"</p>
                                 </div>
                             </div>
                         ) : (
@@ -281,17 +281,17 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
                                 </div>
                                 <div>
                                     <h2 className="text-4xl font-black text-red-500 mb-2 uppercase tracking-wider">It's a Lie!</h2>
-                                    <p className="text-gray-300 text-lg mb-6"><span className="font-bold text-white">{currentPlayer || 'The Storyteller'}</span> spun a web of deceit.</p>
+                                    <p className="text-ink-soft text-lg mb-6"><span className="font-bold text-ink">{currentPlayer || 'The Storyteller'}</span> spun a web of deceit.</p>
                                 </div>
-                                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl text-left">
-                                    <p className="text-sm text-red-400 font-bold mb-2 uppercase tracking-wide">The chosen lie:</p>
-                                    <p className="text-white text-lg italic">
+                                <div className="bg-surface-alt border border-divider p-6 rounded-2xl text-left">
+                                    <p className="text-sm text-red-500 font-bold mb-2 uppercase tracking-wide">The chosen lie:</p>
+                                    <p className="text-ink text-lg italic">
                                         "{selectedOption === 'lie1' && generatedLies ? generatedLies[0] : (generatedLies ? generatedLies[1] : '')}"
                                     </p>
                                 </div>
-                                <div className="bg-white/5 border border-white/10 p-4 rounded-xl text-left mt-2 opacity-70">
+                                <div className="bg-surface-alt border border-divider p-4 rounded-xl text-left mt-2 opacity-70">
                                     <p className="text-xs text-green-400 font-bold mb-1 uppercase tracking-wide">The actual truth was:</p>
-                                    <p className="text-gray-300 text-sm">"{truthText}"</p>
+                                    <p className="text-ink-soft text-sm">"{truthText}"</p>
                                 </div>
                             </div>
                         )}
