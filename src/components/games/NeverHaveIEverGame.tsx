@@ -4,7 +4,7 @@ import { ScreenHeader } from '../ui/Layout';
 import neverHaveIEverData from '../../data/never_have_i_ever.json';
 import { generateNeverHaveIEver, generateCustomNeverHaveIEver } from '../../services/geminiService';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Lock, ChevronRight, Hand, MessageCircle, Flame, Landmark, Users, Wand2 } from 'lucide-react';
+import { Sparkles, Lock, ChevronRight, Hand, MessageCircle, Flame, Landmark, Users, Wand2, ShieldCheck } from 'lucide-react';
 
 interface GameProps {
     onExit: () => void;
@@ -416,21 +416,37 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                     );
                 })()}
 
-                <div className="w-full max-w-sm mt-12 grid grid-cols-1 gap-4">
-                    <button
-                        onClick={handleNextCard}
-                        disabled={isLoading}
-                        className={`w-full py-4 rounded-xl font-bold tracking-wider text-white shadow-lg transition-all active:scale-[0.98] ${category === 'rehaan' ? 'bg-cyan-600 hover:bg-cyan-500' : category === 'guilty_pleasures' ? 'bg-pink-600 hover:bg-pink-500' : category === 'custom_vibe' ? 'bg-violet-600 hover:bg-violet-500' : 'bg-emerald-600 hover:bg-emerald-500'} ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                        {isLoading ? (
-                            <span className="flex items-center justify-center gap-2">
-                                <Sparkles className="animate-spin" size={20} /> Generating via AI...
-                            </span>
-                        ) : (
-                            "NEXT STATEMENT"
-                        )}
-                    </button>
-                    <p className="text-center text-xs text-neutral-500 font-medium">Stand up if you've done it!</p>
+                {/* I've Never / I Have — same outlined-CTA treatment as the
+                    TOD Truth/Drink row. Emerald for the innocent claim,
+                    rose for the confession. Both buttons advance to the
+                    next statement (NHIE has no per-player turn so the
+                    declaration is purely flavor). */}
+                <div className="w-full max-w-sm mt-12 flex flex-col gap-3">
+                    <div className="flex gap-3">
+                        <button
+                            onClick={handleNextCard}
+                            disabled={isLoading}
+                            className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-300 bg-emerald-500/10 border-2 border-emerald-500/60 hover:bg-emerald-500/20 hover:border-emerald-400 hover:text-emerald-200 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <ShieldCheck size={18} />
+                            I've Never
+                        </button>
+                        <button
+                            onClick={handleNextCard}
+                            disabled={isLoading}
+                            className="flex-1 py-4 rounded-xl font-bold text-base text-rose-300 bg-rose-500/10 border-2 border-rose-500/60 hover:bg-rose-500/20 hover:border-rose-400 hover:text-rose-200 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Hand size={18} />
+                            I Have
+                        </button>
+                    </div>
+                    {isLoading ? (
+                        <p className="text-center text-xs text-violet-400 font-medium flex items-center justify-center gap-2">
+                            <Sparkles className="animate-spin" size={14} /> Generating more statements…
+                        </p>
+                    ) : (
+                        <p className="text-center text-xs text-neutral-500 font-medium">Stand up if you've done it!</p>
+                    )}
                 </div>
             </div>
         </div>
