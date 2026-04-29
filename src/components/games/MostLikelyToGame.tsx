@@ -309,13 +309,10 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
 
     if (gameState === 'CATEGORY') {
         // Tab sizing matches Truth or Drink (compact py-3 px-4, 16px inline icon).
-        // Per-category bottom-line variations (test designs — finalize later):
-        //   pattern 'custom'       -> custom vibe: 2px colored ring + soft outer glow
-        //   pattern 'full-bottom'  -> full-width 2px bottom line
-        //   pattern 'third-bottom' -> 33% center-aligned bottom line
-        //   pattern 'third-both'   -> 33% center-aligned line at top AND bottom
-        // After the custom tile, the remaining categories cycle through the
-        // 3 non-custom patterns so each appears in different colors.
+        // Accent treatment, finalized:
+        //   • Custom Vibe tile: 2px colored ring + soft outer glow (special pick).
+        //   • All other tiles: 3px inset-vertical left bar (top-3 bottom-3) +
+        //     33% center-aligned 2px bottom line.
         const TILES: Record<string, string> = {
             custom_vibe:     '#8B5CE0',
             family_friendly: '#35B4C8',
@@ -334,8 +331,6 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
             chaos:           <AlertTriangle size={16} />,
             bbf:             <Users size={16} />,
         };
-        type AccentPattern = 'custom' | 'full-bottom' | 'third-bottom' | 'third-both';
-        const NON_CUSTOM_CYCLE: AccentPattern[] = ['full-bottom', 'third-bottom', 'third-both'];
         const isAdultCat = (id: string) => ADULT_CATEGORY_IDS.includes(id);
 
         return (
@@ -385,14 +380,10 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                 {/* Category list — TOD-sized tabs, 4 different accent patterns */}
                 <div className="flex-1 overflow-y-auto px-4 pb-5">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
-                        {MOST_LIKELY_TO_CATEGORIES.map((cat: any, idx: number) => {
+                        {MOST_LIKELY_TO_CATEGORIES.map((cat: any) => {
                             const color = TILES[cat.id] || '#94A3B8';
                             const adult = isAdultCat(cat.id);
                             const isCustom = cat.id === 'custom_vibe';
-                            // Custom always gets the special pattern; others cycle.
-                            const pattern: AccentPattern = isCustom
-                                ? 'custom'
-                                : NON_CUSTOM_CYCLE[(idx - 1) % NON_CUSTOM_CYCLE.length];
 
                             return (
                                 <button
@@ -403,38 +394,23 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                                 >
                                     <div
                                         className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden"
-                                        style={pattern === 'custom' ? {
-                                            // Custom: full 2px colored ring + soft outer glow
+                                        style={isCustom ? {
+                                            // Custom: 2px colored ring + soft outer glow.
+                                            // No partial accents — the ring already covers
+                                            // all 4 edges in the brand color.
                                             borderColor: color,
                                             borderWidth: 2,
                                             boxShadow: `0 0 18px ${color}55, inset 0 0 0 1px ${color}33`,
-                                        } : {
-                                            // Non-custom: keep the colored 4px left vertical bar
-                                            // (matches TOD's pattern). Bottom-line variation
-                                            // sits inside the tile via absolute spans below.
-                                            borderLeftWidth: 4,
-                                            borderLeftColor: color,
-                                        }}
+                                        } : undefined}
                                     >
-                                        {/* Pattern: full-width bottom line */}
-                                        {pattern === 'full-bottom' && (
-                                            <span
-                                                className="absolute left-0 right-0 bottom-0 h-[2px]"
-                                                style={{ background: color }}
-                                            />
-                                        )}
-                                        {/* Pattern: 33% center bottom only */}
-                                        {pattern === 'third-bottom' && (
-                                            <span
-                                                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]"
-                                                style={{ background: color }}
-                                            />
-                                        )}
-                                        {/* Pattern: 33% center top AND bottom */}
-                                        {pattern === 'third-both' && (
+                                        {/* Non-custom accents: 3px inset-vertical left bar +
+                                            33% center-aligned bottom line. Both via
+                                            absolutely-positioned spans so the rounded corners
+                                            clip cleanly via overflow-hidden on the parent. */}
+                                        {!isCustom && (
                                             <>
                                                 <span
-                                                    className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]"
+                                                    className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]"
                                                     style={{ background: color }}
                                                 />
                                                 <span
