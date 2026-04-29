@@ -79,7 +79,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
         <div className="w-full max-w-4xl mx-auto flex flex-col md:flex-row gap-8 animate-fade-in-up">
             {/* Visuals */}
             <div className="flex-1 space-y-4">
-                <div className="relative group rounded-xl overflow-hidden shadow-2xl shadow-yellow-900/20 border-2 border-neutral-800">
+                <div className="relative group rounded-xl overflow-hidden shadow-2xl shadow-yellow-900/20 border-2 border-divider">
                     {isEditing && (
                         <div className="absolute inset-0 bg-black/70 z-10 flex items-center justify-center">
                             <span className="text-yellow-400 font-comic animate-pulse text-xl">Applying Magic...</span>
@@ -98,7 +98,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                 <div className="flex gap-4 mb-4">
                     <button
                         onClick={handleSave}
-                        className="flex-1 flex items-center justify-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium py-3 rounded-xl border border-neutral-700 transition-colors"
+                        className="flex-1 flex items-center justify-center gap-2 bg-surface hover:bg-app-tint text-ink font-medium py-3 rounded-xl border border-divider transition-colors"
                     >
                         <Download size={18} />
                         Save Photo
@@ -112,28 +112,28 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                     </button>
                 </div>
 
-                <div className="bg-neutral-900 p-4 rounded-xl border border-neutral-800 space-y-4">
+                <div className="bg-surface-alt p-4 rounded-xl border border-divider space-y-4">
                     <div>
-                        <h3 className="text-neutral-400 text-xs font-bold mb-2 uppercase tracking-wider">Change Theme</h3>
+                        <h3 className="text-muted text-xs font-bold mb-2 uppercase tracking-wider">Change Theme</h3>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => handleIntensityClick('animate')}
                                 disabled={isEditing}
-                                className="flex-1 bg-neutral-800 hover:bg-yellow-900/40 text-yellow-500 text-sm font-medium py-2 rounded-lg border border-neutral-700 transition-all"
+                                className="flex-1 bg-surface hover:bg-yellow-900/40 text-yellow-500 text-sm font-medium py-2 rounded-lg border border-divider transition-all"
                             >
                                 Animate
                             </button>
                             <button
                                 onClick={() => handleIntensityClick('tabloid')}
                                 disabled={isEditing}
-                                className="flex-1 bg-neutral-800 hover:bg-pink-900/40 text-pink-500 text-sm font-medium py-2 rounded-lg border border-neutral-700 transition-all"
+                                className="flex-1 bg-surface hover:bg-pink-900/40 text-pink-500 text-sm font-medium py-2 rounded-lg border border-divider transition-all"
                             >
                                 Tabloid
                             </button>
                             <button
                                 onClick={() => handleIntensityClick('movie')}
                                 disabled={isEditing}
-                                className="flex-1 bg-neutral-800 hover:bg-blue-900/40 text-blue-500 text-sm font-medium py-2 rounded-lg border border-neutral-700 transition-all"
+                                className="flex-1 bg-surface hover:bg-blue-900/40 text-blue-500 text-sm font-medium py-2 rounded-lg border border-divider transition-all"
                             >
                                 Movie
                             </button>
@@ -141,14 +141,14 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                     </div>
 
                     <div>
-                        <h3 className="text-neutral-400 text-xs font-bold mb-2 uppercase tracking-wider">Custom Refinement</h3>
+                        <h3 className="text-muted text-xs font-bold mb-2 uppercase tracking-wider">Custom Refinement</h3>
                         <div className="flex gap-2">
                             <input
                                 type="text"
                                 value={prompt}
                                 onChange={(e) => setPrompt(e.target.value)}
                                 placeholder="e.g., Make it a zombie..."
-                                className="flex-1 bg-neutral-800 border border-neutral-700 text-white px-3 py-2 text-sm rounded-lg focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
+                                className="flex-1 bg-surface border border-divider text-ink placeholder:text-muted px-3 py-2 text-sm rounded-lg focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
                                 onKeyDown={(e) => e.key === 'Enter' && handleCustomEdit()}
                             />
                             <button
@@ -180,7 +180,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
 
                     <div className="mt-8 flex items-center justify-between border-t border-red-900/30 pt-4">
                         <div className="flex items-center space-x-2">
-                            <span className="text-neutral-400 text-sm">Roasted by</span>
+                            <span className="text-muted text-sm">Roasted by</span>
                             <span className="text-yellow-500 font-bold uppercase tracking-tighter">Gemini 3 Pro</span>
                         </div>
                         <div className="flex space-x-1 text-yellow-500">

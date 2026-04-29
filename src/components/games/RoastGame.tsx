@@ -76,11 +76,11 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
     };
 
     return (
-        <div className="w-full min-h-full bg-[#0f0f0f] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-900 to-[#050505] text-white flex flex-col rounded-xl overflow-hidden shadow-2xl border border-neutral-800">
-            <div className="p-4 border-b border-neutral-800 backdrop-blur-md bg-black/50 flex items-center justify-between">
+        <div className="w-full min-h-full bg-app text-ink flex flex-col rounded-xl overflow-hidden border border-divider-soft" style={{ boxShadow: 'var(--shadow-card)' }}>
+            <div className="p-4 border-b border-divider-soft bg-surface-alt flex items-center justify-between">
                 <div className="flex items-center space-x-2" onClick={handleReset} role="button">
                     <div className="text-3xl">🔥</div>
-                    <h2 className="text-2xl font-comic text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-red-600 tracking-wide">
+                    <h2 className="text-2xl font-comic text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-red-600 tracking-wide">
                         RoastMyPic
                     </h2>
                 </div>
@@ -88,14 +88,14 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                     {appState === AppState.COMPLETE && (
                         <button
                             onClick={handleReset}
-                            className="px-3 py-1 rounded-full border border-neutral-700 hover:bg-neutral-800 text-xs font-semibold transition-all hover:text-white text-neutral-400"
+                            className="px-3 py-1 rounded-full border border-divider hover:bg-app-tint text-xs font-semibold transition-all text-ink-soft hover:text-ink"
                         >
                             Start Over
                         </button>
                     )}
                     <button
                         onClick={onExit}
-                        className="px-3 py-1 rounded-full border border-neutral-700 hover:bg-neutral-800 text-xs font-semibold transition-all hover:text-white text-neutral-400"
+                        className="px-3 py-1 rounded-full border border-divider hover:bg-app-tint text-xs font-semibold transition-all text-ink-soft hover:text-ink"
                     >
                         Exit
                     </button>
@@ -107,7 +107,7 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                 {appState === AppState.ERROR && (
                     <div className="text-center space-y-4">
                         <div className="text-6xl">🤕</div>
-                        <h3 className="text-xl font-bold">The grill malfunctioned.</h3>
+                        <h3 className="text-xl font-bold text-ink">The grill malfunctioned.</h3>
                         <button onClick={handleReset} className="text-yellow-500 underline">Try Again</button>
                     </div>
                 )}
@@ -115,16 +115,16 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                 {appState === AppState.IDLE && (
                     <div className="w-full max-w-2xl text-center space-y-8 animate-fade-in-down">
                         <div className="space-y-4 mb-8">
-                            <h3 className="text-4xl md:text-5xl font-bold tracking-tighter text-white">
+                            <h3 className="text-4xl md:text-5xl font-bold tracking-tighter text-ink">
                                 Get <span className="text-red-500 underline decoration-wavy decoration-yellow-500">Roasted</span>
                             </h3>
-                            <p className="text-lg text-neutral-400 max-w-lg mx-auto">
-                                Upload a photo. We'll turn you into a cartoon and destroy your ego using <span className="text-white font-bold">Gemini 3 Pro</span>.
+                            <p className="text-lg text-muted max-w-lg mx-auto">
+                                Upload a photo. We'll turn you into a cartoon and destroy your ego using <span className="text-ink font-bold">Gemini 3 Pro</span>.
                             </p>
                         </div>
 
                         <div className="flex flex-col items-center justify-center space-y-2 mb-8">
-                            <span className="text-neutral-500 text-xs font-bold uppercase tracking-widest">Select Roast Theme</span>
+                            <span className="text-muted text-xs font-bold uppercase tracking-widest">Select Roast Theme</span>
                             <div className="flex flex-wrap justify-center gap-3 w-full max-w-2xl mb-8">
                                 {(['animate', 'tabloid', 'movie', 'disco', 'agra'] as RoastTheme[]).map((t) => (
                                     <button
@@ -132,8 +132,8 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                                         onClick={() => setTheme(t)}
                                         className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 border ${
                                             theme === t
-                                                ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]'
-                                                : 'bg-[#1c1c1e]/50 text-neutral-400 border-neutral-800 hover:bg-[#2c2c2e] hover:text-white'
+                                                ? 'bg-ink text-app border-ink shadow-md'
+                                                : 'bg-surface-alt text-ink-soft border-divider hover:bg-app-tint hover:text-ink'
                                         }`}
                                     >
                                         <span>
@@ -164,7 +164,7 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                 )}
             </div>
 
-            <div className="p-4 text-center text-neutral-600 text-xs">
+            <div className="p-4 text-center text-muted text-xs">
                 <p>Powered by Gemini 3 Pro & 3 Flash</p>
             </div>
         </div>
