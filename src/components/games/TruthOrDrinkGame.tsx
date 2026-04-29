@@ -298,9 +298,19 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     // RENDER
     // ========================
 
-    // CATEGORY SELECT — "Slim Row"
-    // Compact horizontal rows with a colored left accent bar.
+    // CATEGORY SELECT — same design pattern as MLT category screen.
+    // Custom Vibe gets a 2px ring + glow; the other decks get a 3px inset
+    // left bar + a 33% center-aligned bottom line in the deck color.
     if (gameState === 'CATEGORY_SELECT') {
+        const TILES: Record<Category, string> = {
+            custom:  '#C026D3', // fuchsia-600
+            classic: '#8B5CE0', // violet
+            spicy:   '#F43F5E', // rose-500
+            deep:    '#10B981', // emerald-500
+            exes:    '#EC4899', // pink-500
+            chaos:   '#A855F7', // purple-500
+        };
+
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Truth or Drink" onBack={onExit} onHome={onExit} />
@@ -309,27 +319,52 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                 </p>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
-                        {CATEGORIES.map(cat => (
-                            <button
-                                key={cat.id}
-                                onClick={() => handleCategorySelect(cat.id)}
-                                className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
-                            >
-                                <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${cat.accentBorderLeft} border-b-2 ${cat.accentBorderBottom} hover:bg-white/[0.08] hover:border-t-white/20 hover:border-r-white/20 rounded-xl py-3 px-4 transition-colors`}>
-                                    <div className="flex items-center gap-3">
-                                        <cat.Icon className={`${cat.accentText} flex-shrink-0`} size={16} />
-                                        <div className="flex-1 min-w-0">
-                                            <h3 className="text-base font-bold text-white leading-tight flex items-center gap-1.5">
-                                                <span className="truncate">{cat.title}</span>
-                                                <span className="text-sm flex-shrink-0">{cat.emoji}</span>
-                                            </h3>
-                                            <p className="text-xs text-gray-400 leading-snug truncate">{cat.tagline}</p>
+                        {CATEGORIES.map(cat => {
+                            const color = TILES[cat.id] || '#94A3B8';
+                            const isCustom = cat.id === 'custom';
+                            return (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => handleCategorySelect(cat.id)}
+                                    className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
+                                >
+                                    <div
+                                        className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden"
+                                        style={isCustom ? {
+                                            borderColor: color,
+                                            borderWidth: 2,
+                                            boxShadow: `0 0 18px ${color}55, inset 0 0 0 1px ${color}33`,
+                                        } : undefined}
+                                    >
+                                        {!isCustom && (
+                                            <>
+                                                <span
+                                                    className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]"
+                                                    style={{ background: color }}
+                                                />
+                                                <span
+                                                    className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]"
+                                                    style={{ background: color }}
+                                                />
+                                            </>
+                                        )}
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex-shrink-0" style={{ color }}>
+                                                <cat.Icon size={16} />
+                                            </span>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-base font-bold text-white leading-tight flex items-center gap-1.5">
+                                                    <span className="truncate">{cat.title}</span>
+                                                    <span className="text-sm flex-shrink-0">{cat.emoji}</span>
+                                                </h3>
+                                                <p className="text-xs text-gray-400 leading-snug truncate">{cat.tagline}</p>
+                                            </div>
+                                            <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
                                         </div>
-                                        <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
                                     </div>
-                                </div>
-                            </button>
-                        ))}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

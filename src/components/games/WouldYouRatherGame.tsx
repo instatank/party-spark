@@ -116,6 +116,17 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
 
     // ===== CATEGORY SELECT =====
     if (gameState === 'CATEGORY') {
+        // Same design pattern as MLT/TOD: 3px inset left bar + 33% center
+        // bottom line. WYR has no AI custom-vibe deck. The single 'spicy'
+        // category is adult-gated and gets an 18+ pill.
+        const TILES: Record<string, string> = {
+            classic_chaos:  '#6366F1', // indigo-500
+            deep_revealing: '#A855F7', // purple-500
+            travel_living:  '#10B981', // emerald-500
+            pop_culture:    '#EC4899', // pink-500
+            spicy:          '#F43F5E', // rose-500
+        };
+
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Would You Rather?" onBack={onExit} onHome={onExit} />
@@ -132,37 +143,45 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                         }}
                     />
                 )}
-                <div className="text-center mb-6">
-                    <p className="text-5xl mb-2">🤔</p>
-                    <h2 className="text-xl font-serif font-bold text-white mb-1">Pick your <em>vibe</em>.</h2>
-                    <p className="text-gray-400 text-sm">Vote on 10 brutal hypotheticals. Get psychoanalysed.</p>
-                </div>
+                <p className="text-gray-400 mb-4 text-sm text-center">
+                    Vote on 10 brutal hypotheticals. Get psychoanalysed.
+                </p>
                 <div className="flex-1 overflow-y-auto pb-8">
-                    <div className="grid gap-3">
+                    <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {WOULD_YOU_RATHER_CATEGORIES.map(cat => {
                             const Icon = CATEGORY_ICONS[cat.id] ?? Sparkles;
+                            const color = TILES[cat.id] || '#94A3B8';
                             return (
                                 <button
                                     key={cat.id}
                                     onClick={() => startCategory(cat.id)}
-                                    className="group relative w-full text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                                    className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                                 >
-                                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${cat.gradient} opacity-0 group-hover:opacity-10 transition-opacity blur-xl`} />
-                                    <div className="bg-white/5 border border-white/10 hover:bg-white/[0.07] hover:border-white/20 backdrop-blur-sm p-5 rounded-2xl shadow-xl transition-colors relative overflow-hidden">
-                                        <div className="relative z-10 flex items-center justify-between p-1">
-                                            <div className="flex-1 pr-3">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <Icon className={cat.accentText} size={20} />
-                                                    <h3 className="text-xl font-bold text-white">
-                                                        {cat.title}
-                                                        {cat.adult && <span className="ml-2 text-[10px] bg-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider text-gray-300">Adults Only</span>}
-                                                    </h3>
-                                                </div>
-                                                <p className="text-sm text-gray-300">{cat.tagline}</p>
+                                    <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden">
+                                        <span
+                                            className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]"
+                                            style={{ background: color }}
+                                        />
+                                        <span
+                                            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]"
+                                            style={{ background: color }}
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex-shrink-0" style={{ color }}>
+                                                <Icon size={16} />
+                                            </span>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-base font-bold text-white leading-tight flex items-center gap-1.5">
+                                                    <span className="truncate">{cat.title}</span>
+                                                    {cat.adult && (
+                                                        <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-400 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
+                                                            18+
+                                                        </span>
+                                                    )}
+                                                </h3>
+                                                <p className="text-xs text-gray-400 leading-snug truncate">{cat.tagline}</p>
                                             </div>
-                                            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${cat.gradient} flex items-center justify-center shadow-lg ${cat.shadow} group-hover:shadow-xl transition-shadow flex-shrink-0`}>
-                                                <ChevronRight className="text-white" size={20} />
-                                            </div>
+                                            <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
                                         </div>
                                     </div>
                                 </button>

@@ -51,15 +51,15 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     };
 
     if (gameState === 'SELECT') {
-        // "Slim Row" — compact horizontal rows with a colored left accent bar.
-        // Static class strings per category so Tailwind v4 JIT compiles them.
-        const CAT_META: Record<string, { Icon: LucideIcon; accent: string; borderL: string; borderB: string }> = {
-            rehaan:           { Icon: MessageCircle, accent: 'text-cyan-400',    borderL: 'border-l-cyan-500',    borderB: 'border-b-cyan-500' },
-            rehaan_asks:      { Icon: Flame,         accent: 'text-orange-400',  borderL: 'border-l-orange-500',  borderB: 'border-b-orange-500' },
-            agra:             { Icon: Landmark,      accent: 'text-amber-400',   borderL: 'border-l-amber-500',   borderB: 'border-b-amber-500' },
-            bbf:              { Icon: Users,         accent: 'text-purple-400',  borderL: 'border-l-purple-500',  borderB: 'border-b-purple-500' },
-            classic:          { Icon: Hand,          accent: 'text-emerald-400', borderL: 'border-l-emerald-500', borderB: 'border-b-emerald-500' },
-            guilty_pleasures: { Icon: Lock,          accent: 'text-pink-400',    borderL: 'border-l-pink-500',    borderB: 'border-b-pink-500' },
+        // Same design pattern as MLT/TOD: 3px inset left bar + 33% center
+        // bottom line. NHIE has no AI custom-vibe deck so no ring/glow tile.
+        const TILES: Record<string, { Icon: LucideIcon; color: string }> = {
+            rehaan:           { Icon: MessageCircle, color: '#06B6D4' }, // cyan-500
+            rehaan_asks:      { Icon: Flame,         color: '#F97316' }, // orange-500
+            agra:             { Icon: Landmark,      color: '#D97706' }, // amber-600
+            bbf:              { Icon: Users,         color: '#9333EA' }, // purple-600
+            classic:          { Icon: Hand,          color: '#10B981' }, // emerald-500
+            guilty_pleasures: { Icon: Lock,          color: '#EC4899' }, // pink-500
         };
 
         return (
@@ -71,10 +71,11 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                         Pick a category. Stand up if you've done it. Last one sitting wins.
                     </p>
 
-                    <div className="grid gap-2 max-w-[340px] mx-auto w-full">
+                    <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {NEVER_HAVE_I_EVER_CATEGORIES.map((cat) => {
-                            const meta = CAT_META[cat.id];
+                            const meta = TILES[cat.id];
                             const Icon = meta?.Icon || Sparkles;
+                            const color = meta?.color || '#94A3B8';
                             return (
                                 <button
                                     key={cat.id}
@@ -84,9 +85,19 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                     }}
                                     className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                                 >
-                                    <div className={`bg-white/5 backdrop-blur-sm border border-white/10 border-l-4 ${meta?.borderL || 'border-l-white/20'} border-b-2 ${meta?.borderB || 'border-b-white/20'} hover:bg-white/[0.08] hover:border-t-white/20 hover:border-r-white/20 rounded-xl py-3 px-4 transition-colors`}>
+                                    <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden">
+                                        <span
+                                            className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]"
+                                            style={{ background: color }}
+                                        />
+                                        <span
+                                            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]"
+                                            style={{ background: color }}
+                                        />
                                         <div className="flex items-center gap-3">
-                                            <Icon className={`${meta?.accent || 'text-white'} flex-shrink-0`} size={16} />
+                                            <span className="flex-shrink-0" style={{ color }}>
+                                                <Icon size={16} />
+                                            </span>
                                             <div className="flex-1 min-w-0">
                                                 <h3 className="text-base font-bold text-white leading-tight truncate">{cat.label}</h3>
                                                 <p className="text-xs text-gray-400 leading-snug truncate">{cat.description}</p>
