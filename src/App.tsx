@@ -120,6 +120,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
     GameType.ICEBREAKERS,
     GameType.WOULD_YOU_RATHER,
     GameType.NEVER_HAVE_I_EVER,
+    GameType.MINI_MAFIA,
   ];
 
   // Adult-gated games — require PIN before entering
