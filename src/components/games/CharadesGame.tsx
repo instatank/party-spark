@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, ScreenHeader } from '../ui/Layout';
+import { Button, ScreenHeader } from '../ui/Layout';
 import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles } from 'lucide-react';
 import { generateCharadesWords } from '../../services/geminiService';
 import { useContent } from '../../contexts/ContentContext';
@@ -259,11 +259,34 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
             </div>
 
             <div className="flex-1 flex items-center justify-center perspective-1000">
-                <Card className="w-full h-80 flex items-center justify-center bg-gradient-to-br from-indigo-900 to-party-surface border-party-primary/30 shadow-2xl shadow-party-primary/20 transform transition-all duration-300">
-                    <h2 className="text-4xl md:text-5xl font-black text-center px-4 leading-tight break-words animate-slide-up">
-                        {words[currentIndex]}
-                    </h2>
-                </Card>
+                {/* Card body — same MLT play-screen style: portrait 3:4, bg-party-surface,
+                    border, rounded-22, decorative blob top-right, header pill top-left,
+                    Playfair word centered, italic "PartySpark" footer. Charades brand
+                    color is gold (#EFC050). */}
+                <div
+                    className="w-full aspect-[3/4] max-h-[460px] bg-party-surface border border-white/10 rounded-[22px] p-7 flex flex-col relative overflow-hidden"
+                    style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}
+                >
+                    <div
+                        className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none"
+                        style={{ background: 'rgba(239, 192, 80, 0.18)' }}
+                    />
+                    <div
+                        className="self-start text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md relative z-10"
+                        style={{ background: 'rgba(239, 192, 80, 0.18)', color: '#EFC050' }}
+                    >
+                        Charades
+                    </div>
+                    <div className="flex-1 flex items-center justify-center relative z-10">
+                        <h2 className="font-serif font-bold text-[36px] leading-[1.1] tracking-[-0.015em] text-white text-center break-words animate-slide-up">
+                            {words[currentIndex]}
+                        </h2>
+                    </div>
+                    <div className="text-[11px] text-gray-400 flex items-center justify-between relative z-10">
+                        <span>Act it out silently.</span>
+                        <span className="font-serif italic text-[12px]" style={{ color: '#EFC050' }}>PartySpark</span>
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mt-8">

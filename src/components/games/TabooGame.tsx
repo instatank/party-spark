@@ -189,19 +189,13 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
 
     const card = cards[currentIndex];
 
-    const getCardColor = (difficulty?: string) => {
+    // Difficulty palette for the new MLT-style card body. solid colors the
+    // header pill text + decorative blob; tint backs the pill bg + blob fill.
+    const getTilePalette = (difficulty?: string): { solid: string; tint: string } => {
         switch (difficulty) {
-            case 'easy': return 'border-green-500 shadow-green-500/20';
-            case 'hard': return 'border-red-500 shadow-red-500/20';
-            default: return 'border-yellow-500 shadow-yellow-500/20'; // Medium default
-        }
-    };
-
-    const getAccentColor = (difficulty?: string) => {
-        switch (difficulty) {
-            case 'easy': return 'bg-green-500';
-            case 'hard': return 'bg-red-500';
-            default: return 'bg-yellow-500';
+            case 'easy': return { solid: '#22C55E', tint: 'rgba(34, 197, 94, 0.18)' };
+            case 'hard': return { solid: '#EF4444', tint: 'rgba(239, 68, 68, 0.18)' };
+            default:     return { solid: '#EAB308', tint: 'rgba(234, 179, 8, 0.18)' }; // Medium
         }
     };
 
@@ -220,29 +214,50 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                 </div>
             </div>
 
+            {/* Card body — MLT play-screen styling adapted for Taboo's two-section
+                layout (target word + forbidden list). Header pill on top, target
+                word in Playfair centered upper-half, forbidden block on lower
+                third with a divider. Difficulty drives the blob/pill color. */}
             <div className="flex-1 flex flex-col gap-4 perspective-1000">
-                <Card className={`flex-1 flex flex-col items-center bg-party-surface text-white overflow-hidden relative border-2 shadow-xl transition-colors duration-300 ${getCardColor(card.difficulty || currentCategory)}`}>
-                    <div className={`absolute top-0 inset-x-0 h-2 ${getAccentColor(card.difficulty || currentCategory)}`}></div>
-
-                    {/* Target Word */}
-                    <div className="flex-1 flex items-center justify-center w-full border-b border-white/10 py-6">
-                        <h2 className="text-4xl md:text-5xl font-bold text-center leading-tight uppercase tracking-tight text-white font-serif">
-                            {card.word}
-                        </h2>
-                    </div>
-
-                    {/* Forbidden Words */}
-                    <div className="w-full bg-slate-900/50 p-6 flex flex-col items-center justify-center gap-3 border-t border-white/5">
-                        <div className="flex items-center gap-2 text-red-400 font-bold uppercase tracking-widest text-xs mb-2">
-                            <Ban size={14} /> Forbidden
-                        </div>
-                        {card.forbidden.map((word, i) => (
-                            <div key={i} className="text-lg font-medium text-gray-300 uppercase tracking-wide">
-                                {word}
+                {(() => {
+                    const palette = getTilePalette(card.difficulty);
+                    return (
+                        <div
+                            className="flex-1 w-full bg-party-surface border border-white/10 rounded-[22px] p-6 flex flex-col relative overflow-hidden"
+                            style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}
+                        >
+                            <div
+                                className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none"
+                                style={{ background: palette.tint }}
+                            />
+                            <div
+                                className="self-start text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md relative z-10"
+                                style={{ background: palette.tint, color: palette.solid }}
+                            >
+                                Taboo {card.difficulty ? `· ${card.difficulty}` : ''}
                             </div>
-                        ))}
-                    </div>
-                </Card>
+
+                            {/* Target Word — fills upper portion, divider underneath */}
+                            <div className="flex-1 flex items-center justify-center relative z-10 border-b border-white/10 py-4">
+                                <h2 className="font-serif font-bold text-[40px] leading-[1.05] tracking-[-0.015em] text-white text-center break-words">
+                                    {card.word}
+                                </h2>
+                            </div>
+
+                            {/* Forbidden Words */}
+                            <div className="relative z-10 pt-4 flex flex-col items-center gap-1.5">
+                                <div className="flex items-center gap-2 text-red-400 font-bold uppercase tracking-[0.14em] text-[10px] mb-1">
+                                    <Ban size={12} /> Forbidden
+                                </div>
+                                {card.forbidden.map((word, i) => (
+                                    <div key={i} className="text-[15px] font-medium text-gray-300 uppercase tracking-wide leading-tight">
+                                        {word}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })()}
             </div>
 
             <div className="grid grid-cols-2 gap-4 mt-6">
