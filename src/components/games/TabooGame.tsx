@@ -201,7 +201,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
 
     return (
         <div className="h-full flex flex-col">
-            <div className="flex items-center justify-between mb-4 pt-2">
+            <div className="flex items-center justify-between mb-2 pt-2">
                 <Button variant="ghost" onClick={() => setGameState('CATEGORY')} className="!p-2">
                     <span className="text-gray-400">Quit</span>
                 </Button>
@@ -217,8 +217,10 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
             {/* Card body — MLT play-screen styling adapted for Taboo's two-section
                 layout (target word + forbidden list). Header pill on top, target
                 word in Playfair centered upper-half, forbidden block on lower
-                third with a divider. Difficulty drives the blob/pill color. */}
-            <div className="flex-1 flex flex-col gap-4 perspective-1000">
+                third with a divider. Difficulty drives the blob/pill color.
+                Header/buttons margins trimmed so the card eats more vertical
+                space without overflow; inner type sized up ~40% for legibility. */}
+            <div className="flex-1 flex flex-col perspective-1000">
                 {(() => {
                     const palette = getTilePalette(card.difficulty);
                     return (
@@ -231,7 +233,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                                 style={{ background: palette.tint }}
                             />
                             <div
-                                className="self-start text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md relative z-10"
+                                className="self-start text-[11px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md relative z-10"
                                 style={{ background: palette.tint, color: palette.solid }}
                             >
                                 Taboo {card.difficulty ? `· ${card.difficulty}` : ''}
@@ -239,18 +241,18 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
 
                             {/* Target Word — fills upper portion, divider underneath */}
                             <div className="flex-1 flex items-center justify-center relative z-10 border-b border-white/10 py-4">
-                                <h2 className="font-serif font-bold text-[40px] leading-[1.05] tracking-[-0.015em] text-white text-center break-words">
+                                <h2 className="font-serif font-bold text-[56px] leading-[1.02] tracking-[-0.02em] text-white text-center break-words">
                                     {card.word}
                                 </h2>
                             </div>
 
                             {/* Forbidden Words */}
-                            <div className="relative z-10 pt-4 flex flex-col items-center gap-1.5">
-                                <div className="flex items-center gap-2 text-red-400 font-bold uppercase tracking-[0.14em] text-[10px] mb-1">
-                                    <Ban size={12} /> Forbidden
+                            <div className="relative z-10 pt-4 flex flex-col items-center gap-2">
+                                <div className="flex items-center gap-2 text-red-400 font-bold uppercase tracking-[0.14em] text-[12px] mb-1">
+                                    <Ban size={14} /> Forbidden
                                 </div>
                                 {card.forbidden.map((word, i) => (
-                                    <div key={i} className="text-[15px] font-medium text-gray-300 uppercase tracking-wide leading-tight">
+                                    <div key={i} className="text-[20px] font-medium text-gray-300 uppercase tracking-wide leading-tight">
                                         {word}
                                     </div>
                                 ))}
@@ -260,7 +262,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                 })()}
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-6">
+            <div className="grid grid-cols-2 gap-4 mt-3">
                 <Button onClick={handleSkip} variant="secondary" className="h-20 flex flex-col items-center justify-center gap-1">
                     <X size={28} className="text-gray-400" />
                     <span className="text-sm uppercase font-bold tracking-wider text-gray-400">Skip</span>
