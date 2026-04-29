@@ -169,11 +169,12 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     const [turnIndex, setTurnIndex] = useState(0);
     const [roundIndex, setRoundIndex] = useState(0);
     const [lastChoice, setLastChoice] = useState<Choice | null>(null);
-    // Cosmetic only post-flatten — both modes share the same flow (choice
+    // Cosmetic + scoring split — both modes share the same flow (choice
     // advances directly to the next prompt). 'named' shows player turns in
-    // the header; 'just_play' shows the category instead and skips player
-    // setup entirely.
+    // the header and tallies truths/drinks per player; 'just_play' shows
+    // the category instead and skips player setup + scoring.
     const [playMode, setPlayMode] = useState<PlayMode>('named');
+    const [scores, setScores] = useState<Record<string, { truths: number; drinks: number }>>({});
 
     // Custom-deck state
     const [customGroupType, setCustomGroupType] = useState('friends');
@@ -234,6 +235,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setTurnIndex(0);
         setRoundIndex(0);
         setLastChoice(null);
+        setScores({});
 
         // Custom deck: collect context before generating.
         if (category === 'custom' && !customDeck) {
@@ -287,13 +289,27 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setTurnIndex(0);
         setRoundIndex(0);
         setLastChoice(null);
+        setScores({});
         setGameState('PROMPT');
     };
 
-    // Choice is flavor only — no scoring or tracking. Either we wrap up
-    // (last round) or we advance straight to the next prompt.
+    // Tally truth/drink per player in named mode, then either wrap up
+    // (last round) or advance to the next prompt. In just_play we skip
+    // tallying — choice stays purely cosmetic.
     const handleChoice = (choice: Choice) => {
         setLastChoice(choice);
+        if (playMode === 'named' && currentPlayer) {
+            setScores(prev => {
+                const cur = prev[currentPlayer] || { truths: 0, drinks: 0 };
+                return {
+                    ...prev,
+                    [currentPlayer]: {
+                        truths: cur.truths + (choice === 'truth' ? 1 : 0),
+                        drinks: cur.drinks + (choice === 'drink' ? 1 : 0),
+                    },
+                };
+            });
+        }
         if (isLastRound) {
             setGameState('END');
             return;
@@ -316,6 +332,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setCustomTone(null);
         setCustomError('');
         setPlayMode('named');
+        setScores({});
     };
 
     // ========================
@@ -700,18 +717,36 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         </p>
                     </div>
 
-                    <div className="bg-slate-800/60 p-6 rounded-2xl border border-white/5 w-full">
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Session Recap</p>
-                        <div className="grid grid-cols-2 gap-3 mt-2">
-                            <div>
+                    <div className="bg-slate-800/60 p-5 rounded-2xl border border-white/5 w-full">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Session Recap</p>
+                        {playMode === 'named' ? (
+                            <div className="flex flex-col">
+                                <div className="flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest pb-2 border-b border-white/5">
+                                    <span>Player</span>
+                                    <div className="flex items-center gap-4">
+                                        <span className="w-12 text-right">🗣️ Truths</span>
+                                        <span className="w-12 text-right">🥃 Drinks</span>
+                                    </div>
+                                </div>
+                                {trimmedPlayers.map(name => {
+                                    const s = scores[name] || { truths: 0, drinks: 0 };
+                                    return (
+                                        <div key={name} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                                            <span className="text-sm font-semibold text-white truncate pr-2">{name}</span>
+                                            <div className="flex items-center gap-4 font-mono font-bold text-base">
+                                                <span className="w-12 text-right text-emerald-400">{s.truths}</span>
+                                                <span className="w-12 text-right text-amber-400">{s.drinks}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="text-center py-1">
                                 <p className="text-3xl font-black text-white">{roundIndex + (lastChoice ? 1 : 0)}</p>
-                                <p className="text-xs text-gray-500 uppercase tracking-wider">Rounds Played</p>
+                                <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">Rounds Played</p>
                             </div>
-                            <div>
-                                <p className="text-3xl font-black text-white">{playMode === 'named' ? trimmedPlayers.length : '—'}</p>
-                                <p className="text-xs text-gray-500 uppercase tracking-wider">Players</p>
-                            </div>
-                        </div>
+                        )}
                     </div>
 
                     <div className="flex flex-col gap-3 w-full mt-2">
