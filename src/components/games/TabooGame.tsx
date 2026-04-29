@@ -113,18 +113,18 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Taboo Categories" onBack={onExit} onHome={onExit} />
-                <p className="text-gray-400 mb-4 text-sm">Pick a topic. Describe the word without using forbidden words!</p>
+                <p className="text-muted mb-4 text-sm">Pick a topic. Describe the word without using forbidden words!</p>
                 <div className="grid grid-cols-2 gap-3 overflow-y-auto pb-4">
                     {TABOO_CATEGORIES.map(cat => (
                         <button
                             key={cat.id}
                             onClick={() => startGame(cat.id)}
-                            className={`p-4 rounded-xl flex flex-col items-center gap-3 transition-all active:scale-95 bg-party-surface hover:bg-slate-800 border-2 ${(cat as any).borderColor || 'border-white/5'}`}
+                            className={`p-4 rounded-xl flex flex-col items-center gap-3 transition-all active:scale-95 bg-surface hover:bg-surface-alt border-2 ${(cat as any).borderColor || 'border-divider-soft'}`}
                         >
-                            <div className={`p-2 rounded-full bg-white/5 ${cat.color}`}>
+                            <div className={`p-2 rounded-full bg-surface-alt ${cat.color}`}>
                                 {cat.icon}
                             </div>
-                            <span className="font-bold text-sm text-center text-white">{cat.label}</span>
+                            <span className="font-bold text-sm text-center text-ink">{cat.label}</span>
                         </button>
                     ))}
                 </div>
@@ -151,10 +151,10 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Ready?" onBack={() => setGameState('CATEGORY')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8">
-                    <Card className="w-full text-center py-12 bg-party-surface border border-white/5 shadow-xl">
-                        <h2 className="text-2xl font-bold mb-4 font-serif text-white">Pass the phone to the<br />Clue Giver!</h2>
+                    <Card className="w-full text-center py-12 bg-surface border border-divider-soft shadow-xl">
+                        <h2 className="text-2xl font-bold mb-4 font-serif text-ink">Pass the phone to the<br />Clue Giver!</h2>
                         <div className="text-6xl mb-4">🤫</div>
-                        <p className="text-gray-400 text-sm px-6">
+                        <p className="text-muted text-sm px-6">
                             When you're ready, hit start. You have 60 seconds to describe as many words as possible.
                         </p>
                     </Card>
@@ -171,7 +171,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-slide-up">
                     <div className="text-center">
                         <h2 className="text-4xl font-bold mb-2">Round Over</h2>
-                        <p className="text-gray-400">Team Score</p>
+                        <p className="text-muted">Team Score</p>
                     </div>
 
                     <div className="text-9xl font-black text-party-secondary drop-shadow-lg">
@@ -203,11 +203,11 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
         <div className="h-full flex flex-col">
             <div className="flex items-center justify-between mb-2 pt-2">
                 <Button variant="ghost" onClick={() => setGameState('CATEGORY')} className="!p-2">
-                    <span className="text-gray-400">Quit</span>
+                    <span className="text-muted">Quit</span>
                 </Button>
-                <div className="flex items-center gap-2 bg-party-surface border border-white/10 px-4 py-2 rounded-full shadow-lg">
-                    <Timer size={18} className={timeLeft < 10 ? 'text-red-400 animate-pulse' : 'text-party-accent'} />
-                    <span className={`font-mono font-bold text-xl ${timeLeft < 10 ? 'text-red-400' : 'text-white'}`}>{timeLeft}</span>
+                <div className="flex items-center gap-2 bg-surface border border-divider px-4 py-2 rounded-full shadow-lg">
+                    <Timer size={18} className={timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-party-accent'} />
+                    <span className={`font-mono font-bold text-xl ${timeLeft < 10 ? 'text-red-500' : 'text-ink'}`}>{timeLeft}</span>
                 </div>
                 <div className="font-bold text-xl text-party-primary w-[50px] text-right">
                     {score}
@@ -225,8 +225,8 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                     const palette = getTilePalette(card.difficulty);
                     return (
                         <div
-                            className="flex-1 w-full bg-party-surface border border-white/10 rounded-[22px] p-6 flex flex-col relative overflow-hidden"
-                            style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}
+                            className="flex-1 w-full bg-surface border border-divider rounded-[22px] p-6 flex flex-col relative overflow-hidden"
+                            style={{ boxShadow: 'var(--shadow-card)' }}
                         >
                             <div
                                 className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none"
@@ -240,19 +240,19 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                             </div>
 
                             {/* Target Word — fills upper portion, divider underneath */}
-                            <div className="flex-1 flex items-center justify-center relative z-10 border-b border-white/10 py-4">
-                                <h2 className="font-serif font-bold text-[56px] leading-[1.02] tracking-[-0.02em] text-white text-center break-words">
+                            <div className="flex-1 flex items-center justify-center relative z-10 border-b border-divider py-4">
+                                <h2 className="font-serif font-bold text-[56px] leading-[1.02] tracking-[-0.02em] text-ink text-center break-words">
                                     {card.word}
                                 </h2>
                             </div>
 
                             {/* Forbidden Words */}
                             <div className="relative z-10 pt-4 flex flex-col items-center gap-2">
-                                <div className="flex items-center gap-2 text-red-400 font-bold uppercase tracking-[0.14em] text-[12px] mb-1">
+                                <div className="flex items-center gap-2 text-red-500 font-bold uppercase tracking-[0.14em] text-[12px] mb-1">
                                     <Ban size={14} /> Forbidden
                                 </div>
                                 {card.forbidden.map((word, i) => (
-                                    <div key={i} className="text-[20px] font-medium text-gray-300 uppercase tracking-wide leading-tight">
+                                    <div key={i} className="text-[20px] font-medium text-ink-soft uppercase tracking-wide leading-tight">
                                         {word}
                                     </div>
                                 ))}
@@ -264,10 +264,10 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
 
             <div className="grid grid-cols-2 gap-4 mt-3">
                 <Button onClick={handleSkip} variant="secondary" className="h-20 flex flex-col items-center justify-center gap-1">
-                    <X size={28} className="text-gray-400" />
-                    <span className="text-sm uppercase font-bold tracking-wider text-gray-400">Skip</span>
+                    <X size={28} className="text-muted" />
+                    <span className="text-sm uppercase font-bold tracking-wider text-muted">Skip</span>
                 </Button>
-                <Button onClick={handleCorrect} className="h-20 bg-party-secondary text-slate-900 hover:bg-yellow-500 flex flex-col items-center justify-center gap-1 border-0">
+                <Button onClick={handleCorrect} className="h-20 bg-gold text-slate-900 hover:brightness-110 flex flex-col items-center justify-center gap-1 border-0">
                     <ThumbsUp size={28} className="text-slate-900" />
                     <span className="text-sm uppercase font-bold tracking-wider text-slate-900">Correct</span>
                 </Button>

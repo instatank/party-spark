@@ -143,7 +143,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                         }}
                     />
                 )}
-                <p className="text-gray-400 mb-4 text-sm text-center">
+                <p className="text-muted mb-4 text-sm text-center">
                     Vote on 10 brutal hypotheticals. Get psychoanalysed.
                 </p>
                 <div className="flex-1 overflow-y-auto pb-8">
@@ -157,7 +157,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                                     onClick={() => startCategory(cat.id)}
                                     className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                                 >
-                                    <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden">
+                                    <div className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-divider rounded-xl py-3 px-4 transition-colors overflow-hidden">
                                         <span
                                             className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]"
                                             style={{ background: color }}
@@ -171,17 +171,17 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                                                 <Icon size={16} />
                                             </span>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="text-base font-bold text-white leading-tight flex items-center gap-1.5">
+                                                <h3 className="text-base font-bold text-ink leading-tight flex items-center gap-1.5">
                                                     <span className="truncate">{cat.title}</span>
                                                     {cat.adult && (
-                                                        <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-400 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
+                                                        <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-500 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
                                                             18+
                                                         </span>
                                                     )}
                                                 </h3>
-                                                <p className="text-xs text-gray-400 leading-snug truncate">{cat.tagline}</p>
+                                                <p className="text-xs text-muted leading-snug truncate">{cat.tagline}</p>
                                             </div>
-                                            <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
+                                            <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
                                         </div>
                                     </div>
                                 </button>
@@ -196,7 +196,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
     // ===== PLAYING =====
     const currentQuestion = questions[currentQuestionIndex];
     if (!currentQuestion) {
-        return <div className="text-white text-center p-10">Loading…</div>;
+        return <div className="text-ink text-center p-10">Loading…</div>;
     }
     const analysis = selectedOption === 'A' ? currentQuestion.analysisA : currentQuestion.analysisB;
     const goBackToCategory = () => {
@@ -217,7 +217,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                 className="flex flex-col flex-1 p-6 relative overflow-y-auto pb-32 safe-pb"
             >
                 <div className="text-center mb-4 z-10 shrink-0">
-                    <span className="text-xs font-mono text-gray-500">
+                    <span className="text-xs font-mono text-muted">
                         Question {currentQuestionIndex + 1} / {questions.length}
                     </span>
                 </div>
@@ -231,12 +231,12 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                             ? selectedOption === 'A'
                                 ? 'bg-green-600/30 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
                                 : 'bg-red-600/30 border-red-500 opacity-60'
-                            : 'bg-party-dark border-white/10 hover:bg-party-dark/80 hover:border-party-secondary hover:shadow-lg active:scale-[0.98]'
+                            : 'bg-surface border-divider hover:bg-surface-alt hover:border-gold hover:shadow-lg active:scale-[0.98]'
                             }`}
                     >
                         <div className="relative z-10 flex-1">
-                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'A' ? 'text-green-300' : 'text-red-300') : 'text-party-secondary'}`}>Option A</div>
-                            <h3 className="text-xl md:text-3xl font-bold text-white leading-tight">
+                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'A' ? 'text-green-500' : 'text-red-500') : 'text-gold'}`}>Option A</div>
+                            <h3 className="text-xl md:text-3xl font-bold text-ink leading-tight">
                                 {currentQuestion.optionA}
                             </h3>
                         </div>
@@ -252,10 +252,10 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                     </button>
 
                     {/* OR Divider */}
-                    <div className="flex items-center gap-4 text-gray-500 font-serif italic justify-center my-2">
-                        <div className="h-px bg-gray-700 flex-1" />
+                    <div className="flex items-center gap-4 text-muted font-serif italic justify-center my-2">
+                        <div className="h-px bg-divider flex-1" />
                         <span>OR</span>
-                        <div className="h-px bg-gray-700 flex-1" />
+                        <div className="h-px bg-divider flex-1" />
                     </div>
 
                     {/* Option B */}
@@ -266,12 +266,12 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                             ? selectedOption === 'B'
                                 ? 'bg-green-600/30 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
                                 : 'bg-red-600/30 border-red-500 opacity-60'
-                            : 'bg-party-dark border-white/10 hover:bg-party-dark/80 hover:border-party-accent hover:shadow-lg active:scale-[0.98]'
+                            : 'bg-surface border-divider hover:bg-surface-alt hover:border-accent hover:shadow-lg active:scale-[0.98]'
                             }`}
                     >
                         <div className="relative z-10 flex-1">
-                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'B' ? 'text-green-300' : 'text-red-300') : 'text-party-accent'}`}>Option B</div>
-                            <h3 className="text-xl md:text-3xl font-bold text-white leading-tight">
+                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'B' ? 'text-green-500' : 'text-red-500') : 'text-accent'}`}>Option B</div>
+                            <h3 className="text-xl md:text-3xl font-bold text-ink leading-tight">
                                 {currentQuestion.optionB}
                             </h3>
                         </div>
@@ -289,16 +289,16 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
 
                 {/* Analysis & Next Button Area */}
                 <div className={`mt-auto pb-10 transition-all duration-500 ease-out transform ${hasVoted ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
-                    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 mb-6">
+                    <div className="bg-app-tint backdrop-blur-md rounded-xl p-4 border border-divider mb-6">
                         <div className="flex items-start gap-3">
                             <div className="p-2 bg-purple-500/20 rounded-lg shrink-0">
-                                <Brain className="w-5 h-5 text-purple-300" />
+                                <Brain className="w-5 h-5 text-vibe" />
                             </div>
                             <div>
-                                <h4 className="text-sm font-bold text-purple-200 uppercase tracking-wider mb-1">
+                                <h4 className="text-sm font-bold text-vibe uppercase tracking-wider mb-1">
                                     Psychoanalysis
                                 </h4>
-                                <p className="text-gray-100 italic leading-relaxed">
+                                <p className="text-ink-soft italic leading-relaxed">
                                     {analysis}
                                 </p>
                             </div>
@@ -307,7 +307,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
 
                     <Button
                         onClick={nextQuestion}
-                        className="w-full py-4 text-lg bg-white text-party-dark hover:bg-gray-200 font-bold flex items-center justify-center gap-2 shadow-lg shadow-white/10 mb-8"
+                        className="w-full py-4 text-lg font-bold flex items-center justify-center gap-2 mb-8"
                     >
                         {currentQuestionIndex >= questions.length - 1 ? 'Finish Round' : 'Next Question'} <ArrowRight size={20} />
                     </Button>
@@ -317,7 +317,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-party-accent/5 rounded-full blur-3xl -z-0 pointer-events-none" />
 
                 <div className="mt-8 text-center shrink-0">
-                    <p className="text-[10px] text-white/30 font-mono">
+                    <p className="text-[10px] text-muted font-mono">
                         * Percentages represent global player votes
                     </p>
                 </div>

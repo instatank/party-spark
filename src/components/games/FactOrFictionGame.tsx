@@ -167,7 +167,7 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
             <div className="flex flex-col h-full animate-fade-in relative z-10">
                 <ScreenHeader title="Fact or Fiction" onBack={onExit} onHome={onExit} />
                 <div className="px-2 pb-6 flex-1 flex flex-col">
-                    <p className="text-gray-300 text-center mb-6">
+                    <p className="text-ink-soft text-center mb-6">
                         Race the clock to determine the truth. Getting it right makes it harder.
                     </p>
                     <div className="space-y-3">
@@ -175,13 +175,13 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                             <button
                                 key={cat.id}
                                 onClick={() => handleCategorySelect(cat)}
-                                className="w-full bg-slate-800 border items-center border-slate-700 hover:border-rose-500 rounded-xl p-5 text-left flex justify-between transition-all group active:scale-95"
+                                className="w-full bg-surface-alt border items-center border-divider hover:border-rose-500 rounded-xl p-5 text-left flex justify-between transition-all group active:scale-95"
                             >
                                 <div>
-                                    <h3 className="font-bold text-lg text-white group-hover:text-rose-400 transition-colors">{cat.name}</h3>
-                                    <p className="text-xs text-slate-400 mt-1">{cat.questions.length} Questions</p>
+                                    <h3 className="font-bold text-lg text-ink group-hover:text-rose-500 transition-colors">{cat.name}</h3>
+                                    <p className="text-xs text-muted mt-1">{cat.questions.length} Questions</p>
                                 </div>
-                                <ArrowRight className="text-slate-600 group-hover:text-rose-500" />
+                                <ArrowRight className="text-muted group-hover:text-rose-500" />
                             </button>
                         ))}
                     </div>
@@ -196,14 +196,14 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                 <ScreenHeader title="Round Summary" onBack={() => setGameState('category_select')} onHome={onExit} />
                 <Card className="flex-1 flex flex-col items-center justify-center p-8 text-center border-rose-500/30">
                     <Trophy size={64} className="text-rose-500 mb-6" />
-                    <h2 className="text-3xl font-serif font-bold text-white mb-2">Game Over!</h2>
-                    <p className="text-gray-400 mb-6">
+                    <h2 className="text-3xl font-serif font-bold text-ink mb-2">Game Over!</h2>
+                    <p className="text-muted mb-6">
                         You survived {score} rapid-fire questions in {selectedCategory?.name}!
                     </p>
                     
-                    <div className="bg-slate-800/80 w-full p-6 rounded-2xl border border-white/5 mb-8">
-                        <p className="text-sm uppercase tracking-widest text-gray-500 font-bold mb-2">Survived</p>
-                        <p className="text-6xl font-black text-rose-500">{score}<span className="text-3xl text-gray-400"> Facts</span></p>
+                    <div className="bg-surface-alt w-full p-6 rounded-2xl border border-divider-soft mb-8">
+                        <p className="text-sm uppercase tracking-widest text-muted font-bold mb-2">Survived</p>
+                        <p className="text-6xl font-black text-rose-500">{score}<span className="text-3xl text-muted"> Facts</span></p>
                     </div>
 
                     <Button onClick={() => setGameState('category_select')} className="w-full mb-3" variant="primary">
@@ -233,16 +233,16 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                         </div>
                     )}
 
-                    <h2 className={`text-4xl font-black mb-2 ${lastAnswerCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                    <h2 className={`text-4xl font-black mb-2 ${lastAnswerCorrect ? 'text-green-500' : 'text-red-500'}`}>
                         {lastAnswerCorrect ? 'CORRECT!' : (timeLeft === 0 ? "⏱ TIME'S UP!" : 'INCORRECT!')}
                     </h2>
                     
-                    <div className="bg-slate-900/80 p-6 rounded-2xl border border-white/10 my-6 w-full relative overflow-hidden">
+                    <div className="bg-surface-alt p-6 rounded-2xl border border-divider my-6 w-full relative overflow-hidden">
                         <div className={`absolute top-0 left-0 w-full h-1 ${currentQuestion.isFact ? 'bg-green-500' : 'bg-red-500'}`} />
-                        <p className="text-sm tracking-widest text-gray-500 font-bold mb-2 uppercase">
+                        <p className="text-sm tracking-widest text-muted font-bold mb-2 uppercase">
                             The truth is: {currentQuestion.isFact ? 'FACT' : 'FICTION'}
                         </p>
-                        <p className="text-lg text-white font-medium italic">
+                        <p className="text-lg text-ink font-medium italic">
                             "{currentQuestion.explanation}"
                         </p>
                     </div>
@@ -263,17 +263,17 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
             {/* Top Bar Details */}
             <div className="flex justify-between items-center px-2 mb-4">
                 <div className="flex items-center gap-2">
-                    <span className="text-rose-400 font-black text-xl">{score}</span>
-                    <span className="text-xs text-gray-500 font-bold tracking-widest uppercase">Score</span>
+                    <span className="text-rose-500 font-black text-xl">{score}</span>
+                    <span className="text-xs text-muted font-bold tracking-widest uppercase">Score</span>
                 </div>
-                <div className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+                <div className="flex items-center gap-2 bg-surface-alt px-3 py-1.5 rounded-full border border-divider">
                     <AlertTriangle size={14} className="text-amber-500" />
-                    <span className="text-xs font-bold text-gray-300 uppercase">Lv {difficulty}</span>
+                    <span className="text-xs font-bold text-ink-soft uppercase">Lv {difficulty}</span>
                 </div>
                 <div className="flex gap-1 items-center">
-                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mr-1">Strikes</span>
+                    <span className="text-[10px] text-muted font-bold uppercase tracking-widest mr-1">Strikes</span>
                     {[...Array(MAX_STRIKES)].map((_, i) => (
-                        <X key={i} size={18} className={i < strikes ? 'text-red-500 stroke-[3px]' : 'text-slate-700/50 stroke-[3px]'} />
+                        <X key={i} size={18} className={i < strikes ? 'text-red-500 stroke-[3px]' : 'text-divider stroke-[3px]'} />
                     ))}
                 </div>
             </div>
@@ -283,14 +283,14 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                 {/* Timer Bar */}
                 <div className="mb-8">
                     <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-400 font-bold uppercase tracking-wider flex items-center gap-2">
+                        <span className="text-sm text-muted font-bold uppercase tracking-wider flex items-center gap-2">
                             <Clock size={16} /> Time
                         </span>
-                        <span className={`text-xl font-black ${timeLeft <= 3 ? 'text-red-500 animate-pulse' : 'text-white'}`}>
+                        <span className={`text-xl font-black ${timeLeft <= 3 ? 'text-red-500 animate-pulse' : 'text-ink'}`}>
                             00:{timeLeft.toString().padStart(2, '0')}
                         </span>
                     </div>
-                    <div className="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
+                    <div className="w-full bg-surface-alt h-3 rounded-full overflow-hidden">
                         <div 
                             className={`h-full transition-all duration-1000 ease-linear ${timeLeft <= 3 ? 'bg-red-500' : 'bg-rose-500'}`}
                             style={{ width: `${(timeLeft / TIMER_SECONDS) * 100}%` }}
@@ -300,7 +300,7 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
 
                 {/* Question Area */}
                 <div className="flex-1 flex flex-col justify-center items-center text-center px-2 mb-8">
-                    <p className="text-3xl sm:text-4xl font-serif font-bold text-white leading-tight">
+                    <p className="text-3xl sm:text-4xl font-serif font-bold text-ink leading-tight">
                         "{currentQuestion?.text}"
                     </p>
                 </div>

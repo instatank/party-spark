@@ -7,12 +7,29 @@ import { CHARADES_CATEGORIES } from '../../constants';
 import gamesDataRaw from '../../data/games_data.json';
 import { sessionService } from '../../services/SessionManager';
 import { GameType } from '../../types';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface Props {
     onExit: () => void;
 }
 
+// Per-category tile color. Light values darkened so they read on #EEF4FA.
+const TILES_DARK: Record<string, string> = {
+    mix_movies:        '#94A3B8',
+    family_mix:        '#EFC050',
+    bollywood_movies:  '#EC4899',
+    hollywood_movies:  '#65B7F0',
+};
+const TILES_LIGHT: Record<string, string> = {
+    mix_movies:        '#475569', // slate-600
+    family_mix:        '#B8922F', // Azure gold
+    bollywood_movies:  '#C72D7F',
+    hollywood_movies:  '#1F77C9',
+};
+
 export const CharadesGame: React.FC<Props> = ({ onExit }) => {
+    const { theme } = useTheme();
+    const TILES_MAP = theme === 'light' ? TILES_LIGHT : TILES_DARK;
     const [words, setWords] = useState<string[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -151,14 +168,13 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     };
 
     if (gameState === 'SETUP') {
-        // Same design pattern as MLT/TOD/NHIE/WYR/Forecast: 3px inset left bar
-        // + 33% center bottom line. Tap-to-start (no separate Start button).
-        // Charades has no AI custom-vibe deck so no ring/glow tile.
-        const TILES: Record<string, { Icon: typeof Sparkles; color: string; description: string }> = {
-            mix_movies:        { Icon: Shuffle, color: '#94A3B8', description: 'Hollywood + Bollywood + arthouse. Pure chaos.' },
-            family_mix:        { Icon: Users,   color: '#EFC050', description: 'Wholesome titles only. PG vibes.' },
-            bollywood_movies:  { Icon: Film,    color: '#EC4899', description: 'All Hindi cinema. Iconic to underrated.' },
-            hollywood_movies:  { Icon: Star,    color: '#65B7F0', description: 'American studio + indie. Big-budget energy.' },
+        // Slim Row pattern. Charades has no AI custom-vibe deck so no
+        // ring/glow tile. Tile color resolves through the theme map.
+        const TILE_META: Record<string, { Icon: typeof Sparkles; description: string }> = {
+            mix_movies:        { Icon: Shuffle, description: 'Hollywood + Bollywood + arthouse. Pure chaos.' },
+            family_mix:        { Icon: Users,   description: 'Wholesome titles only. PG vibes.' },
+            bollywood_movies:  { Icon: Film,    description: 'All Hindi cinema. Iconic to underrated.' },
+            hollywood_movies:  { Icon: Star,    description: 'American studio + indie. Big-budget energy.' },
         };
 
         // Loading state — full-screen spinner while words are being fetched.
@@ -168,10 +184,10 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                     <ScreenHeader title="Charades" onBack={onExit} onHome={onExit} />
                     <div className="flex-1 flex flex-col items-center justify-center gap-6">
                         <div className="relative">
-                            <div className="w-16 h-16 border-4 border-party-accent/30 border-t-party-accent rounded-full animate-spin" />
-                            <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-party-accent animate-pulse" size={24} />
+                            <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
+                            <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-accent animate-pulse" size={24} />
                         </div>
-                        <p className="text-xl font-bold text-white">Brewing your words…</p>
+                        <p className="text-xl font-bold text-ink">Brewing your words…</p>
                     </div>
                 </div>
             );
@@ -180,13 +196,14 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Charades" onBack={onExit} onHome={onExit} />
-                <p className="text-gray-400 mb-4 text-sm text-center">
+                <p className="text-muted mb-4 text-sm text-center">
                     Pick a category. 60-second round, act them out silently.
                 </p>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {categories.map(c => {
-                            const meta = TILES[c.id] || { Icon: Sparkles, color: '#94A3B8', description: '' };
+                            const meta = TILE_META[c.id] || { Icon: Sparkles, description: '' };
+                            const color = TILES_MAP[c.id] || '#94A3B8';
                             const Icon = meta.Icon;
                             return (
                                 <button
@@ -194,24 +211,24 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                                     onClick={() => startGame(c.id)}
                                     className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                                 >
-                                    <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/[0.08] hover:border-white/20 rounded-xl py-3 px-4 transition-colors overflow-hidden">
+                                    <div className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden">
                                         <span
                                             className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]"
-                                            style={{ background: meta.color }}
+                                            style={{ background: color }}
                                         />
                                         <span
                                             className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]"
-                                            style={{ background: meta.color }}
+                                            style={{ background: color }}
                                         />
                                         <div className="flex items-center gap-3">
-                                            <span className="flex-shrink-0" style={{ color: meta.color }}>
+                                            <span className="flex-shrink-0" style={{ color }}>
                                                 <Icon size={16} />
                                             </span>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="text-base font-bold text-white leading-tight truncate">{c.label}</h3>
-                                                <p className="text-xs text-gray-400 leading-snug truncate">{meta.description}</p>
+                                                <h3 className="text-base font-bold text-ink leading-tight truncate">{c.label}</h3>
+                                                <p className="text-xs text-muted leading-snug truncate">{meta.description}</p>
                                             </div>
-                                            <ChevronRight size={16} className="text-gray-500 group-hover:text-white transition-colors flex-shrink-0" />
+                                            <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
                                         </div>
                                     </div>
                                 </button>
@@ -229,11 +246,11 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                 <ScreenHeader title="Game Over" onBack={() => setGameState('SETUP')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-slide-up">
                     <div className="text-center">
-                        <h2 className="text-4xl font-bold mb-2">Time's Up!</h2>
-                        <p className="text-gray-400">You got</p>
+                        <h2 className="text-4xl font-bold mb-2 text-ink">Time's Up!</h2>
+                        <p className="text-muted">You got</p>
                     </div>
 
-                    <div className="text-8xl font-black text-party-accent">
+                    <div className="text-8xl font-black text-accent">
                         {score}
                     </div>
 
@@ -251,50 +268,49 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
             <ScreenHeader title="Charades" onBack={() => setGameState('SETUP')} onHome={onExit} />
 
             <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                    <Timer size={18} className={timeLeft < 10 ? 'text-red-400 animate-pulse' : ''} />
-                    <span className={`font-mono font-bold ${timeLeft < 10 ? 'text-red-400' : ''}`}>{timeLeft}s</span>
+                <div className="flex items-center gap-2 bg-app-tint px-4 py-2 rounded-full">
+                    <Timer size={18} className={timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-ink-soft'} />
+                    <span className={`font-mono font-bold ${timeLeft < 10 ? 'text-red-500' : 'text-ink'}`}>{timeLeft}s</span>
                 </div>
-                <div className="font-bold text-xl text-party-primary">Score: {score}</div>
+                <div className="font-bold text-xl text-ink">Score: {score}</div>
             </div>
 
             <div className="flex-1 flex items-center justify-center perspective-1000">
-                {/* Card body — same MLT play-screen style: portrait 3:4, bg-party-surface,
-                    border, rounded-22, decorative blob top-right, header pill top-left,
-                    Playfair word centered, italic "PartySpark" footer. Charades brand
-                    color is gold (#EFC050). */}
+                {/* Card body — MLT play-screen style. Charades brand color is gold,
+                    so blob + pill + footer pull from the gold token (var(--c-gold)
+                    → #EFC050 dark / #B8922F light). */}
                 <div
-                    className="w-full aspect-[3/4] max-h-[340px] bg-party-surface border border-white/10 rounded-[22px] p-6 flex flex-col relative overflow-hidden"
-                    style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}
+                    className="w-full aspect-[3/4] max-h-[340px] bg-surface border border-divider rounded-[22px] p-6 flex flex-col relative overflow-hidden"
+                    style={{ boxShadow: 'var(--shadow-card)' }}
                 >
                     <div
                         className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none"
-                        style={{ background: 'rgba(239, 192, 80, 0.18)' }}
+                        style={{ background: 'var(--c-gold-soft)' }}
                     />
                     <div
                         className="self-start text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md relative z-10"
-                        style={{ background: 'rgba(239, 192, 80, 0.18)', color: '#EFC050' }}
+                        style={{ background: 'var(--c-gold-soft)', color: 'var(--c-gold)' }}
                     >
                         Charades
                     </div>
                     <div className="flex-1 flex items-center justify-center relative z-10">
-                        <h2 className="font-serif font-bold text-[36px] leading-[1.1] tracking-[-0.015em] text-white text-center break-words animate-slide-up">
+                        <h2 className="font-serif font-bold text-[36px] leading-[1.1] tracking-[-0.015em] text-ink text-center break-words animate-slide-up">
                             {words[currentIndex]}
                         </h2>
                     </div>
-                    <div className="text-[11px] text-gray-400 flex items-center justify-between relative z-10">
+                    <div className="text-[11px] text-muted flex items-center justify-between relative z-10">
                         <span>Act it out silently.</span>
-                        <span className="font-serif italic text-[12px]" style={{ color: '#EFC050' }}>PartySpark</span>
+                        <span className="font-serif italic text-[12px]" style={{ color: 'var(--c-gold)' }}>PartySpark</span>
                     </div>
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mt-8">
                 <Button onClick={handleSkip} variant="secondary" className="h-24 flex flex-col items-center justify-center gap-2">
-                    <ThumbsDown size={32} className="text-gray-400" />
+                    <ThumbsDown size={32} className="text-muted" />
                     <span>Skip</span>
                 </Button>
-                <Button onClick={handleCorrect} className="h-24 bg-green-500 hover:bg-green-600 flex flex-col items-center justify-center gap-2">
+                <Button onClick={handleCorrect} className="h-24 bg-green-500 hover:bg-green-600 flex flex-col items-center justify-center gap-2 text-white">
                     <ThumbsUp size={32} />
                     <span>Correct</span>
                 </Button>
