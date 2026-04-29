@@ -264,7 +264,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                     Playfair word centered, italic "PartySpark" footer. Charades brand
                     color is gold (#EFC050). */}
                 <div
-                    className="w-full aspect-[3/4] max-h-[460px] bg-party-surface border border-white/10 rounded-[22px] p-7 flex flex-col relative overflow-hidden"
+                    className="w-full aspect-[3/4] max-h-[340px] bg-party-surface border border-white/10 rounded-[22px] p-6 flex flex-col relative overflow-hidden"
                     style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}
                 >
                     <div
