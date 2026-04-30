@@ -224,30 +224,30 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Create Your Vibe" onBack={() => setGameState('CATEGORY')} onHome={onExit} />
                 <div className="flex-1 overflow-y-auto pb-8 px-1">
-                    {/* Intro — short, punchy. Subhead does the heavy lifting in
-                        one line; the Wand2 icon + section header carry the rest
-                        of the meaning. */}
-                    <div className="text-center mb-6">
-                        <div className="inline-flex bg-accent-soft border border-accent/30 rounded-2xl p-4 mb-3">
-                            <Wand2 size={32} className="text-accent" />
+                    {/* Intro — short, punchy. Wand2 icon a touch smaller and
+                        section gap trimmed. */}
+                    <div className="text-center mb-3">
+                        <div className="inline-flex bg-accent-soft border border-accent/30 rounded-2xl p-3 mb-2">
+                            <Wand2 size={24} className="text-accent" />
                         </div>
-                        <h2 className="text-xl font-bold text-ink mb-1">Personalised Cards</h2>
-                        <p className="text-muted text-sm">
+                        <h2 className="text-lg font-bold text-ink mb-0.5">Personalised Cards</h2>
+                        <p className="text-muted text-xs">
                             AI-written cards, tailored to your group.
                         </p>
                     </div>
 
-                    {/* Step 1: Group Type Chips */}
-                    <div className="mb-6">
-                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
+                    {/* Step 1: Group Type Chips — slimmer pill height + smaller
+                        type so they hug less vertical space. */}
+                    <div className="mb-3">
+                        <label className="text-[11px] font-bold text-muted uppercase tracking-widest mb-1.5 block">
                             1. Who's playing?
                         </label>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-1.5">
                             {GROUP_TYPES.map(g => (
                                 <button
                                     key={g.id}
                                     onClick={() => setSelectedGroupType(g.id)}
-                                    className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 border
                                         ${selectedGroupType === g.id
                                             ? 'bg-accent-soft border-accent text-accent'
                                             : 'bg-surface-alt border-divider text-muted hover:border-ink-soft hover:text-ink-soft'
@@ -260,18 +260,17 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                     </div>
 
                     {/* Step 2: Tone Chips (optional). Equal-width 3-column grid
-                        + smaller padding so the three options always sit on
-                        one row, even on narrow phones. */}
-                    <div className="mb-6">
-                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
+                        with the same slim height as Step 1. */}
+                    <div className="mb-3">
+                        <label className="text-[11px] font-bold text-muted uppercase tracking-widest mb-1.5 block">
                             2. Set the tone <span className="text-muted/70 normal-case tracking-normal font-medium">(optional)</span>
                         </label>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-3 gap-1.5">
                             {TONE_OPTIONS.map(t => (
                                 <button
                                     key={t.id}
                                     onClick={() => setSelectedTone(selectedTone === t.id ? null : t.id)}
-                                    className={`px-2 py-2 rounded-xl text-sm font-bold transition-all active:scale-95 border truncate
+                                    className={`px-2 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 border truncate
                                         ${selectedTone === t.id
                                             ? 'bg-accent-soft border-accent text-accent'
                                             : 'bg-surface-alt border-divider text-muted hover:border-ink-soft hover:text-ink-soft'
@@ -282,23 +281,20 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                             ))}
                         </div>
                         {selectedTone && (
-                            <p className="text-xs text-muted mt-2 pl-1">
+                            <p className="text-[11px] text-muted mt-1 pl-1">
                                 {TONE_OPTIONS.find(t => t.id === selectedTone)?.hint}
                             </p>
                         )}
                     </div>
 
-                    {/* Step 3: Context Text Box */}
-                    <div className="mb-6">
-                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
+                    {/* Step 3: Context Text Box — slimmer padding so the default
+                        rows=2 actually feels like 2 lines. Grows on input via
+                        scrollHeight (capped at 240px). */}
+                    <div className="mb-3">
+                        <label className="text-[11px] font-bold text-muted uppercase tracking-widest mb-1.5 block">
                             3. The secret sauce — describe your group
                         </label>
-                        <div className="bg-surface-alt border border-divider rounded-2xl p-1 focus-within:border-accent transition-colors">
-                            {/* Starts at 2 lines, grows with content (capped at
-                                ~10 lines so it never eats the screen). The
-                                inline style trick: reset height to auto on each
-                                keystroke, then set it to scrollHeight — that's
-                                the natural content height for the textarea. */}
+                        <div className="bg-surface-alt border border-divider rounded-xl focus-within:border-accent transition-colors">
                             <textarea
                                 value={customContext}
                                 onChange={(e) => {
@@ -309,26 +305,27 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                                 }}
                                 placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
                                 rows={2}
-                                className="w-full bg-transparent p-4 text-ink placeholder:text-muted text-sm leading-relaxed resize-none focus:outline-none overflow-hidden"
+                                className="w-full bg-transparent px-3 pt-2 pb-1 text-ink placeholder:text-muted text-sm leading-snug resize-none focus:outline-none overflow-hidden"
                             />
-                            <div className="flex justify-between items-center px-4 py-2 border-t border-divider-soft">
-                                <span className={`text-xs font-bold ${wordCount > WORD_LIMIT ? 'text-red-500' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-500' : 'text-muted'}`}>
+                            <div className="flex justify-between items-center px-3 py-1 border-t border-divider-soft">
+                                <span className={`text-[11px] font-bold ${wordCount > WORD_LIMIT ? 'text-red-500' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-500' : 'text-muted'}`}>
                                     {wordCount}/{WORD_LIMIT} words
                                 </span>
                                 {wordCount > 0 && wordCount <= 15 && (
-                                    <span className="text-xs text-amber-500 font-medium">A bit more detail will help!</span>
+                                    <span className="text-[11px] text-amber-500 font-medium">A bit more detail will help!</span>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    {/* Tips */}
-                    <div className="bg-accent-soft border border-accent/30 rounded-xl p-4 mb-6">
-                        <p className="text-xs text-accent font-bold uppercase tracking-widest mb-2">💡 Pro Tips for Better Cards</p>
-                        <ul className="text-xs text-ink-soft space-y-1.5">
-                            <li>• <strong className="text-ink">Name names:</strong> "Rahul always burns the food" → hilarious card</li>
-                            <li>• <strong className="text-ink">Be specific:</strong> "Goa trip" → "Goa trip where Priya lost her passport"</li>
-                            <li>• <strong className="text-ink">Add dynamics:</strong> "One person is vegetarian, one snores..."</li>
+                    {/* Tips — examples shortened so each fits on one line on
+                        a 340px-wide layout. */}
+                    <div className="bg-accent-soft border border-accent/30 rounded-xl p-3 mb-3">
+                        <p className="text-[11px] text-accent font-bold uppercase tracking-widest mb-1.5">💡 Pro Tips</p>
+                        <ul className="text-[11px] text-ink-soft space-y-0.5 leading-snug">
+                            <li>• <strong className="text-ink">Name names</strong> — "Rahul burns the food"</li>
+                            <li>• <strong className="text-ink">Be specific</strong> — places, trips, situations</li>
+                            <li>• <strong className="text-ink">Add dynamics</strong> — exes, rivalries, jokes</li>
                         </ul>
                     </div>
 
