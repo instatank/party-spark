@@ -24,8 +24,8 @@ The category is: ${category}.
 Return ONLY the movie titles separated by commas. No numbering. No years.`;
 
         const response = await gemini.models.generateContent({ model: MODEL, contents: prompt });
-        const text = response.text || '';
-        return text.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        const text: string = response.text || '';
+        return text.split(',').map((s: string) => s.trim()).filter((s: string) => s.length > 0);
     } catch (err) {
         console.error('[ai/charades] error:', err);
         return [];
