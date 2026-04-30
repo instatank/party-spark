@@ -54,9 +54,9 @@ const GROUP_TYPES = [
 ];
 
 const TONE_OPTIONS = [
-    { id: 'clean', label: '😇 Keep it Clean', hint: 'PG — safe for all ages' },
+    { id: 'clean', label: '😇 Clean',  hint: 'PG — safe for all ages' },
     { id: 'cheeky', label: '😏 Cheeky', hint: 'PG-13 — light teasing, innuendo OK' },
-    { id: 'spicy', label: '🔥 Spicy', hint: 'R-rated — bold, flirty, no filter' },
+    { id: 'spicy', label: '🔥 Spicy',  hint: 'R-rated — bold, flirty, no filter' },
 ];
 
 const WORD_LIMIT = 150;
@@ -224,14 +224,16 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Create Your Vibe" onBack={() => setGameState('CATEGORY')} onHome={onExit} />
                 <div className="flex-1 overflow-y-auto pb-8 px-1">
-                    {/* Intro */}
+                    {/* Intro — short, punchy. Subhead does the heavy lifting in
+                        one line; the Wand2 icon + section header carry the rest
+                        of the meaning. */}
                     <div className="text-center mb-6">
                         <div className="inline-flex bg-accent-soft border border-accent/30 rounded-2xl p-4 mb-3">
                             <Wand2 size={32} className="text-accent" />
                         </div>
                         <h2 className="text-xl font-bold text-ink mb-1">Personalised Cards</h2>
-                        <p className="text-muted text-sm max-w-sm mx-auto">
-                            Tell us about your group and AI will generate "Most Likely To" cards that feel like they were written just for you.
+                        <p className="text-muted text-sm">
+                            AI-written cards, tailored to your group.
                         </p>
                     </div>
 
@@ -257,17 +259,19 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                         </div>
                     </div>
 
-                    {/* Step 2: Tone Chips (optional) */}
+                    {/* Step 2: Tone Chips (optional). Equal-width 3-column grid
+                        + smaller padding so the three options always sit on
+                        one row, even on narrow phones. */}
                     <div className="mb-6">
                         <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
                             2. Set the tone <span className="text-muted/70 normal-case tracking-normal font-medium">(optional)</span>
                         </label>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="grid grid-cols-3 gap-2">
                             {TONE_OPTIONS.map(t => (
                                 <button
                                     key={t.id}
                                     onClick={() => setSelectedTone(selectedTone === t.id ? null : t.id)}
-                                    className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
+                                    className={`px-2 py-2 rounded-xl text-sm font-bold transition-all active:scale-95 border truncate
                                         ${selectedTone === t.id
                                             ? 'bg-accent-soft border-accent text-accent'
                                             : 'bg-surface-alt border-divider text-muted hover:border-ink-soft hover:text-ink-soft'
@@ -290,15 +294,22 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                             3. The secret sauce — describe your group
                         </label>
                         <div className="bg-surface-alt border border-divider rounded-2xl p-1 focus-within:border-accent transition-colors">
+                            {/* Starts at 2 lines, grows with content (capped at
+                                ~10 lines so it never eats the screen). The
+                                inline style trick: reset height to auto on each
+                                keystroke, then set it to scrollHeight — that's
+                                the natural content height for the textarea. */}
                             <textarea
                                 value={customContext}
                                 onChange={(e) => {
                                     setCustomContext(e.target.value);
                                     setCustomError('');
+                                    e.target.style.height = 'auto';
+                                    e.target.style.height = `${Math.min(e.target.scrollHeight, 240)}px`;
                                 }}
                                 placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
-                                rows={5}
-                                className="w-full bg-transparent p-4 text-ink placeholder:text-muted text-sm leading-relaxed resize-none focus:outline-none"
+                                rows={2}
+                                className="w-full bg-transparent p-4 text-ink placeholder:text-muted text-sm leading-relaxed resize-none focus:outline-none overflow-hidden"
                             />
                             <div className="flex justify-between items-center px-4 py-2 border-t border-divider-soft">
                                 <span className={`text-xs font-bold ${wordCount > WORD_LIMIT ? 'text-red-500' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-500' : 'text-muted'}`}>
