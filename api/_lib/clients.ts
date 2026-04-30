@@ -29,3 +29,4 @@ export const getClaude = (): Anthropic | null => {
 };
 
 export const isClaudeConfigured = (): boolean => Boolean(process.env.ANTHROPIC_API_KEY);
+export const isGeminiConfigured = (): boolean => Boolean(process.env.GEMINI_API_KEY);
