@@ -13,17 +13,48 @@ import { getGemini, getClaude, isClaudeConfigured } from './clients';
 const CLAUDE_MODEL = 'claude-haiku-4-5';
 const GEMINI_MODEL = 'gemini-2.0-flash-001';
 
-const STRING_ARRAY_SCHEMA = { type: 'array', items: { type: 'string' }, additionalProperties: false } as const;
-
+// Lenient JSON-array extractor for Claude responses.
+//
+// Earlier code passed `output_config` to `messages.create()` to force
+// structured output. That parameter only exists on `messages.parse()`
+// in the Anthropic SDK — `create()` silently ignores it. So Claude has
+// always been returning plain text here, and this parser is what
+// actually has to do the work.
+//
+// We can't rely on Claude returning bare JSON every time — sometimes it
+// wraps in ```json ... ``` fences, sometimes adds a one-line preamble.
+// So we strip common wrappers, then look for the first '['..']' span
+// and JSON.parse that. Far more robust than naive JSON.parse(text).
 const parseClaudeJson = (message: Anthropic.Message): string[] => {
     const text = message.content.filter((b): b is Anthropic.TextBlock => b.type === 'text').map(b => b.text).join('');
     if (!text) return [];
-    try {
-        const parsed = JSON.parse(text);
-        return Array.isArray(parsed) ? parsed.filter(q => typeof q === 'string' && q.trim().length > 0) : [];
-    } catch {
-        return [];
+
+    // 1. Try the easy case first — clean JSON, no wrappers.
+    const tryParse = (raw: string): string[] | null => {
+        try {
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return null;
+            return parsed.filter((q): q is string => typeof q === 'string' && q.trim().length > 0);
+        } catch { return null; }
+    };
+
+    const direct = tryParse(text.trim());
+    if (direct) return direct;
+
+    // 2. Strip ```json ... ``` (or plain ```) markdown fences.
+    const fenced = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '');
+    const fromFence = tryParse(fenced.trim());
+    if (fromFence) return fromFence;
+
+    // 3. Last resort: locate the first balanced '['..']' span and parse that.
+    const start = text.indexOf('[');
+    const end = text.lastIndexOf(']');
+    if (start !== -1 && end > start) {
+        const span = text.slice(start, end + 1);
+        const fromSpan = tryParse(span);
+        if (fromSpan) return fromSpan;
     }
+    return [];
 };
 
 // =============================================================================
@@ -147,7 +178,6 @@ const generateCustomMLTClaude = async (groupType: string, customContext: string,
             max_tokens: 4096,
             system: MLT_SYSTEM_PROMPT,
             messages: [{ role: 'user', content: user }],
-            output_config: { format: { type: 'json_schema', schema: STRING_ARRAY_SCHEMA } },
         });
         return parseClaudeJson(message);
     } catch (err) {
@@ -244,7 +274,6 @@ Return a JSON array of exactly ${count} question strings.`;
             max_tokens: 4096,
             system,
             messages: [{ role: 'user', content: user }],
-            output_config: { format: { type: 'json_schema', schema: STRING_ARRAY_SCHEMA } },
         });
         return parseClaudeJson(message);
     } catch (err) {
@@ -355,7 +384,6 @@ Return a JSON array of exactly ${count} statement strings.`;
             max_tokens: 4096,
             system,
             messages: [{ role: 'user', content: user }],
-            output_config: { format: { type: 'json_schema', schema: STRING_ARRAY_SCHEMA } },
         });
         return parseClaudeJson(message);
     } catch (err) {
