@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Search } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Search, X } from 'lucide-react';
 import { GameType } from './types';
 import { GAMES, getIcon, GAME_RICH_META, HOME_FILTERS, gameMatchesFilter, type HomeFilter } from './constants';
 import { Card } from './components/ui/Layout';
@@ -115,6 +115,46 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<HomeFilter>('all');
 
+  // Tap-to-expand search. The input is always rendered (overlaying the
+  // chips row) but visually hidden when closed — that way the user's
+  // tap on the icon can synchronously focus a real DOM node, which
+  // is what iOS/Android need to bring up the soft keyboard on first
+  // tap. Deferring the focus into a setTimeout/raf would suppress it.
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const openSearch = () => {
+    searchInputRef.current?.focus();
+    setSearchOpen(true);
+  };
+  const closeSearch = () => {
+    setQuery('');
+    setSearchOpen(false);
+    searchInputRef.current?.blur();
+  };
+
+  // Outside-click closes the overlay. Two key tricks:
+  // 1. setTimeout(0) before attaching, so the SAME tap that opened
+  //    the overlay doesn't immediately bubble up and close it.
+  // 2. capture phase + an exempt-class check, so taps on game cards
+  //    or filter pills can do their work without collapsing search.
+  useEffect(() => {
+    if (!searchOpen) return;
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (target.closest('.search-overlay, .game-card, .filter-pill')) return;
+      setSearchOpen(false);
+    };
+    const tid = setTimeout(() => {
+      document.addEventListener('click', onClick, true);
+    }, 0);
+    return () => {
+      clearTimeout(tid);
+      document.removeEventListener('click', onClick, true);
+    };
+  }, [searchOpen]);
+
   // Coming-soon list. Order here drives display order in the Coming Soon
   // tab (the filter below preserves it via comingSoonGameIds.map).
   const comingSoonGameIds = [
@@ -218,35 +258,63 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         />
       )}
 
-      {/* Search bar + filter chips — narrow the games shown in the active tab */}
-      <div className="flex flex-col gap-2.5">
-        <div className="flex items-center gap-2.5 bg-surface-alt border border-divider rounded-xl px-3.5 py-2.5">
+      {/* Filter chips + tap-to-expand search.
+          Single row at h-11 so the icon button (collapsed) and the
+          overlay input (expanded) are the same height — no layout
+          shift between states. The input is always in the DOM but
+          opacity-0 + pointer-events-none when closed, which lets us
+          focus() it inside the same tap that opens it (required for
+          the mobile soft keyboard to appear on first tap). */}
+      <div className="relative h-11">
+        <div className="absolute inset-0 flex items-center gap-2">
+          <div className="flex-1 flex gap-1.5 overflow-x-auto px-1 no-scrollbar items-center h-full">
+            {HOME_FILTERS.map(f => {
+              const active = filter === f.id;
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => setFilter(f.id)}
+                  className={`filter-pill flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+                    active
+                      ? 'bg-gold text-app border-gold'
+                      : 'bg-transparent text-muted border-divider hover:border-ink-soft hover:text-ink-soft'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={openSearch}
+            aria-label="Search games"
+            className="flex-shrink-0 h-11 w-11 rounded-xl bg-surface-alt hover:bg-app-tint border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
+          >
+            <Search size={18} />
+          </button>
+        </div>
+
+        <div
+          className={`search-overlay absolute inset-0 flex items-center gap-2 bg-surface-alt border border-divider rounded-xl px-3 transition-opacity ${
+            searchOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+        >
           <Search size={16} className="text-muted flex-shrink-0" />
           <input
+            ref={searchInputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search games, vibes, or players…"
             className="flex-1 bg-transparent text-sm text-ink placeholder:text-muted outline-none min-w-0"
           />
-        </div>
-        <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1 no-scrollbar">
-          {HOME_FILTERS.map(f => {
-            const active = filter === f.id;
-            return (
-              <button
-                key={f.id}
-                onClick={() => setFilter(f.id)}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                  active
-                    ? 'bg-gold text-app border-gold'
-                    : 'bg-transparent text-muted border-divider hover:border-ink-soft hover:text-ink-soft'
-                }`}
-              >
-                {f.label}
-              </button>
-            );
-          })}
+          <button
+            onClick={closeSearch}
+            aria-label="Close search"
+            className="flex-shrink-0 p-1 rounded-full text-muted hover:text-ink transition-colors"
+          >
+            <X size={16} />
+          </button>
         </div>
       </div>
 
@@ -260,7 +328,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
           <Card
             key={game.id}
             onClick={() => handleSelectGame(game.id)}
-            className="!p-4 group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95"
+            className="game-card !p-4 group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95"
           >
             {/* Background Gradient Blob */}
             <div className={`absolute top-0 right-0 w-32 h-32 opacity-20 rounded-full blur-3xl -mr-10 -mt-10 ${game.color}`} />
