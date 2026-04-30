@@ -21,12 +21,14 @@ import { TruthOrDrinkGame } from './components/games/TruthOrDrinkGame';
 
 const SplashScreen = () => (
   <div className="fixed inset-0 z-[100] bg-app flex items-center justify-center overflow-hidden font-sans">
-    {/* Background layer — bg image is dark-tuned, so we drop its opacity in
-        light mode via the .splash-bg helper to keep things airy. */}
+    {/* Background layer — bg image is dark-tuned. Dark mode uses an
+        overlay blend at 40%; light mode swaps to a multiply blend at
+        25% (handled in .splash-bg CSS) so the image reads as a soft
+        watermark on the airy bg without fighting the gold title. */}
     <div className="absolute inset-0 z-0">
       <div className="absolute inset-0 bg-app" />
       <div
-        className="splash-bg absolute inset-0 bg-cover bg-center mix-blend-overlay"
+        className="splash-bg absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: 'url("/splash-bg.jpg")' }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-app via-transparent to-app/50" />

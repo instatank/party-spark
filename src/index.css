@@ -134,10 +134,19 @@
   animation: shake 0.5s ease-in-out;
 }
 
-/* Splash bg image is dark-tuned. Stays subtle in dark, almost invisible in
-   light so the airy bg stays clean. */
-.splash-bg { opacity: 0.40; }
-[data-theme="light"] .splash-bg { opacity: 0.10; }
+/* Splash bg image is dark-tuned. Dark mode keeps the original overlay
+   blend at 40% — it adds depth on the deep-slate bg. Light mode swaps
+   to a multiply blend at 25% so the image darkens the airy white bg
+   into a soft watermark texture without washing out (overlay barely
+   reads on near-white). The gold Playfair title stays the focal point. */
+.splash-bg {
+  opacity: 0.40;
+  mix-blend-mode: overlay;
+}
+[data-theme="light"] .splash-bg {
+  opacity: 0.25;
+  mix-blend-mode: multiply;
+}
 
 /* Hide horizontal scrollbar on filter-chip rows that scroll on overflow */
 .no-scrollbar {
