@@ -52,9 +52,9 @@ const GROUP_TYPES = [
 ];
 
 const TONE_OPTIONS = [
-    { id: 'clean', label: '😇 Keep it Clean', hint: 'PG — safe for all ages' },
+    { id: 'clean', label: '😇 Clean',  hint: 'PG — safe for all ages' },
     { id: 'cheeky', label: '😏 Cheeky', hint: 'PG-13 — light teasing, innuendo OK' },
-    { id: 'spicy', label: '🔥 Spicy', hint: 'R-rated — bold, flirty, no filter' },
+    { id: 'spicy', label: '🔥 Spicy',  hint: 'R-rated — bold, flirty, no filter' },
 ];
 
 const WORD_LIMIT = 150;
@@ -235,29 +235,29 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                 <ScreenHeader title="Create Your Vibe" onBack={() => setGameState('SELECT')} onHome={onExit} />
                 <div className="flex-1 overflow-y-auto pb-8 px-1">
                     {/* Intro */}
-                    <div className="text-center mb-6">
-                        <div className="inline-flex bg-gradient-to-r from-violet-600/20 to-fuchsia-500/20 border border-violet-500/30 rounded-2xl p-4 mb-3">
-                            <Wand2 size={32} className="text-vibe" />
+                    <div className="text-center mb-3">
+                        <div className="inline-flex bg-gradient-to-r from-violet-600/20 to-fuchsia-500/20 border border-violet-500/30 rounded-2xl p-3 mb-2">
+                            <Wand2 size={24} className="text-vibe" />
                         </div>
-                        <h2 className="text-xl font-bold text-ink mb-1">Personalised Statements</h2>
-                        <p className="text-muted text-sm max-w-sm mx-auto">
-                            Tell us about your group and AI will write "Never Have I Ever" statements that feel like they were written just for you.
+                        <h2 className="text-lg font-bold text-ink mb-0.5">Personalised Statements</h2>
+                        <p className="text-muted text-xs">
+                            AI-written statements, tailored to your group.
                         </p>
                     </div>
 
                     {/* Step 1: Group Type Chips */}
-                    <div className="mb-6">
-                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
+                    <div className="mb-3">
+                        <label className="text-[11px] font-bold text-muted uppercase tracking-widest mb-1.5 block">
                             1. Who's playing?
                         </label>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-1.5">
                             {GROUP_TYPES.map(g => (
                                 <button
                                     key={g.id}
                                     onClick={() => setSelectedGroupType(g.id)}
-                                    className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 border
                                         ${selectedGroupType === g.id
-                                            ? 'bg-violet-600/30 border-violet-500 text-vibe shadow-lg shadow-violet-500/20'
+                                            ? 'bg-violet-600/30 border-violet-500 text-vibe'
                                             : 'bg-surface-alt border-divider text-muted hover:border-ink-soft/40'
                                         }`}
                                 >
@@ -268,18 +268,18 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                     </div>
 
                     {/* Step 2: Tone Chips (optional) */}
-                    <div className="mb-6">
-                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
+                    <div className="mb-3">
+                        <label className="text-[11px] font-bold text-muted uppercase tracking-widest mb-1.5 block">
                             2. Set the tone <span className="text-muted normal-case tracking-normal font-medium">(optional)</span>
                         </label>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="grid grid-cols-3 gap-1.5">
                             {TONE_OPTIONS.map(t => (
                                 <button
                                     key={t.id}
                                     onClick={() => setSelectedTone(selectedTone === t.id ? null : t.id)}
-                                    className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 border
+                                    className={`px-2 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 border truncate
                                         ${selectedTone === t.id
-                                            ? 'bg-violet-600/30 border-violet-500 text-vibe shadow-lg shadow-violet-500/20'
+                                            ? 'bg-violet-600/30 border-violet-500 text-vibe'
                                             : 'bg-surface-alt border-divider text-muted hover:border-ink-soft/40'
                                         }`}
                                 >
@@ -288,46 +288,49 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                             ))}
                         </div>
                         {selectedTone && (
-                            <p className="text-xs text-muted mt-2 pl-1">
+                            <p className="text-[11px] text-muted mt-1 pl-1">
                                 {TONE_OPTIONS.find(t => t.id === selectedTone)?.hint}
                             </p>
                         )}
                     </div>
 
-                    {/* Step 3: Context Text Box */}
-                    <div className="mb-6">
-                        <label className="text-xs font-bold text-muted uppercase tracking-widest mb-3 block">
+                    {/* Step 3: Context Text Box — starts at rows=2, auto-grows
+                        on input via scrollHeight (capped at 240px). */}
+                    <div className="mb-3">
+                        <label className="text-[11px] font-bold text-muted uppercase tracking-widest mb-1.5 block">
                             3. The secret sauce — describe your group
                         </label>
-                        <div className="bg-surface-alt border border-divider rounded-2xl p-1 focus-within:border-violet-500/50 transition-colors">
+                        <div className="bg-surface-alt border border-divider rounded-xl focus-within:border-violet-500/50 transition-colors">
                             <textarea
                                 value={customContext}
                                 onChange={(e) => {
                                     setCustomContext(e.target.value);
                                     setCustomError('');
+                                    e.target.style.height = 'auto';
+                                    e.target.style.height = `${Math.min(e.target.scrollHeight, 240)}px`;
                                 }}
                                 placeholder={PLACEHOLDER_EXAMPLES[placeholderIdx]}
-                                rows={5}
-                                className="w-full bg-transparent p-4 text-ink placeholder:text-muted text-sm leading-relaxed resize-none focus:outline-none"
+                                rows={2}
+                                className="w-full bg-transparent px-3 pt-2 pb-1 text-ink placeholder:text-muted text-sm leading-snug resize-none focus:outline-none overflow-hidden"
                             />
-                            <div className="flex justify-between items-center px-4 py-2 border-t border-divider-soft">
-                                <span className={`text-xs font-bold ${wordCount > WORD_LIMIT ? 'text-red-500' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-500' : 'text-muted'}`}>
+                            <div className="flex justify-between items-center px-3 py-1 border-t border-divider-soft">
+                                <span className={`text-[11px] font-bold ${wordCount > WORD_LIMIT ? 'text-red-500' : wordCount > WORD_LIMIT * 0.8 ? 'text-amber-500' : 'text-muted'}`}>
                                     {wordCount}/{WORD_LIMIT} words
                                 </span>
                                 {wordCount > 0 && wordCount <= 15 && (
-                                    <span className="text-xs text-amber-500 font-medium">A bit more detail will help!</span>
+                                    <span className="text-[11px] text-amber-500 font-medium">A bit more detail will help!</span>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    {/* Pro Tips */}
-                    <div className="bg-violet-900/20 border border-violet-500/20 rounded-xl p-4 mb-6">
-                        <p className="text-xs text-vibe font-bold uppercase tracking-widest mb-2">💡 Pro Tips for Better Cards</p>
-                        <ul className="text-xs text-muted space-y-1.5">
-                            <li>• <strong className="text-ink-soft">Name names:</strong> "Aisha hates confrontation" → gold</li>
-                            <li>• <strong className="text-ink-soft">Be specific:</strong> "Goa trip where Priya lost her passport"</li>
-                            <li>• <strong className="text-ink-soft">Add dynamics:</strong> exes, rivalries, running jokes</li>
+                    {/* Pro Tips — examples shortened so each fits on one line. */}
+                    <div className="bg-violet-900/20 border border-violet-500/20 rounded-xl p-3 mb-3">
+                        <p className="text-[11px] text-vibe font-bold uppercase tracking-widest mb-1.5">💡 Pro Tips</p>
+                        <ul className="text-[11px] text-muted space-y-0.5 leading-snug">
+                            <li>• <strong className="text-ink-soft">Name names</strong> — "Aisha hates confrontation"</li>
+                            <li>• <strong className="text-ink-soft">Be specific</strong> — places, trips, situations</li>
+                            <li>• <strong className="text-ink-soft">Add dynamics</strong> — exes, rivalries, jokes</li>
                         </ul>
                     </div>
 
