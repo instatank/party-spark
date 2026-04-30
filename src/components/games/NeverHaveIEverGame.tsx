@@ -6,6 +6,7 @@ import { generateNeverHaveIEver, generateCustomNeverHaveIEver } from '../../serv
 import type { LucideIcon } from 'lucide-react';
 import { Sparkles, Lock, ChevronRight, Hand, MessageCircle, Flame, Landmark, Users, Wand2, ShieldCheck } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 
 interface GameProps {
     onExit: () => void;
@@ -86,6 +87,11 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     const [customError, setCustomError] = useState('');
     const [placeholderIdx] = useState(Math.floor(Math.random() * PLACEHOLDER_EXAMPLES.length));
 
+    // Temporary PIN gate on the Create-Your-Vibe tile while AI prompts are
+    // still being tuned in production. Same PIN as adult content. Drop
+    // showPinGate + the gate intercept once Custom Vibe is signed off.
+    const [showPinGate, setShowPinGate] = useState(false);
+
     const wordCount = customContext.trim().split(/\s+/).filter(Boolean).length;
 
     // Initialize with local data depending on category. Skip for custom_vibe —
@@ -165,6 +171,16 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
             <div className="flex flex-col h-full animate-fade-in relative">
                 <ScreenHeader title="Never Have I Ever" onBack={onExit} onHome={onExit} />
 
+                {showPinGate && (
+                    <PinGateModal
+                        onSuccess={() => {
+                            setShowPinGate(false);
+                            setGameState('CUSTOM_SETUP');
+                        }}
+                        onCancel={() => setShowPinGate(false)}
+                    />
+                )}
+
                 <div className="flex-1 overflow-y-auto pb-8">
                     <p className="text-muted mb-4 text-sm text-center">
                         Pick a category. Stand up if you've done it. Last one sitting wins.
@@ -180,6 +196,13 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                 <button
                                     key={cat.id}
                                     onClick={() => {
+                                        // PIN gate on Custom Vibe (temporary,
+                                        // while AI prompts are being tuned).
+                                        if (isCustom && !isAdultUnlocked()) {
+                                            setCategory(cat.id);
+                                            setShowPinGate(true);
+                                            return;
+                                        }
                                         setCategory(cat.id);
                                         setGameState(isCustom ? 'CUSTOM_SETUP' : 'PLAY');
                                     }}

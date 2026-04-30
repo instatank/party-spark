@@ -165,8 +165,12 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
     GameType.NEVER_HAVE_I_EVER,
   ];
 
-  // Adult-gated games — require PIN before entering
-  const ADULT_GAME_IDS = [GameType.COMPATIBILITY_TEST, GameType.TRUTH_OR_DRINK];
+  // Adult-gated games — require PIN before entering. Roast Me + Custom
+  // Vibe paths are also temporarily gated here while AI prompts/output
+  // are still being tuned in production. REMOVE Roast from this list
+  // once those flows are signed off; the Custom Vibe gates live inside
+  // MLT and NHIE (TOD inherits the gate from this list).
+  const ADULT_GAME_IDS = [GameType.COMPATIBILITY_TEST, GameType.TRUTH_OR_DRINK, GameType.ROAST];
   const [showPinGate, setShowPinGate] = useState(false);
   const [pendingGameId, setPendingGameId] = useState<GameType | null>(null);
 

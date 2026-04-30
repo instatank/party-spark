@@ -96,8 +96,11 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
     const wordCount = customContext.trim().split(/\s+/).filter(Boolean).length;
 
     const startGame = async (cat: any) => {
-        // Gate adult categories
-        if (ADULT_CATEGORY_IDS.includes(cat.id) && !isAdultUnlocked()) {
+        // Gate adult categories AND custom-vibe (the latter is temporary
+        // while AI prompts are still being tuned in production — drop the
+        // `|| cat.isCustom` clause once Custom Vibe is signed off).
+        const needsPin = ADULT_CATEGORY_IDS.includes(cat.id) || cat.isCustom;
+        if (needsPin && !isAdultUnlocked()) {
             setPendingAdultCat(cat);
             setShowPinGate(true);
             return;
