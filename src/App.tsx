@@ -267,6 +267,13 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
           the mobile soft keyboard to appear on first tap). */}
       <div className="relative h-11">
         <div className="absolute inset-0 flex items-center gap-2">
+          <button
+            onClick={openSearch}
+            aria-label="Search games"
+            className="flex-shrink-0 h-11 w-11 rounded-xl bg-surface-alt hover:bg-app-tint border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
+          >
+            <Search size={18} />
+          </button>
           <div className="flex-1 flex gap-1.5 overflow-x-auto px-1 no-scrollbar items-center h-full">
             {HOME_FILTERS.map(f => {
               const active = filter === f.id;
@@ -285,13 +292,6 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
               );
             })}
           </div>
-          <button
-            onClick={openSearch}
-            aria-label="Search games"
-            className="flex-shrink-0 h-11 w-11 rounded-xl bg-surface-alt hover:bg-app-tint border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
-          >
-            <Search size={18} />
-          </button>
         </div>
 
         <div
