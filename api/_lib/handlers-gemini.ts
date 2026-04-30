@@ -2,7 +2,9 @@
 // MLT / TOD flows (those live in handlers-custom.ts because they orchestrate
 // Claude-first with Gemini fallback).
 
-import { Type } from '@google/genai';
+// Avoid static @google/genai import (crashes Vercel cold start). Use
+// string literals 'ARRAY' / 'OBJECT' / 'STRING' / 'NUMBER' instead of
+// the Type enum — they're equivalent at the schema level.
 import { getGemini } from './clients';
 
 const MODEL = 'gemini-2.0-flash-001';
@@ -12,7 +14,7 @@ const MODEL = 'gemini-2.0-flash-001';
 // =============================================================================
 
 export const handleCharadesWords = async (params: { category: string; count?: number }): Promise<string[]> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return [];
     const { category, count = 20 } = params;
 
@@ -35,7 +37,7 @@ Return ONLY the movie titles separated by commas. No numbering. No years.`;
 // =============================================================================
 
 export const handleWouldILieToYou = async (params: { count?: number }): Promise<Array<{ statement: string; rule: string }>> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return [];
     const { count = 3 } = params;
 
@@ -67,7 +69,7 @@ Do NOT wrap in markdown \`\`\`json block. Just raw JSON structure.`;
 // =============================================================================
 
 export const handleNeverHaveIEver = async (params: { category: string; count?: number }): Promise<string[]> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return [];
     const { category, count = 5 } = params;
 
@@ -120,7 +122,7 @@ Return EXACTLY a JSON array of ${count} strings. Do NOT wrap in markdown. Just r
 // =============================================================================
 
 export const handleTabooCards = async (params: { category: string; count?: number }): Promise<Array<{ word: string; forbidden: string[] }>> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return [];
     const { category, count = 10 } = params;
 
@@ -135,12 +137,12 @@ Make them fun and challenging.`;
             config: {
                 responseMimeType: 'application/json',
                 responseSchema: {
-                    type: Type.ARRAY,
+                    type: 'ARRAY',
                     items: {
-                        type: Type.OBJECT,
+                        type: 'OBJECT',
                         properties: {
-                            word: { type: Type.STRING },
-                            forbidden: { type: Type.ARRAY, items: { type: Type.STRING } },
+                            word: { type: 'STRING' },
+                            forbidden: { type: 'ARRAY', items: { type: 'STRING' } },
                         },
                         required: ['word', 'forbidden'],
                     },
@@ -159,7 +161,7 @@ Make them fun and challenging.`;
 // =============================================================================
 
 export const handleIcebreaker = async (params: { type: 'fun' | 'deep' }): Promise<string> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return '';
     const { type } = params;
 
@@ -181,7 +183,7 @@ export const handleIcebreaker = async (params: { type: 'fun' | 'deep' }): Promis
 // =============================================================================
 
 export const handleMafiaNarrative = async (params: { phase: 'INTRO' | 'NIGHT' | 'DAY' }): Promise<string> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return '';
     const { phase } = params;
 
@@ -208,7 +210,7 @@ export const handleMafiaNarrative = async (params: { phase: 'INTRO' | 'NIGHT' | 
 // =============================================================================
 
 export const handleWouldYouRather = async (params: { count?: number }): Promise<unknown[]> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return [];
     const { count = 5 } = params;
 
@@ -235,20 +237,20 @@ Return a JSON array where each object has:
             config: {
                 responseMimeType: 'application/json',
                 responseSchema: {
-                    type: Type.ARRAY,
+                    type: 'ARRAY',
                     items: {
-                        type: Type.OBJECT,
+                        type: 'OBJECT',
                         properties: {
-                            optionA: { type: Type.STRING },
-                            optionB: { type: Type.STRING },
-                            category: { type: Type.STRING },
+                            optionA: { type: 'STRING' },
+                            optionB: { type: 'STRING' },
+                            category: { type: 'STRING' },
                             stats: {
-                                type: Type.OBJECT,
-                                properties: { a: { type: Type.NUMBER }, b: { type: Type.NUMBER } },
+                                type: 'OBJECT',
+                                properties: { a: { type: 'NUMBER' }, b: { type: 'NUMBER' } },
                                 required: ['a', 'b'],
                             },
-                            analysisA: { type: Type.STRING },
-                            analysisB: { type: Type.STRING },
+                            analysisA: { type: 'STRING' },
+                            analysisB: { type: 'STRING' },
                         },
                         required: ['optionA', 'optionB', 'category', 'stats', 'analysisA', 'analysisB'],
                     },
@@ -282,7 +284,7 @@ Return a JSON array where each object has:
 // =============================================================================
 
 export const handlePsychoAnalysis = async (params: { questionOptionA: string; questionOptionB: string; userChoice: 'A' | 'B' }): Promise<string> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return '';
     const { questionOptionA, questionOptionB, userChoice } = params;
 
@@ -311,7 +313,7 @@ Keep it under 25 words.`;
 // =============================================================================
 
 export const handleImposterContent = async (): Promise<{ category: string; word: string } | null> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return null;
 
     try {
@@ -327,8 +329,8 @@ Make it challenging but not impossible.`;
             config: {
                 responseMimeType: 'application/json',
                 responseSchema: {
-                    type: Type.OBJECT,
-                    properties: { category: { type: Type.STRING }, word: { type: Type.STRING } },
+                    type: 'OBJECT',
+                    properties: { category: { type: 'STRING' }, word: { type: 'STRING' } },
                     required: ['category', 'word'],
                 },
             },
@@ -345,7 +347,7 @@ Make it challenging but not impossible.`;
 // =============================================================================
 
 export const handleMostLikelyTo = async (params: { category: string; count?: number }): Promise<string[]> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return [];
     const { category, count = 10 } = params;
 
@@ -398,7 +400,7 @@ Return ONLY the questions as a JSON array of strings. No numbering.`;
             contents: prompt,
             config: {
                 responseMimeType: 'application/json',
-                responseSchema: { type: Type.ARRAY, items: { type: Type.STRING } },
+                responseSchema: { type: 'ARRAY', items: { type: 'STRING' } },
             },
         });
         return response.text ? (JSON.parse(response.text) as string[]) : [];
@@ -413,7 +415,7 @@ Return ONLY the questions as a JSON array of strings. No numbering.`;
 // =============================================================================
 
 export const handleContextualLies = async (params: { topic: string; trueStory: string }): Promise<[string, string] | []> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return [];
     const { topic, trueStory } = params;
 
@@ -437,7 +439,7 @@ Return the result as a JSON array containing exactly two strings.`;
             contents: prompt,
             config: {
                 responseMimeType: 'application/json',
-                responseSchema: { type: Type.ARRAY, items: { type: Type.STRING } },
+                responseSchema: { type: 'ARRAY', items: { type: 'STRING' } },
             },
         });
 

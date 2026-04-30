@@ -6,8 +6,11 @@
 //
 // These handlers are called by api/ai.ts via the dispatcher.
 
-import { Type } from '@google/genai';
-import Anthropic from '@anthropic-ai/sdk';
+// NOTE: avoid static top-level imports of @google/genai or
+// @anthropic-ai/sdk. They crash the Vercel function on cold start on
+// Node 24. clients.ts handles the SDKs via lazy dynamic imports; this
+// file only consumes the lazy getters.
+import type Anthropic from '@anthropic-ai/sdk';
 import { getGemini, getClaude, isClaudeConfigured } from './clients';
 
 const CLAUDE_MODEL = 'claude-haiku-4-5';
@@ -167,7 +170,7 @@ Generate exactly ${count} "Most Likely To" cards for this group, following the s
 };
 
 const generateCustomMLTClaude = async (groupType: string, customContext: string, count: number, tone: string): Promise<string[]> => {
-    const claude = getClaude();
+    const claude = await getClaude();
     if (!claude) return [];
 
     const user = buildCustomMLTUserPrompt(groupType, customContext, count, tone);
@@ -187,7 +190,7 @@ const generateCustomMLTClaude = async (groupType: string, customContext: string,
 };
 
 const generateCustomMLTGemini = async (groupType: string, customContext: string, count: number, tone: string): Promise<string[]> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return [];
 
     // Gemini has no separate system field — concatenate system + user with a
@@ -201,7 +204,7 @@ const generateCustomMLTGemini = async (groupType: string, customContext: string,
             contents: prompt,
             config: {
                 responseMimeType: 'application/json',
-                responseSchema: { type: Type.ARRAY, items: { type: Type.STRING } },
+                responseSchema: { type: 'ARRAY', items: { type: 'STRING' } },
             },
         });
         return response.text ? (JSON.parse(response.text) as string[]) : [];
@@ -235,7 +238,7 @@ export const handleCustomTruthOrDrink = async (params: CustomTODParams): Promise
 };
 
 const generateCustomTODClaude = async (groupType: string, customContext: string, playerNames: string[], count: number, tone: string): Promise<string[]> => {
-    const claude = getClaude();
+    const claude = await getClaude();
     if (!claude) return [];
 
     const toneHint = tone
@@ -283,7 +286,7 @@ Return a JSON array of exactly ${count} question strings.`;
 };
 
 const generateCustomTODGemini = async (groupType: string, customContext: string, playerNames: string[], count: number, tone: string): Promise<string[]> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return [];
 
     const toneInstruction = tone
@@ -317,7 +320,7 @@ Return ONLY the questions as a JSON array of strings. No numbering.`;
             contents: prompt,
             config: {
                 responseMimeType: 'application/json',
-                responseSchema: { type: Type.ARRAY, items: { type: Type.STRING } },
+                responseSchema: { type: 'ARRAY', items: { type: 'STRING' } },
             },
         });
         return response.text ? (JSON.parse(response.text) as string[]) : [];
@@ -350,7 +353,7 @@ export const handleCustomNeverHaveIEver = async (params: CustomNHIEParams): Prom
 };
 
 const generateCustomNHIEClaude = async (groupType: string, customContext: string, count: number, tone: string): Promise<string[]> => {
-    const claude = getClaude();
+    const claude = await getClaude();
     if (!claude) return [];
 
     const toneHint = tone
@@ -393,7 +396,7 @@ Return a JSON array of exactly ${count} statement strings.`;
 };
 
 const generateCustomNHIEGemini = async (groupType: string, customContext: string, count: number, tone: string): Promise<string[]> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return [];
 
     const toneInstruction = tone
@@ -420,7 +423,7 @@ Return ONLY the statements as a JSON array of strings. No numbering.`;
             contents: prompt,
             config: {
                 responseMimeType: 'application/json',
-                responseSchema: { type: Type.ARRAY, items: { type: Type.STRING } },
+                responseSchema: { type: 'ARRAY', items: { type: 'STRING' } },
             },
         });
         return response.text ? (JSON.parse(response.text) as string[]) : [];

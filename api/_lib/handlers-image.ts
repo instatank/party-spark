@@ -130,7 +130,7 @@ Keep it under 280 characters.${randomVibe(vibes)}`;
 // =============================================================================
 
 export const handleGenerateRoast = async (params: { base64Image: string; theme?: string }): Promise<string> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return "🔥 ROAST PROTOCOL DISABLED: API Key missing on server.";
     const { base64Image, theme = 'animate' } = params;
 
@@ -157,7 +157,7 @@ export const handleGenerateRoast = async (params: { base64Image: string; theme?:
 // =============================================================================
 
 export const handleEditImage = async (params: { base64Image: string; theme?: string; prompt?: string }): Promise<string | null> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return null;
     const { base64Image, theme, prompt } = params;
 
@@ -199,7 +199,7 @@ export const handleEditImage = async (params: { base64Image: string; theme?: str
 // =============================================================================
 
 export const handleRoastOrToast = async (params: { image: string; type: 'roast' | 'toast' }): Promise<string> => {
-    const gemini = getGemini();
+    const gemini = await getGemini();
     if (!gemini) return params.type === 'roast' ? "I'm speechless... literally." : 'Cheers to you!';
     const { image, type } = params;
 
