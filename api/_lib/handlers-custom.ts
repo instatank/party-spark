@@ -27,6 +27,31 @@ const parseClaudeJson = (message: Anthropic.Message): string[] => {
 };
 
 // =============================================================================
+// Shared prompt vocabulary
+//
+// The clients send tone + groupType as IDs ('clean' | 'cheeky' | 'spicy';
+// 'family' | 'friends' | 'couple' | 'colleagues' | 'mixed'). These maps
+// expand each ID into a richer prompt-side instruction so the model has
+// concrete guidance instead of a label.
+// =============================================================================
+
+const GROUP_TYPE_GUIDANCE: Record<string, string> = {
+    family:     'multi-generational mix. Lean on family roles, generational gaps, and shared history.',
+    friends:    'a peer group. Lean on running jokes, dating lives, and group dynamics.',
+    couple:     'just two people. Reframe questions as "Which of you is more likely to..." instead of "Who".',
+    colleagues: 'work people off-duty. Lean on office personas and what they hide at work.',
+    mixed:      'a mixed crowd. Stay broader, lighter on inside-baseball.',
+};
+
+const TONE_DEFINITIONS: Record<string, string> = {
+    clean:  'PG. Wholesome. No innuendo. Safe for grandparents and kids.',
+    cheeky: 'PG-13. Light innuendo, drinking, dating, mild embarrassment OK. No explicit sex, no body parts, no naming exes.',
+    spicy:  'R-rated. Sex, exes, body stuff, regrettable nights, and taboo confessions are all fair game. Still no slurs, racism, violence, or punching down on protected traits.',
+};
+
+const DEFAULT_TONE = 'cheeky';
+
+// =============================================================================
 // Most Likely To — Custom
 // =============================================================================
 
@@ -48,39 +73,79 @@ export const handleCustomMostLikelyTo = async (params: CustomMLTParams): Promise
     return generateCustomMLTGemini(groupType, customContext, count, tone);
 };
 
+// System prompt is a single source of truth — both Claude and Gemini get the
+// same brief so the fallback doesn't degrade quality. Edit here, both flows
+// pick it up.
+const MLT_SYSTEM_PROMPT = `You are a party game writer for "Most Likely To" — a game where one person reads a card aloud and the group instantly points at whoever fits.
+
+The best cards land within seconds, get the group laughing or knowingly nodding, and feel like they were written by someone who knows the group. The worst cards are generic ("Who is most likely to be late?"), wordy (over 18 words), or invent details that aren't true.
+
+VOICE
+- Tight. 6–18 words per card. Read-aloud cadence.
+- Specific over generic. Use concrete hooks the players gave you.
+- Warmth and teasing in equal measure. Never cruel, never preachy.
+
+COVERAGE RULES
+- Spread references roughly evenly across all named people. Don't fixate on one or two.
+- Vary the shape across the deck:
+  * ~50% personal callouts (use a name or unmistakable trait)
+  * ~30% group-wide observations (anyone could win)
+  * ~20% absurd hypotheticals grounded in their context
+- Vary topics. Don't write five drinking cards in a row.
+
+HALLUCINATION GUARD
+- Only use names, places, and details the players actually gave you. Do NOT invent specifics.
+- If the context is thin, lean on the GROUP TYPE for general flavor instead of inventing personal details.
+
+OUTPUT FORMAT
+- Every card starts with "Who is most likely to" (or "Which of you" for couples) and ends with "?"
+- Return a JSON array of strings. No numbering. No commentary.
+
+EXAMPLE — for calibration only
+
+Given context: "Five college friends from Mumbai reuniting in Goa after 8 years. Rahul has a new boyfriend nobody's met. Priya is teetotal now. Karan still talks about his startup constantly. Anjali got a divorce last year. Meera became a yoga teacher."
+
+Good output:
+[
+  "Who is most likely to grill Rahul's boyfriend with awkward college questions within ten minutes?",
+  "Who is most likely to make Karan's startup the third topic of every conversation?",
+  "Who is most likely to suggest 'one more drink' knowing Priya is the only sober one?",
+  "Who is most likely to bring up that one Goa trip from 2017 within the first hour?",
+  "Who is most likely to attempt Meera's sunrise yoga and quit by minute four?",
+  "Who is most likely to cry first at the group photo?"
+]
+
+Notice how names spread across the deck, shapes vary, every card stays tight, and nothing was invented beyond what the context gave.`;
+
+const buildCustomMLTUserPrompt = (groupType: string, customContext: string, count: number, tone: string): string => {
+    const groupGuidance = GROUP_TYPE_GUIDANCE[groupType] ?? GROUP_TYPE_GUIDANCE.mixed;
+    const toneKey = tone || DEFAULT_TONE;
+    const toneDefinition = TONE_DEFINITIONS[toneKey] ?? TONE_DEFINITIONS[DEFAULT_TONE];
+
+    return `GROUP TYPE: ${groupType} — ${groupGuidance}
+
+TONE: ${toneKey}
+${toneDefinition}
+
+CONTEXT FROM THE PLAYERS:
+"""
+${customContext}
+"""
+
+Generate exactly ${count} "Most Likely To" cards for this group, following the system rules. Return as a JSON array of ${count} strings.`;
+};
+
 const generateCustomMLTClaude = async (groupType: string, customContext: string, count: number, tone: string): Promise<string[]> => {
     const claude = getClaude();
     if (!claude) return [];
 
-    const toneHint = tone
-        ? `TONE/RATING: ${tone}. Calibrate humor and subject matter accordingly.`
-        : 'Keep it PG-13 unless the context clearly implies otherwise.';
-
-    const system = `You are a party game writer creating "Most Likely To" questions for a specific group of people.
-
-Each question is read aloud, and the group points at whoever fits the description best.
-
-Your job: generate questions that feel personally written for THIS group — referencing their names, places, running jokes, and shared history. Mix teasing with warmth. Keep things fun rather than cruel.`;
-
-    const user = `GROUP TYPE: ${groupType}
-CONTEXT FROM THE PLAYERS: "${customContext}"
-
-Generate exactly ${count} "Most Likely To" questions specifically tailored to this group.
-
-Rules:
-- Each question must start with "Who is most likely to..."
-- USE the specifics they gave you — names, places, situations, inside jokes. Weave them in naturally.
-- Avoid generic questions like "Who is most likely to be late?" unless the context twists it.
-- Mix lighthearted teasing with wholesome observations.
-- ${toneHint}
-
-Return a JSON array of exactly ${count} question strings.`;
+    const user = buildCustomMLTUserPrompt(groupType, customContext, count, tone);
 
     try {
         const message = await claude.messages.create({
             model: CLAUDE_MODEL,
             max_tokens: 4096,
-            system,
+            system: MLT_SYSTEM_PROMPT,
             messages: [{ role: 'user', content: user }],
             output_config: { format: { type: 'json_schema', schema: STRING_ARRAY_SCHEMA } },
         });
@@ -95,23 +160,10 @@ const generateCustomMLTGemini = async (groupType: string, customContext: string,
     const gemini = getGemini();
     if (!gemini) return [];
 
-    const toneInstruction = tone
-        ? `- TONE/RATING: ${tone}. Calibrate the humor, edginess, and subject matter accordingly.`
-        : `- Keep it PG-13 unless the context clearly implies otherwise.`;
-
-    const prompt = `You are a party game writer creating "Most Likely To" questions for a specific group of people.
-
-GROUP TYPE: ${groupType}
-CONTEXT FROM THE PLAYERS: "${customContext}"
-
-INSTRUCTIONS:
-- Generate exactly ${count} "Most Likely To" questions SPECIFICALLY tailored to the context above.
-- USE the specific details they gave you — names, places, situations, relationships, inside jokes, locations. Weave them directly into the questions.
-- Every single question must feel like it was written BY someone who knows this group personally.
-- Each question must start with "Who is most likely to..."
-${toneInstruction}
-
-Return ONLY the questions as a JSON array of strings. No numbering.`;
+    // Gemini has no separate system field — concatenate system + user with a
+    // visible separator so the model still treats them as distinct sections.
+    const user = buildCustomMLTUserPrompt(groupType, customContext, count, tone);
+    const prompt = `${MLT_SYSTEM_PROMPT}\n\n---\n\n${user}`;
 
     try {
         const response = await gemini.models.generateContent({

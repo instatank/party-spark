@@ -167,8 +167,9 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
         setGameState('LOADING');
 
         try {
-            const toneLabel = selectedTone ? TONE_OPTIONS.find(t => t.id === selectedTone)?.hint || '' : '';
-            const generatedCards = await generateCustomMostLikelyTo(groupLabel, customContext.trim(), 15, toneLabel);
+            // Pass IDs (e.g. 'friends', 'spicy') — the new MLT prompt expands
+            // them server-side via GROUP_TYPE_GUIDANCE / TONE_DEFINITIONS.
+            const generatedCards = await generateCustomMostLikelyTo(selectedGroupType, customContext.trim(), 15, selectedTone || '');
 
             if (generatedCards.length > 0) {
                 setCards(generatedCards);
@@ -206,9 +207,8 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
         } else if (category?.id === 'custom_vibe') {
             // For custom vibe, regenerate more with same context
             setGameState('LOADING');
-            const groupLabel = GROUP_TYPES.find(g => g.id === selectedGroupType)?.label || 'Friends';
-            const toneLabel = selectedTone ? TONE_OPTIONS.find(t => t.id === selectedTone)?.hint || '' : '';
-            const more = await generateCustomMostLikelyTo(groupLabel, customContext.trim(), 10, toneLabel);
+            // Mid-game refill — same ID-based call shape as startCustomGame.
+            const more = await generateCustomMostLikelyTo(selectedGroupType, customContext.trim(), 10, selectedTone || '');
             setCards(prev => [...prev, ...more]);
             setCurrentIndex(c => c + 1);
             setGameState('PLAYING');
