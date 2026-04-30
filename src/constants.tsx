@@ -157,6 +157,88 @@ export const gameMatchesFilter = (gameId: GameType, filter: HomeFilter): boolean
     return meta.tags.includes(filter);
 };
 
+// Sub-category search index. Each game lists its decks/categories with a
+// human label (shown in the "Matches:" hint on a search result card) and
+// a list of search tags (synonyms the query is checked against).
+// Edit this when a game adds or renames a deck.
+export interface SubcatEntry {
+    label: string;
+    tags: string[];
+}
+
+export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
+    [GameType.MOST_LIKELY_TO]: [
+        { label: 'Family Friendly', tags: ['wholesome', 'pg', 'family', 'clean', 'kids'] },
+        { label: 'Fun & Light',     tags: ['fun', 'light', 'casual', 'pg13'] },
+        { label: 'Scandalous',      tags: ['scandalous', 'gossip', 'drama', 'juicy', 'saucy'] },
+        { label: 'X-Rated',         tags: ['adult', 'spicy', 'saucy', 'naughty', '18+', 'nsfw', 'x-rated'] },
+        { label: 'Chaos Mode',      tags: ['chaos', 'absurd', 'unhinged', 'wild'] },
+        { label: 'For BBF',         tags: ['family', 'indian', 'bbf'] },
+    ],
+    [GameType.TRUTH_OR_DRINK]: [
+        { label: 'Classic',    tags: ['classic', 'party', 'chaos', 'petty'] },
+        { label: 'Spicy',      tags: ['spicy', 'saucy', 'flirty', 'scandalous', 'naughty'] },
+        { label: 'Deep Cuts',  tags: ['deep', 'vulnerable', 'heartfelt', 'real'] },
+        { label: 'Ex Files',   tags: ['exes', 'dating', 'ex', 'relationships', 'drama'] },
+        { label: 'Chaos',      tags: ['chaos', 'absurd', 'surreal', 'weird'] },
+    ],
+    [GameType.NEVER_HAVE_I_EVER]: [
+        { label: 'Rehaan Answers',    tags: ['rehaan', 'family', 'indian'] },
+        { label: 'Rehaan Asks',       tags: ['rehaan', 'family', 'indian'] },
+        { label: 'Agra Confessions',  tags: ['agra', 'mughal', 'history', 'indian'] },
+        { label: 'For BBF',           tags: ['family', 'indian', 'bbf'] },
+        { label: 'Classic Party',     tags: ['classic', 'party', 'fun'] },
+        { label: 'Guilty Pleasures',  tags: ['guilty', 'embarrassing', 'spicy', 'saucy', 'naughty'] },
+    ],
+    [GameType.CHARADES]: [
+        { label: 'Mix Movies',        tags: ['mix', 'movies', 'films', 'chaos'] },
+        { label: 'Family Mix',        tags: ['family', 'wholesome', 'pg'] },
+        { label: 'Bollywood Movies',  tags: ['bollywood', 'hindi', 'indian', 'movies'] },
+        { label: 'Hollywood Movies',  tags: ['hollywood', 'american', 'movies'] },
+    ],
+    [GameType.IMPOSTER]: [
+        { label: 'Animals', tags: ['animals', 'nature', 'wildlife'] },
+        { label: 'Food',    tags: ['food', 'cooking', 'cuisine'] },
+        { label: 'Places',  tags: ['places', 'locations', 'travel'] },
+        { label: 'Objects', tags: ['objects', 'things'] },
+        { label: 'Jobs',    tags: ['jobs', 'careers', 'work', 'professions'] },
+    ],
+    [GameType.WOULD_YOU_RATHER]: [
+        { label: 'Classic Chaos',      tags: ['classic', 'fun', 'hypothetical', 'chaos'] },
+        { label: 'Deep & Revealing',   tags: ['deep', 'vulnerable', 'philosophical', 'real'] },
+        { label: 'Travel & Living',    tags: ['travel', 'food', 'living', 'lifestyle'] },
+        { label: 'Pop Culture',        tags: ['pop', 'culture', 'movies', 'music', 'tv', 'fandom'] },
+        { label: 'Spicy',              tags: ['spicy', 'saucy', 'dating', 'intimate', '18+'] },
+    ],
+    [GameType.COMPATIBILITY_TEST]: [
+        { label: 'Friends', tags: ['friends', 'platonic'] },
+        { label: 'Couples', tags: ['couples', 'dating', 'romance', 'partners'] },
+        { label: 'Bunny',   tags: ['bunny', 'intimate', 'spicy', '18+', 'saucy'] },
+    ],
+    [GameType.TABOO]: [
+        { label: 'Easy Mode',   tags: ['easy', 'casual', 'simple'] },
+        { label: 'Medium Mode', tags: ['medium'] },
+        { label: 'Hard Mode',   tags: ['hard', 'challenging'] },
+    ],
+};
+
+// Returns the labels of any sub-categories whose label or tags match the
+// query. Empty query → empty array. Used by Home search to (a) include
+// games whose decks match (even if the game-level fields don't), and
+// (b) render the "Matches: X, Y" hint on the result card.
+export const getSubcategoryMatches = (gameId: GameType, query: string): string[] => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    const subcats = GAME_SUBCATEGORIES[gameId];
+    if (!subcats) return [];
+    return subcats
+        .filter(s => {
+            const haystack = [s.label, ...s.tags].join(' ').toLowerCase();
+            return haystack.includes(q);
+        })
+        .map(s => s.label);
+};
+
 export const getIcon = (name: string, size: number = 24) => {
     switch (name) {
         case 'drama': return <Sparkles size={size} />;

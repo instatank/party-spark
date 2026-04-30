@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { GameType } from './types';
-import { GAMES, getIcon, GAME_RICH_META, HOME_FILTERS, gameMatchesFilter, type HomeFilter } from './constants';
+import { GAMES, getIcon, GAME_RICH_META, HOME_FILTERS, gameMatchesFilter, getSubcategoryMatches, type HomeFilter } from './constants';
 import { Card } from './components/ui/Layout';
 import { PinGateModal, isAdultUnlocked } from './components/ui/PinGate';
 import { ThemeToggle } from './components/ui/ThemeToggle';
@@ -196,7 +196,10 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         const haystack = [
           g.title, g.description, meta?.vibe || '', ...(meta?.tags || []),
         ].join(' ').toLowerCase();
-        return haystack.includes(q);
+        if (haystack.includes(q)) return true;
+        // Fallback: match against the game's sub-categories (e.g. searching
+        // "saucy" should pick up TOD because its Spicy deck matches).
+        return getSubcategoryMatches(g.id, query).length > 0;
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, query, filter]);
@@ -324,33 +327,46 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
             No games match. Try a different filter or search.
           </div>
         )}
-        {displayGames.map((game) => (
-          <Card
-            key={game.id}
-            onClick={() => handleSelectGame(game.id)}
-            className="game-card !p-4 group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95"
-          >
-            {/* Background Gradient Blob */}
-            <div className={`absolute top-0 right-0 w-32 h-32 opacity-20 rounded-full blur-3xl -mr-10 -mt-10 ${game.color}`} />
+        {displayGames.map((game) => {
+          // Decks within this game that match the active query — drives
+          // the "Matches: …" hint line below the description so the user
+          // knows which deck to pick on tap-in.
+          const subcatHits = query.trim() ? getSubcategoryMatches(game.id, query) : [];
+          const visibleHits = subcatHits.slice(0, 2);
+          const extra = subcatHits.length - visibleHits.length;
+          return (
+            <Card
+              key={game.id}
+              onClick={() => handleSelectGame(game.id)}
+              className="game-card !p-4 group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95"
+            >
+              {/* Background Gradient Blob */}
+              <div className={`absolute top-0 right-0 w-32 h-32 opacity-20 rounded-full blur-3xl -mr-10 -mt-10 ${game.color}`} />
 
-            <div className="flex items-center gap-3 relative z-10">
-              <div className={`p-3 rounded-2xl ${game.color} shadow-sm text-white`}>
-                {getIcon(game.icon, 24)}
-              </div>
-              <div className="flex-1 w-full overflow-hidden">
-                <div className="flex items-center justify-between mb-0.5 mt-0.5">
-                  <h3 className="text-lg font-bold leading-none text-ink">{game.title}</h3>
-                  <span className="bg-accent-soft px-2 py-0.5 rounded text-[10px] font-medium text-accent uppercase tracking-wider shrink-0 ml-2">
-                    {game.minPlayers}+ Players
-                  </span>
+              <div className="flex items-center gap-3 relative z-10">
+                <div className={`p-3 rounded-2xl ${game.color} shadow-sm text-white`}>
+                  {getIcon(game.icon, 24)}
                 </div>
-                <p className="text-[13px] text-muted leading-snug truncate whitespace-nowrap overflow-hidden pr-2">
-                   {game.description}
-                </p>
+                <div className="flex-1 w-full overflow-hidden">
+                  <div className="flex items-center justify-between mb-0.5 mt-0.5">
+                    <h3 className="text-lg font-bold leading-none text-ink">{game.title}</h3>
+                    <span className="bg-accent-soft px-2 py-0.5 rounded text-[10px] font-medium text-accent uppercase tracking-wider shrink-0 ml-2">
+                      {game.minPlayers}+ Players
+                    </span>
+                  </div>
+                  <p className="text-[13px] text-muted leading-snug truncate whitespace-nowrap overflow-hidden pr-2">
+                     {game.description}
+                  </p>
+                  {visibleHits.length > 0 && (
+                    <p className="text-[11px] text-accent mt-1 font-medium truncate pr-2">
+                      Matches: {visibleHits.join(', ')}{extra > 0 ? ` +${extra}` : ''}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
       </div>
 
       <footer className="text-center text-xs text-muted mt-auto pb-4">
