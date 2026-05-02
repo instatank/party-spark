@@ -38,9 +38,9 @@ const RoastLoading: React.FC<RoastLoadingProps> = ({ onClose }) => {
             <button
                 onClick={onClose}
                 aria-label="Home"
-                className="absolute top-4 right-4 z-20 w-[34px] h-[34px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
+                className="absolute top-4 right-4 z-20 w-[50px] h-[50px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
             >
-                <Home size={16} />
+                <Home size={24} />
             </button>
 
             <div className="flex-1 flex items-center justify-center px-5 py-8 min-h-[480px]">

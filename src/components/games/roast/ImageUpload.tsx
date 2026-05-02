@@ -132,9 +132,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
             <button
                 onClick={onClose}
                 aria-label="Home"
-                className="absolute top-4 right-4 z-20 w-[34px] h-[34px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
+                className="absolute top-4 right-4 z-20 w-[50px] h-[50px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
             >
-                <Home size={16} />
+                <Home size={24} />
             </button>
 
             <div className="flex-1 flex flex-col gap-4 px-5 pt-7 pb-6 overflow-hidden">
@@ -156,7 +156,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
                             <span
                                 className="absolute bg-gold text-slate-900 font-display text-[14px] tracking-[0.08em] px-2.5 py-1 rounded-md border-2 border-slate-900 whitespace-nowrap"
                                 style={{
-                                    top: '-4px',
+                                    bottom: '4px',
                                     left: 'calc(100% + 10px)',
                                     transform: 'rotate(8deg)',
                                     boxShadow: '2px 2px 0 #0F172A',
