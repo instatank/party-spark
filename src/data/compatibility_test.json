@@ -280,138 +280,93 @@
   "couples": {
     "round1": [
       {
-        "text": "What side of the bed does {name} prefer?",
+        "text": "What does {name} reach for first when they're stressed?",
         "options": [
-          "Left side",
-          "Right side",
-          "The entire bed",
-          "Wherever you're not"
+          "Food",
+          "Their phone",
+          "You",
+          "A long shower"
         ]
       },
       {
-        "text": "What does {name} do when they want your attention?",
+        "text": "What's {name}'s most annoying habit you've quietly accepted?",
         "options": [
-          "Get physically clingy",
-          "Start talking non-stop",
-          "Stare dramatically",
-          "Send memes from 2 feet away"
+          "Leaving things half-finished",
+          "Being on their phone too much",
+          "Repeating the same stories",
+          "Running late by exactly 10 minutes"
         ]
       },
       {
-        "text": "What's {name}'s ideal date night?",
+        "text": "How does {name} react when you suggest a last-minute plan?",
         "options": [
-          "Fancy dinner out",
-          "Couch + takeout + movie",
-          "An activity like bowling or cooking",
-          "A surprise — they love spontaneity"
+          "Instantly in",
+          "Asks 12 questions first",
+          "Pretends to be in but secretly resents it",
+          "Hard no, suggests staying in"
         ]
       },
       {
-        "text": "How does {name} show love without saying it?",
+        "text": "What does {name} do when they're mad at you but won't admit it?",
         "options": [
-          "Making food or coffee",
-          "Doing chores quietly",
-          "Physical touch",
-          "Remembering small details"
+          "Goes very quiet",
+          "Becomes weirdly polite",
+          "Picks a fight about something else",
+          "You can tell from across the room"
         ]
       },
       {
-        "text": "What's {name}'s most annoying relationship habit?",
+        "text": "What's {name}'s comfort meal on a bad day?",
         "options": [
-          "Leaving dishes in the sink",
-          "Being on their phone during movies",
-          "Stealing the blanket",
-          "Saying 'I don't mind, you pick'"
+          "Whatever you'll cook them",
+          "Takeout from the same place",
+          "Something from their childhood",
+          "They forget to eat"
         ]
       },
       {
-        "text": "What does {name} look like when they're hangry?",
+        "text": "How does {name} behave at a wedding?",
         "options": [
-          "Short, snappy answers",
-          "Complete silence",
-          "Dramatic sighing",
-          "Declaring they'll never eat again"
+          "Last on the dance floor",
+          "Charming everyone they meet",
+          "Quietly glued to your side",
+          "Eyeing the exit by 10pm"
         ]
       },
       {
-        "text": "What would {name} want for breakfast in bed?",
+        "text": "What's {name}'s phone screen time, honestly?",
         "options": [
-          "Pancakes and fruit",
-          "Eggs and toast",
-          "Just coffee, don't talk to me",
-          "They'd rather make it themselves"
+          "Under 3 hours — they're disciplined",
+          "3 to 5 hours — average",
+          "5 to 8 hours — heavy",
+          "They've turned off the tracker"
         ]
       },
       {
-        "text": "How does {name} react to a spider in the house?",
+        "text": "How does {name} order at a restaurant?",
         "options": [
-          "Scream and call you",
-          "Calmly catch it",
-          "Burn the house down",
-          "Ignore it and hope it leaves"
+          "Already decided before sitting down",
+          "Asks the waiter for a recommendation",
+          "Reads every dish and still picks last",
+          "Copies what you're getting"
         ]
       },
       {
-        "text": "What does {name} hog most?",
+        "text": "What does {name} do on a Sunday morning when nothing is scheduled?",
         "options": [
-          "The bathroom",
-          "The TV remote",
-          "The blanket",
-          "Conversation at dinner"
+          "Stays in bed as long as humanly possible",
+          "Up early, makes a whole production of breakfast",
+          "Errands and admin — being productive",
+          "Disappears to do their own thing"
         ]
       },
       {
-        "text": "What's {name}'s texting style when you're apart?",
+        "text": "What's {name}'s tell that they're tired and need to leave?",
         "options": [
-          "Constant updates",
-          "Memes and TikToks only",
-          "One word replies",
-          "Voice notes"
-        ]
-      },
-      {
-        "text": "Which household 'crime' is {name} most guilty of?",
-        "options": [
-          "Leaving 'half-drunk' beverages in various rooms",
-          "The 'floordrobe'—clothes that are neither clean nor dirty",
-          "Starting the dishwasher but never actually emptying it",
-          "Hoarding cardboard boxes or 'useful' clutter"
-        ]
-      },
-      {
-        "text": "What is {name}'s ideal 'lazy' date night?",
-        "options": [
-          "Ordering the exact same takeout as last time and a movie",
-          "Parallel play: both on phones/laptops but touching feet",
-          "A long drive with a specific playlist and no destination",
-          "Deep-diving into a niche YouTube documentary together"
-        ]
-      },
-      {
-        "text": "How does {name} usually announce they are hungry?",
-        "options": [
-          "A subtle, polite 'What are you thinking for dinner?'",
-          "Getting increasingly cranky (hangry) until you notice",
-          "The 'I'll eat anything' lie (they will reject the first 3 options)",
-          "Sending a link to a menu or a food photo with no context"
-        ]
-      },
-      {
-        "text": "What is {name}'s 'social battery' limit when you're out together?",
-        "options": [
-          "The 'Early Bird': Ready to go as soon as the main event ends",
-          "The 'Vibe Checker': Stays as long as the music/energy is good",
-          "The 'Marathoner': Always the last to leave",
-          "The 'Look': They give you a specific facial expression that means 'leave now'"
-        ]
-      },
-      {
-        "text": "What is {name}'s most specific domestic quirk?",
-        "options": [
-          "A very particular way the bed must be made",
-          "An irrational hatred of a specific chore (e.g., the bins)",
-          "Needing to 'decompress' in total silence for 20 minutes after work",
-          "A bizarrely organized ritual for their morning routine"
+          "Goes quiet",
+          "Starts checking their phone",
+          "Gives you a specific look",
+          "Just says it directly"
         ]
       }
     ],
@@ -419,136 +374,91 @@
       {
         "text": "What does {name} need most after a hard day?",
         "options": [
-          "Space and quiet",
-          "A long hug",
-          "To vent without advice",
+          "Space and silence",
+          "A long hug, no talking",
+          "To vent without you fixing anything",
           "Distraction — make them laugh"
         ]
       },
       {
-        "text": "What's {name}'s love language?",
+        "text": "What's {name}'s love language in practice?",
         "options": [
-          "Words of affirmation",
-          "Physical touch",
-          "Quality time",
-          "Acts of service"
+          "Words",
+          "Touch",
+          "Time",
+          "Doing things for you"
         ]
       },
       {
-        "text": "What would {name} sacrifice last?",
+        "text": "What does {name} value most about your relationship?",
         "options": [
-          "Career ambition",
-          "Time with family",
-          "Personal freedom",
-          "Financial security"
+          "Feeling fully understood",
+          "Feeling safe to be themselves",
+          "How much fun you have together",
+          "Knowing you're on the same team"
         ]
       },
       {
-        "text": "Where does {name} see you both in 5 years?",
-        "options": [
-          "Travelling together",
-          "Settled with a home",
-          "Building something big",
-          "Same vibes, deeper bond"
-        ]
-      },
-      {
-        "text": "What topic does {name} avoid talking about?",
-        "options": [
-          "Money",
-          "Past relationships",
-          "The distant future",
-          "Family dynamics"
-        ]
-      },
-      {
-        "text": "What does {name} think makes a relationship last?",
+        "text": "What does {name} think makes a relationship actually last?",
         "options": [
           "Trust above everything",
-          "Keeping things fun",
-          "Growing individually together",
+          "Keeping things light and fun",
+          "Growing in the same direction",
           "Fighting fair, not avoiding fights"
         ]
       },
       {
-        "text": "What's {name}'s way of apologising after a fight?",
+        "text": "What topic does {name} avoid talking about with you?",
         "options": [
-          "Saying sorry directly",
-          "Acting extra nice without words",
-          "Buying food or gifts",
-          "Cracking a joke to break the ice"
+          "Money",
+          "Past relationships",
+          "The distant future",
+          "Their family"
+        ]
+      },
+      {
+        "text": "How does {name} actually apologise after a fight?",
+        "options": [
+          "Says it directly",
+          "Acts extra nice without saying the words",
+          "Buys food or a small gift",
+          "Cracks a joke to break the tension"
         ]
       },
       {
         "text": "What's the one thing {name} wishes you did more of?",
         "options": [
-          "Compliment them",
-          "Plan surprises",
-          "Listen more carefully",
-          "Put the phone down"
+          "Initiated plans",
+          "Touched them randomly during the day",
+          "Asked how they were and meant it",
+          "Surprised them"
         ]
       },
       {
-        "text": "How does {name} handle jealousy?",
+        "text": "Where does {name} actually see you both in five years?",
         "options": [
-          "Talks about it openly",
-          "Gets quietly distant",
-          "Makes passive-aggressive jokes",
-          "Pretends it doesn't exist"
+          "Settled, with a home",
+          "Travelling, less rooted",
+          "Building something together",
+          "Same vibes, deeper bond"
         ]
       },
       {
-        "text": "What would upset {name} most in a relationship?",
+        "text": "What's {name}'s biggest pet peeve about how you communicate?",
         "options": [
-          "Being lied to",
-          "Being taken for granted",
-          "Not being prioritised",
-          "Having no personal space"
+          "You go quiet when you're upset",
+          "You over-explain things",
+          "You bring it up later instead of in the moment",
+          "You ask 'are you okay' too much"
         ]
       },
       {
-        "text": "Which 'Love Language' does {name} actually value most in a partner?",
+        "text": "What does {name} think is the biggest difference between you two?",
         "options": [
-          "Acts of Service: Doing the thing they didn't want to do",
-          "Words of Affirmation: Specific, unprompted compliments",
-          "Quality Time: Phones away, focused attention",
-          "Physical Touch: Constant, low-key physical proximity"
-        ]
-      },
-      {
-        "text": "How does {name} handle a heated argument?",
-        "options": [
-          "The Lawyer: Debating points with logic and facts",
-          "The Exploder: Everything comes out at once, then they're fine",
-          "The Turtle: Needs to retreat and process before speaking",
-          "The Peacemaker: Tries to fix it or apologize immediately to end the tension"
-        ]
-      },
-      {
-        "text": "What is {name}'s biggest 'green flag' in a relationship?",
-        "options": [
-          "Being able to sit in comfortable silence together",
-          "Matching their level of ambition and drive",
-          "Emotional intelligence and self-awareness",
-          "A sense of humor that perfectly mirrors their own"
-        ]
-      },
-      {
-        "text": "What does {name} find most difficult to share with you?",
-        "options": [
-          "When they are feeling inadequate or 'not enough'",
-          "Specific financial worries or stress",
-          "When they are annoyed by something small you did",
-          "Their wildest, most 'unrealistic' future dreams"
-        ]
-      },
-      {
-        "text": "If you both had a completely free day, what would {name} want to prioritize?",
-        "options": [
-          "Productivity: Ticking off life goals or errands together",
-          "Rest: Deep recovery and zero responsibilities",
-          "Adventure: Going somewhere new or doing an activity",
-          "Connection: Focused time to talk and reconnect"
+          "How you handle stress",
+          "How social you are",
+          "How you spend money",
+          "How much you need to talk things through"
         ]
       }
     ],
@@ -558,17 +468,17 @@
         "options": [
           "Not being enough",
           "Things getting boring",
-          "Growing apart",
-          "Losing independence"
+          "Growing apart slowly",
+          "Losing their independence"
         ]
       },
       {
         "text": "What's the hardest thing for {name} to say to you?",
         "options": [
-          "'I need help'",
-          "'You hurt me'",
-          "'I'm scared'",
-          "'I was wrong'"
+          "I need help",
+          "You hurt me",
+          "I'm scared",
+          "I was wrong"
         ]
       },
       {
@@ -581,36 +491,27 @@
         ]
       },
       {
-        "text": "What's {name}'s biggest relationship fear?",
-        "options": [
-          "Repeating past mistakes",
-          "Losing themselves",
-          "Being truly seen",
-          "Loving more than being loved"
-        ]
-      },
-      {
-        "text": "What would {name} change about how you argue?",
+        "text": "What would {name} change about how you fight?",
         "options": [
           "Less silent treatment",
-          "Less shouting",
+          "Less escalation",
           "More listening",
-          "Resolve faster, don't let it simmer"
+          "Resolve faster, don't let it sit"
         ]
       },
       {
         "text": "What makes {name} feel most loved by you?",
         "options": [
-          "When you remember the little things",
-          "When you defend them publicly",
+          "When you remember the small things",
+          "When you defend them in front of others",
           "When you choose them over other plans",
-          "When you just sit with them in silence"
+          "When you sit with them in silence"
         ]
       },
       {
-        "text": "What has {name} learned about themselves from being with you?",
+        "text": "What has being with you taught {name} about themselves?",
         "options": [
-          "That they can trust someone",
+          "That they can trust someone fully",
           "That they're more patient than they thought",
           "That vulnerability isn't weakness",
           "That they deserve to be loved well"
@@ -622,70 +523,34 @@
           "An inside joke that always lands",
           "The first real 'I love you'",
           "A time you showed up when it mattered",
-          "A trip or adventure together"
+          "A trip you took together"
         ]
       },
       {
-        "text": "If {name} could relive one day with you, what kind of day?",
+        "text": "What does {name} need to hear from you that they haven't asked for?",
         "options": [
-          "A spontaneous adventure",
-          "A quiet day at home",
-          "A milestone celebration",
-          "An ordinary day that just felt perfect"
+          "I'm proud of you",
+          "I'm not going anywhere",
+          "You don't have to be strong all the time",
+          "I see how hard you're trying"
         ]
       },
       {
-        "text": "What does {name} need to hear from you right now but hasn't asked for?",
+        "text": "What does {name} hope is true about you that they're not sure of?",
         "options": [
-          "'I'm proud of you'",
-          "'I'm not going anywhere'",
-          "'You don't have to be strong all the time'",
-          "'I see how hard you're trying'"
+          "That you'd choose them again",
+          "That you find them as attractive as day one",
+          "That you don't secretly resent something they did",
+          "That you'd stay through the hard version of life"
         ]
       },
       {
-        "text": "What is {name}'s deepest 'relationship fear'?",
+        "text": "What's {name}'s deepest fear about your future together?",
         "options": [
-          "Becoming 'boring' or stagnant as a couple",
-          "Losing their individual identity within the partnership",
-          "Waking up one day and realizing the spark is gone",
-          "Being a burden to you during hard times"
-        ]
-      },
-      {
-        "text": "What is something {name} often needs from you but struggles to voice?",
-        "options": [
-          "To be told they are attractive/desired without asking",
-          "To be given more 'mental load' support without prompting",
-          "To be checked in on when they seem 'fine'",
-          "To have their boundaries respected without having to defend them"
-        ]
-      },
-      {
-        "text": "How has {name}'s view of love changed since being with you?",
-        "options": [
-          "It feels more like a choice/commitment than just a feeling",
-          "They feel safer to be 'messy' and imperfect",
-          "They've realized they don't have to do everything alone",
-          "They've learned that conflict doesn't always lead to ending"
-        ]
-      },
-      {
-        "text": "What part of {name}'s personality do they feel you 'get' better than anyone else?",
-        "options": [
-          "Their weird sense of humor that others find confusing",
-          "Their underlying anxiety that they mask with confidence",
-          "Their deep-seated need for independence",
-          "The way they show love through small, invisible actions"
-        ]
-      },
-      {
-        "text": "If {name} could change one 'dynamic' in the relationship, what would it be?",
-        "options": [
-          "Better communication during high-stress moments",
-          "More spontaneous 'fun' and less routine",
-          "Finding a better balance of household/life responsibilities",
-          "Deepening the emotional intimacy even further"
+          "Drifting apart without noticing",
+          "One of you wanting different things",
+          "Losing the spark for good",
+          "Being together but lonely"
         ]
       }
     ]
