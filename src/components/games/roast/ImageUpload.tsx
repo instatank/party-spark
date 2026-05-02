@@ -1,24 +1,39 @@
-
 import React, { useCallback, useRef, useState } from 'react';
+import { Camera as CameraIcon, Image as PhotoIcon, Sparkles, Home } from 'lucide-react';
+import type { RoastTheme } from '../../../services/geminiService';
 
 interface ImageUploadProps {
+    theme: RoastTheme;
+    onThemeChange: (t: RoastTheme) => void;
     onImageSelected: (base64: string) => void;
+    onClose: () => void;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelected }) => {
+// Theme catalog mirrors roast-shared.jsx → ROAST_THEMES (key, label, emoji,
+// color). The color is the active-tile fill in the picker grid; rotations
+// are inline because they're per-index data, not utility classes.
+type ThemeMeta = { key: RoastTheme; label: string; emoji: string; color: string };
+const THEMES: ThemeMeta[] = [
+    { key: 'animate', label: 'ANIMATE',    emoji: '🎨', color: '#E15B82' },
+    { key: 'tabloid', label: 'TABLOID',    emoji: '📰', color: '#0F1E33' },
+    { key: 'movie',   label: 'MOVIE',      emoji: '🎬', color: '#D83A3A' },
+    { key: 'disco',   label: '80s DISCO',  emoji: '🕺', color: '#9266D2' },
+    { key: 'agra',    label: 'AGRA ROYAL', emoji: '🕌', color: '#B8922F' },
+];
+const TILE_ROTATIONS = [-2, 1.5, -1, 2, -1.5];
+
+const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImageSelected, onClose }) => {
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
     const videoRef = useRef<HTMLVideoElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                const result = reader.result as string;
-                onImageSelected(result);
-            };
+            reader.onloadend = () => onImageSelected(reader.result as string);
             reader.readAsDataURL(file);
         }
     }, [onImageSelected]);
@@ -26,68 +41,61 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelected }) => {
     const startCamera = async (mode: 'user' | 'environment' = 'user') => {
         try {
             if (streamRef.current) {
-                streamRef.current.getTracks().forEach(track => track.stop());
+                streamRef.current.getTracks().forEach(t => t.stop());
             }
-
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: mode } });
             streamRef.current = stream;
             setFacingMode(mode);
             setIsCameraOpen(true);
-            
-            // Wait for state update then attach stream
             setTimeout(() => {
-                if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
-                }
+                if (videoRef.current) videoRef.current.srcObject = stream;
             }, 100);
         } catch (err) {
-            console.error("Error accessing camera:", err);
-            alert("Could not access camera. Please allow permissions.");
+            console.error('Error accessing camera:', err);
+            alert('Could not access camera. Please allow permissions.');
         }
     };
 
-    const switchCamera = () => {
-        startCamera(facingMode === 'user' ? 'environment' : 'user');
-    };
+    const switchCamera = () => startCamera(facingMode === 'user' ? 'environment' : 'user');
 
     const stopCamera = () => {
         if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current.getTracks().forEach(t => t.stop());
             streamRef.current = null;
         }
         setIsCameraOpen(false);
     };
 
     const capturePhoto = () => {
-        if (videoRef.current) {
-            const canvas = document.createElement('canvas');
-            canvas.width = videoRef.current.videoWidth;
-            canvas.height = videoRef.current.videoHeight;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                // Mirror the canvas context if it's the front camera so the resulting saved
-                // photo matches what the user saw on their screen.
-                if (facingMode === 'user') {
-                    ctx.translate(canvas.width, 0);
-                    ctx.scale(-1, 1);
-                }
-                ctx.drawImage(videoRef.current, 0, 0);
-                const dataUrl = canvas.toDataURL('image/jpeg');
-                stopCamera();
-                onImageSelected(dataUrl);
-            }
+        if (!videoRef.current) return;
+        const canvas = document.createElement('canvas');
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        // Mirror the front-camera capture so the saved photo matches what the
+        // user saw on screen.
+        if (facingMode === 'user') {
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
         }
+        ctx.drawImage(videoRef.current, 0, 0);
+        const dataUrl = canvas.toDataURL('image/jpeg');
+        stopCamera();
+        onImageSelected(dataUrl);
     };
 
-    return (
-        <div className="w-full max-w-md mx-auto">
-            {isCameraOpen ? (
-                <div className="relative rounded-xl overflow-hidden border-2 border-yellow-500 bg-black shadow-2xl">
-                    <div className="absolute top-4 right-4 z-10 flex gap-2">
+    // Camera-capture overlay — preserved from previous implementation, just
+    // restyled to match the new design language.
+    if (isCameraOpen) {
+        return (
+            <div className="w-full min-h-[600px] flex items-center justify-center bg-app px-4 py-6">
+                <div className="relative w-full max-w-md rounded-2xl overflow-hidden bg-black border-2 border-ink shadow-[5px_5px_0_var(--c-ink)]">
+                    <div className="absolute top-3 right-3 z-10 flex gap-2">
                         <button
                             onClick={switchCamera}
-                            className="bg-black/60 text-white p-2 rounded-full text-xl hover:bg-black/80 transition shadow-lg"
-                            title="Flip Camera"
+                            className="w-10 h-10 rounded-full bg-black/60 text-white text-lg flex items-center justify-center hover:bg-black/80 transition"
+                            title="Flip camera"
                         >
                             🔄
                         </button>
@@ -97,9 +105,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelected }) => {
                         autoPlay
                         playsInline
                         muted
-                        className={`w-full h-64 object-cover ${facingMode === 'user' ? 'transform scale-x-[-1]' : ''}`}
+                        className={`w-full h-72 object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
                     />
-                    <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-4">
+                    <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 px-4">
                         <button
                             onClick={stopCamera}
                             className="px-4 py-2 bg-black/60 text-white rounded-full text-sm font-semibold hover:bg-black/80 transition"
@@ -108,52 +116,154 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelected }) => {
                         </button>
                         <button
                             onClick={capturePhoto}
-                            className="px-6 py-2 bg-red-600 text-white rounded-full font-bold hover:bg-red-500 transition shadow-lg animate-pulse"
+                            className="px-6 py-2 bg-roast-red text-white rounded-full font-display tracking-wide text-base shadow-lg animate-pulse"
                         >
                             SNAP IT 📸
                         </button>
                     </div>
                 </div>
-            ) : (
-                <div className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl bg-surface-alt border-divider hover:border-yellow-500 hover:bg-surface transition-all group relative">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center p-4 w-full">
-                        <label className="cursor-pointer flex flex-col items-center justify-center">
-                            <div className="mb-4 text-muted group-hover:text-yellow-500 transition-colors">
-                                <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
-                            <p className="mb-2 text-xl font-comic text-ink-soft">
-                                <span className="text-yellow-500">Click to upload photo</span>
-                            </p>
-                            <p className="text-sm text-muted">From Photo Library</p>
-                            <input
-                                type="file"
-                                className="hidden"
-                                accept="image/png, image/jpeg, image/jpg"
-                                onChange={handleFileChange}
-                            />
-                        </label>
+            </div>
+        );
+    }
 
-                        <div className="flex items-center w-full mt-6 space-x-2">
-                            <div className="h-px bg-divider flex-1"></div>
-                            <span className="text-xs text-muted font-bold">OR</span>
-                            <div className="h-px bg-divider flex-1"></div>
-                        </div>
+    return (
+        <div className="w-full flex flex-col font-sans relative">
+            {/* Home button — top-right floating, replaces the old title band */}
+            <button
+                onClick={onClose}
+                aria-label="Home"
+                className="absolute top-4 right-4 z-20 w-[34px] h-[34px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
+            >
+                <Home size={16} />
+            </button>
 
-                        <button
-                            type="button"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                startCamera('user');
+            <div className="flex-1 flex flex-col gap-4 px-5 pt-7 pb-6 overflow-hidden">
+                {/* Hero title — ROAST/ME!! is now the page title; the gold BRUTAL
+                    tag rides on ME!!'s upper-right edge so the home icon can take
+                    the page's top-right corner without a chrome band. */}
+                <div>
+                    <h1 className="font-display text-[72px] leading-[0.85] tracking-wide text-ink m-0">
+                        ROAST
+                        <br />
+                        <span
+                            className="inline-block text-roast-red relative"
+                            style={{
+                                WebkitTextStroke: '2px var(--c-ink)',
+                                transform: 'rotate(-2deg)',
                             }}
-                            className="mt-4 px-4 py-2 bg-surface hover:bg-black/80 text-yellow-500 text-sm font-bold rounded-lg transition-colors border border-divider hover:border-yellow-500 flex items-center space-x-2"
                         >
-                            <span>📷 Open Device Camera</span>
-                        </button>
+                            ME!!
+                            <span
+                                className="absolute bg-gold text-slate-900 font-display text-[14px] tracking-[0.08em] px-2.5 py-1 rounded-md border-2 border-slate-900 whitespace-nowrap"
+                                style={{
+                                    top: '-4px',
+                                    left: 'calc(100% + 10px)',
+                                    transform: 'rotate(8deg)',
+                                    boxShadow: '2px 2px 0 #0F172A',
+                                    WebkitTextStroke: '0',
+                                }}
+                            >
+                                BRUTAL!
+                            </span>
+                        </span>
+                    </h1>
+                    <p className="mt-2 text-xs font-medium text-ink-soft">
+                        Pick a sticker, drop a pic, get destroyed.
+                    </p>
+                </div>
+
+                {/* Theme picker — 3-col sticker tile grid */}
+                <div>
+                    <div className="text-[10px] font-extrabold tracking-[0.16em] text-muted uppercase mb-2">
+                        ★ Pick your sticker
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                        {THEMES.map((t, i) => {
+                            const active = t.key === theme;
+                            const baseRot = TILE_ROTATIONS[i];
+                            return (
+                                <button
+                                    key={t.key}
+                                    onClick={() => onThemeChange(t.key)}
+                                    className="aspect-square rounded-xl border-2 border-ink flex flex-col items-center justify-center gap-1 transition-all"
+                                    style={{
+                                        background: active ? t.color : 'var(--c-surface)',
+                                        color: active ? '#FFFFFF' : 'var(--c-ink)',
+                                        boxShadow: active ? '4px 4px 0 var(--c-ink)' : '2px 2px 0 var(--c-ink)',
+                                        transform: active ? `rotate(${baseRot}deg) scale(1.02)` : `rotate(${baseRot * 0.4}deg)`,
+                                    }}
+                                >
+                                    <span
+                                        className="text-[44px] leading-none"
+                                        style={{ filter: active ? 'drop-shadow(0 2px 0 rgba(0,0,0,0.25))' : 'none' }}
+                                    >
+                                        {t.emoji}
+                                    </span>
+                                    <span className="font-display text-[18px] tracking-[0.04em] leading-none">
+                                        {t.label}
+                                    </span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
-            )}
+
+                {/* Hero upload card — ember-filled sticker with sparkles */}
+                <div className="flex-1 min-h-0 flex flex-col justify-end">
+                    <div
+                        className="relative bg-roast-ember border-[2.5px] border-slate-900 rounded-[18px] p-[18px_18px_16px] overflow-hidden"
+                        style={{ boxShadow: '5px 5px 0 #0F172A' }}
+                    >
+                        {/* sparkle decorations */}
+                        <div className="absolute top-2 left-3" style={{ transform: 'rotate(-15deg)' }}>
+                            <Sparkles size={14} className="text-white" fill="currentColor" />
+                        </div>
+                        <div className="absolute top-[18px] right-[18px]" style={{ transform: 'rotate(20deg)' }}>
+                            <Sparkles size={10} className="text-white" fill="currentColor" />
+                        </div>
+                        <div className="absolute bottom-3 right-9">
+                            <Sparkles size={12} className="text-white" fill="currentColor" />
+                        </div>
+
+                        <div
+                            className="font-display text-[26px] tracking-wider text-white leading-[0.95] mb-0.5"
+                            style={{ textShadow: '2px 2px 0 #1A0F00' }}
+                        >
+                            DROP YOUR FACE
+                        </div>
+                        <div className="text-[11px] font-bold text-[#3A1A00] mb-3">
+                            We'll do the worst.
+                        </div>
+
+                        {/* Buttons sit on the fixed-orange ember card, so their colors
+                            are fixed-dark navy + white in BOTH modes — not theme-flipping ink. */}
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="flex-1 py-[11px] rounded-[10px] bg-slate-900 text-white text-xs font-extrabold tracking-wide border-2 border-slate-900 flex items-center justify-center gap-1.5"
+                            >
+                                <PhotoIcon size={14} />
+                                <span>UPLOAD</span>
+                            </button>
+                            <button
+                                onClick={() => startCamera('user')}
+                                className="flex-1 py-[11px] rounded-[10px] bg-white text-slate-900 text-xs font-extrabold tracking-wide border-2 border-slate-900 flex items-center justify-center gap-1.5"
+                            >
+                                <CameraIcon size={14} />
+                                <span>CAMERA</span>
+                            </button>
+                        </div>
+
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/png, image/jpeg, image/jpg"
+                            onChange={handleFileChange}
+                            className="hidden"
+                        />
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
