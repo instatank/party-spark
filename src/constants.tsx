@@ -183,9 +183,11 @@ export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
         { label: 'Chaos',      tags: ['chaos', 'absurd', 'surreal', 'weird'] },
     ],
     [GameType.NEVER_HAVE_I_EVER]: [
-        { label: 'For BBF',           tags: ['family', 'indian', 'bbf'] },
+        { label: 'Family Friendly',   tags: ['family', 'clean', 'wholesome', 'pg'] },
         { label: 'Classic Party',     tags: ['classic', 'party', 'fun'] },
+        { label: 'For BBF',           tags: ['family', 'indian', 'bbf'] },
         { label: 'Guilty Pleasures',  tags: ['guilty', 'embarrassing', 'spicy', 'saucy', 'naughty'] },
+        { label: 'No Filter',         tags: ['nofilter', 'no_filter', 'bold', 'edgy', 'spicy', 'unfiltered'] },
     ],
     [GameType.CHARADES]: [
         { label: 'Mix Movies',        tags: ['mix', 'movies', 'films', 'chaos'] },
@@ -281,9 +283,11 @@ export const MOST_LIKELY_TO_CATEGORIES = [
 
 export const NEVER_HAVE_I_EVER_CATEGORIES = [
     { id: 'custom_vibe', label: 'Create Your Vibe', description: 'Personalised statements, powered by AI.', color: 'bg-gradient-to-r from-violet-600 to-fuchsia-500', isCustom: true },
-    { id: 'bbf', label: 'For BBF', description: 'For the core family crew.', color: 'bg-purple-600' },
+    { id: 'family_friendly', label: 'Family Friendly', description: 'Wholesome & funny. PG.', color: 'bg-sky-500' },
     { id: 'classic', label: 'Classic Party', description: 'Fun, relatable scenarios.', color: 'bg-emerald-500' },
-    { id: 'guilty_pleasures', label: 'Guilty Pleasures', description: 'Slightly embarrassing stuff.', color: 'bg-pink-600' }
+    { id: 'bbf', label: 'For BBF', description: 'For the core family crew.', color: 'bg-purple-600' },
+    { id: 'guilty_pleasures', label: 'Guilty Pleasures', description: 'Slightly embarrassing stuff.', color: 'bg-pink-600' },
+    { id: 'no_filter', label: 'No Filter', description: 'Bold, edgy, no holding back.', color: 'bg-red-600' }
 ];
 
 export const IMPOSTER_CATEGORIES = [

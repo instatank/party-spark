@@ -4,7 +4,7 @@ import { ScreenHeader } from '../ui/Layout';
 import neverHaveIEverData from '../../data/never_have_i_ever.json';
 import { generateNeverHaveIEver, generateCustomNeverHaveIEver } from '../../services/geminiService';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Lock, ChevronRight, Hand, Users, Wand2, ShieldCheck } from 'lucide-react';
+import { Sparkles, Lock, ChevronRight, Hand, Users, Wand2, ShieldCheck, Flame, Smile } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 
@@ -18,15 +18,19 @@ interface GameProps {
 type Pal = { Icon: LucideIcon; solid: string; tintAlpha: number };
 const CATEGORY_DARK: Record<string, Pal> = {
     custom_vibe:      { Icon: Wand2,         solid: '#8B5CE0', tintAlpha: 0.18 },
-    bbf:              { Icon: Users,         solid: '#9333EA', tintAlpha: 0.18 },
+    family_friendly:  { Icon: Smile,         solid: '#0EA5E9', tintAlpha: 0.18 },
     classic:          { Icon: Hand,          solid: '#10B981', tintAlpha: 0.18 },
+    bbf:              { Icon: Users,         solid: '#9333EA', tintAlpha: 0.18 },
     guilty_pleasures: { Icon: Lock,          solid: '#EC4899', tintAlpha: 0.18 },
+    no_filter:        { Icon: Flame,         solid: '#DC2626', tintAlpha: 0.18 },
 };
 const CATEGORY_LIGHT: Record<string, Pal> = {
     custom_vibe:      { Icon: Wand2,         solid: '#9266D2', tintAlpha: 0.30 }, // Azure tiles.mostLikely
-    bbf:              { Icon: Users,         solid: '#7B27C9', tintAlpha: 0.26 },
+    family_friendly:  { Icon: Smile,         solid: '#0284C7', tintAlpha: 0.26 },
     classic:          { Icon: Hand,          solid: '#0E8C66', tintAlpha: 0.26 },
+    bbf:              { Icon: Users,         solid: '#7B27C9', tintAlpha: 0.26 },
     guilty_pleasures: { Icon: Lock,          solid: '#C72D7F', tintAlpha: 0.26 },
+    no_filter:        { Icon: Flame,         solid: '#B91C1C', tintAlpha: 0.26 },
 };
 const hexToRgba = (hex: string, alpha: number): string => {
     const h = hex.replace('#', '');

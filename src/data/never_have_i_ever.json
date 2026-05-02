@@ -1,4 +1,5 @@
 {
+    "family_friendly": [],
     "classic": [
         "Never have I ever ghosted someone after a first date.",
         "Never have I ever lied about my age to get into a club or movie.",
@@ -10,18 +11,6 @@
         "Never have I ever accidentally said 'I love you' and immediately regretted it.",
         "Never have I ever been thrown out of a bar or restaurant.",
         "Never have I ever created a fake social media account to stalk someone."
-    ],
-    "guilty_pleasures": [
-        "Never have I ever binge-watched an entire season of a show in one day.",
-        "Never have I ever eaten food that fell on the floor after the 5-second rule.",
-        "Never have I ever listened to a cheesy pop song on repeat for hours.",
-        "Never have I ever pretended to be on a phone call to avoid someone.",
-        "Never have I ever worn the same underwear two days in a row.",
-        "Never have I ever eaten a whole tub of ice cream by myself.",
-        "Never have I ever practiced an argument in the mirror.",
-        "Never have I ever bought something online and immediately regretted it.",
-        "Never have I ever stalked an ex's new partner on Instagram.",
-        "Never have I ever lied about seeing a critically acclaimed movie just to fit in."
     ],
     "bbf": [
         "Never have I ever used a family secret as blackmail material against a cousin.",
@@ -44,5 +33,18 @@
         "Never have I ever covered up for a cousin when they were doing something totally forbidden in their teens.",
         "Never have I ever compared my spouse to someone else's spouse in the family.",
         "Never have I ever deeply appreciated how we all show up for each other, no matter what."
-    ]
+    ],
+    "guilty_pleasures": [
+        "Never have I ever binge-watched an entire season of a show in one day.",
+        "Never have I ever eaten food that fell on the floor after the 5-second rule.",
+        "Never have I ever listened to a cheesy pop song on repeat for hours.",
+        "Never have I ever pretended to be on a phone call to avoid someone.",
+        "Never have I ever worn the same underwear two days in a row.",
+        "Never have I ever eaten a whole tub of ice cream by myself.",
+        "Never have I ever practiced an argument in the mirror.",
+        "Never have I ever bought something online and immediately regretted it.",
+        "Never have I ever stalked an ex's new partner on Instagram.",
+        "Never have I ever lied about seeing a critically acclaimed movie just to fit in."
+    ],
+    "no_filter": []
 }
