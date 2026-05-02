@@ -4,7 +4,7 @@ import { ScreenHeader } from '../ui/Layout';
 import neverHaveIEverData from '../../data/never_have_i_ever.json';
 import { generateNeverHaveIEver, generateCustomNeverHaveIEver } from '../../services/geminiService';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Lock, ChevronRight, Hand, MessageCircle, Flame, Landmark, Users, Wand2, ShieldCheck } from 'lucide-react';
+import { Sparkles, Lock, ChevronRight, Hand, Users, Wand2, ShieldCheck } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 
@@ -18,18 +18,12 @@ interface GameProps {
 type Pal = { Icon: LucideIcon; solid: string; tintAlpha: number };
 const CATEGORY_DARK: Record<string, Pal> = {
     custom_vibe:      { Icon: Wand2,         solid: '#8B5CE0', tintAlpha: 0.18 },
-    rehaan:           { Icon: MessageCircle, solid: '#06B6D4', tintAlpha: 0.18 },
-    rehaan_asks:      { Icon: Flame,         solid: '#F97316', tintAlpha: 0.18 },
-    agra:             { Icon: Landmark,      solid: '#D97706', tintAlpha: 0.18 },
     bbf:              { Icon: Users,         solid: '#9333EA', tintAlpha: 0.18 },
     classic:          { Icon: Hand,          solid: '#10B981', tintAlpha: 0.18 },
     guilty_pleasures: { Icon: Lock,          solid: '#EC4899', tintAlpha: 0.18 },
 };
 const CATEGORY_LIGHT: Record<string, Pal> = {
     custom_vibe:      { Icon: Wand2,         solid: '#9266D2', tintAlpha: 0.30 }, // Azure tiles.mostLikely
-    rehaan:           { Icon: MessageCircle, solid: '#0891B2', tintAlpha: 0.26 },
-    rehaan_asks:      { Icon: Flame,         solid: '#D9531B', tintAlpha: 0.26 },
-    agra:             { Icon: Landmark,      solid: '#A35804', tintAlpha: 0.26 },
     bbf:              { Icon: Users,         solid: '#7B27C9', tintAlpha: 0.26 },
     classic:          { Icon: Hand,          solid: '#0E8C66', tintAlpha: 0.26 },
     guilty_pleasures: { Icon: Lock,          solid: '#C72D7F', tintAlpha: 0.26 },

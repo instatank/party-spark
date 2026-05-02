@@ -28,6 +28,14 @@ export const GAMES: GameMeta[] = [
         minPlayers: 4
     },
     {
+        id: GameType.NEVER_HAVE_I_EVER,
+        title: "Never Have I Ever",
+        description: "Stand up if you've done it!",
+        icon: "hand",
+        color: "bg-cyan-600",
+        minPlayers: 3
+    },
+    {
         id: GameType.FACT_OR_FICTION,
         title: "Fact or Fiction",
         description: "Beat the clock identifying true facts!",
@@ -58,14 +66,6 @@ export const GAMES: GameMeta[] = [
         icon: "spy",
         color: "bg-slate-800",
         minPlayers: 5
-    },
-    {
-        id: GameType.NEVER_HAVE_I_EVER,
-        title: "Never Have I Ever",
-        description: "Stand up if you've done it!",
-        icon: "hand",
-        color: "bg-cyan-600",
-        minPlayers: 3
     },
     {
         id: GameType.WOULD_YOU_RATHER,
@@ -183,9 +183,6 @@ export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
         { label: 'Chaos',      tags: ['chaos', 'absurd', 'surreal', 'weird'] },
     ],
     [GameType.NEVER_HAVE_I_EVER]: [
-        { label: 'Rehaan Answers',    tags: ['rehaan', 'family', 'indian'] },
-        { label: 'Rehaan Asks',       tags: ['rehaan', 'family', 'indian'] },
-        { label: 'Agra Confessions',  tags: ['agra', 'mughal', 'history', 'indian'] },
         { label: 'For BBF',           tags: ['family', 'indian', 'bbf'] },
         { label: 'Classic Party',     tags: ['classic', 'party', 'fun'] },
         { label: 'Guilty Pleasures',  tags: ['guilty', 'embarrassing', 'spicy', 'saucy', 'naughty'] },
@@ -284,9 +281,6 @@ export const MOST_LIKELY_TO_CATEGORIES = [
 
 export const NEVER_HAVE_I_EVER_CATEGORIES = [
     { id: 'custom_vibe', label: 'Create Your Vibe', description: 'Personalised statements, powered by AI.', color: 'bg-gradient-to-r from-violet-600 to-fuchsia-500', isCustom: true },
-    { id: 'rehaan', label: 'Rehaan Answers', description: 'Rehaan in the hot seat.', color: 'bg-cyan-600' },
-    { id: 'rehaan_asks', label: 'Rehaan Asks', description: 'Rehaan grills the adults.', color: 'bg-orange-500' },
-    { id: 'agra', label: 'Agra Confessions', description: 'Mughal secrets & Agra history.', color: 'bg-amber-600' },
     { id: 'bbf', label: 'For BBF', description: 'For the core family crew.', color: 'bg-purple-600' },
     { id: 'classic', label: 'Classic Party', description: 'Fun, relatable scenarios.', color: 'bg-emerald-500' },
     { id: 'guilty_pleasures', label: 'Guilty Pleasures', description: 'Slightly embarrassing stuff.', color: 'bg-pink-600' }
