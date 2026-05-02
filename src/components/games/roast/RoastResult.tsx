@@ -28,7 +28,7 @@ const REFINE_CHIPS: { label: string; prompt: string }[] = [
     { label: 'ANIME',        prompt: 'Re-render in vibrant anime style — large expressive eyes, cel-shaded color, dynamic background — keep facial identity intact.' },
     { label: '80S',          prompt: 'Re-render the person in over-the-top 1980s style — neon, big hair, bold makeup, synthwave background — keep facial identity intact.' },
     { label: 'NOIR',         prompt: 'Re-render in black-and-white film noir — dramatic shadows, smoky lighting, fedora-and-trenchcoat aesthetic — keep facial identity intact.' },
-    { label: 'RENAISSANCE',  prompt: 'Re-render as a Renaissance oil painting — chiaroscuro lighting, formal pose, period-appropriate clothing — keep facial identity intact.' },
+    { label: 'CLASSIC',      prompt: 'Re-render as a Renaissance oil painting — chiaroscuro lighting, formal pose, period-appropriate clothing — keep facial identity intact.' },
 ];
 
 const formatRoastedDate = (): string => {
@@ -126,9 +126,9 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
             <button
                 onClick={onClose}
                 aria-label="Home"
-                className="absolute top-4 right-4 z-20 w-[34px] h-[34px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
+                className="absolute top-4 right-4 z-20 w-[50px] h-[50px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
             >
-                <Home size={16} />
+                <Home size={24} />
             </button>
 
             <div className="flex-1 flex flex-col gap-3 px-4 pt-14 pb-4 overflow-hidden">
@@ -171,7 +171,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                             {isClamped && (
                                 <button
                                     onClick={() => setSheetOpen(true)}
-                                    className="block mx-auto mt-2 bg-roast-ember text-slate-900 px-3 py-1 rounded-full border-2 border-slate-900 font-display text-xs tracking-wider"
+                                    className="block mx-auto mt-2 bg-roast-ember text-slate-900 px-4 py-1.5 rounded-full border-2 border-slate-900 font-display text-[15px] tracking-[0.06em] font-bold"
                                     style={{ boxShadow: '2px 2px 0 #0F172A' }}
                                 >
                                     ▾ READ FULL ROAST
@@ -180,12 +180,13 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                         </div>
                     </div>
 
-                    {/* Polaroid caption strip — fixed dark text on the cream/white surface */}
-                    <div className="flex items-center justify-between px-1 py-2.5">
-                        <span className="italic text-sm text-[#1F1F1F]" style={{ fontFamily: "'Brush Script MT', cursive" }}>
+                    {/* Polaroid caption strip — sub-text size so the photo above
+                        gets more vertical real estate. */}
+                    <div className="flex items-center justify-between px-1 py-1.5">
+                        <span className="italic text-[10px] text-[#1F1F1F]" style={{ fontFamily: "'Brush Script MT', cursive" }}>
                             — roasted, {formatRoastedDate()}
                         </span>
-                        <span className="font-display text-[11px] tracking-[0.08em] text-[#3A3A3A]">
+                        <span className="font-display text-[9px] tracking-[0.08em] text-[#3A3A3A]">
                             GEMINI 3 PRO
                         </span>
                     </div>
@@ -226,7 +227,11 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                         </div>
                         <span className="text-[10px] font-semibold text-muted">or pick a chip</span>
                     </div>
-                    <div className="flex flex-wrap gap-1.5 mb-3">
+                    {/* All 5 chips fit in one row via flex-1 equal share + tight
+                        padding. RENAISSANCE was renamed to CLASSIC to fit the
+                        budget; the prompt below still drives the oil-painting
+                        style so output is unchanged. */}
+                    <div className="flex gap-1 mb-3">
                         {REFINE_CHIPS.map(c => {
                             const active = activeChip === c.label;
                             return (
@@ -234,7 +239,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                                     key={c.label}
                                     onClick={() => handleChipClick(c.label, c.prompt)}
                                     disabled={isEditing}
-                                    className={`font-display text-xs tracking-[0.04em] px-3 py-1.5 rounded-full border transition-colors disabled:opacity-50
+                                    className={`flex-1 font-display text-[10px] tracking-[0.04em] px-2 py-1.5 rounded-full border transition-colors disabled:opacity-50
                                         ${active
                                             ? 'bg-gold text-slate-900 border-gold'
                                             : 'bg-surface-alt text-ink-soft border-divider hover:border-ink-soft'}`}
