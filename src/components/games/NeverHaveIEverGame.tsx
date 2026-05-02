@@ -119,9 +119,8 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
         setGameState('LOADING');
 
         try {
-            const groupLabel = GROUP_TYPES.find(g => g.id === selectedGroupType)?.label || 'Friends';
-            const toneLabel = selectedTone ? TONE_OPTIONS.find(t => t.id === selectedTone)?.hint || '' : '';
-            const generated = await generateCustomNeverHaveIEver(groupLabel, customContext.trim(), 15, toneLabel);
+            // Pass IDs — server-side advanced prompt expands them.
+            const generated = await generateCustomNeverHaveIEver(selectedGroupType, customContext.trim(), 15, selectedTone || '');
 
             if (generated.length > 0) {
                 setCards(generated);
@@ -148,9 +147,8 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
         try {
             let newCards: string[] = [];
             if (category === 'custom_vibe') {
-                const groupLabel = GROUP_TYPES.find(g => g.id === selectedGroupType)?.label || 'Friends';
-                const toneLabel = selectedTone ? TONE_OPTIONS.find(t => t.id === selectedTone)?.hint || '' : '';
-                newCards = await generateCustomNeverHaveIEver(groupLabel, customContext.trim(), 10, toneLabel);
+                // Mid-game refill — same ID-based call shape as startCustomGame.
+                newCards = await generateCustomNeverHaveIEver(selectedGroupType, customContext.trim(), 10, selectedTone || '');
             } else {
                 newCards = await generateNeverHaveIEver(category, 5);
             }

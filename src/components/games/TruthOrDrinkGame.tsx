@@ -284,14 +284,14 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setGameState('LOADING');
 
         try {
-            const groupLabel = GROUP_TYPES.find(g => g.id === customGroupType)?.label || 'Friends';
-            const toneHint = customTone ? TONE_OPTIONS.find(t => t.id === customTone)?.hint || '' : '';
+            // Pass IDs (e.g. 'friends', 'spicy') — the server-side advanced
+            // prompt expands them via GROUP_TYPE_GUIDANCE / TONE_DEFINITIONS.
             const cards = await generateCustomTruthOrDrink(
-                groupLabel,
+                customGroupType,
                 customContext.trim(),
                 trimmedPlayers,
                 CUSTOM_DECK_SIZE,
-                toneHint
+                customTone || ''
             );
 
             if (cards.length === 0) {

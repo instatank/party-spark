@@ -160,6 +160,33 @@ In `api/_lib/handlers-custom.ts`:
 - **Vercel plan limits:** Hobby tier has 10s max duration per serverless function. Image generation via `edit_image` can take 15-30s and may time out on Hobby. If that happens, either upgrade to Pro (60s) or convert that one route to an Edge Function.
 - **Cold starts:** first request after 15+ minutes of idle has ~300-500ms SDK-init overhead. Warm requests are fast.
 
+### ⚠️ Critical landmines — discovered the hard way
+
+These three rules apply to anything under `api/`. Breaking any of them gives `FUNCTION_INVOCATION_FAILED 500` with no useful client-side info, and the actual error only shows up in Vercel function logs (or in a hand-rolled diagnostic endpoint that wraps the failure in a try/catch).
+
+1. **Relative imports in `api/` MUST end in `.js`** — even though they're `.ts` source files. Node's ESM resolver (which Vercel uses because `package.json` has `"type": "module"`) will not auto-resolve extensionless paths. TypeScript and `tsx` happily resolve them locally, which is why this slips through every local check.
+   ```ts
+   // ❌ Looks fine, fails on Vercel cold start
+   import { getClaude } from './_lib/clients';
+
+   // ✅ Use this everywhere in api/
+   import { getClaude } from './_lib/clients.js';
+   ```
+
+2. **Never statically import `@google/genai` at the top of any `api/` file** — its CJS/ESM interop crashes the function on cold start under Node 24/20. `clients.ts` exposes `getGemini()` as a lazy async getter that does `await import('@google/genai')` on first call. Use that. Same pattern works for `@anthropic-ai/sdk` and is used for symmetry, even though Anthropic alone happens to work statically.
+
+3. **`api/` is in the local typecheck via `tsconfig.api.json`** — referenced from the root `tsconfig.json`. So `npm run build` now catches strict-mode TS errors in `api/` files. Don't drop the reference; without it, errors there only surface on Vercel.
+
+### Custom-prompt structure
+
+`api/_lib/handlers-custom.ts` holds the Claude-first, Gemini-fallback flows for all three custom games (MLT, TOD, NHIE). Each game uses a single "advanced" prompt: a long system message with voice rules, coverage targets, hallucination guard, and a worked calibration example. Group type and tone IDs (e.g. `'friends'`, `'cheeky'`) are expanded server-side via shared `GROUP_TYPE_GUIDANCE` / `TONE_DEFINITIONS` maps.
+
+The basic / env-var-switched mode was simplified out once advanced was validated (commit `893989f` if you ever want it back). The Anthropic SDK's `messages.create()` does NOT accept `output_config` (that's only on `messages.parse()`), so structured output is enforced via prompt instruction + a lenient three-tier JSON parser in `parseClaudeJson()` that handles bare JSON, ```json fences, and prose-wrapped arrays.
+
+### Diagnostics
+
+`/api/health` returns `{ ok, claude, gemini, node }` based purely on env-var presence. Useful for confirming a deploy is healthy without burning provider quota. The 6 deeper diagnostic endpoints used to debug the cold-start saga were removed in commit `<this commit>` — see git history if needed.
+
 ## 🚀 Build & Deployment Pipeline
 
 **We use Vercel's GitHub integration.** Each git push to a branch triggers a Vercel preview build. Merges to `main` trigger the production deploy.

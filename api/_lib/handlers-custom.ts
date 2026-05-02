@@ -5,28 +5,14 @@
 // games (MLT / TOD / NHIE). Falls back to Gemini if Claude isn't configured
 // or returns empty.
 //
-// =============================================================================
-// PROMPT MODES — advanced vs basic, switchable per game via env vars
-// =============================================================================
+// Each game uses a single "advanced" prompt:
+//   - long system prompt with voice rules, coverage targets, hallucination
+//     guard, and a worked calibration example
+//   - group type + tone expanded server-side via the shared maps below
 //
-// Each game has TWO prompt versions maintained side-by-side so you can A/B
-// test or roll back without code changes:
-//
-//   "advanced"  — long system prompt with voice rules, coverage targets,
-//                  hallucination guard, and a worked calibration example.
-//                  Group type and tone get expanded server-side via
-//                  GROUP_TYPE_GUIDANCE / TONE_DEFINITIONS maps.
-//
-//   "basic"     — short system message + bulleted user-message rules.
-//                  Group type and tone passed through to the prompt verbatim.
-//                  Lower token cost and fewer moving parts.
-//
-// Switching is per-game via env vars set in Vercel:
-//   MLT_PROMPT_MODE   = 'advanced' | 'basic'    (default: 'advanced')
-//   TOD_PROMPT_MODE   = 'advanced' | 'basic'    (default: 'basic')
-//   NHIE_PROMPT_MODE  = 'advanced' | 'basic'    (default: 'basic')
-//
-// To flip a game, set the env var on Vercel and redeploy. No code changes.
+// The earlier "basic" / env-var-switchable mode was simplified out once
+// advanced prompts were validated. If a basic version is ever wanted back,
+// pull from git history (commit 893989f and earlier).
 //
 // NOTE: avoid static top-level imports of @google/genai or @anthropic-ai/sdk.
 // They crash the Vercel function on cold start. clients.ts handles the SDKs
@@ -70,33 +56,12 @@ const parseClaudeJson = (message: Anthropic.Message): string[] => {
 };
 
 // =============================================================================
-// Mode switching
-// =============================================================================
-
-type PromptMode = 'advanced' | 'basic';
-
-// Defaults reflect the current operationally-tested setup. Override at deploy
-// time via Vercel env vars (MLT_PROMPT_MODE, TOD_PROMPT_MODE, NHIE_PROMPT_MODE).
-const DEFAULT_MODES: Record<'mlt' | 'tod' | 'nhie', PromptMode> = {
-    mlt: 'advanced',
-    tod: 'basic',
-    nhie: 'basic',
-};
-
-const getPromptMode = (game: 'mlt' | 'tod' | 'nhie'): PromptMode => {
-    const envKey = `${game.toUpperCase()}_PROMPT_MODE`;
-    const v = process.env[envKey];
-    if (v === 'advanced' || v === 'basic') return v;
-    return DEFAULT_MODES[game];
-};
-
-// =============================================================================
-// Shared prompt vocabulary (advanced mode only)
+// Shared prompt vocabulary
 //
-// Maps group/tone IDs to richer prompt-side instructions. If the client sends
-// a value that's not in these maps (e.g. a human label like "🍻 Friends, Your
-// crew"), we fall back to using the raw string. So both ID-based and label-
-// based clients work — the advanced expansion just kicks in when IDs match.
+// Maps group/tone IDs to richer prompt-side instructions. Clients all send
+// canonical IDs (e.g. 'friends', 'cheeky'); these maps expand them for the
+// model. If a value isn't in a map, we pass the raw string through so older
+// clients sending labels still work.
 // =============================================================================
 
 const GROUP_TYPE_GUIDANCE: Record<string, string> = {
@@ -115,8 +80,6 @@ const TONE_DEFINITIONS: Record<string, string> = {
 
 const DEFAULT_TONE = 'cheeky';
 
-// Resolve a group token to its rich guidance line, or fall back to passing
-// through whatever the client sent (so label-style clients still work).
 const resolveGroupGuidance = (groupType: string): string =>
     GROUP_TYPE_GUIDANCE[groupType] ?? `${groupType}.`;
 
@@ -136,8 +99,7 @@ export interface CustomMLTParams {
     tone?: string;
 }
 
-// ---- ADVANCED ----
-const MLT_SYSTEM_PROMPT_ADVANCED = `You are a party game writer for "Most Likely To" — a game where one person reads a card aloud and the group instantly points at whoever fits.
+const MLT_SYSTEM_PROMPT = `You are a party game writer for "Most Likely To" — a game where one person reads a card aloud and the group instantly points at whoever fits.
 
 The best cards land within seconds, get the group laughing or knowingly nodding, and feel like they were written by someone who knows the group. The worst cards are generic ("Who is most likely to be late?"), wordy (over 18 words), or invent details that aren't true.
 
@@ -178,7 +140,7 @@ Good output:
 
 Notice how names spread across the deck, shapes vary, every card stays tight, and nothing was invented beyond what the context gave.`;
 
-const buildMLTUserPromptAdvanced = (groupType: string, customContext: string, count: number, tone: string): string => {
+const buildMLTUserPrompt = (groupType: string, customContext: string, count: number, tone: string): string => {
     return `GROUP TYPE: ${groupType} — ${resolveGroupGuidance(groupType)}
 
 TONE: ${tone || DEFAULT_TONE}
@@ -191,34 +153,6 @@ ${customContext}
 
 Generate exactly ${count} "Most Likely To" cards for this group, following the system rules. Return as a JSON array of ${count} strings.`;
 };
-
-// ---- BASIC ----
-const MLT_SYSTEM_PROMPT_BASIC = `You are a party game writer creating "Most Likely To" questions for a specific group of people.
-
-Each question is read aloud, and the group points at whoever fits the description best.
-
-Your job: generate questions that feel personally written for THIS group — referencing their names, places, running jokes, and shared history. Mix teasing with warmth. Keep things fun rather than cruel.`;
-
-const buildMLTUserPromptBasic = (groupType: string, customContext: string, count: number, tone: string): string => {
-    const toneHint = tone
-        ? `TONE/RATING: ${tone}. Calibrate humor and subject matter accordingly.`
-        : 'Keep it PG-13 unless the context clearly implies otherwise.';
-    return `GROUP TYPE: ${groupType}
-CONTEXT FROM THE PLAYERS: "${customContext}"
-
-Generate exactly ${count} "Most Likely To" questions specifically tailored to this group.
-
-Rules:
-- Each question must start with "Who is most likely to..."
-- USE the specifics they gave you — names, places, situations, inside jokes. Weave them in naturally.
-- Avoid generic questions like "Who is most likely to be late?" unless the context twists it.
-- Mix lighthearted teasing with wholesome observations.
-- ${toneHint}
-
-Return a JSON array of exactly ${count} question strings.`;
-};
-
-// ---- ORCHESTRATION ----
 
 export const handleCustomMostLikelyTo = async (params: CustomMLTParams): Promise<string[]> => {
     const { groupType, customContext, count = 15, tone = '' } = params;
@@ -233,19 +167,12 @@ export const handleCustomMostLikelyTo = async (params: CustomMLTParams): Promise
 const generateCustomMLTClaude = async (groupType: string, customContext: string, count: number, tone: string): Promise<string[]> => {
     const claude = await getClaude();
     if (!claude) return [];
-
-    const mode = getPromptMode('mlt');
-    const system = mode === 'advanced' ? MLT_SYSTEM_PROMPT_ADVANCED : MLT_SYSTEM_PROMPT_BASIC;
-    const user = mode === 'advanced'
-        ? buildMLTUserPromptAdvanced(groupType, customContext, count, tone)
-        : buildMLTUserPromptBasic(groupType, customContext, count, tone);
-
     try {
         const message = await claude.messages.create({
             model: CLAUDE_MODEL,
             max_tokens: 4096,
-            system,
-            messages: [{ role: 'user', content: user }],
+            system: MLT_SYSTEM_PROMPT,
+            messages: [{ role: 'user', content: buildMLTUserPrompt(groupType, customContext, count, tone) }],
         });
         return parseClaudeJson(message);
     } catch (err) {
@@ -257,14 +184,7 @@ const generateCustomMLTClaude = async (groupType: string, customContext: string,
 const generateCustomMLTGemini = async (groupType: string, customContext: string, count: number, tone: string): Promise<string[]> => {
     const gemini = await getGemini();
     if (!gemini) return [];
-
-    const mode = getPromptMode('mlt');
-    const system = mode === 'advanced' ? MLT_SYSTEM_PROMPT_ADVANCED : MLT_SYSTEM_PROMPT_BASIC;
-    const user = mode === 'advanced'
-        ? buildMLTUserPromptAdvanced(groupType, customContext, count, tone)
-        : buildMLTUserPromptBasic(groupType, customContext, count, tone);
-    const prompt = `${system}\n\n---\n\n${user}`;
-
+    const prompt = `${MLT_SYSTEM_PROMPT}\n\n---\n\n${buildMLTUserPrompt(groupType, customContext, count, tone)}`;
     try {
         const response = await gemini.models.generateContent({
             model: GEMINI_MODEL,
@@ -293,8 +213,7 @@ export interface CustomTODParams {
     tone?: string;
 }
 
-// ---- ADVANCED ----
-const TOD_SYSTEM_PROMPT_ADVANCED = `You are a party game writer for "Truth or Drink" — a game where each player gets a personal question on their turn. They either answer honestly or take a sip.
+const TOD_SYSTEM_PROMPT = `You are a party game writer for "Truth or Drink" — a game where each player gets a personal question on their turn. They either answer honestly or take a sip.
 
 The best questions probe something interesting about a player. They land fast, feel personal, and reward honesty. The worst are generic ("What's your favorite color?"), too long-winded, or invent details that aren't true.
 
@@ -338,7 +257,7 @@ Good output:
 
 Notice how each names a specific player or group dynamic, every question stays under 22 words, and nothing was invented beyond what the context gave.`;
 
-const buildTODUserPromptAdvanced = (groupType: string, customContext: string, playerNames: string[], count: number, tone: string): string => {
+const buildTODUserPrompt = (groupType: string, customContext: string, playerNames: string[], count: number, tone: string): string => {
     const namesClause = playerNames.length
         ? `\nNAMED PLAYERS: ${playerNames.join(', ')}.`
         : '';
@@ -355,40 +274,6 @@ ${customContext}
 Generate exactly ${count} Truth or Drink questions for this group, following the system rules. Return as a JSON array of ${count} strings.`;
 };
 
-// ---- BASIC ----
-const TOD_SYSTEM_PROMPT_BASIC = `You are a party game writer creating "Truth or Drink" prompts for a specific group of people.
-
-In Truth or Drink, each player is handed a personal question on their turn. They either answer honestly or skip the question. Questions should be directed, personal, and probe something interesting about the player.
-
-Your job: generate questions that feel personally written for THIS group — referencing their names, shared history, inside jokes, and situations. Mix playful teasing with curious probing and deeper reveals. Keep things fun rather than cruel.`;
-
-const buildTODUserPromptBasic = (groupType: string, customContext: string, playerNames: string[], count: number, tone: string): string => {
-    const toneHint = tone
-        ? `TONE/RATING: ${tone}. Calibrate humor and subject matter accordingly.`
-        : 'Keep it PG-13 unless the context clearly implies otherwise.';
-    const namesClause = playerNames.length
-        ? `PLAYER NAMES (reference by first name when the context calls for it): ${playerNames.join(', ')}.`
-        : '';
-    return `GROUP TYPE: ${groupType}
-${namesClause}
-CONTEXT FROM THE PLAYERS: "${customContext}"
-
-Generate exactly ${count} Truth or Drink questions specifically tailored to this group.
-
-Rules:
-- Write in SECOND person ("you") so any player can be asked.
-- You may reference named players by first name when the context calls for it.
-- USE the specifics they gave you — names, places, shared history, inside jokes, situations.
-- Avoid generic questions unless the context twists them.
-- Every question should be something a sober person might actually hesitate to answer.
-- Each question must end with a "?".
-- ${toneHint}
-
-Return a JSON array of exactly ${count} question strings.`;
-};
-
-// ---- ORCHESTRATION ----
-
 export const handleCustomTruthOrDrink = async (params: CustomTODParams): Promise<string[]> => {
     const { groupType, customContext, playerNames = [], count = 15, tone = '' } = params;
     if (isClaudeConfigured()) {
@@ -402,19 +287,12 @@ export const handleCustomTruthOrDrink = async (params: CustomTODParams): Promise
 const generateCustomTODClaude = async (groupType: string, customContext: string, playerNames: string[], count: number, tone: string): Promise<string[]> => {
     const claude = await getClaude();
     if (!claude) return [];
-
-    const mode = getPromptMode('tod');
-    const system = mode === 'advanced' ? TOD_SYSTEM_PROMPT_ADVANCED : TOD_SYSTEM_PROMPT_BASIC;
-    const user = mode === 'advanced'
-        ? buildTODUserPromptAdvanced(groupType, customContext, playerNames, count, tone)
-        : buildTODUserPromptBasic(groupType, customContext, playerNames, count, tone);
-
     try {
         const message = await claude.messages.create({
             model: CLAUDE_MODEL,
             max_tokens: 4096,
-            system,
-            messages: [{ role: 'user', content: user }],
+            system: TOD_SYSTEM_PROMPT,
+            messages: [{ role: 'user', content: buildTODUserPrompt(groupType, customContext, playerNames, count, tone) }],
         });
         return parseClaudeJson(message);
     } catch (err) {
@@ -426,14 +304,7 @@ const generateCustomTODClaude = async (groupType: string, customContext: string,
 const generateCustomTODGemini = async (groupType: string, customContext: string, playerNames: string[], count: number, tone: string): Promise<string[]> => {
     const gemini = await getGemini();
     if (!gemini) return [];
-
-    const mode = getPromptMode('tod');
-    const system = mode === 'advanced' ? TOD_SYSTEM_PROMPT_ADVANCED : TOD_SYSTEM_PROMPT_BASIC;
-    const user = mode === 'advanced'
-        ? buildTODUserPromptAdvanced(groupType, customContext, playerNames, count, tone)
-        : buildTODUserPromptBasic(groupType, customContext, playerNames, count, tone);
-    const prompt = `${system}\n\n---\n\n${user}`;
-
+    const prompt = `${TOD_SYSTEM_PROMPT}\n\n---\n\n${buildTODUserPrompt(groupType, customContext, playerNames, count, tone)}`;
     try {
         const response = await gemini.models.generateContent({
             model: GEMINI_MODEL,
@@ -461,8 +332,7 @@ export interface CustomNHIEParams {
     tone?: string;
 }
 
-// ---- ADVANCED ----
-const NHIE_SYSTEM_PROMPT_ADVANCED = `You are a party game writer for "Never Have I Ever" — a game where a statement is read aloud, and anyone in the group who HAS done it stands up (or takes a sip).
+const NHIE_SYSTEM_PROMPT = `You are a party game writer for "Never Have I Ever" — a game where a statement is read aloud, and anyone in the group who HAS done it stands up (or takes a sip).
 
 The best statements feel real and oddly specific — embarrassing, awkward, or quietly common. They make at least one person in the room look around guiltily. The worst are too generic ("Never have I ever traveled"), too long, or invent details that aren't true.
 
@@ -502,7 +372,7 @@ Good output:
 
 Notice the variety of angles, the specificity tied to the context, and that nothing was invented beyond what the context gave.`;
 
-const buildNHIEUserPromptAdvanced = (groupType: string, customContext: string, count: number, tone: string): string => {
+const buildNHIEUserPrompt = (groupType: string, customContext: string, count: number, tone: string): string => {
     return `GROUP TYPE: ${groupType} — ${resolveGroupGuidance(groupType)}
 
 TONE: ${tone || DEFAULT_TONE}
@@ -515,35 +385,6 @@ ${customContext}
 
 Generate exactly ${count} "Never Have I Ever" statements for this group, following the system rules. Return as a JSON array of ${count} strings.`;
 };
-
-// ---- BASIC ----
-const NHIE_SYSTEM_PROMPT_BASIC = `You are a party game writer creating "Never Have I Ever" statements for a specific group of people.
-
-In Never Have I Ever, a statement is read aloud, and anyone in the group who HAS done it stands up (or takes a sip). Statements should feel real, personal, and reveal something interesting about the people in the room.
-
-Your job: generate statements that feel personally written for THIS group — referencing their shared history, inside jokes, places they've been, and dynamics. Mix mundane confessions with juicier reveals. Keep things fun rather than cruel.`;
-
-const buildNHIEUserPromptBasic = (groupType: string, customContext: string, count: number, tone: string): string => {
-    const toneHint = tone
-        ? `TONE/RATING: ${tone}. Calibrate humor and subject matter accordingly.`
-        : 'Keep it PG-13 unless the context clearly implies otherwise.';
-    return `GROUP TYPE: ${groupType}
-CONTEXT FROM THE PLAYERS: "${customContext}"
-
-Generate exactly ${count} "Never Have I Ever" statements specifically tailored to this group.
-
-Rules:
-- Each statement must start with "Never have I ever..."
-- Write in FIRST person.
-- USE the specifics they gave you — names, places, shared history, inside jokes, situations.
-- Avoid generic statements unless the context twists them.
-- Mix lighthearted confessions with juicier reveals.
-- ${toneHint}
-
-Return a JSON array of exactly ${count} statement strings.`;
-};
-
-// ---- ORCHESTRATION ----
 
 export const handleCustomNeverHaveIEver = async (params: CustomNHIEParams): Promise<string[]> => {
     const { groupType, customContext, count = 15, tone = '' } = params;
@@ -558,19 +399,12 @@ export const handleCustomNeverHaveIEver = async (params: CustomNHIEParams): Prom
 const generateCustomNHIEClaude = async (groupType: string, customContext: string, count: number, tone: string): Promise<string[]> => {
     const claude = await getClaude();
     if (!claude) return [];
-
-    const mode = getPromptMode('nhie');
-    const system = mode === 'advanced' ? NHIE_SYSTEM_PROMPT_ADVANCED : NHIE_SYSTEM_PROMPT_BASIC;
-    const user = mode === 'advanced'
-        ? buildNHIEUserPromptAdvanced(groupType, customContext, count, tone)
-        : buildNHIEUserPromptBasic(groupType, customContext, count, tone);
-
     try {
         const message = await claude.messages.create({
             model: CLAUDE_MODEL,
             max_tokens: 4096,
-            system,
-            messages: [{ role: 'user', content: user }],
+            system: NHIE_SYSTEM_PROMPT,
+            messages: [{ role: 'user', content: buildNHIEUserPrompt(groupType, customContext, count, tone) }],
         });
         return parseClaudeJson(message);
     } catch (err) {
@@ -582,14 +416,7 @@ const generateCustomNHIEClaude = async (groupType: string, customContext: string
 const generateCustomNHIEGemini = async (groupType: string, customContext: string, count: number, tone: string): Promise<string[]> => {
     const gemini = await getGemini();
     if (!gemini) return [];
-
-    const mode = getPromptMode('nhie');
-    const system = mode === 'advanced' ? NHIE_SYSTEM_PROMPT_ADVANCED : NHIE_SYSTEM_PROMPT_BASIC;
-    const user = mode === 'advanced'
-        ? buildNHIEUserPromptAdvanced(groupType, customContext, count, tone)
-        : buildNHIEUserPromptBasic(groupType, customContext, count, tone);
-    const prompt = `${system}\n\n---\n\n${user}`;
-
+    const prompt = `${NHIE_SYSTEM_PROMPT}\n\n---\n\n${buildNHIEUserPrompt(groupType, customContext, count, tone)}`;
     try {
         const response = await gemini.models.generateContent({
             model: GEMINI_MODEL,
