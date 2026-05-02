@@ -828,412 +828,277 @@
   "bunny": {
     "round1": [
       {
-        "text": "What's {name}'s go-to sleeping position?",
+        "text": "How does {name} signal they're in the mood without saying it?",
         "options": [
-          "Starfish — claims the whole bed",
-          "Foetal position, fully cocooned",
-          "On their stomach, face down",
-          "Clinging onto you like a koala"
+          "A specific kind of eye contact",
+          "Hand on your thigh under the table",
+          "Suddenly very interested in what you're doing",
+          "Just outright tells you"
         ]
       },
       {
-        "text": "How many pillows does {name} need to function?",
+        "text": "What's the fastest way to flip {name}'s switch from chill to charged?",
         "options": [
-          "One (normal human)",
-          "Three minimum",
-          "A full pillow fort",
-          "Zero — they use you instead"
+          "Pinning them against something",
+          "Whispering in their ear",
+          "Slow neck kiss",
+          "Just looking at them a beat too long"
         ]
       },
       {
-        "text": "What does {name} wear to bed?",
+        "text": "How does {name} flirt when they want something to happen tonight?",
         "options": [
-          "Full matching pyjamas",
-          "Oversized t-shirt and nothing else",
-          "As little as legally possible",
-          "Whatever they wore that day"
+          "Subtle touches that pretend to be accidents",
+          "Outright suggestive comments",
+          "Going quiet and intense",
+          "Making you laugh until you can't help yourself"
         ]
       },
       {
-        "text": "How does {name} react when your cold feet touch them in bed?",
+        "text": "What's {name}'s tell that they're about to make a move?",
         "options": [
-          "Full scream and kick",
-          "Silent passive-aggressive shuffle away",
-          "Trap your feet between theirs",
-          "Don't care — already asleep"
+          "Goes silent and locks eyes",
+          "Gets weirdly close in a small space",
+          "Smirks at you out of nowhere",
+          "Touches your face"
         ]
       },
       {
-        "text": "What's {name}'s cuddling style?",
+        "text": "Where does {name} like to be kissed first?",
         "options": [
-          "Big spoon energy",
-          "Little spoon, fully wrapped",
-          "Starts cuddling then rolls away in 3 mins",
-          "Leg draped over, face buried in pillow"
+          "Neck, no question",
+          "Lips, classic",
+          "Just below the ear",
+          "Inside of the wrist"
         ]
       },
       {
-        "text": "What does {name} do right before falling asleep?",
+        "text": "What's {name}'s favourite pre-bed move that isn't bed yet?",
         "options": [
-          "Scroll phone for 45 more minutes",
-          "Immediately pass out mid-sentence",
-          "Need to talk about the meaning of life",
-          "One more episode (repeat x4)"
+          "Slow undressing each other",
+          "Shower together",
+          "Long couch makeout",
+          "Drink, music, conversation that turns"
         ]
       },
       {
-        "text": "How does {name} wake you up on weekends?",
+        "text": "How does {name} like to be touched when you're just lying together?",
         "options": [
-          "Gently with coffee",
-          "By being annoyingly energetic",
-          "They don't — they sleep later than you",
-          "Passive-aggressively making noise nearby"
+          "Slow tracing with fingertips",
+          "Firm grip, pulled in close",
+          "Hair played with",
+          "Hardly at all — just presence"
         ]
       },
       {
-        "text": "What's {name}'s blanket behaviour?",
+        "text": "What does {name} actually want to hear when things start escalating?",
         "options": [
-          "Full burrito wrap, steals everything",
-          "Kicks it off within 10 minutes",
-          "One leg out, perfectly balanced",
-          "Doesn't need one — they run hot"
+          "Exactly what you want to do to them",
+          "How much you want them",
+          "Nothing — just breathing",
+          "A specific compliment"
         ]
       },
       {
-        "text": "How does {name} react to morning breath?",
+        "text": "What does {name} do with their hands when they're getting turned on?",
         "options": [
-          "Breathes directly in your face",
-          "Turns away dramatically",
-          "Says they don't have it (they do)",
-          "Immediately goes to brush teeth"
+          "Grips the back of your neck",
+          "Hands in your hair",
+          "Pulls you in by the waist",
+          "Holds your face"
         ]
       },
       {
-        "text": "What would {name} do if you started snoring?",
+        "text": "What kind of pace gets {name} going?",
         "options": [
-          "Elbow you aggressively",
-          "Film it for evidence",
-          "Put headphones in and suffer",
-          "They're snoring louder than you"
-        ]
-      },
-      {
-        "text": "What is {name}'s most common 'bed crime'?",
-        "options": [
-          "The 'Blanket Cocoon': Slowly rolling until you have nothing",
-          "The 'Human Furnace': Radiating enough heat to melt the ice caps",
-          "The 'Starfish': Gradually expanding until they occupy 80% of the bed",
-          "The 'Phone Glow': Scrolling until 2 AM while you try to sleep"
-        ]
-      },
-      {
-        "text": "What is {name}'s preferred 'uniform' for the bedroom?",
-        "options": [
-          "An oversized, soft t-shirt that's seen better days",
-          "Just underwear—functional and simple",
-          "A coordinated, 'grown-up' pajama set",
-          "Strictly the 'Birthday Suit' at all times"
-        ]
-      },
-      {
-        "text": "How does {name} feel about 'Morning Energy'?",
-        "options": [
-          "A 'Cuddle Monster' who won't let you leave the bed",
-          "Strictly 'don't touch me' until coffee has been consumed",
-          "Playful and ready for action immediately",
-          "Needs a solid 30 minutes of scrolling in silence first"
-        ]
-      },
-      {
-        "text": "What is {name}'s favorite way to wake you up?",
-        "options": [
-          "Soft, lingering touches and whispers",
-          "Bringing you a hot drink as a peace offering",
-          "Aggressive cuddling to force you into consciousness",
-          "Opening the curtains and being suspiciously productive"
-        ]
-      },
-      {
-        "text": "What is the 'ideal' temperature for {name} to sleep in?",
-        "options": [
-          "Arctic Tundra: Fans on, window open, heavy duvet",
-          "The Sauna: Warm, cozy, and multiple blankets",
-          "Exactly 68 degrees with a single sheet",
-          "They don't care, as long as they are touching you"
+          "Slow and drawn out",
+          "Fast and urgent",
+          "Slow build, fast finish",
+          "Whatever you're in the mood for"
         ]
       }
     ],
     "round2": [
       {
-        "text": "What's {name}'s biggest turn-on that isn't physical?",
+        "text": "What's {name}'s biggest non-physical turn-on?",
         "options": [
-          "Cooking them dinner",
-          "Making them laugh really hard",
-          "Taking charge and planning something",
-          "Saying something unexpectedly deep"
+          "Confidence in front of other people",
+          "Watching you be good at something",
+          "Being told exactly what they want",
+          "Quiet competence"
         ]
       },
       {
-        "text": "What time of day is {name} most… in the mood?",
+        "text": "When is {name} most in the mood?",
         "options": [
-          "Morning — they're a sunrise person",
-          "Late night, after a good show",
-          "Random mid-afternoon energy",
-          "Only when they should be doing something else"
+          "Right after waking up",
+          "Late night, lights off",
+          "Random afternoon, no warning",
+          "After a couple of drinks"
         ]
       },
       {
-        "text": "How does {name} flirt when they want something?",
+        "text": "What setting gets {name} going more than they admit?",
         "options": [
-          "Gets touchy and close",
-          "Drops obvious hints nobody could miss",
-          "Suddenly becomes very helpful around the house",
-          "Sends a spicy text from the next room"
+          "Hotel room, somewhere new",
+          "Their own bed, familiar",
+          "Somewhere risky",
+          "Somewhere they shouldn't be"
         ]
       },
       {
-        "text": "What kills the mood fastest for {name}?",
+        "text": "What do you do that turns {name} on without you realising?",
         "options": [
-          "Talking about work",
-          "Bad hygiene",
-          "Checking their phone",
-          "A weird smell or sound"
+          "The way you look at them",
+          "How you handle yourself in public",
+          "Something specific you wear",
+          "When you take charge of a small thing"
         ]
       },
       {
-        "text": "What's {name}'s opinion on candles and mood lighting?",
+        "text": "What kind of energy is {name} most attracted to in the moment?",
         "options": [
-          "Essential — ambiance matters",
-          "Couldn't care less",
-          "Will light them but forget to blow them out",
-          "Prefers fairy lights or nothing"
+          "Take-charge confidence",
+          "Soft and slow attention",
+          "Playful, teasing, pushing buttons",
+          "Intense, fully locked in"
         ]
       },
       {
-        "text": "{name}'s ideal setting for a romantic night?",
+        "text": "What's {name}'s favourite thing about your body?",
         "options": [
-          "Hotel room somewhere new",
-          "Living room fort with blankets",
-          "Fancy bath with wine",
-          "Honestly, just the bed with clean sheets"
+          "Something they've never told you",
+          "Something obvious",
+          "A small detail you'd never guess",
+          "It changes depending on the day"
         ]
       },
       {
-        "text": "How long does {name} take to get 'ready' for bed?",
+        "text": "What does {name} secretly find sexy that sounds boring on paper?",
         "options": [
-          "30 seconds — hops right in",
-          "A full 45-minute skincare routine",
-          "Depends if they're 'in the mood'",
-          "They're always ready, just ask"
+          "Watching you cook",
+          "You doing chores without being asked",
+          "You being good with their family",
+          "You getting dressed for something"
         ]
       },
       {
-        "text": "What's {name}'s post-intimacy move?",
+        "text": "What's {name}'s ideal frequency, honestly?",
         "options": [
-          "Immediate snack run",
-          "Deep philosophical conversation",
-          "Pass out instantly",
-          "Want round two"
+          "Every day if possible",
+          "A few times a week",
+          "When the mood hits, no schedule",
+          "More than they currently get"
         ]
       },
       {
-        "text": "What would {name} say is their signature move?",
+        "text": "What do you wear that {name} reacts to most?",
         "options": [
-          "The slow tease",
-          "Eye contact that hits different",
-          "Surprising confidence",
-          "Making you laugh mid-moment"
+          "Something fitted",
+          "Their clothes",
+          "Specific underwear",
+          "Almost nothing"
         ]
       },
       {
-        "text": "How does {name} feel about PDA?",
+        "text": "What tone of voice makes {name} pay attention?",
         "options": [
-          "All in — hold hands, kiss, everything",
-          "Subtle only — hand on the back",
-          "Depends on who's watching",
-          "Save it for home"
-        ]
-      },
-      {
-        "text": "What is {name}'s most effective 'mood setter'?",
-        "options": [
-          "A specific playlist they've spent hours curating",
-          "Dimmed lighting or specific 'vibe' candles",
-          "Physical proximity—leaning in and making eye contact",
-          "Wit and banter that leads to physical tension"
-        ]
-      },
-      {
-        "text": "How does {name} typically flirt when they're 'in the mood'?",
-        "options": [
-          "Subtle, suggestive comments that fly under the radar",
-          "Tactile: Lots of passing touches and 'accidental' brushes",
-          "Bold: Being very direct about what they want",
-          "Sarcastic: Teasing you until the tension is unbearable"
-        ]
-      },
-      {
-        "text": "What does {name} find most attractive in the heat of the moment?",
-        "options": [
-          "Confidence and taking the lead",
-          "Gentleness and a soft, slow approach",
-          "Playfulness and a bit of 'cheeky' humor",
-          "Intensity and total focus on them"
-        ]
-      },
-      {
-        "text": "Where is {name}'s 'sweet spot' for Public Displays of Affection?",
-        "options": [
-          "Strictly private: 'Keep it behind closed doors'",
-          "Low-key: Hand-holding and the occasional quick kiss",
-          "Subtle: A hand on the back or a knee under the table",
-          "No limits: They don't care who is watching"
-        ]
-      },
-      {
-        "text": "What is {name}'s 'weakness' when it comes to physical touch?",
-        "options": [
-          "Neck and shoulder attention",
-          "Hands running through their hair",
-          "Slow, light touches on their arms or back",
-          "A firm, confident hold around their waist"
+          "Lower, quieter than usual",
+          "Direct and commanding",
+          "Soft and slow",
+          "Teasing, like you know something they don't"
         ]
       }
     ],
     "round3": [
       {
-        "text": "What fantasy has {name} definitely thought about but won't bring up?",
+        "text": "What's a fantasy {name} has thought about but won't bring up first?",
         "options": [
-          "Role play scenario",
-          "A spontaneous getaway with no plan",
-          "Something involving blindfolds",
-          "They're too shy to even think about it"
+          "Being watched or watching",
+          "A roleplay with specific characters",
+          "Being told what to do",
+          "Being in charge of every move"
         ]
       },
       {
-        "text": "What does {name} secretly wish you'd do more of in bed?",
+        "text": "What kink is {name} curious about but hasn't asked for?",
         "options": [
-          "Take the lead more often",
-          "Slow things down",
-          "Be more vocal",
-          "Surprise them — break the routine"
+          "Light restraint",
+          "A specific power dynamic",
+          "Something with a sensory element",
+          "They're not telling — even now"
         ]
       },
       {
-        "text": "What's {name}'s honest opinion on morning intimacy?",
+        "text": "What's {name}'s honest opinion on threesomes?",
         "options": [
-          "Best kind — sleepy and warm",
-          "Hard no — need coffee first",
-          "In theory yes, in practice they choose sleep",
-          "Depends entirely on the vibe"
+          "Genuinely up for it with the right person",
+          "Fantasy only — wouldn't actually do it",
+          "Already been there",
+          "Hard no"
         ]
       },
       {
-        "text": "If {name} rated your physical chemistry, what would they secretly think?",
+        "text": "What's something {name} secretly wants more of in bed?",
         "options": [
-          "Off the charts — no complaints",
-          "Good but could use more adventure",
-          "Amazing connection, could be more frequent",
-          "Underrated — we don't talk about it enough"
+          "Dirty talk",
+          "Slower, more drawn out everything",
+          "Being told they're wanted",
+          "Surprise — anything that breaks routine"
         ]
       },
       {
-        "text": "What's the thing {name} finds unexpectedly attractive about you?",
+        "text": "What's {name}'s real number?",
         "options": [
-          "Your voice when you're being serious",
-          "The way you smell in the morning",
-          "Your confidence in weird moments",
-          "How you look when you're concentrating"
+          "Lower than they've told anyone",
+          "Higher than they've told anyone",
+          "Exactly what they say it is",
+          "They genuinely lost count"
         ]
       },
       {
-        "text": "What would {name} want written on a coupon book from you?",
+        "text": "Who's the one person from {name}'s past they still think about?",
         "options": [
-          "One full body massage",
-          "Breakfast in bed + no talking",
-          "You pick everything tonight",
-          "One guilt-free nap while you handle everything"
+          "An ex they shouldn't",
+          "Someone they never actually dated",
+          "Someone you know",
+          "Someone they hooked up with once"
         ]
       },
       {
-        "text": "How adventurous does {name} actually want to be?",
+        "text": "What's {name}'s biggest sexual regret?",
+        "options": [
+          "Someone they slept with",
+          "Someone they didn't sleep with",
+          "Something they didn't try when they had the chance",
+          "Staying somewhere too long"
+        ]
+      },
+      {
+        "text": "How adventurous is {name} actually willing to be?",
         "options": [
           "Way more than they let on",
-          "Happy with things exactly as they are",
-          "Open to trying anything once",
-          "They need to be convinced but secretly love it"
+          "Talks big, follows through less",
+          "Open to almost anything once",
+          "Knows exactly what they like and stays there"
         ]
       },
       {
-        "text": "What makes {name} feel sexiest?",
+        "text": "What's {name}'s position on watching adult content together?",
         "options": [
-          "When you can't keep your eyes off them",
-          "After a great workout",
-          "When they're dressed up and going out",
-          "When you tell them something specific you love"
+          "Yes, regularly",
+          "Curious but never brought it up",
+          "Tried once, awkward",
+          "Hard no"
         ]
       },
       {
-        "text": "What would {name} never admit they enjoy?",
+        "text": "What does {name} want to try that they think you might say no to?",
         "options": [
-          "Being the little spoon",
-          "Cheesy romantic gestures",
-          "That one thing you do that they pretend annoys them",
-          "Watching you get ready"
-        ]
-      },
-      {
-        "text": "If you could read {name}'s mind in bed, what would shock you most?",
-        "options": [
-          "How much they think about you during the day",
-          "That they have a secret playlist for the mood",
-          "How nervous they still get sometimes",
-          "That they've planned things in their head you'd never guess"
-        ]
-      },
-      {
-        "text": "If {name} were to be 'adventurous', what direction would they head in?",
-        "options": [
-          "Trying a new, unexpected location",
-          "Introducing a bit of 'roleplay' or power dynamics",
-          "Focusing on a very slow, sensory-overload experience",
-          "Keeping it simple but increasing the physical intensity"
-        ]
-      },
-      {
-        "text": "What is {name}'s secret bedroom 'superpower'?",
-        "options": [
-          "Being incredibly intuitive about what you need",
-          "Their ability to switch from 'sweet' to 'spicy' instantly",
-          "Their stamina and dedication to the process",
-          "Making even the simplest moments feel high-stakes"
-        ]
-      },
-      {
-        "text": "What is something {name} finds 'secretly' attractive but hasn't fully admitted?",
-        "options": [
-          "When you are being bossy or in charge",
-          "When you are being particularly vulnerable or 'soft'",
-          "When you are dressed in a very specific, non-obvious way",
-          "When you are deeply focused on a task or hobby"
-        ]
-      },
-      {
-        "text": "Which of these is the 'ultimate' intimate experience for {name}?",
-        "options": [
-          "A long, slow burn that builds over an entire evening",
-          "A spontaneous, high-energy 'quick' moment",
-          "A deep, emotional connection where it feels like 'one'",
-          "A playful, experimental session with lots of laughter"
-        ]
-      },
-      {
-        "text": "What does {name} want more of, but feels 'too shy' to ask for?",
-        "options": [
-          "More verbal feedback and 'talk' during the act",
-          "More focus on their specific desires and fantasies",
-          "More variety in the routine and the 'way' things happen",
-          "More physical reassurance after the moment is over"
+          "Something with a third person",
+          "Something with a specific power dynamic",
+          "Something in public or semi-public",
+          "Recording it"
         ]
       }
     ]
