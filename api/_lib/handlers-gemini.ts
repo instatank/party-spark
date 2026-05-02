@@ -5,7 +5,7 @@
 // Avoid static @google/genai import (crashes Vercel cold start). Use
 // string literals 'ARRAY' / 'OBJECT' / 'STRING' / 'NUMBER' instead of
 // the Type enum — they're equivalent at the schema level.
-import { getGemini } from './clients';
+import { getGemini } from './clients.js';
 
 const MODEL = 'gemini-2.0-flash-001';
 

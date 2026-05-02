@@ -25,7 +25,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     // exact error instead of Vercel's opaque crash.
     let clients: any = null;
     try {
-        clients = await import('./_lib/clients');
+        clients = await import('./_lib/clients.js');
         stages.clients_module_loaded = true;
         stages.clients_exports = Object.keys(clients);
     } catch (err) {

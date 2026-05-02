@@ -8,7 +8,7 @@
 // If that happens in practice, this handler can be moved to an Edge Function
 // or the user can upgrade the Vercel plan.
 
-import { getGemini } from './clients';
+import { getGemini } from './clients.js';
 
 const TEXT_MODEL = 'gemini-2.0-flash-001';
 const IMAGE_MODEL = 'gemini-3-pro-image-preview';

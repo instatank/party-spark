@@ -11,7 +11,7 @@
 // Node 24. clients.ts handles the SDKs via lazy dynamic imports; this
 // file only consumes the lazy getters.
 import type Anthropic from '@anthropic-ai/sdk';
-import { getGemini, getClaude, isClaudeConfigured } from './clients';
+import { getGemini, getClaude, isClaudeConfigured } from './clients.js';
 
 const CLAUDE_MODEL = 'claude-haiku-4-5';
 const GEMINI_MODEL = 'gemini-2.0-flash-001';

@@ -9,7 +9,7 @@
 // Also accepts ?count= and ?tone= query params so we can sweep quickly.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleCustomMostLikelyTo } from './_lib/handlers-custom';
+import { handleCustomMostLikelyTo } from './_lib/handlers-custom.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     const count = Number(req.query.count) || 15;

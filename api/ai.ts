@@ -10,7 +10,7 @@
 // Types are validated by the dispatch table below; unknown types 400.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handleCustomMostLikelyTo, handleCustomTruthOrDrink, handleCustomNeverHaveIEver } from './_lib/handlers-custom';
+import { handleCustomMostLikelyTo, handleCustomTruthOrDrink, handleCustomNeverHaveIEver } from './_lib/handlers-custom.js';
 import {
     handleCharadesWords,
     handleWouldILieToYou,
@@ -23,12 +23,12 @@ import {
     handleImposterContent,
     handleMostLikelyTo,
     handleContextualLies,
-} from './_lib/handlers-gemini';
+} from './_lib/handlers-gemini.js';
 import {
     handleGenerateRoast,
     handleEditImage,
     handleRoastOrToast,
-} from './_lib/handlers-image';
+} from './_lib/handlers-image.js';
 
 // Union of all accepted request types. If you add a handler, add its type here.
 type AIRequestType =

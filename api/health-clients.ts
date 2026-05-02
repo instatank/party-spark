@@ -9,7 +9,7 @@
 // shows up in the response body, not as a function crash.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getGemini, getClaude, isClaudeConfigured, isGeminiConfigured } from './_lib/clients';
+import { getGemini, getClaude, isClaudeConfigured, isGeminiConfigured } from './_lib/clients.js';
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
     const out: Record<string, unknown> = {
