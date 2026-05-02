@@ -2,66 +2,39 @@
   "friends": {
     "round1": [
       {
-        "text": "What does {name} reach for first when they're stressed?",
+        "text": "What does {name} order at a coffee shop?",
         "options": [
-          "Junk food",
-          "Their phone",
-          "A nap",
-          "Music"
-        ]
-      },
-      {
-        "text": "What would {name} most likely binge-watch on a lazy Sunday?",
-        "options": [
-          "True crime docs",
-          "Sitcom reruns",
-          "Reality TV",
-          "Anime or sci-fi"
-        ]
-      },
-      {
-        "text": "What's {name}'s go-to order at a coffee shop?",
-        "options": [
-          "Black coffee",
-          "Iced latte",
+          "Black coffee, no nonsense",
+          "Iced latte with oat milk",
           "Chai or tea",
-          "Something with caramel"
+          "Something with caramel and whipped cream"
         ]
       },
       {
         "text": "How does {name} act when they're running late?",
         "options": [
-          "Panic and sprint",
-          "Casually stroll in",
-          "Send 5 sorry texts",
-          "Pretend they're on time"
+          "Panics and sprints",
+          "Sends 5 sorry texts en route",
+          "Walks in casually like nothing happened",
+          "Pretends they were on time"
         ]
       },
       {
-        "text": "What would {name} grab first in a fire?",
+        "text": "What does {name} do at a party where they only know one person?",
         "options": [
-          "Phone",
-          "Wallet",
-          "A pet or plant",
-          "Nothing — just run"
-        ]
-      },
-      {
-        "text": "What does {name} do at a party where they know nobody?",
-        "options": [
-          "Find the snack table",
-          "Make one best friend",
-          "Leave after 20 mins",
-          "Become the DJ"
+          "Sticks to that one person all night",
+          "Makes one new best friend",
+          "Disappears after 30 minutes",
+          "Becomes the loudest person in the room"
         ]
       },
       {
         "text": "What's {name}'s most annoying habit?",
         "options": [
-          "Being on their phone",
+          "Always on their phone",
           "Running late",
-          "Talking too much",
-          "Leaving things messy"
+          "Talking over people",
+          "Leaving things half-done"
         ]
       },
       {
@@ -69,345 +42,237 @@
         "options": [
           "Silent rage",
           "Dramatic outburst",
-          "Immediately demand rematch",
-          "Shrug and laugh it off"
+          "Demands an immediate rematch",
+          "Genuinely doesn't care"
         ]
       },
       {
         "text": "What's {name}'s guilty pleasure food?",
         "options": [
-          "Instant noodles",
-          "Ice cream at midnight",
+          "Instant noodles at midnight",
+          "An entire pint of ice cream",
           "Fast food drive-thru",
-          "An entire bag of chips"
+          "A whole bag of chips, alone"
         ]
       },
       {
         "text": "What does {name} do in the first 5 minutes of waking up?",
         "options": [
-          "Check their phone",
-          "Hit snooze 3 times",
-          "Head straight to the bathroom",
-          "Lie there existentially"
+          "Checks their phone",
+          "Hits snooze 3 times",
+          "Straight to the bathroom",
+          "Lies there spiralling about the day"
         ]
       },
       {
-        "text": "If {name} is ordering a coffee, which one is most likely appearing on the receipt?",
+        "text": "How does {name} reply to a long voice note?",
         "options": [
-          "A complex, 5-step customized order with alternative milk",
-          "A black coffee or double espresso—liquid fuel only",
-          "The most sugary, seasonal special on the menu",
-          "They don't know; they just asked the barista for a recommendation"
+          "Listens immediately and replies in detail",
+          "Listens days later",
+          "Sends back an even longer voice note",
+          "Replies with a meme instead"
         ]
       },
       {
-        "text": "How does {name} typically behave at a party where they only know the host?",
+        "text": "What's {name}'s move when the group can't decide where to eat?",
         "options": [
-          "The 'Social Butterfly' working the room within ten minutes",
-          "The 'Kitchen Dweller' hovering near the snacks and the dog",
-          "The 'Shadow' following the host around until they find a safe group",
-          "The 'Ghost' who makes a polite appearance and leaves after 45 minutes"
+          "Just picks a place and tells everyone",
+          "Sends 4 options and waits",
+          "Says 'I don't mind' for 40 minutes",
+          "Quietly resents whoever picks"
         ]
       },
       {
-        "text": "What is {name}'s digital communication style?",
+        "text": "What does {name} do when they see a notification from someone they're avoiding?",
         "options": [
-          "The 'Instant Responder' who replies before you've even finished typing",
-          "The 'Novelist' who sends five consecutive paragraphs",
-          "The 'Time Traveler' who replies three business days later with 'lol true'",
-          "The 'Voice Noter' who refuses to use their thumbs"
-        ]
-      },
-      {
-        "text": "It's a rainy Saturday afternoon. Where is {name}?",
-        "options": [
-          "Deep-cleaning the entire house while listening to a podcast",
-          "Horizontal on the couch in a 'doom-scrolling' trance",
-          "Halfway through a hobby they started yesterday and will quit tomorrow",
-          "Aggressively napping to make up for a chaotic week"
-        ]
-      },
-      {
-        "text": "What is {name}'s go-to move when they're genuinely annoyed?",
-        "options": [
-          "Total radio silence and a very visible 'fine' face",
-          "A calculated, sarcastic remark that cuts deep",
-          "Venting to anyone who will listen for exactly twenty minutes",
-          "Cleaning or organizing things aggressively to blow off steam"
+          "Marks it as read and ignores",
+          "Replies eventually with a vague excuse",
+          "Pretends they never saw it",
+          "Ghosts entirely"
         ]
       }
     ],
     "round2": [
       {
-        "text": "What would {name} regret most not doing?",
+        "text": "What does {name} secretly judge their friends for?",
         "options": [
-          "Travelling more",
-          "Starting a business",
-          "Learning an instrument",
-          "Writing something meaningful"
+          "Being late constantly",
+          "Bad taste in music or movies",
+          "How they treat their partners",
+          "How they spend their money"
         ]
       },
       {
-        "text": "If {name} could master one skill overnight, what would it be?",
+        "text": "What's {name}'s honest opinion on giving advice nobody asked for?",
         "options": [
-          "Cooking like a chef",
-          "Speaking 5 languages",
-          "Playing guitar",
-          "Public speaking"
+          "Does it constantly",
+          "Holds back, then says it anyway",
+          "Asks first, every time",
+          "Stays out of it completely"
         ]
       },
       {
-        "text": "What does {name} value most in a friendship?",
+        "text": "What does {name} actually believe makes a good friend?",
         "options": [
-          "Loyalty",
-          "Humour",
-          "Honest feedback",
-          "Showing up when it matters"
+          "Showing up when it's hard",
+          "Honesty, even when it stings",
+          "Being fun to be around",
+          "Knowing when to leave you alone"
         ]
       },
       {
-        "text": "What would {name} do with a surprise week off work?",
+        "text": "What's {name}'s relationship with money?",
         "options": [
-          "Solo trip somewhere",
-          "Sleep for 3 days straight",
-          "Start a side project",
-          "Catch up with old friends"
+          "Saver — careful and tracked",
+          "Spender — enjoys it now",
+          "Anxious about it constantly",
+          "Doesn't think about it much"
         ]
       },
       {
-        "text": "What hill would {name} die on?",
+        "text": "What does {name} think people get most wrong about them?",
         "options": [
-          "Pineapple on pizza is valid",
-          "Morning people are superior",
-          "Texting is better than calling",
-          "Dogs are better than cats"
+          "That they're more confident than they are",
+          "That they don't care",
+          "That they're laid-back when they're not",
+          "That they have it all figured out"
         ]
       },
       {
-        "text": "What's {name}'s biggest ick?",
+        "text": "What kind of friend is {name} in a crisis?",
         "options": [
-          "Bad table manners",
-          "People who one-up stories",
-          "Slow walkers",
-          "Loud chewing"
+          "Drops everything and shows up",
+          "Sends practical solutions",
+          "Listens for hours without fixing",
+          "Goes quiet and doesn't know what to do"
         ]
       },
       {
-        "text": "How does {name} deal with conflict?",
+        "text": "What's {name}'s honest take on parties they've been invited to?",
         "options": [
-          "Confront it head-on",
-          "Avoid until it blows over",
-          "Write a long text message",
-          "Joke their way out of it"
+          "Always wants to go, always glad they did",
+          "Wants to go, regrets it by 11pm",
+          "Doesn't want to go, glad they did",
+          "Doesn't want to go, doesn't go"
         ]
       },
       {
-        "text": "What keeps {name} up at night?",
+        "text": "How does {name} feel about being the centre of attention?",
         "options": [
-          "Replaying conversations",
-          "Career worries",
-          "Existential dread",
-          "Tomorrow's to-do list"
+          "Lives for it",
+          "Tolerates it for special occasions",
+          "Genuinely uncomfortable",
+          "Pretends to hate it but secretly loves it"
         ]
       },
       {
-        "text": "What would {name} spend a windfall of money on first?",
+        "text": "What does {name} think they'd do if they won the lottery tomorrow?",
         "options": [
-          "A holiday",
-          "Invest or save it",
-          "Treat friends and family",
-          "Something impulsive for themselves"
+          "Quit immediately, travel for a year",
+          "Tell almost no one, change very little",
+          "Buy property",
+          "Spend it all in a year"
         ]
       },
       {
-        "text": "If {name} had to give up one forever?",
+        "text": "What's {name}'s view on staying friends with exes?",
         "options": [
-          "Social media",
-          "Streaming services",
-          "Takeout food",
-          "Sleeping in on weekends"
-        ]
-      },
-      {
-        "text": "If {name} found a wallet with \u0000 and no ID, what would they actually do?",
-        "options": [
-          "Keep it—it's a gift from the universe",
-          "Hand it into the nearest shop, even if they think the staff will keep it",
-          "Spend it immediately on a round of drinks for everyone",
-          "Leave it exactly where it is to avoid the moral karma"
-        ]
-      },
-      {
-        "text": "What does {name} value most in a long-term friendship?",
-        "options": [
-          "Brutal honesty, even when it's uncomfortable",
-          "Consistency and showing up for the boring stuff",
-          "Shared humor and the ability to laugh at anything",
-          "Loyalty—knowing they have a 'ride or die' in their corner"
-        ]
-      },
-      {
-        "text": "How does {name} handle a major life disagreement with a friend?",
-        "options": [
-          "Initiates a 'sit down' talk to process every emotion",
-          "Wait for it to blow over and act like nothing happened",
-          "Writes a long, carefully worded text to avoid immediate confrontation",
-          "Distances themselves until they aren't angry anymore"
-        ]
-      },
-      {
-        "text": "What is {name}'s internal 'success' metric?",
-        "options": [
-          "Professional status and the respect of their peers",
-          "Financial freedom and the ability to buy whatever they want",
-          "The quality and depth of their personal relationships",
-          "Personal growth and feeling like a 'better' version of themselves"
-        ]
-      },
-      {
-        "text": "In a hypothetical 'zombie apocalypse' group, what is {name}'s role?",
-        "options": [
-          "The Leader: Making the hard calls and keeping order",
-          "The Specialist: Fixing things and being useful",
-          "The Morale Booster: Cracking jokes so no one loses it",
-          "The Realist: Pointing out why every plan will probably fail"
+          "Has done it, works fine",
+          "Possible in theory, never in practice",
+          "Hard no, clean break only",
+          "Depends entirely on who broke up with who"
         ]
       }
     ],
     "round3": [
       {
-        "text": "What does {name} secretly judge people for?",
-        "options": [
-          "Their music taste",
-          "How they treat waiters",
-          "Their social media behaviour",
-          "Their punctuality"
-        ]
-      },
-      {
-        "text": "What's {name}'s biggest insecurity they rarely talk about?",
+        "text": "What is {name} most insecure about that they'd never say out loud?",
         "options": [
           "How they look",
-          "Whether they're successful enough",
-          "Being liked",
-          "Being taken seriously"
+          "Whether people actually like them",
+          "Where they are in life vs their friends",
+          "That they're not as smart as they let on"
         ]
       },
       {
-        "text": "How would {name} react to a major life disappointment?",
+        "text": "What does {name} actually think about how their life is going?",
         "options": [
-          "Withdraw and process alone",
-          "Talk it out with someone close",
-          "Channel it into work",
-          "Pretend they're fine until they are"
+          "Better than they let on",
+          "Worse than they let on",
+          "Exactly where they expected",
+          "Genuinely don't know"
         ]
       },
       {
-        "text": "What's {name} most afraid of about the future?",
+        "text": "What's {name}'s biggest fear about getting older?",
         "options": [
-          "Losing close people",
-          "Career stagnation",
-          "Being alone",
-          "Regret over roads not taken"
+          "Becoming irrelevant",
+          "Becoming their parents",
+          "Running out of time",
+          "Doing it alone"
         ]
       },
       {
-        "text": "What does {name} wish people understood about them?",
+        "text": "What does {name} cry about that they wouldn't admit?",
         "options": [
-          "They care more than they show",
-          "They need more alone time",
-          "They're not as confident as they seem",
-          "They overthink everything"
+          "A song that hits unexpectedly",
+          "Old photos",
+          "Movies they pretend they hate",
+          "Worrying about people they love"
         ]
       },
       {
-        "text": "If {name} could change one thing about themselves?",
+        "text": "What's the lie {name} tells themselves most often?",
         "options": [
-          "Be less anxious",
+          "I'll start tomorrow",
+          "I'm fine",
+          "It doesn't bother me",
+          "I'll deal with it later"
+        ]
+      },
+      {
+        "text": "What does {name} miss most from their younger self?",
+        "options": [
+          "How easy it was to make friends",
+          "Not caring what people thought",
+          "Having more time",
+          "Being less tired"
+        ]
+      },
+      {
+        "text": "What's the regret {name} thinks about most often?",
+        "options": [
+          "A relationship they ended",
+          "A career path they didn't take",
+          "Something they didn't say in time",
+          "Time they spent on something that didn't matter"
+        ]
+      },
+      {
+        "text": "Who in {name}'s life do they most want approval from?",
+        "options": [
+          "A parent",
+          "A sibling",
+          "A close friend",
+          "Themselves, honestly"
+        ]
+      },
+      {
+        "text": "What does {name} hope people remember them for?",
+        "options": [
+          "How they made others feel",
+          "Something they built or made",
+          "Their sense of humour",
+          "That they were genuinely kind"
+        ]
+      },
+      {
+        "text": "What's the one thing {name} would change about themselves if they could?",
+        "options": [
+          "Worry less about everything",
           "Be more disciplined",
-          "Care less about what others think",
-          "Be better at expressing emotions"
-        ]
-      },
-      {
-        "text": "What makes {name} cry (even if they won't admit it)?",
-        "options": [
-          "Sentimental movie scenes",
-          "Thinking about family",
-          "Feeling misunderstood",
-          "Acts of unexpected kindness"
-        ]
-      },
-      {
-        "text": "What's the compliment {name} secretly wants to hear most?",
-        "options": [
-          "'You're really talented'",
-          "'You make people feel safe'",
-          "'You're funnier than you think'",
-          "'I admire how you handle things'"
-        ]
-      },
-      {
-        "text": "What would {name} never forgive in a friendship?",
-        "options": [
-          "Lying to their face",
-          "Talking behind their back",
-          "Not showing up when needed",
-          "Betraying a shared secret"
-        ]
-      },
-      {
-        "text": "What emotion does {name} have the hardest time expressing?",
-        "options": [
-          "Vulnerability",
-          "Anger",
-          "Gratitude",
-          "Sadness"
-        ]
-      },
-      {
-        "text": "What is {name}'s most recurring 'middle of the night' insecurity?",
-        "options": [
-          "That they aren't living up to their full potential",
-          "That they are secretly annoying to the people they love",
-          "That they've made a major life choice they can't take back",
-          "That everyone else has a 'manual' for life that they missed"
-        ]
-      },
-      {
-        "text": "Which of these is {name} most likely to hide from the world?",
-        "options": [
-          "How much they actually care about what strangers think",
-          "A deep-seated fear of being alone or forgotten",
-          "A sensitive side that contradicts their 'tough' exterior",
-          "How much they struggle with basic daily tasks"
-        ]
-      },
-      {
-        "text": "When {name} is feeling overwhelmed, what do they need most but rarely ask for?",
-        "options": [
-          "Someone to take the lead and make decisions for them",
-          "Genuine validation that they are doing a good job",
-          "Physical space and total silence without judgment",
-          "A distraction that makes them forget their responsibilities"
-        ]
-      },
-      {
-        "text": "What is the fastest way to hurt {name}'s feelings, even if they don't show it?",
-        "options": [
-          "Dismissing an idea they were genuinely excited about",
-          "Questioning their intelligence or competence",
-          "Being 'left out' of a plan or an inner-circle joke",
-          "Receiving constructive criticism when they didn't ask for it"
-        ]
-      },
-      {
-        "text": "If {name} were to be totally honest, what is their 'emotional default'?",
-        "options": [
-          "Restless—always looking for the next thing",
-          "Anxious—anticipating the next problem",
-          "Content—trying to maintain the current peace",
-          "Guarded—waiting to see how others react first"
+          "Speak up more",
+          "Care less what other people think"
         ]
       }
     ]
