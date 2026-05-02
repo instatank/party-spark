@@ -160,10 +160,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
                         </span>
                     </h1>
                     <div
-                        className="absolute top-2 right-0 bg-gold text-ink font-display text-[13px] tracking-[0.1em] px-3 py-1.5 rounded-lg border-2 border-ink"
+                        className="absolute top-2 right-0 bg-gold text-slate-900 font-display text-[13px] tracking-[0.1em] px-3 py-1.5 rounded-lg border-2 border-slate-900"
                         style={{
                             transform: 'rotate(6deg)',
-                            boxShadow: '3px 3px 0 var(--c-ink)',
+                            boxShadow: '3px 3px 0 #0F172A',
                         }}
                     >
                         BRUTAL!
@@ -212,8 +212,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
                 {/* Hero upload card — ember-filled sticker with sparkles */}
                 <div className="flex-1 min-h-0 flex flex-col justify-end">
                     <div
-                        className="relative bg-roast-ember border-[2.5px] border-ink rounded-[18px] p-[18px_18px_16px] overflow-hidden"
-                        style={{ boxShadow: '5px 5px 0 var(--c-ink)' }}
+                        className="relative bg-roast-ember border-[2.5px] border-slate-900 rounded-[18px] p-[18px_18px_16px] overflow-hidden"
+                        style={{ boxShadow: '5px 5px 0 #0F172A' }}
                     >
                         {/* sparkle decorations */}
                         <div className="absolute top-2 left-3" style={{ transform: 'rotate(-15deg)' }}>
@@ -228,7 +228,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
 
                         <div
                             className="font-display text-[26px] tracking-wider text-white leading-[0.95] mb-0.5"
-                            style={{ textShadow: '2px 2px 0 var(--c-ink)' }}
+                            style={{ textShadow: '2px 2px 0 #1A0F00' }}
                         >
                             DROP YOUR FACE
                         </div>
@@ -236,17 +236,19 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
                             We'll do the worst.
                         </div>
 
+                        {/* Buttons sit on the fixed-orange ember card, so their colors
+                            are fixed-dark navy + white in BOTH modes — not theme-flipping ink. */}
                         <div className="flex gap-2">
                             <button
                                 onClick={() => fileInputRef.current?.click()}
-                                className="flex-1 py-[11px] rounded-[10px] bg-ink text-white text-xs font-extrabold tracking-wide border-2 border-ink flex items-center justify-center gap-1.5"
+                                className="flex-1 py-[11px] rounded-[10px] bg-slate-900 text-white text-xs font-extrabold tracking-wide border-2 border-slate-900 flex items-center justify-center gap-1.5"
                             >
                                 <PhotoIcon size={14} />
                                 <span>UPLOAD</span>
                             </button>
                             <button
                                 onClick={() => startCamera('user')}
-                                className="flex-1 py-[11px] rounded-[10px] bg-white text-ink text-xs font-extrabold tracking-wide border-2 border-ink flex items-center justify-center gap-1.5"
+                                className="flex-1 py-[11px] rounded-[10px] bg-white text-slate-900 text-xs font-extrabold tracking-wide border-2 border-slate-900 flex items-center justify-center gap-1.5"
                             >
                                 <CameraIcon size={14} />
                                 <span>CAMERA</span>

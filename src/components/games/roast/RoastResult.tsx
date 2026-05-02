@@ -154,18 +154,19 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                         )}
                         <img src={resultImage} alt="Roast result" className="w-full h-full object-cover" />
 
-                        {/* Theme sticker — top-left */}
+                        {/* Theme sticker — top-left. Sits on the fixed-light polaroid
+                            surface, so colors are fixed-dark in both modes. */}
                         <div
-                            className="absolute top-2.5 left-2.5 bg-white text-ink px-2 py-1 rounded-md font-display text-xs tracking-[0.08em] border-2 border-ink"
-                            style={{ transform: 'rotate(-3deg)', boxShadow: '2px 2px 0 var(--c-ink)' }}
+                            className="absolute top-2.5 left-2.5 bg-white text-slate-900 px-2 py-1 rounded-md font-display text-xs tracking-[0.08em] border-2 border-slate-900"
+                            style={{ transform: 'rotate(-3deg)', boxShadow: '2px 2px 0 #0F172A' }}
                         >
                             ★ {THEME_LABEL[theme]}
                         </div>
 
-                        {/* Skull rating — top-right */}
+                        {/* Skull rating — top-right. Same surface logic. */}
                         <div
-                            className="absolute top-2.5 right-2.5 bg-roast-red text-white px-1.5 py-1 rounded-md border-2 border-ink flex items-center gap-0.5"
-                            style={{ transform: 'rotate(3deg)', boxShadow: '2px 2px 0 var(--c-ink)' }}
+                            className="absolute top-2.5 right-2.5 bg-roast-red text-white px-1.5 py-1 rounded-md border-2 border-slate-900 flex items-center gap-0.5"
+                            style={{ transform: 'rotate(3deg)', boxShadow: '2px 2px 0 #0F172A' }}
                         >
                             {[1, 2, 3, 4, 5].map(i => <Skull key={i} size={10} fill="white" stroke="white" />)}
                         </div>
@@ -187,8 +188,8 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                             {isClamped && (
                                 <button
                                     onClick={() => setSheetOpen(true)}
-                                    className="block mx-auto mt-2 bg-roast-ember text-ink px-3 py-1 rounded-full border-2 border-ink font-display text-xs tracking-wider"
-                                    style={{ boxShadow: '2px 2px 0 var(--c-ink)' }}
+                                    className="block mx-auto mt-2 bg-roast-ember text-slate-900 px-3 py-1 rounded-full border-2 border-slate-900 font-display text-xs tracking-wider"
+                                    style={{ boxShadow: '2px 2px 0 #0F172A' }}
                                 >
                                     ▾ READ FULL ROAST
                                 </button>
@@ -218,7 +219,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                     </button>
                     <button
                         onClick={() => handleShare()}
-                        className="flex-1 px-3 py-3 rounded-xl bg-roast-ember text-ink font-display text-sm tracking-wider flex items-center justify-center gap-1.5 border border-roast-ember"
+                        className="flex-1 px-3 py-3 rounded-xl bg-roast-ember text-slate-900 font-display text-sm tracking-wider flex items-center justify-center gap-1.5 border border-roast-ember"
                         style={{ boxShadow: '0 4px 16px rgba(240,139,58,0.35)' }}
                     >
                         <Share2 size={14} />
@@ -252,7 +253,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                                     disabled={isEditing}
                                     className={`font-display text-xs tracking-[0.04em] px-3 py-1.5 rounded-full border transition-colors disabled:opacity-50
                                         ${active
-                                            ? 'bg-gold text-ink border-gold'
+                                            ? 'bg-gold text-slate-900 border-gold'
                                             : 'bg-surface-alt text-ink-soft border-divider hover:border-ink-soft'}`}
                                 >
                                     {c.label}
@@ -312,7 +313,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
 
                         {/* Meta strip */}
                         <div className="flex items-center gap-1.5 mb-3.5">
-                            <span className="font-display text-[11px] tracking-[0.06em] px-2 py-1 rounded-md bg-gold text-ink border border-gold">
+                            <span className="font-display text-[11px] tracking-[0.06em] px-2 py-1 rounded-md bg-gold text-slate-900 border border-gold">
                                 {THEME_LABEL[theme]}
                             </span>
                             <span
@@ -336,7 +337,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                         <div className="flex gap-2 mt-2">
                             <button
                                 onClick={() => handleShare(roastText)}
-                                className="flex-1 px-3 py-3 rounded-xl bg-roast-ember text-ink border border-roast-ember font-display text-sm tracking-wider flex items-center justify-center gap-1.5"
+                                className="flex-1 px-3 py-3 rounded-xl bg-roast-ember text-slate-900 border border-roast-ember font-display text-sm tracking-wider flex items-center justify-center gap-1.5"
                                 style={{ boxShadow: '0 4px 20px rgba(240,139,58,0.4)' }}
                             >
                                 <Share2 size={14} />
