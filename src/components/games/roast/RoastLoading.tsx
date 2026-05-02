@@ -45,7 +45,7 @@ const RoastLoading: React.FC<RoastLoadingProps> = ({ onClose }) => {
 
             <div className="flex-1 flex items-center justify-center px-5 py-8 min-h-[480px]">
                 <div
-                    className="relative w-full max-w-[340px] bg-polaroid rounded-[14px] border-[2.5px] border-slate-900 px-7 pt-10 pb-8 overflow-hidden"
+                    className="relative w-full max-w-[340px] bg-polaroid rounded-[14px] border-[2.5px] border-slate-900 px-7 pt-12 pb-9 overflow-hidden"
                     style={{ boxShadow: '5px 5px 0 #0F172A' }}
                 >
                     {/* Memo paper rule lines — subtle horizontal lines, decorative. */}
@@ -57,26 +57,17 @@ const RoastLoading: React.FC<RoastLoadingProps> = ({ onClose }) => {
                         }}
                     />
 
-                    {/* Rubber stamp — top-right, rotated, animated pulse */}
-                    <div
-                        className="absolute top-3 right-3 font-display text-roast-red text-[18px] tracking-[0.16em] px-3 py-1 border-[2.5px] border-roast-red rounded-md animate-roast-stamp"
-                        style={{ transform: 'rotate(-8deg)' }}
-                    >
-                        ROASTING
-                    </div>
-
-                    {/* Headline */}
-                    <div className="relative z-10 text-center">
+                    <div className="relative z-10 flex flex-col items-center text-center">
+                        {/* Rubber stamp — center-stage hero. Big, rotated, pulsing. */}
                         <div
-                            className="font-display text-slate-900 text-[44px] leading-[0.92] tracking-wide"
+                            className="font-display text-roast-red text-[52px] leading-none tracking-[0.14em] px-5 py-2 border-[3px] border-roast-red rounded-lg animate-roast-stamp"
+                            style={{ transform: 'rotate(-8deg)' }}
                         >
-                            COOKING UP
-                            <br />
-                            YOUR ROAST
+                            ROASTING
                         </div>
 
                         {/* 3-dot spinner */}
-                        <div className="flex items-end justify-center gap-1.5 mt-5 mb-4 h-3">
+                        <div className="flex items-end justify-center gap-1.5 mt-7 mb-4 h-3">
                             <span
                                 className="w-[9px] h-[9px] rounded-full bg-roast-red inline-block animate-roast-dot"
                                 style={{ animationDelay: '0s' }}
