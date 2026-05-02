@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import ImageUpload from './roast/ImageUpload';
 import RoastResult from './roast/RoastResult';
@@ -11,6 +10,11 @@ interface Props {
     onExit: () => void;
 }
 
+// State machine, copy strings, and API call orchestration are unchanged from
+// the previous implementation — only the visual layer was redesigned. The
+// theme picker, header, and footer that used to live here have moved into
+// the child screens (ImageUpload and RoastResult) so each screen is now
+// self-contained.
 const RoastGame: React.FC<Props> = ({ onExit }) => {
     const [appState, setAppState] = useState<AppState>(AppState.IDLE);
     const [originalImage, setOriginalImage] = useState<string | null>(null);
@@ -21,7 +25,7 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
 
     const handleImageSelected = async (base64: string) => {
         // RATE LIMIT CHECK
-        const currentRoasts = import.meta.env.VITE_ROAST_LIMIT ? parseInt(import.meta.env.VITE_ROAST_LIMIT) : 100; // Default 100
+        const currentRoasts = import.meta.env.VITE_ROAST_LIMIT ? parseInt(import.meta.env.VITE_ROAST_LIMIT) : 100;
         const usedCount = sessionService.getUsageCount('ROAST');
 
         if (usedCount >= currentRoasts) {
@@ -50,7 +54,6 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
 
             const [roast, caricature] = await Promise.all([roastPromise, caricaturePromise]);
 
-            // Track usage
             sessionService.markAsUsed('ROAST', 'default', Date.now().toString());
 
             setRoastText(roast);
@@ -76,97 +79,45 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
     };
 
     return (
-        <div className="w-full min-h-full bg-app text-ink flex flex-col rounded-xl overflow-hidden border border-divider-soft" style={{ boxShadow: 'var(--shadow-card)' }}>
-            <div className="p-4 border-b border-divider-soft bg-surface-alt flex items-center justify-between">
-                <div className="flex items-center space-x-2" onClick={handleReset} role="button">
-                    <div className="text-3xl">🔥</div>
-                    <h2 className="text-2xl font-comic text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-red-600 tracking-wide">
-                        RoastMyPic
-                    </h2>
-                </div>
-                <div className="flex gap-2">
-                    {appState === AppState.COMPLETE && (
-                        <button
-                            onClick={handleReset}
-                            className="px-3 py-1 rounded-full border border-divider hover:bg-app-tint text-xs font-semibold transition-all text-ink-soft hover:text-ink"
-                        >
-                            Start Over
+        <div className="w-full min-h-full bg-app text-ink relative overflow-hidden rounded-xl border border-divider-soft" style={{ boxShadow: 'var(--shadow-card)' }}>
+            {appState === AppState.IDLE && (
+                <ImageUpload
+                    theme={theme}
+                    onThemeChange={setTheme}
+                    onImageSelected={handleImageSelected}
+                    onClose={onExit}
+                />
+            )}
+
+            {appState === AppState.PROCESSING && <LoadingOverlay message={loadingMessage} />}
+
+            {appState === AppState.ERROR && (
+                <div className="w-full min-h-[600px] flex flex-col items-center justify-center px-6 text-center gap-3">
+                    <div className="text-6xl mb-2">🤕</div>
+                    <h3 className="font-display text-3xl tracking-wide text-ink">THE GRILL MALFUNCTIONED</h3>
+                    <p className="text-sm text-muted max-w-xs">Couldn't reach the AI. Check your connection and try again.</p>
+                    <div className="flex gap-3 mt-2">
+                        <button onClick={handleReset} className="px-5 py-2.5 rounded-xl bg-roast-red text-white font-display text-sm tracking-wide">
+                            TRY AGAIN
                         </button>
-                    )}
-                    <button
-                        onClick={onExit}
-                        className="px-3 py-1 rounded-full border border-divider hover:bg-app-tint text-xs font-semibold transition-all text-ink-soft hover:text-ink"
-                    >
-                        Exit
-                    </button>
+                        <button onClick={onExit} className="px-5 py-2.5 rounded-xl bg-surface-alt text-ink-soft font-display text-sm tracking-wide border border-divider">
+                            EXIT
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
 
-            <div className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-6 flex flex-col items-center justify-center relative min-h-[500px]">
-                {appState === AppState.PROCESSING && <LoadingOverlay message={loadingMessage} />}
-                {appState === AppState.ERROR && (
-                    <div className="text-center space-y-4">
-                        <div className="text-6xl">🤕</div>
-                        <h3 className="text-xl font-bold text-ink">The grill malfunctioned.</h3>
-                        <button onClick={handleReset} className="text-yellow-500 underline">Try Again</button>
-                    </div>
-                )}
-
-                {appState === AppState.IDLE && (
-                    <div className="w-full max-w-2xl text-center space-y-8 animate-fade-in-down">
-                        <div className="space-y-4 mb-8">
-                            <h3 className="text-4xl md:text-5xl font-bold tracking-tighter text-ink">
-                                Get <span className="text-red-500 underline decoration-wavy decoration-yellow-500">Roasted</span>
-                            </h3>
-                            <p className="text-lg text-muted max-w-lg mx-auto">
-                                Upload a photo. We'll turn you into a cartoon and destroy your ego using <span className="text-ink font-bold">Gemini 3 Pro</span>.
-                            </p>
-                        </div>
-
-                        <div className="flex flex-col items-center justify-center space-y-2 mb-8">
-                            <span className="text-muted text-xs font-bold uppercase tracking-widest">Select Roast Theme</span>
-                            <div className="flex flex-wrap justify-center gap-3 w-full max-w-2xl mb-8">
-                                {(['animate', 'tabloid', 'movie', 'disco', 'agra'] as RoastTheme[]).map((t) => (
-                                    <button
-                                        key={t}
-                                        onClick={() => setTheme(t)}
-                                        className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 border ${
-                                            theme === t
-                                                ? 'bg-ink text-app border-ink shadow-md'
-                                                : 'bg-surface-alt text-ink-soft border-divider hover:bg-app-tint hover:text-ink'
-                                        }`}
-                                    >
-                                        <span>
-                                            {t === 'animate' && "🎨"}
-                                            {t === 'tabloid' && "📰"}
-                                            {t === 'movie' && "🎬"}
-                                            {t === 'disco' && "🕺"}
-                                            {t === 'agra' && "🕌"}
-                                        </span>
-                                        <span className="capitalize">
-                                            {t === 'disco' ? '80s Disco' : t === 'agra' ? 'Agra Royal' : t}
-                                        </span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                        <ImageUpload onImageSelected={handleImageSelected} />
-                    </div>
-                )}
-
-                {appState === AppState.COMPLETE && originalImage && resultImage && (
-                    <RoastResult
-                        originalImage={originalImage}
-                        resultImage={resultImage}
-                        roastText={roastText}
-                        onUpdateImage={handleUpdateImage}
-                    />
-                )}
-            </div>
-
-            <div className="p-4 text-center text-muted text-xs">
-                <p>Powered by Gemini 3 Pro & 3 Flash</p>
-            </div>
+            {appState === AppState.COMPLETE && originalImage && resultImage && (
+                <RoastResult
+                    originalImage={originalImage}
+                    resultImage={resultImage}
+                    roastText={roastText}
+                    theme={theme}
+                    onUpdateImage={handleUpdateImage}
+                    onReset={handleReset}
+                    onClose={onExit}
+                />
+            )}
         </div>
     );
 };

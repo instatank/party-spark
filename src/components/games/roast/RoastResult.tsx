@@ -1,42 +1,76 @@
-
 import React, { useState } from 'react';
-import { Download, Share2 } from 'lucide-react';
-import { editImage, cleanBase64, getCaricaturePrompt, type RoastTheme } from '../../../services/geminiService';
+import { Download, Share2, RefreshCcw, Wand2, X, Skull, Flame } from 'lucide-react';
+import { editImage, cleanBase64, type RoastTheme } from '../../../services/geminiService';
 
 interface RoastResultProps {
     originalImage: string;
     resultImage: string;
     roastText: string;
+    theme: RoastTheme;
     onUpdateImage: (newImage: string) => void;
+    onReset: () => void;
+    onClose: () => void;
 }
 
-const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, roastText, onUpdateImage }) => {
+const THEME_LABEL: Record<RoastTheme, string> = {
+    animate: 'ANIMATE',
+    tabloid: 'TABLOID',
+    movie:   'MOVIE',
+    disco:   '80S DISCO',
+    agra:    'AGRA ROYAL',
+};
+
+// Refinement chips — preset stylistic modifiers fired through the same
+// editImage() backend the custom input uses. Order tracked so we can show
+// an active state on the last-clicked chip.
+const REFINE_CHIPS: { label: string; prompt: string }[] = [
+    { label: 'ZOMBIE',       prompt: 'Re-render the person as an undead zombie — pale rotting skin, sunken eyes, torn clothes — keep facial identity intact.' },
+    { label: 'ANIME',        prompt: 'Re-render in vibrant anime style — large expressive eyes, cel-shaded color, dynamic background — keep facial identity intact.' },
+    { label: '80S',          prompt: 'Re-render the person in over-the-top 1980s style — neon, big hair, bold makeup, synthwave background — keep facial identity intact.' },
+    { label: 'NOIR',         prompt: 'Re-render in black-and-white film noir — dramatic shadows, smoky lighting, fedora-and-trenchcoat aesthetic — keep facial identity intact.' },
+    { label: 'RENAISSANCE',  prompt: 'Re-render as a Renaissance oil painting — chiaroscuro lighting, formal pose, period-appropriate clothing — keep facial identity intact.' },
+];
+
+const formatRoastedDate = (): string => {
+    const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    const d = new Date();
+    return `${months[d.getMonth()]} '${String(d.getFullYear()).slice(-2)}`;
+};
+
+const CLAMP_LIMIT = 80;
+const clampRoast = (text: string): { display: string; isClamped: boolean } => {
+    if (text.length <= CLAMP_LIMIT) return { display: text, isClamped: false };
+    return { display: text.slice(0, CLAMP_LIMIT - 2).trim() + '…', isClamped: true };
+};
+
+const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, roastText, theme, onUpdateImage, onReset, onClose }) => {
     const [prompt, setPrompt] = useState('');
     const [isEditing, setIsEditing] = useState(false);
+    const [activeChip, setActiveChip] = useState<string | null>(null);
+    const [sheetOpen, setSheetOpen] = useState(false);
 
     const handleCustomEdit = async (customPrompt?: string) => {
         const promptToUse = customPrompt || prompt;
         if (!promptToUse.trim()) return;
-
         setIsEditing(true);
         try {
             const rawBase64 = cleanBase64(originalImage);
             const newImage = await editImage(rawBase64, promptToUse);
-
             if (newImage) {
                 onUpdateImage(newImage);
                 if (!customPrompt) setPrompt('');
             }
         } catch (e) {
             console.error(e);
-            alert("Failed to edit image. Try a different prompt.");
+            alert('Failed to edit image. Try a different prompt.');
         } finally {
             setIsEditing(false);
         }
     };
 
-    const handleIntensityClick = (level: RoastTheme) => {
-        handleCustomEdit(getCaricaturePrompt(level));
+    const handleChipClick = (label: string, presetPrompt: string) => {
+        setActiveChip(label);
+        handleCustomEdit(presetPrompt);
     };
 
     const handleSave = () => {
@@ -53,15 +87,16 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
         }
     };
 
-    const handleShare = async () => {
+    const handleShare = async (text?: string) => {
         try {
+            const shareText = text || roastText;
             const response = await fetch(resultImage);
             const blob = await response.blob();
             const file = new File([blob], 'partyspark_roast.jpg', { type: 'image/jpeg' });
             if (navigator.share) {
                 await navigator.share({
                     title: 'My PartySpark Roast',
-                    text: `Check out my roast from PartySpark!\n\n"${roastText}"`,
+                    text: `Check out my roast from PartySpark!\n\n"${shareText}"`,
                     files: [file],
                 });
             } else {
@@ -69,128 +104,254 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
             }
         } catch (error) {
             console.error('Error sharing image:', error);
-            if ((error as any).name !== 'AbortError') {
+            if ((error as { name?: string }).name !== 'AbortError') {
                 alert('Sharing failed. Please try saving the image instead.');
             }
         }
     };
 
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(roastText);
+        } catch (e) {
+            console.error('Copy failed:', e);
+        }
+    };
+
+    const { display: clampedText, isClamped } = clampRoast(roastText);
+
     return (
-        <div className="w-full max-w-4xl mx-auto flex flex-col md:flex-row gap-8 animate-fade-in-up">
-            {/* Visuals */}
-            <div className="flex-1 space-y-4">
-                <div className="relative group rounded-xl overflow-hidden shadow-2xl shadow-yellow-900/20 border-2 border-divider">
-                    {isEditing && (
-                        <div className="absolute inset-0 bg-black/70 z-10 flex items-center justify-center">
-                            <span className="text-yellow-400 font-comic animate-pulse text-xl">Applying Magic...</span>
+        <div className="w-full flex flex-col font-sans relative">
+            {/* Header — same shape as ImageUpload */}
+            <div className="flex items-center justify-between px-5 pt-6 pb-4 border-b border-divider-soft">
+                <div className="flex items-center gap-2">
+                    <Flame size={18} className="text-roast-red" fill="currentColor" />
+                    <span className="text-[15px] font-bold text-ink tracking-tight">Roast Me</span>
+                </div>
+                <button
+                    onClick={onClose}
+                    aria-label="Close"
+                    className="w-[30px] h-[30px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
+                >
+                    <X size={14} />
+                </button>
+            </div>
+
+            <div className="flex-1 flex flex-col gap-3 px-4 pt-3.5 pb-4 overflow-hidden">
+                {/* Polaroid card — sticker treatment in BOTH modes (it's the hero) */}
+                <div
+                    className="bg-polaroid border-[2.5px] border-ink rounded-[10px] mx-1.5 px-2.5 pt-2.5 pb-0"
+                    style={{
+                        boxShadow: '5px 5px 0 var(--c-ink)',
+                        transform: 'rotate(-1.4deg)',
+                    }}
+                >
+                    <div className="relative rounded-[4px] overflow-hidden" style={{ aspectRatio: '4 / 4.2' }}>
+                        {isEditing && (
+                            <div className="absolute inset-0 z-20 bg-black/70 flex items-center justify-center">
+                                <span className="font-display text-yellow-400 text-xl tracking-wide animate-pulse">APPLYING MAGIC…</span>
+                            </div>
+                        )}
+                        <img src={resultImage} alt="Roast result" className="w-full h-full object-cover" />
+
+                        {/* Theme sticker — top-left */}
+                        <div
+                            className="absolute top-2.5 left-2.5 bg-white text-ink px-2 py-1 rounded-md font-display text-xs tracking-[0.08em] border-2 border-ink"
+                            style={{ transform: 'rotate(-3deg)', boxShadow: '2px 2px 0 var(--c-ink)' }}
+                        >
+                            ★ {THEME_LABEL[theme]}
                         </div>
-                    )}
-                    <img
-                        src={resultImage}
-                        alt="Roast Result"
-                        className="w-full h-auto object-cover transform transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                        Generated Caricature
+
+                        {/* Skull rating — top-right */}
+                        <div
+                            className="absolute top-2.5 right-2.5 bg-roast-red text-white px-1.5 py-1 rounded-md border-2 border-ink flex items-center gap-0.5"
+                            style={{ transform: 'rotate(3deg)', boxShadow: '2px 2px 0 var(--c-ink)' }}
+                        >
+                            {[1, 2, 3, 4, 5].map(i => <Skull key={i} size={10} fill="white" stroke="white" />)}
+                        </div>
+
+                        {/* Meme caption + READ FULL ROAST */}
+                        <div
+                            className="absolute left-0 right-0 bottom-0 px-3 pt-12 pb-3"
+                            style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0.92) 95%)' }}
+                        >
+                            <div
+                                className="font-display text-white text-center uppercase text-[22px] leading-[0.98] tracking-[0.02em]"
+                                style={{
+                                    textShadow: '2px 2px 0 #000, -1px -1px 0 #000',
+                                    textWrap: 'balance',
+                                }}
+                            >
+                                {clampedText}
+                            </div>
+                            {isClamped && (
+                                <button
+                                    onClick={() => setSheetOpen(true)}
+                                    className="block mx-auto mt-2 bg-roast-ember text-ink px-3 py-1 rounded-full border-2 border-ink font-display text-xs tracking-wider"
+                                    style={{ boxShadow: '2px 2px 0 var(--c-ink)' }}
+                                >
+                                    ▾ READ FULL ROAST
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Polaroid caption strip — fixed dark text on the cream/white surface */}
+                    <div className="flex items-center justify-between px-1 py-2.5">
+                        <span className="italic text-sm text-[#1F1F1F]" style={{ fontFamily: "'Brush Script MT', cursive" }}>
+                            — roasted, {formatRoastedDate()}
+                        </span>
+                        <span className="font-display text-[11px] tracking-[0.08em] text-[#3A3A3A]">
+                            GEMINI 3 PRO
+                        </span>
                     </div>
                 </div>
 
-                <div className="flex gap-4 mb-4">
+                {/* Action row — sleek chrome */}
+                <div className="flex gap-2">
                     <button
                         onClick={handleSave}
-                        className="flex-1 flex items-center justify-center gap-2 bg-surface hover:bg-app-tint text-ink font-medium py-3 rounded-xl border border-divider transition-colors"
+                        className="flex-1 px-3 py-3 rounded-xl bg-surface text-ink border border-divider font-display text-sm tracking-wider flex items-center justify-center gap-1.5"
                     >
-                        <Download size={18} />
-                        Save Photo
+                        <Download size={14} />
+                        <span>SAVE</span>
                     </button>
                     <button
-                        onClick={handleShare}
-                        className="flex-1 flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-3 rounded-xl transition-colors shadow-lg shadow-yellow-900/20"
+                        onClick={() => handleShare()}
+                        className="flex-1 px-3 py-3 rounded-xl bg-roast-ember text-ink font-display text-sm tracking-wider flex items-center justify-center gap-1.5 border border-roast-ember"
+                        style={{ boxShadow: '0 4px 16px rgba(240,139,58,0.35)' }}
                     >
-                        <Share2 size={18} />
-                        Share
+                        <Share2 size={14} />
+                        <span>SHARE</span>
+                    </button>
+                    <button
+                        onClick={onReset}
+                        className="flex-1 px-3 py-3 rounded-xl bg-transparent text-roast-red border border-roast-red font-display text-sm tracking-wider flex items-center justify-center gap-1.5"
+                    >
+                        <RefreshCcw size={14} />
+                        <span>REDO</span>
                     </button>
                 </div>
 
-                <div className="bg-surface-alt p-4 rounded-xl border border-divider space-y-4">
-                    <div>
-                        <h3 className="text-muted text-xs font-bold mb-2 uppercase tracking-wider">Change Theme</h3>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => handleIntensityClick('animate')}
-                                disabled={isEditing}
-                                className="flex-1 bg-surface hover:bg-yellow-900/40 text-yellow-500 text-sm font-medium py-2 rounded-lg border border-divider transition-all"
-                            >
-                                Animate
-                            </button>
-                            <button
-                                onClick={() => handleIntensityClick('tabloid')}
-                                disabled={isEditing}
-                                className="flex-1 bg-surface hover:bg-pink-900/40 text-pink-500 text-sm font-medium py-2 rounded-lg border border-divider transition-all"
-                            >
-                                Tabloid
-                            </button>
-                            <button
-                                onClick={() => handleIntensityClick('movie')}
-                                disabled={isEditing}
-                                className="flex-1 bg-surface hover:bg-blue-900/40 text-blue-500 text-sm font-medium py-2 rounded-lg border border-divider transition-all"
-                            >
-                                Movie
-                            </button>
+                {/* Refine card — sleek chrome */}
+                <div className="bg-surface rounded-2xl border border-divider p-3.5">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-1.5">
+                            <Wand2 size={14} className="text-roast-red" />
+                            <span className="font-display text-sm tracking-[0.06em] text-ink">REFINE THE VERDICT</span>
                         </div>
+                        <span className="text-[10px] font-semibold text-muted">or pick a chip</span>
                     </div>
-
-                    <div>
-                        <h3 className="text-muted text-xs font-bold mb-2 uppercase tracking-wider">Custom Refinement</h3>
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                value={prompt}
-                                onChange={(e) => setPrompt(e.target.value)}
-                                placeholder="e.g., Make it a zombie..."
-                                className="flex-1 bg-surface border border-divider text-ink placeholder:text-muted px-3 py-2 text-sm rounded-lg focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
-                                onKeyDown={(e) => e.key === 'Enter' && handleCustomEdit()}
-                            />
-                            <button
-                                onClick={() => handleCustomEdit()}
-                                disabled={isEditing || !prompt}
-                                className="bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold px-3 py-2 text-sm rounded-lg transition-colors"
-                            >
-                                Go
-                            </button>
-                        </div>
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                        {REFINE_CHIPS.map(c => {
+                            const active = activeChip === c.label;
+                            return (
+                                <button
+                                    key={c.label}
+                                    onClick={() => handleChipClick(c.label, c.prompt)}
+                                    disabled={isEditing}
+                                    className={`font-display text-xs tracking-[0.04em] px-3 py-1.5 rounded-full border transition-colors disabled:opacity-50
+                                        ${active
+                                            ? 'bg-gold text-ink border-gold'
+                                            : 'bg-surface-alt text-ink-soft border-divider hover:border-ink-soft'}`}
+                                >
+                                    {c.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <div className="flex items-center gap-1.5 px-2.5 py-2 rounded-[10px] bg-app border border-divider">
+                        <input
+                            type="text"
+                            value={prompt}
+                            onChange={(e) => setPrompt(e.target.value)}
+                            placeholder="Custom: make it a 1920s gangster…"
+                            onKeyDown={(e) => e.key === 'Enter' && handleCustomEdit()}
+                            className="flex-1 bg-transparent border-none outline-none text-xs font-medium text-ink placeholder:text-muted"
+                        />
+                        <button
+                            onClick={() => handleCustomEdit()}
+                            disabled={isEditing || !prompt.trim()}
+                            className="px-3 py-1.5 rounded-lg bg-roast-red text-white font-display text-xs tracking-widest border-none disabled:opacity-50"
+                        >
+                            GO
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {/* Roast Card */}
-            <div className="flex-1 flex flex-col justify-center">
-                <div className="bg-gradient-to-br from-red-900/40 to-black p-8 rounded-2xl border border-red-900/50 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-20">
-                        <svg className="w-24 h-24 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z" /></svg>
-                    </div>
+            {/* Bottom sheet — full verdict */}
+            {sheetOpen && (
+                <div
+                    className="fixed inset-0 z-[60] flex items-end backdrop-blur-md"
+                    style={{ background: 'rgba(15, 30, 51, 0.55)' }}
+                    onClick={() => setSheetOpen(false)}
+                >
+                    <div
+                        className="w-full bg-surface border border-divider rounded-t-[24px] px-5 pt-3 pb-7 max-h-[78%] flex flex-col"
+                        style={{ boxShadow: '0 -16px 40px rgba(15, 30, 51, 0.18)' }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Drag handle */}
+                        <div className="w-11 h-[5px] rounded-full bg-divider-soft mx-auto mb-3.5" />
 
-                    <h2 className="text-3xl font-comic text-red-500 mb-6 drop-shadow-md transform -rotate-2">
-                        THE VERDICT 💀
-                    </h2>
-
-                    <p className="text-xl md:text-2xl text-white font-medium leading-relaxed italic drop-shadow-lg">
-                        "{roastText}"
-                    </p>
-
-                    <div className="mt-8 flex items-center justify-between border-t border-red-900/30 pt-4">
-                        <div className="flex items-center space-x-2">
-                            <span className="text-muted text-sm">Roasted by</span>
-                            <span className="text-yellow-500 font-bold uppercase tracking-tighter">Gemini 3 Pro</span>
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-3.5">
+                            <div className="flex items-center gap-2">
+                                <Skull size={16} className="text-roast-red" fill="currentColor" />
+                                <span className="font-display text-lg tracking-[0.08em] text-ink">THE FULL VERDICT</span>
+                            </div>
+                            <button
+                                onClick={() => setSheetOpen(false)}
+                                aria-label="Close sheet"
+                                className="w-7 h-7 rounded-full bg-surface-alt border border-divider text-muted flex items-center justify-center hover:text-ink"
+                            >
+                                <X size={14} />
+                            </button>
                         </div>
-                        <div className="flex space-x-1 text-yellow-500">
-                            {'★★★★★'.split('').map((star, i) => (
-                                <span key={i} className="animate-pulse" style={{ animationDelay: `${i * 100}ms` }}>{star}</span>
-                            ))}
+
+                        {/* Meta strip */}
+                        <div className="flex items-center gap-1.5 mb-3.5">
+                            <span className="font-display text-[11px] tracking-[0.06em] px-2 py-1 rounded-md bg-gold text-ink border border-gold">
+                                {THEME_LABEL[theme]}
+                            </span>
+                            <span
+                                className="px-2 py-1 rounded-md border border-roast-red flex items-center gap-0.5"
+                                style={{ background: 'rgba(216,58,58,0.10)' }}
+                            >
+                                {[1, 2, 3, 4, 5].map(i => <Skull key={i} size={9} className="text-roast-red" fill="currentColor" />)}
+                            </span>
+                            <div className="flex-1" />
+                            <span className="font-display text-[11px] tracking-[0.08em] text-muted">GEMINI 3 PRO</span>
+                        </div>
+
+                        {/* Full roast text with red Bebas quote marks */}
+                        <div className="flex-1 overflow-y-auto py-1 pr-1 text-base leading-[1.42] text-ink font-medium" style={{ textWrap: 'pretty' }}>
+                            <span className="font-display text-[38px] text-roast-red mr-1" style={{ verticalAlign: '-12px', lineHeight: 0 }}>"</span>
+                            {roastText}
+                            <span className="font-display text-[38px] text-roast-red ml-0.5" style={{ verticalAlign: '-12px', lineHeight: 0 }}>"</span>
+                        </div>
+
+                        {/* Sheet actions */}
+                        <div className="flex gap-2 mt-2">
+                            <button
+                                onClick={() => handleShare(roastText)}
+                                className="flex-1 px-3 py-3 rounded-xl bg-roast-ember text-ink border border-roast-ember font-display text-sm tracking-wider flex items-center justify-center gap-1.5"
+                                style={{ boxShadow: '0 4px 20px rgba(240,139,58,0.4)' }}
+                            >
+                                <Share2 size={14} />
+                                <span>SHARE QUOTE</span>
+                            </button>
+                            <button
+                                onClick={handleCopy}
+                                className="flex-1 px-3 py-3 rounded-xl bg-surface-alt text-ink border border-divider font-display text-sm tracking-wider"
+                            >
+                                COPY
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
