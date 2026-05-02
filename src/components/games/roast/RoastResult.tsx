@@ -148,22 +148,11 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                         )}
                         <img src={resultImage} alt="Roast result" className="w-full h-full object-cover" />
 
-                        {/* Theme sticker — top-left. Sits on the fixed-light polaroid
-                            surface, so colors are fixed-dark in both modes. */}
-                        <div
-                            className="absolute top-2.5 left-2.5 bg-white text-slate-900 px-2 py-1 rounded-md font-display text-xs tracking-[0.08em] border-2 border-slate-900"
-                            style={{ transform: 'rotate(-3deg)', boxShadow: '2px 2px 0 #0F172A' }}
-                        >
-                            ★ {THEME_LABEL[theme]}
-                        </div>
-
-                        {/* Skull rating — top-right. Same surface logic. */}
-                        <div
-                            className="absolute top-2.5 right-2.5 bg-roast-red text-white px-1.5 py-1 rounded-md border-2 border-slate-900 flex items-center gap-0.5"
-                            style={{ transform: 'rotate(3deg)', boxShadow: '2px 2px 0 #0F172A' }}
-                        >
-                            {[1, 2, 3, 4, 5].map(i => <Skull key={i} size={10} fill="white" stroke="white" />)}
-                        </div>
+                        {/* No image overlays here — the AI-generated poster/tabloid
+                            often carries its own title or cover art, so the theme
+                            sticker + skull rating that used to sit at top-left and
+                            top-right would clash. Both moved to the full-verdict
+                            sheet's meta strip where they don't fight the image. */}
 
                         {/* Meme caption + READ FULL ROAST */}
                         <div
@@ -278,8 +267,8 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
             {/* Bottom sheet — full verdict */}
             {sheetOpen && (
                 <div
-                    className="fixed inset-0 z-[60] flex items-end backdrop-blur-md"
-                    style={{ background: 'rgba(15, 30, 51, 0.55)' }}
+                    className="fixed inset-0 z-[60] flex items-end backdrop-blur-sm"
+                    style={{ background: 'rgba(15, 30, 51, 0.5)' }}
                     onClick={() => setSheetOpen(false)}
                 >
                     <div
