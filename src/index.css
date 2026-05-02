@@ -64,6 +64,13 @@
 
   --animate-slide-up: slideUp 0.3s ease-out forwards;
 
+  /* Roast Me LOADING screen — rubber stamp pulse and 3-dot spinner.
+     Stamp baseline transform is rotate(-8deg) so the keyframes interpolate
+     through that rotation, never snapping the stamp upright. Dots use
+     animation-delay (0 / 160ms / 320ms) to stagger the bounce. */
+  --animate-roast-stamp: roastStampPulse 1.6s ease-in-out infinite;
+  --animate-roast-dot: roastDotPulse 1s ease-in-out infinite;
+
   @keyframes slideUp {
     0% { transform: translateY(20px); opacity: 0; }
     100% { transform: translateY(0); opacity: 1; }
@@ -75,6 +82,16 @@
     40% { transform: translateX(8px); }
     60% { transform: translateX(-6px); }
     80% { transform: translateX(6px); }
+  }
+
+  @keyframes roastStampPulse {
+    0%, 100% { transform: rotate(-8deg) scale(1); opacity: 1; }
+    50%      { transform: rotate(-8deg) scale(1.06); opacity: 0.92; }
+  }
+
+  @keyframes roastDotPulse {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.45; }
+    40%           { transform: translateY(-6px); opacity: 1; }
   }
 }
 

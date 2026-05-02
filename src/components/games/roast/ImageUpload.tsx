@@ -1,6 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Camera as CameraIcon, Image as PhotoIcon, Sparkles, Flame, X } from 'lucide-react';
+import { Camera as CameraIcon, Image as PhotoIcon, Sparkles } from 'lucide-react';
 import type { RoastTheme } from '../../../services/geminiService';
+import GameHeader from './GameHeader';
 
 interface ImageUploadProps {
     theme: RoastTheme;
@@ -128,20 +129,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
 
     return (
         <div className="w-full flex flex-col font-sans">
-            {/* Header — flame + Roast Me wordmark left, circular close right */}
-            <div className="flex items-center justify-between px-5 pt-6 pb-4 border-b border-divider-soft">
-                <div className="flex items-center gap-2">
-                    <Flame size={18} className="text-roast-red" fill="currentColor" />
-                    <span className="text-[15px] font-bold text-ink tracking-tight">Roast Me</span>
-                </div>
-                <button
-                    onClick={onClose}
-                    aria-label="Close"
-                    className="w-[30px] h-[30px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
-                >
-                    <X size={14} />
-                </button>
-            </div>
+            <GameHeader onClose={onClose} />
 
             <div className="flex-1 flex flex-col gap-4 px-5 pt-4 pb-6 overflow-hidden">
                 {/* Hero title — Bebas ROAST/ME!! with gold BRUTAL sticker */}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ImageUpload from './roast/ImageUpload';
 import RoastResult from './roast/RoastResult';
-import LoadingOverlay from './roast/LoadingOverlay';
+import RoastLoading from './roast/RoastLoading';
 import { cleanBase64, generateRoast, editImage, getCaricaturePrompt, type RoastTheme } from '../../services/geminiService';
 import { sessionService } from '../../services/SessionManager';
 import { AppState } from '../../types';
@@ -20,7 +20,6 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
     const [originalImage, setOriginalImage] = useState<string | null>(null);
     const [resultImage, setResultImage] = useState<string | null>(null);
     const [roastText, setRoastText] = useState<string>('');
-    const [loadingMessage, setLoadingMessage] = useState('Firing up the grill...');
     const [theme, setTheme] = useState<RoastTheme>('animate');
 
     const handleImageSelected = async (base64: string) => {
@@ -38,15 +37,6 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
 
         try {
             const rawBase64 = cleanBase64(base64);
-
-            let loadingText = "Analyzing your flaws...";
-            if (theme === 'animate') loadingText = "Drawing caricature...";
-            if (theme === 'tabloid') loadingText = "Printing front page...";
-            if (theme === 'movie') loadingText = "Directing action scene...";
-            if (theme === 'disco') loadingText = "Hanging the disco ball...";
-            if (theme === 'agra') loadingText = "Building the Taj Mahal...";
-
-            setLoadingMessage(loadingText);
 
             const roastPromise = generateRoast(rawBase64, theme);
             const caricaturePrompt = getCaricaturePrompt(theme);
@@ -89,7 +79,7 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                 />
             )}
 
-            {appState === AppState.PROCESSING && <LoadingOverlay message={loadingMessage} />}
+            {appState === AppState.PROCESSING && <RoastLoading onClose={onExit} />}
 
             {appState === AppState.ERROR && (
                 <div className="w-full min-h-[600px] flex flex-col items-center justify-center px-6 text-center gap-3">

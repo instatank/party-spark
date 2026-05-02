@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Download, Share2, RefreshCcw, Wand2, X, Skull, Flame } from 'lucide-react';
+import { Download, Share2, RefreshCcw, Wand2, X, Skull } from 'lucide-react';
 import { editImage, cleanBase64, type RoastTheme } from '../../../services/geminiService';
+import GameHeader from './GameHeader';
 
 interface RoastResultProps {
     originalImage: string;
@@ -122,20 +123,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
 
     return (
         <div className="w-full flex flex-col font-sans relative">
-            {/* Header — same shape as ImageUpload */}
-            <div className="flex items-center justify-between px-5 pt-6 pb-4 border-b border-divider-soft">
-                <div className="flex items-center gap-2">
-                    <Flame size={18} className="text-roast-red" fill="currentColor" />
-                    <span className="text-[15px] font-bold text-ink tracking-tight">Roast Me</span>
-                </div>
-                <button
-                    onClick={onClose}
-                    aria-label="Close"
-                    className="w-[30px] h-[30px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
-                >
-                    <X size={14} />
-                </button>
-            </div>
+            <GameHeader onClose={onClose} />
 
             <div className="flex-1 flex flex-col gap-3 px-4 pt-3.5 pb-4 overflow-hidden">
                 {/* Polaroid card — sticker treatment in BOTH modes (it's the hero) */}
