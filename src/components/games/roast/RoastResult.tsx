@@ -37,17 +37,18 @@ const formatRoastedDate = (): string => {
     return `${months[d.getMonth()]} '${String(d.getFullYear()).slice(-2)}`;
 };
 
-const CLAMP_LIMIT = 80;
-const clampRoast = (text: string): { display: string; isClamped: boolean } => {
-    if (text.length <= CLAMP_LIMIT) return { display: text, isClamped: false };
-    return { display: text.slice(0, CLAMP_LIMIT - 2).trim() + '…', isClamped: true };
-};
+// Threshold for "this roast is long enough that it'll get visually clamped to
+// 2 lines, so show the READ FULL affordance". Visual clamping is done in CSS
+// via -webkit-line-clamp; this is just a heuristic for whether to surface the
+// expand button at all.
+const EXPAND_THRESHOLD = 70;
 
 const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, roastText, theme, onUpdateImage, onReset, onClose }) => {
     const [prompt, setPrompt] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [activeChip, setActiveChip] = useState<string | null>(null);
     const [sheetOpen, setSheetOpen] = useState(false);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
 
     const handleCustomEdit = async (customPrompt?: string) => {
         const promptToUse = customPrompt || prompt;
@@ -118,7 +119,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
         }
     };
 
-    const { display: clampedText, isClamped } = clampRoast(roastText);
+    const needsExpand = roastText.length > EXPAND_THRESHOLD;
 
     return (
         <div className="w-full flex flex-col font-sans relative">
@@ -140,52 +141,64 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                         transform: 'rotate(-1.4deg)',
                     }}
                 >
-                    <div className="relative rounded-[4px] overflow-hidden" style={{ aspectRatio: '4 / 4.2' }}>
+                    {/* Image area is its own button — tap to enlarge into the
+                        lightbox. object-contain (with a dark bg backing) ensures
+                        movie/tabloid posters with title text aren't cropped at
+                        the top. The caption overlay sits at the bottom and is
+                        clamped to 2 lines via CSS line-clamp; the READ FULL
+                        affordance was moved into the polaroid metadata strip
+                        below so it doesn't eat photo real estate. */}
+                    <button
+                        type="button"
+                        onClick={() => setLightboxOpen(true)}
+                        aria-label="Enlarge image"
+                        className="relative rounded-[4px] overflow-hidden bg-black w-full block"
+                        style={{ aspectRatio: '4 / 4.2' }}
+                    >
                         {isEditing && (
                             <div className="absolute inset-0 z-20 bg-black/70 flex items-center justify-center">
                                 <span className="font-display text-yellow-400 text-xl tracking-wide animate-pulse">APPLYING MAGIC…</span>
                             </div>
                         )}
-                        <img src={resultImage} alt="Roast result" className="w-full h-full object-cover" />
+                        <img src={resultImage} alt="Roast result" className="w-full h-full object-contain" />
 
-                        {/* No image overlays here — the AI-generated poster/tabloid
-                            often carries its own title or cover art, so the theme
-                            sticker + skull rating that used to sit at top-left and
-                            top-right would clash. Both moved to the full-verdict
-                            sheet's meta strip where they don't fight the image. */}
-
-                        {/* Meme caption + READ FULL ROAST */}
                         <div
-                            className="absolute left-0 right-0 bottom-0 px-3 pt-12 pb-3"
+                            className="absolute left-0 right-0 bottom-0 px-3 pt-7 pb-2.5"
                             style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0.92) 95%)' }}
                         >
                             <div
-                                className="font-display text-white text-center uppercase text-[22px] leading-[0.98] tracking-[0.02em]"
+                                className="font-display text-white text-center uppercase text-[20px] leading-[1.05] tracking-[0.02em]"
                                 style={{
                                     textShadow: '2px 2px 0 #000, -1px -1px 0 #000',
                                     textWrap: 'balance',
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
                                 }}
                             >
-                                {clampedText}
+                                {roastText}
                             </div>
-                            {isClamped && (
-                                <button
-                                    onClick={() => setSheetOpen(true)}
-                                    className="block mx-auto mt-2 bg-roast-ember text-slate-900 px-4 py-1.5 rounded-full border-2 border-slate-900 font-display text-[15px] tracking-[0.06em] font-bold"
-                                    style={{ boxShadow: '2px 2px 0 #0F172A' }}
-                                >
-                                    ▾ READ FULL ROAST
-                                </button>
-                            )}
                         </div>
-                    </div>
+                    </button>
 
-                    {/* Polaroid caption strip — sub-text size so the photo above
-                        gets more vertical real estate. */}
-                    <div className="flex items-center justify-between px-1 py-1.5">
+                    {/* Polaroid metadata strip — date on the left, GEMINI 3 PRO
+                        on the right, and (for long roasts) the READ FULL button
+                        riding the empty middle slot so it doesn't crowd the
+                        image overlay above. */}
+                    <div className="flex items-center justify-between gap-2 px-1 py-1.5">
                         <span className="italic text-[10px] text-[#1F1F1F]" style={{ fontFamily: "'Brush Script MT', cursive" }}>
                             — roasted, {formatRoastedDate()}
                         </span>
+                        {needsExpand && (
+                            <button
+                                onClick={() => setSheetOpen(true)}
+                                className="bg-roast-ember text-slate-900 px-2.5 py-0.5 rounded-full border border-slate-900 font-display text-[10px] tracking-[0.04em] font-bold whitespace-nowrap"
+                                style={{ boxShadow: '1px 1px 0 #0F172A' }}
+                            >
+                                ▾ READ FULL
+                            </button>
+                        )}
                         <span className="font-display text-[9px] tracking-[0.08em] text-[#3A3A3A]">
                             GEMINI 3 PRO
                         </span>
@@ -268,6 +281,40 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                     </div>
                 </div>
             </div>
+
+            {/* Lightbox — tap-to-enlarge view of the roast image. Heavy scrim
+                so the page sinks back; image scales up to fill most of the
+                viewport with the roast text below it. Small × top-right exits. */}
+            {lightboxOpen && (
+                <div
+                    className="fixed inset-0 z-[70] backdrop-blur-md flex items-center justify-center px-4 py-6"
+                    style={{ background: 'rgba(15, 30, 51, 0.92)' }}
+                    onClick={() => setLightboxOpen(false)}
+                >
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setLightboxOpen(false); }}
+                        aria-label="Close enlarged view"
+                        className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/10 border border-white/25 text-white flex items-center justify-center hover:bg-white/20 transition"
+                    >
+                        <X size={18} />
+                    </button>
+                    <div
+                        className="w-full max-w-md flex flex-col gap-3 max-h-full"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <img
+                            src={resultImage}
+                            alt="Roast result"
+                            className="w-full max-h-[62vh] object-contain rounded-xl border-2 border-white/20 bg-black"
+                        />
+                        <div className="bg-surface text-ink rounded-2xl p-4 border border-divider max-h-[28vh] overflow-y-auto">
+                            <p className="text-sm leading-[1.5] font-medium" style={{ textWrap: 'pretty' }}>
+                                {roastText}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Bottom sheet — full verdict */}
             {sheetOpen && (
