@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Roast Me — Redesign Explorations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,600;1,700;1,800&family=Inter:wght@400;500;600;700;800;900&family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #E9E8E3; font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  button { font-family: inherit; border: 0; background: none; cursor: pointer; padding: 0; }
+  /* hide scrollbar on horizontal rails */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="roast-shared.jsx"></script>
+<script type="text/babel" src="roast-direction-a.jsx"></script>
+<script type="text/babel" src="roast-direction-b.jsx"></script>
+<script type="text/babel" src="roast-direction-c.jsx"></script>
+<script type="text/babel" src="roast-direction-d.jsx"></script>
+<script type="text/babel" src="roast-direction-d-light-v2.jsx"></script>
+<script type="text/babel" src="roast-direction-d-dark.jsx"></script>
+<script type="text/babel" src="roast-direction-d-dark-v2.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState } = React;
+
+// Azure Sky tokens — locked from shared/tokens.jsx > DIRECTIONS.azure
+const AZURE = {
+  bg: '#EEF4FA',
+  bgTint: '#E0EAF4',
+  surface: '#FFFFFF',
+  surfaceAlt: '#F5F9FD',
+  ink: '#0F1E33',
+  inkSoft: '#344660',
+  muted: '#7A8BA3',
+  border: '#D7E3F1',
+  borderSoft: '#E8EFF8',
+  accent: '#2C7CD4',
+  accentSoft: '#D7E6F6',
+  gold: '#B8922F',
+  goldSoft: '#F2E4B8',
+  // roast-specific
+  roastRed: '#D83A3A',
+  roastEmber: '#F08B3A',
+};
+
+// Sample roast text — long enough to test wrapping
+const SAMPLE_ROAST = "You look like you peaked in a group photo no one else remembers being in. The kind of face that makes a passport scanner sigh. Iconic, but in a 'lost dog poster' way.";
+
+const SAMPLE_ROAST_SHORT = "You look like the 'before' photo in an ad for therapy.";
+
+// Phone wrapper — uses iOS frame
+function Phone({ children, dark = false }) {
+  return (
+    <IOSDevice width={390} height={844} dark={dark}>
+      {children}
+    </IOSDevice>
+  );
+}
+
+window.AZURE = AZURE;
+window.SAMPLE_ROAST = SAMPLE_ROAST;
+window.SAMPLE_ROAST_SHORT = SAMPLE_ROAST_SHORT;
+window.Phone = Phone;
+
+// ─── App ─────────────────────────────────────────────────
+function App() {
+  return (
+    <DesignCanvas title="Roast Me · Redesign Explorations" subtitle="Refined direction (top) + original 3 explorations · Azure Sky light mode">
+      <DCSection
+        id="dir-d-light-v2"
+        title="★ Direction D · LIGHT MODE V2 — Sleeker (matches Dark V2)"
+        subtitle="Hero stickers preserved (theme tiles, polaroid, BRUTAL tag). Chrome — buttons, refine card, sheet — uses subtle 1px borders + soft ember glow. Same conceptual treatment as Dark V2."
+      >
+        <DCArtboard id="d-light-v2-idle" label="IDLE · Light V2" width={390} height={844}>
+          <Phone><DirectionD_LightV2_Idle /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-light-v2-short" label="COMPLETE · Short · Light V2" width={390} height={844}>
+          <Phone><DirectionD_LightV2_Complete_Short /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-light-v2-long" label="COMPLETE · Long (clamped) · Light V2" width={390} height={844}>
+          <Phone><DirectionD_LightV2_Complete_Long /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-light-v2-expanded" label="COMPLETE · Full sheet · Light V2" width={390} height={844}>
+          <Phone><DirectionD_LightV2_Complete_Expanded /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection
+        id="dir-d-dark-v2"
+        title="★ Direction D · DARK MODE V2 — Sleeker (sticker hero + sleek chrome)"
+        subtitle="Same hero stickers (theme tiles, polaroid, BRUTAL tag) — but action buttons, refine card, and sheet drop the heavy outlines for subtle 1px borders + soft glows. 80% sleek dark UI + 20% sticker punctuation."
+      >
+        <DCArtboard id="d-dark-v2-idle" label="IDLE · Dark V2" width={390} height={844}>
+          <Phone dark><DirectionD_DarkV2_Idle /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-dark-v2-short" label="COMPLETE · Short · Dark V2" width={390} height={844}>
+          <Phone dark><DirectionD_DarkV2_Complete_Short /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-dark-v2-long" label="COMPLETE · Long (clamped) · Dark V2" width={390} height={844}>
+          <Phone dark><DirectionD_DarkV2_Complete_Long /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-dark-v2-expanded" label="COMPLETE · Full sheet · Dark V2" width={390} height={844}>
+          <Phone dark><DirectionD_DarkV2_Complete_Expanded /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection
+        id="dir-d-dark"
+        title="★ Direction D · DARK MODE — Same flow, dark theme"
+        subtitle="Deep slate bg + near-white ink for borders/text. Polaroid stays cream (physical object metaphor). Accent colors brightened slightly. Three states match light mode."
+      >
+        <DCArtboard id="d-dark-idle" label="IDLE · Dark" width={390} height={844}>
+          <Phone dark><DirectionD_Dark_Idle /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-dark-short" label="COMPLETE · Short roast · Dark" width={390} height={844}>
+          <Phone dark><DirectionD_Dark_Complete_Short /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-dark-long" label="COMPLETE · Long roast (clamped) · Dark" width={390} height={844}>
+          <Phone dark><DirectionD_Dark_Complete_Long /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-dark-expanded" label="COMPLETE · Full roast sheet · Dark" width={390} height={844}>
+          <Phone dark><DirectionD_Dark_Complete_Expanded /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection
+        id="dir-d"
+        title="★ Direction D · REFINED — Sticker IDLE + Hybrid COMPLETE"
+        subtitle="C's sticker IDLE (loved) · COMPLETE blends polaroid tilt (from B) + meme caption + 'Read Full Roast' bottom-sheet for long text + A-style refine card with text input. Three states shown: short verdict (fits), long verdict (clamped + read more), full sheet expanded."
+      >
+        <DCArtboard id="d-idle" label="IDLE · Sticker tile picker (unchanged from C)" width={390} height={844}>
+          <Phone><DirectionD_Idle /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-short" label="COMPLETE · Short roast (fits in caption)" width={390} height={844}>
+          <Phone><DirectionD_Complete_Short /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-long" label="COMPLETE · Long roast (clamped + Read Full)" width={390} height={844}>
+          <Phone><DirectionD_Complete_Long /></Phone>
+        </DCArtboard>
+        <DCArtboard id="d-expanded" label="COMPLETE · Full roast sheet open" width={390} height={844}>
+          <Phone><DirectionD_Complete_Expanded /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection
+        id="dir-a"
+        title="Direction A · Editorial Tabloid"
+        subtitle="Magazine pull-quote energy. Playfair display headlines, generous whitespace, the verdict is a literal newspaper masthead. Refined, premium, brand-forward."
+      >
+        <DCArtboard id="a-idle" label="IDLE · Theme picker + upload" width={390} height={844}>
+          <Phone><DirectionA_Idle /></Phone>
+        </DCArtboard>
+        <DCArtboard id="a-complete" label="COMPLETE · Image hero, verdict pinned" width={390} height={844}>
+          <Phone><DirectionA_Complete /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection
+        id="dir-b"
+        title="Direction B · Cinematic Polaroid"
+        subtitle="The roast is a moment. Theme picker as filter cards (Instagram-style), generated image presented as a polaroid/print, verdict overlaid like a film credit. Bold, visual, shareable."
+      >
+        <DCArtboard id="b-idle" label="IDLE · Filter rail + camera-style upload" width={390} height={844}>
+          <Phone><DirectionB_Idle /></Phone>
+        </DCArtboard>
+        <DCArtboard id="b-complete" label="COMPLETE · Polaroid + overlaid verdict" width={390} height={844}>
+          <Phone dark><DirectionB_Complete /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection
+        id="dir-c"
+        title="Direction C · Sticker / Meme"
+        subtitle="Maximum personality. Bebas headlines, sticker-pack theme tiles, verdict as a giant meme caption with a star-rating skull bar. Loud, fun, made to be screenshotted."
+      >
+        <DCArtboard id="c-idle" label="IDLE · Sticker tile picker" width={390} height={844}>
+          <Phone><DirectionC_Idle /></Phone>
+        </DCArtboard>
+        <DCArtboard id="c-complete" label="COMPLETE · Meme caption verdict" width={390} height={844}>
+          <Phone><DirectionC_Complete /></Phone>
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
