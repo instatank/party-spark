@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import GameHeader from './GameHeader';
+import { Home } from 'lucide-react';
 
 interface RoastLoadingProps {
     onClose: () => void;
@@ -19,10 +19,9 @@ const STATUS_MESSAGES = [
 const CYCLE_MS = 1800;
 
 // Direction D V2 — "Rubber Stamp Memo". A cream memo card sits as the hero
-// inside the Roast Me chrome, with a rotated red rubber stamp pulsing in the
-// corner, three bouncing dots, and a cycling status line. Sticker treatment
-// (2.5px ink border + hard offset shadow) is reserved for the memo card —
-// the GameHeader above it stays on the regular surface.
+// of the page, with a rotated red rubber stamp pulsing in the corner, three
+// bouncing dots, and a cycling status line. The home button floats top-right;
+// no chrome band on this screen.
 const RoastLoading: React.FC<RoastLoadingProps> = ({ onClose }) => {
     const [statusIndex, setStatusIndex] = useState(0);
 
@@ -34,8 +33,15 @@ const RoastLoading: React.FC<RoastLoadingProps> = ({ onClose }) => {
     }, []);
 
     return (
-        <div className="w-full flex flex-col font-sans">
-            <GameHeader onClose={onClose} />
+        <div className="w-full flex flex-col font-sans relative">
+            {/* Home button — top-right floating, replaces the old title band */}
+            <button
+                onClick={onClose}
+                aria-label="Home"
+                className="absolute top-4 right-4 z-20 w-[34px] h-[34px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
+            >
+                <Home size={16} />
+            </button>
 
             <div className="flex-1 flex items-center justify-center px-5 py-8 min-h-[480px]">
                 <div

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Download, Share2, RefreshCcw, Wand2, X, Skull } from 'lucide-react';
+import { Download, Share2, RefreshCcw, Wand2, X, Skull, Home } from 'lucide-react';
 import { editImage, cleanBase64, type RoastTheme } from '../../../services/geminiService';
-import GameHeader from './GameHeader';
 
 interface RoastResultProps {
     originalImage: string;
@@ -123,9 +122,16 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
 
     return (
         <div className="w-full flex flex-col font-sans relative">
-            <GameHeader onClose={onClose} />
+            {/* Home button — top-right floating, replaces the old title band */}
+            <button
+                onClick={onClose}
+                aria-label="Home"
+                className="absolute top-4 right-4 z-20 w-[34px] h-[34px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
+            >
+                <Home size={16} />
+            </button>
 
-            <div className="flex-1 flex flex-col gap-3 px-4 pt-3.5 pb-4 overflow-hidden">
+            <div className="flex-1 flex flex-col gap-3 px-4 pt-14 pb-4 overflow-hidden">
                 {/* Polaroid card — sticker treatment in BOTH modes (it's the hero) */}
                 <div
                     className="bg-polaroid border-[2.5px] border-ink rounded-[10px] mx-1.5 px-2.5 pt-2.5 pb-0"

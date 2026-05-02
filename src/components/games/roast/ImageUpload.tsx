@@ -1,7 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Camera as CameraIcon, Image as PhotoIcon, Sparkles } from 'lucide-react';
+import { Camera as CameraIcon, Image as PhotoIcon, Sparkles, Home } from 'lucide-react';
 import type { RoastTheme } from '../../../services/geminiService';
-import GameHeader from './GameHeader';
 
 interface ImageUploadProps {
     theme: RoastTheme;
@@ -128,34 +127,46 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
     }
 
     return (
-        <div className="w-full flex flex-col font-sans">
-            <GameHeader onClose={onClose} />
+        <div className="w-full flex flex-col font-sans relative">
+            {/* Home button — top-right floating, replaces the old title band */}
+            <button
+                onClick={onClose}
+                aria-label="Home"
+                className="absolute top-4 right-4 z-20 w-[34px] h-[34px] rounded-full bg-surface border border-divider text-muted hover:text-ink hover:bg-surface-alt transition flex items-center justify-center"
+            >
+                <Home size={16} />
+            </button>
 
-            <div className="flex-1 flex flex-col gap-4 px-5 pt-4 pb-6 overflow-hidden">
-                {/* Hero title — Bebas ROAST/ME!! with gold BRUTAL sticker */}
-                <div className="relative">
+            <div className="flex-1 flex flex-col gap-4 px-5 pt-7 pb-6 overflow-hidden">
+                {/* Hero title — ROAST/ME!! is now the page title; the gold BRUTAL
+                    tag rides on ME!!'s upper-right edge so the home icon can take
+                    the page's top-right corner without a chrome band. */}
+                <div>
                     <h1 className="font-display text-[72px] leading-[0.85] tracking-wide text-ink m-0">
                         ROAST
                         <br />
                         <span
-                            className="inline-block text-roast-red"
+                            className="inline-block text-roast-red relative"
                             style={{
                                 WebkitTextStroke: '2px var(--c-ink)',
                                 transform: 'rotate(-2deg)',
                             }}
                         >
                             ME!!
+                            <span
+                                className="absolute bg-gold text-slate-900 font-display text-[14px] tracking-[0.08em] px-2.5 py-1 rounded-md border-2 border-slate-900 whitespace-nowrap"
+                                style={{
+                                    top: '-4px',
+                                    left: 'calc(100% + 10px)',
+                                    transform: 'rotate(8deg)',
+                                    boxShadow: '2px 2px 0 #0F172A',
+                                    WebkitTextStroke: '0',
+                                }}
+                            >
+                                BRUTAL!
+                            </span>
                         </span>
                     </h1>
-                    <div
-                        className="absolute top-2 right-0 bg-gold text-slate-900 font-display text-[13px] tracking-[0.1em] px-3 py-1.5 rounded-lg border-2 border-slate-900"
-                        style={{
-                            transform: 'rotate(6deg)',
-                            boxShadow: '3px 3px 0 #0F172A',
-                        }}
-                    >
-                        BRUTAL!
-                    </div>
                     <p className="mt-2 text-xs font-medium text-ink-soft">
                         Pick a sticker, drop a pic, get destroyed.
                     </p>
