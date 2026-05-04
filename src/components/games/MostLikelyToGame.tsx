@@ -4,7 +4,7 @@ import { generateMostLikelyTo, generateCustomMostLikelyTo } from '../../services
 import { MOST_LIKELY_TO_CATEGORIES } from '../../constants';
 import { Users, ChevronRight, Hand, AlertTriangle, Sparkles, Flame, Zap, Wand2, ArrowLeft, Home } from 'lucide-react';
 import MOST_LIKELY_TO_DATA from '../../data/most_likely_to.json';
-import { sessionService } from '../../services/SessionManager';
+import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -128,8 +128,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
         const BATCH_SIZE = 25;
 
         if (availableLocal.length >= BATCH_SIZE) {
-            const shuffled = [...availableLocal].sort(() => 0.5 - Math.random());
-            selectedCards = shuffled.slice(0, BATCH_SIZE);
+            selectedCards = shuffle(availableLocal).slice(0, BATCH_SIZE);
         } else {
             selectedCards = [...availableLocal];
             const needed = BATCH_SIZE - selectedCards.length;

@@ -3,6 +3,8 @@ import { Card, ScreenHeader, Button } from '../ui/Layout';
 import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight } from 'lucide-react';
 
 import factData from '../../data/fact_or_fiction.json';
+import { sessionService } from '../../services/SessionManager';
+import { GameType } from '../../types';
 
 interface Question {
     id: string;
@@ -41,19 +43,32 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
     const categories = factData.categories as Category[];
 
     const handleCategorySelect = (category: Category) => {
+        // Drop questions already played this session for the chosen category;
+        // fall back to the full pool if the player has exhausted it.
+        const filtered = sessionService.filterContent(
+            GameType.FACT_OR_FICTION,
+            category.id,
+            category.questions,
+            (q) => q.id,
+        );
+        const startingPool = filtered.length > 0 ? filtered : category.questions;
         setSelectedCategory(category);
-        setAvailableQuestions([...category.questions]);
+        setAvailableQuestions([...startingPool]);
         setDifficulty(1);
         setScore(0);
         setStrikes(0);
         setWrongStreak(0);
         answeredRef.current = false;
-        loadNextQuestion(category.questions, 1);
+        loadNextQuestion(startingPool, 1, category.id);
         setGameState('playing');
         setTimeLeft(TIMER_SECONDS);
     };
 
-    const loadNextQuestion = (questionsPool: Question[], currentDiff: number) => {
+    // categoryIdOverride is only needed on the very first load — at that point
+    // the selectedCategory state hasn't propagated through the closure yet.
+    // Subsequent calls fall back to reading state, which is up-to-date.
+    const loadNextQuestion = (questionsPool: Question[], currentDiff: number, categoryIdOverride?: string) => {
+        const categoryId = categoryIdOverride ?? selectedCategory?.id;
         // Try to find a question matching exact difficulty
         const exactMatches = questionsPool.filter(q => q.difficultyLevel === currentDiff);
         
@@ -73,9 +88,13 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
             // Pick random from valid pool
             const q = poolToDrawFrom[Math.floor(Math.random() * poolToDrawFrom.length)];
             setCurrentQuestion(q);
-            
-            // Remove it from available
+
+            // Remove it from this round's available pool, and record it on the
+            // session so it won't reappear if the user replays the category later.
             setAvailableQuestions(prev => prev.filter(item => item.id !== q.id));
+            if (categoryId) {
+                sessionService.markAsUsed(GameType.FACT_OR_FICTION, categoryId, q.id);
+            }
         } else {
             // Out of questions
             setGameState('round_over');

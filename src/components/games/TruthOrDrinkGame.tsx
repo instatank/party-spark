@@ -5,6 +5,8 @@ import { Sparkles, Flame, ArrowRight, ChevronRight, Plus, X, Shuffle, GlassWater
 import questionData from '../../data/truth_or_drink.json';
 import { generateCustomTruthOrDrink } from '../../services/geminiService';
 import { useTheme } from '../../contexts/ThemeContext';
+import { sessionService, shuffle } from '../../services/SessionManager';
+import { GameType } from '../../types';
 
 type Category = 'classic' | 'spicy' | 'deep' | 'exes' | 'chaos' | 'custom';
 type GameState =
@@ -172,15 +174,6 @@ const TOTAL_ROUNDS = 10;
 const MAX_PLAYERS = 10;
 const MIN_PLAYERS = 2;
 
-const shuffle = <T,>(arr: T[]): T[] => {
-    const copy = [...arr];
-    for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-};
-
 export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
     const { theme } = useTheme();
     const DECK_MAP = theme === 'light' ? DECK_PALETTE_LIGHT : DECK_PALETTE_DARK;
@@ -212,12 +205,21 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     const categoryMeta = CATEGORIES.find(c => c.id === category)!;
 
     // Shuffle the deck on entry. For 'custom', use the AI-generated cards instead of the static pool.
+    // For curated decks, drop questions already played this session before shuffling; if the
+    // pool is empty (everything's been played) fall back to the full deck so the round still works.
     const deck = useMemo(() => {
         if (category === 'custom') {
             return customDeck ? customDeck.slice(0, TOTAL_ROUNDS) : [];
         }
         const pool = (questionData as Record<string, string[]>)[category] || [];
-        return shuffle(pool).slice(0, TOTAL_ROUNDS);
+        const available = sessionService.filterContent(
+            GameType.TRUTH_OR_DRINK,
+            category,
+            pool,
+            (q) => q,
+        );
+        const source = available.length > 0 ? available : pool;
+        return shuffle(source).slice(0, TOTAL_ROUNDS);
     }, [category, customDeck, players.length, gameState === 'CATEGORY_SELECT']);
 
     const wordCount = customContext.trim().split(/\s+/).filter(Boolean).length;
@@ -322,6 +324,11 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     // (last round) or advance to the next prompt. In just_play we skip
     // tallying — choice stays purely cosmetic.
     const handleChoice = (choice: Choice) => {
+        // Mark the question the player just answered as used so it won't repeat
+        // this session. Custom-vibe questions are AI-generated and not tracked.
+        if (currentQuestion && category !== 'custom') {
+            sessionService.markAsUsed(GameType.TRUTH_OR_DRINK, category, currentQuestion);
+        }
         setLastChoice(choice);
         if (playMode === 'named' && currentPlayer) {
             setScores(prev => {

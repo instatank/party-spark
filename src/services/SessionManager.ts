@@ -1,12 +1,15 @@
-
 const SESSION_KEY = 'party_spark_session';
-const SESSION_DURATION = 2 * 60 * 60 * 1000; // 2 Hours
+// Sliding window: a session expires after this much *inactivity*. Each call
+// to markAsUsed bumps lastActivity. So a long party-game arc (e.g. 7pm to
+// midnight) stays one session as long as cards keep getting played.
+const SESSION_INACTIVITY_MS = 2 * 60 * 60 * 1000; // 2 hours of idle
 
 interface SessionData {
     startTime: number;
+    lastActivity: number;
     usedContent: {
         [gameId: string]: {
-            [category: string]: string[]; // Array of used IDs or Content Hashes
+            [category: string]: string[]; // Array of used IDs or content hashes
         }
     }
 }
@@ -22,20 +25,26 @@ class SessionService {
         try {
             const raw = localStorage.getItem(SESSION_KEY);
             if (raw) {
-                const data: SessionData = JSON.parse(raw);
-                // Check expiry
-                if (Date.now() - data.startTime < SESSION_DURATION) {
-                    return data;
+                const data = JSON.parse(raw) as Partial<SessionData>;
+                // Backwards-compat: pre-sliding-window sessions only had startTime;
+                // treat startTime as the de-facto lastActivity in that case.
+                const lastActivity = data.lastActivity ?? data.startTime ?? 0;
+                if (Date.now() - lastActivity < SESSION_INACTIVITY_MS) {
+                    return {
+                        startTime: data.startTime ?? Date.now(),
+                        lastActivity,
+                        usedContent: data.usedContent ?? {},
+                    };
                 }
             }
         } catch (e) {
             console.error("Failed to load session", e);
         }
 
-        // Return fresh session if invalid/expired
         return {
             startTime: Date.now(),
-            usedContent: {}
+            lastActivity: Date.now(),
+            usedContent: {},
         };
     }
 
@@ -57,13 +66,15 @@ class SessionService {
 
         if (!this.session.usedContent[gameId][category].includes(idOrHash)) {
             this.session.usedContent[gameId][category].push(idOrHash);
-            this.saveSession();
         }
+        // Bump the sliding-window timer on every play so an active party night
+        // stays one session even if it runs past 2 hours from the start.
+        this.session.lastActivity = Date.now();
+        this.saveSession();
     }
 
     public getUsageCount(gameId: string): number {
         if (!this.session.usedContent[gameId]) return 0;
-        // Sum up all items across all categories for this game
         return Object.values(this.session.usedContent[gameId]).reduce((acc, curr) => acc + curr.length, 0);
     }
 
@@ -86,12 +97,26 @@ class SessionService {
     }
 
     public resetSession() {
+        const now = Date.now();
         this.session = {
-            startTime: Date.now(),
-            usedContent: {}
+            startTime: now,
+            lastActivity: now,
+            usedContent: {},
         };
         this.saveSession();
     }
 }
 
 export const sessionService = new SessionService();
+
+// Fisher-Yates shuffle. Returns a new array — does NOT mutate the input.
+// Replaces the biased `[...arr].sort(() => 0.5 - Math.random())` pattern
+// that several games used; produces a uniform random permutation.
+export function shuffle<T>(items: readonly T[]): T[] {
+    const arr = items.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}

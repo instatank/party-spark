@@ -1,4 +1,5 @@
 import gamesDataRaw from '../data/games_data.json';
+import { shuffle } from './SessionManager';
 const gamesData = gamesDataRaw as any;
 
 export const getLocalCharadesWords = (categoryId: string, count: number = 20): string[] => {
@@ -12,16 +13,14 @@ export const getLocalCharadesWords = (categoryId: string, count: number = 20): s
                 const all = gamesData.games.charades.categories
                     .filter((c: any) => c.id !== 'mix_movies')
                     .flatMap((c: any) => c.items);
-                const shuffled = [...all].sort(() => 0.5 - Math.random());
-                return shuffled.slice(0, count);
+                return shuffle(all as string[]).slice(0, count);
             }
             console.warn(`Category ${categoryId} not found in local data.`);
             return [];
         }
 
         // Shuffle and slice
-        const shuffled = [...category.items].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
+        return shuffle(category.items as string[]).slice(0, count);
     } catch (e) {
         console.error("Error reading local game data", e);
         return [];
@@ -35,8 +34,7 @@ export const getLocalTabooCards = (categoryId: string, count: number = 20): any[
                 .filter((c: any) => c.id !== 'mix_taboo')
                 .flatMap((c: any) => c.items);
 
-            const shuffled = [...allCards].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, count);
+            return shuffle(allCards).slice(0, count);
         }
 
         const category = gamesData.games.taboo.categories.find((c: any) => c.id === categoryId);
@@ -46,8 +44,7 @@ export const getLocalTabooCards = (categoryId: string, count: number = 20): any[
             return [];
         }
 
-        const shuffled = [...category.items].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
+        return shuffle(category.items).slice(0, count);
     } catch (e) {
         console.error("Error reading local taboo data", e);
         return [];

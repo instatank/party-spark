@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ScreenHeader } from '../ui/Layout';
 import type { MafiaPlayer, MafiaRole } from '../../types';
 import { Users, UserPlus, Lock, Shield, Eye, Crosshair, Skull, Award } from 'lucide-react';
+import { shuffle } from '../../services/SessionManager';
 
 type GameState = 'SETUP' | 'ROLE_REVEAL' | 'NIGHT_TRANSITION' | 'NIGHT_ACTION' | 'DAY_REVEAL' | 'DAY_DEBATE' | 'DAY_VOTE' | 'VOTE_REVEAL' | 'GAME_OVER';
 
@@ -116,7 +117,7 @@ export const MiniMafiaGame: React.FC<Props> = ({ onExit }) => {
         while (roles.length < players.length) roles.push('VILLAGER');
 
         // Shuffle roles, keeping player order intact
-        const shuffledRoles = roles.sort(() => Math.random() - 0.5);
+        const shuffledRoles = shuffle(roles);
         
         const newPlayers = players.map((p, i) => ({
             ...p, 

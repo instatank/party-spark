@@ -3,6 +3,8 @@ import { NEVER_HAVE_I_EVER_CATEGORIES } from '../../constants';
 import { ScreenHeader } from '../ui/Layout';
 import neverHaveIEverData from '../../data/never_have_i_ever.json';
 import { generateNeverHaveIEver, generateCustomNeverHaveIEver } from '../../services/geminiService';
+import { sessionService, shuffle } from '../../services/SessionManager';
+import { GameType } from '../../types';
 import type { LucideIcon } from 'lucide-react';
 import { Sparkles, Lock, ChevronRight, Hand, Users, Wand2, ShieldCheck, Flame, Smile } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -94,11 +96,19 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
 
     // Initialize with local data depending on category. Skip for custom_vibe —
     // its deck comes from AI generation and is set directly by startCustomGame.
+    // Cards already played this session are filtered out; if the pool runs dry
+    // we fall back to the full set so the round can still play.
     useEffect(() => {
         if (gameState === 'PLAY' && category && category !== 'custom_vibe') {
             const localCards = (neverHaveIEverData as Record<string, string[]>)[category] || [];
-            const shuffled = [...localCards].sort(() => 0.5 - Math.random());
-            setCards(shuffled);
+            const available = sessionService.filterContent(
+                GameType.NEVER_HAVE_I_EVER,
+                category,
+                localCards,
+                (c) => c
+            );
+            const pool = available.length > 0 ? available : localCards;
+            setCards(shuffle(pool));
             setCurrentIndex(0);
         }
     }, [gameState, category]);
@@ -136,6 +146,12 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     };
 
     const handleNextCard = async () => {
+        // Mark the card the user just saw as played so it won't repeat this session.
+        // Custom-vibe cards are AI-generated per session and not tracked.
+        if (cards[currentIndex] && category && category !== 'custom_vibe') {
+            sessionService.markAsUsed(GameType.NEVER_HAVE_I_EVER, category, cards[currentIndex]);
+        }
+
         if (currentIndex < cards.length - 1) {
             setCurrentIndex(prev => prev + 1);
             return;
