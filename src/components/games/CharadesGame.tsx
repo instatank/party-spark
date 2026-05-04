@@ -5,7 +5,7 @@ import { generateCharadesWords } from '../../services/geminiService';
 import { useContent } from '../../contexts/ContentContext';
 import { CHARADES_CATEGORIES } from '../../constants';
 import gamesDataRaw from '../../data/games_data.json';
-import { sessionService } from '../../services/SessionManager';
+import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -90,8 +90,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
 
             if (availableLocal.length >= INITIAL_BATCH_SIZE) {
                 // Enough local content
-                const shuffled = [...availableLocal].sort(() => 0.5 - Math.random());
-                selectedWords = shuffled.slice(0, INITIAL_BATCH_SIZE);
+                selectedWords = shuffle(availableLocal).slice(0, INITIAL_BATCH_SIZE);
             } else {
                 // Not enough local, use what's left + generate
                 selectedWords = [...availableLocal];
@@ -102,8 +101,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                 } catch (e) {
                     console.error("Failed to generate charades", e);
                     // Fallback to all local (repeats)
-                    const shuffled = [...allLocalWords].sort(() => 0.5 - Math.random());
-                    selectedWords = [...selectedWords, ...shuffled.slice(0, needed)];
+                    selectedWords = [...selectedWords, ...shuffle(allLocalWords).slice(0, needed)];
                 }
             }
 

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, Button, ScreenHeader } from '../ui/Layout';
 import { VenetianMask, Check, User, Eye, ArrowRight, RotateCcw, Loader2 } from 'lucide-react';
 import { IMPOSTER_CATEGORIES } from '../../constants';
-import { sessionService } from '../../services/SessionManager';
+import { sessionService, shuffle } from '../../services/SessionManager';
 import { generateImposterContent } from '../../services/geminiService';
 import { GameType } from '../../types';
 
@@ -138,7 +138,7 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
         }));
 
         // Shuffle reveal order so it's different every game
-        const newPlayers = [...assignedPlayers].sort(() => Math.random() - 0.5);
+        const newPlayers = shuffle(assignedPlayers);
 
         setPlayers(newPlayers);
         setImposterName(newPlayers.find(p => p.isImposter)!.name);

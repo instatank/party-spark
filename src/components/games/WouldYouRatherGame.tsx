@@ -5,7 +5,7 @@ import { ScreenHeader } from '../ui/Layout';
 import { ArrowRight, Brain, ChevronRight, Sparkles, Compass, Film, Flame } from 'lucide-react';
 import WYR_DATA from '../../data/would_you_rather.json';
 import { WOULD_YOU_RATHER_CATEGORIES } from '../../constants';
-import { sessionService } from '../../services/SessionManager';
+import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 
@@ -77,10 +77,10 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
 
         let pool: WYRQuestion[];
         if (available.length >= ROUND_SIZE) {
-            pool = [...available].sort(() => 0.5 - Math.random()).slice(0, ROUND_SIZE);
+            pool = shuffle(available).slice(0, ROUND_SIZE);
         } else {
-            // Reset session tracking — full deck nearly exhausted, reshuffle from all
-            pool = [...category.items].sort(() => 0.5 - Math.random()).slice(0, ROUND_SIZE);
+            // Pool nearly exhausted — reshuffle from all so the round can finish.
+            pool = shuffle(category.items).slice(0, ROUND_SIZE);
         }
 
         setActiveCategory(category);

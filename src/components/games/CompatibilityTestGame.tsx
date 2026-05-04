@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
 import { Heart, Users, ArrowRight, ChevronRight, Eye, EyeOff, Target, User, Shuffle, Rabbit } from 'lucide-react';
 import questionData from '../../data/compatibility_test.json';
+import { sessionService, shuffle } from '../../services/SessionManager';
+import { GameType } from '../../types';
 
 interface Question {
     text: string;
@@ -109,18 +111,23 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
     const predictorName = isAPredictor ? playerA : playerB;
     const answererName = isAPredictor ? playerB : playerA;
 
-    // Pick 5 random questions for each round (memoized on mode)
+    // Pick 5 random questions for each round (memoized on mode). Drop questions
+    // already played this session for the same mode+round; if a round's pool is
+    // exhausted, fall back to the full set so the game can still play.
     const selectedQuestions = useMemo(() => {
         const modeData = questionData[mode];
         const result: Record<Round, Question[]> = { round1: [], round2: [], round3: [] };
         (['round1', 'round2', 'round3'] as Round[]).forEach(round => {
-            const pool = [...modeData[round]];
-            // Shuffle
-            for (let i = pool.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [pool[i], pool[j]] = [pool[j], pool[i]];
-            }
-            result[round] = pool.slice(0, QUESTIONS_PER_ROUND);
+            const pool = modeData[round];
+            const cat = `${mode}:${round}`;
+            const available = sessionService.filterContent(
+                GameType.COMPATIBILITY_TEST,
+                cat,
+                pool,
+                (q) => q.text,
+            );
+            const source = available.length >= QUESTIONS_PER_ROUND ? available : pool;
+            result[round] = shuffle(source).slice(0, QUESTIONS_PER_ROUND);
         });
         return result;
     }, [mode, playerA, playerB]); // Re-roll when starting a new game
@@ -180,6 +187,15 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
     };
 
     const handleNext = () => {
+        // Mark the question both players just answered as used so it won't
+        // repeat this session for this mode+round.
+        if (currentQuestion?.text) {
+            sessionService.markAsUsed(
+                GameType.COMPATIBILITY_TEST,
+                `${mode}:${currentRound}`,
+                currentQuestion.text,
+            );
+        }
         setPrediction(null);
         setAnswer(null);
 

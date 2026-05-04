@@ -4,7 +4,7 @@ import { Button, Card, ScreenHeader } from '../ui/Layout';
 import { useContent } from '../../contexts/ContentContext';
 import type { TabooCard } from '../../types';
 import { Timer, ThumbsUp, X, Ban } from 'lucide-react';
-import { sessionService } from '../../services/SessionManager';
+import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import gamesDataRaw from '../../data/games_data.json';
 import { TABOO_CATEGORIES } from '../../constants';
@@ -58,11 +58,10 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
 
         if (availableLocal.length >= 5) {
             // Shuffle ALL available cards and load the full deck — no repeats until exhausted
-            selectedCards = [...availableLocal].sort(() => 0.5 - Math.random());
+            selectedCards = shuffle(availableLocal);
         } else {
-            // Pool nearly exhausted — reset session tracking for this category and reshuffle from full set
-            // Reshuffle from ALL local cards since the filtered pool is nearly empty
-            selectedCards = [...allLocalCards].sort(() => 0.5 - Math.random());
+            // Pool nearly exhausted — reshuffle from full set so the round can finish
+            selectedCards = shuffle(allLocalCards);
         }
 
         setCards(selectedCards);
