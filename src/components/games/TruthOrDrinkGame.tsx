@@ -1,13 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Flame, ArrowRight, ChevronRight, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2 } from 'lucide-react';
+import { Sparkles, Flame, ArrowRight, ChevronRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2 } from 'lucide-react';
 import questionData from '../../data/truth_or_drink.json';
 import { generateCustomTruthOrDrink } from '../../services/geminiService';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
-import PlayerRosterRow from '../ui/PlayerRosterRow';
 
 type Category = 'classic' | 'spicy' | 'deep' | 'exes' | 'chaos' | 'custom';
 type GameState =
@@ -184,10 +183,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     };
     const [gameState, setGameState] = useState<GameState>('CATEGORY_SELECT');
     const [category, setCategory] = useState<Category>('classic');
-    // Player roster is shared across Forecast, TOD, Imposter, Mafia via
-    // SessionService. Seeding from getPlayers() means a couple coming from
-    // Forecast lands here with their names already populated.
-    const [players, setPlayers] = useState<string[]>(() => sessionService.getPlayers());
+    const [players, setPlayers] = useState<string[]>(['', '']);
     const [turnIndex, setTurnIndex] = useState(0);
     const [roundIndex, setRoundIndex] = useState(0);
     const [lastChoice, setLastChoice] = useState<Choice | null>(null);
@@ -245,9 +241,21 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setGameState('SETUP');
     };
 
-    // Add/remove/rename are now handled by PlayerRosterRow's inline editor.
-    // Keeping handleStartGame's `canStart` predicate driving on `players` is
-    // enough for the SETUP screen; the row writes back through setPlayers.
+    const handleAddPlayer = () => {
+        if (players.length >= MAX_PLAYERS) return;
+        setPlayers([...players, '']);
+    };
+
+    const handleRemovePlayer = (i: number) => {
+        if (players.length <= MIN_PLAYERS) return;
+        setPlayers(players.filter((_, idx) => idx !== i));
+    };
+
+    const handlePlayerNameChange = (i: number, value: string) => {
+        const next = [...players];
+        next[i] = value;
+        setPlayers(next);
+    };
 
     const handleStartGame = () => {
         if (!canStart) return;
@@ -346,10 +354,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     const handleEndEarly = () => setGameState('END');
 
     const handlePlayAgain = () => {
-        // Names stay on the session roster so the same group can pick another
-        // deck (or another game) without re-entering. Use the ✕ on the roster
-        // row to clear them explicitly.
         setGameState('CATEGORY_SELECT');
+        setPlayers(['', '']);
         setTurnIndex(0);
         setRoundIndex(0);
         setLastChoice(null);
@@ -445,18 +451,39 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         </span>
                     </div>
 
-                    <div className="flex-1 flex flex-col items-center justify-center">
-                        <PlayerRosterRow
-                            players={players}
-                            onPlayersChange={setPlayers}
-                            minPlayers={MIN_PLAYERS}
-                            maxPlayers={MAX_PLAYERS}
-                            label="Who's playing"
-                        />
-                        {players.length === 0 && (
-                            <p className="text-center text-xs text-muted mt-1 max-w-[280px]">
-                                Add at least {MIN_PLAYERS} players, or skip below to play unnamed.
-                            </p>
+                    <div className="space-y-3 flex-1">
+                        {players.map((name, i) => (
+                            <div key={i} className="flex items-center gap-2">
+                                <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${categoryMeta.gradient} flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-lg ${categoryMeta.shadow}`}>
+                                    {i + 1}
+                                </div>
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={e => handlePlayerNameChange(i, e.target.value)}
+                                    placeholder={`Player ${i + 1}`}
+                                    maxLength={15}
+                                    className={`flex-1 bg-surface-alt border border-divider ${categoryMeta.accentBorderFocus} rounded-xl p-3 text-ink font-medium placeholder:text-muted outline-none transition-colors`}
+                                />
+                                {players.length > MIN_PLAYERS && (
+                                    <button
+                                        onClick={() => handleRemovePlayer(i)}
+                                        className="p-2 rounded-lg bg-surface-alt hover:bg-red-500/20 text-muted hover:text-red-500 transition-colors"
+                                        aria-label={`Remove player ${i + 1}`}
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+
+                        {players.length < MAX_PLAYERS && (
+                            <button
+                                onClick={handleAddPlayer}
+                                className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-divider hover:border-ink-soft text-muted hover:text-ink transition-colors"
+                            >
+                                <Plus size={18} /> Add Player
+                            </button>
                         )}
                     </div>
 

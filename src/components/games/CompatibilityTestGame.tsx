@@ -4,7 +4,6 @@ import { Heart, Users, ArrowRight, ChevronRight, Eye, EyeOff, Target, User, Shuf
 import questionData from '../../data/compatibility_test.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
-import PlayerRosterRow from '../ui/PlayerRosterRow';
 
 interface Question {
     text: string;
@@ -96,13 +95,8 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
     // State
     const [gameState, setGameState] = useState<GameState>('MODE_SELECT');
     const [mode, setMode] = useState<GameMode>('couples');
-    // Player names live on the shared session roster so Forecast → TOD →
-    // Imposter → Mafia all auto-fill. Forecast only needs the first two; we
-    // expose them as playerA/playerB derived getters so the rest of the
-    // component (which is heavily read-only on these names) didn't change.
-    const [players, setPlayers] = useState<string[]>(() => sessionService.getPlayers());
-    const playerA = players[0] ?? '';
-    const playerB = players[1] ?? '';
+    const [playerA, setPlayerA] = useState('');
+    const [playerB, setPlayerB] = useState('');
     const [currentRound, setCurrentRound] = useState<Round>('round1');
     const [questionIndex, setQuestionIndex] = useState(0);
     const [prediction, setPrediction] = useState<string | null>(null);
@@ -301,30 +295,39 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
 
     // SETUP — Name entry
     if (gameState === 'SETUP') {
-        const ready = players.length >= 2 && players[0].trim() && players[1].trim();
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
                 <ScreenHeader title="Who's Playing?" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
                 <div className="flex-1 flex flex-col justify-center px-2 gap-6">
-                    <p className="text-sm text-muted text-center">
-                        Two players. Take turns predicting each other's answers.
-                    </p>
-                    {/* Forecast needs exactly 2 names — fixedSize hides the +/✕
-                        affordances so the row can't grow or shrink. Names persist
-                        across games (TOD/Imposter/Mafia auto-fill). */}
-                    <PlayerRosterRow
-                        players={players}
-                        onPlayersChange={setPlayers}
-                        minPlayers={2}
-                        maxPlayers={2}
-                        label="Player names"
-                        fixedSize
-                    />
+                    <div className="space-y-4">
+                        <div>
+                            <label className="text-xs font-bold text-muted uppercase tracking-widest mb-2 block">Player 1</label>
+                            <input
+                                type="text"
+                                value={playerA}
+                                onChange={e => setPlayerA(e.target.value)}
+                                placeholder="Enter name..."
+                                maxLength={15}
+                                className={`w-full bg-surface-alt border border-divider ${accent.focusBorder500} rounded-xl p-4 text-ink text-lg font-medium placeholder:text-muted outline-none transition-colors`}
+                            />
+                        </div>
+                        <div>
+                            <label className="text-xs font-bold text-muted uppercase tracking-widest mb-2 block">Player 2</label>
+                            <input
+                                type="text"
+                                value={playerB}
+                                onChange={e => setPlayerB(e.target.value)}
+                                placeholder="Enter name..."
+                                maxLength={15}
+                                className={`w-full bg-surface-alt border border-divider ${accent.focusBorder500} rounded-xl p-4 text-ink text-lg font-medium placeholder:text-muted outline-none transition-colors`}
+                            />
+                        </div>
+                    </div>
 
                     <Button
                         onClick={handleStartGame}
-                        className={`w-full py-4 text-lg ${!ready ? 'opacity-40' : ''}`}
-                        disabled={!ready}
+                        className={`w-full py-4 text-lg ${!playerA.trim() || !playerB.trim() ? 'opacity-40' : ''}`}
+                        disabled={!playerA.trim() || !playerB.trim()}
                     >
                         Start The Forecast <ArrowRight className="inline ml-2" size={20} />
                     </Button>
@@ -601,9 +604,9 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
 
                     <div className="flex flex-col gap-3 w-full mt-2">
                         <Button onClick={() => {
-                            // Names stay on the session roster so the same
-                            // couple can pick another game without re-entering.
                             setGameState('MODE_SELECT');
+                            setPlayerA('');
+                            setPlayerB('');
                         }} className="w-full py-3">
                             <Shuffle className="inline mr-2" size={18} /> Play Again
                         </Button>
