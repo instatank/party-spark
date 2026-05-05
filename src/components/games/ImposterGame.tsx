@@ -171,7 +171,14 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
     if (gameState === 'SETUP') {
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Setup Game" onBack={onExit} onHome={onExit} />
+                <ScreenHeader title="Imposter" onBack={onExit} onHome={onExit} />
+                {/* Game-home hero — same compact pattern as the other game
+                    home screens. -mt-3 closes the dead gap below ScreenHeader. */}
+                <div className="text-center mb-3 -mt-3">
+                    <p className="text-3xl mb-1.5 leading-none">🕵️</p>
+                    <h2 className="text-lg font-serif font-bold text-ink mb-0.5">Who's the <em>imposter</em>?</h2>
+                    <p className="text-muted text-sm">Everyone learns the word — except one. Find them.</p>
+                </div>
                 <Card className="p-6 flex-1 overflow-y-auto">
                     <div className="text-center mb-6">
                         <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-party-accent border border-party-accent/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block mb-2 rounded shadow-lg uppercase">

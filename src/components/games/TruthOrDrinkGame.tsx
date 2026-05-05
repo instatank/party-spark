@@ -378,9 +378,14 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Truth or Drink" onBack={onExit} onHome={onExit} />
-                <p className="text-muted mb-4 text-sm text-center">
-                    Pick a deck. Answer honestly — or take a sip.
-                </p>
+                {/* Game-home hero — same compact pattern as The Forecast:
+                    icon on its own line, Playfair tagline, then a tight
+                    descriptor. -mt-3 closes the dead gap below ScreenHeader. */}
+                <div className="text-center mb-4 -mt-3">
+                    <p className="text-3xl mb-1.5 leading-none">🍷</p>
+                    <h2 className="text-lg font-serif font-bold text-ink mb-0.5">How honest are you <em>really</em>?</h2>
+                    <p className="text-muted text-sm">Answer honestly — or take a sip.</p>
+                </div>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {CATEGORIES.map(cat => {

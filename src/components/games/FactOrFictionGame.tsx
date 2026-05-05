@@ -229,10 +229,14 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
                 <ScreenHeader title="Fact or Fiction" onBack={onExit} onHome={onExit} />
+                {/* Game-home hero — same compact pattern as Forecast / TOD / MLT.
+                    -mt-3 closes the dead gap below ScreenHeader. */}
+                <div className="text-center mb-4 -mt-3">
+                    <p className="text-3xl mb-1.5 leading-none">🤔</p>
+                    <h2 className="text-lg font-serif font-bold text-ink mb-0.5">Can you tell what's <em>actually</em> true?</h2>
+                    <p className="text-muted text-sm">Race the clock. 3 strikes — you're out.</p>
+                </div>
                 <div className="px-2 pb-6 flex-1 flex flex-col">
-                    <p className="text-ink-soft text-center mb-6">
-                        Race the clock to determine the truth. Getting it right makes it harder.
-                    </p>
                     <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
                     <div className="space-y-3">
                         {categories.map(cat => (
