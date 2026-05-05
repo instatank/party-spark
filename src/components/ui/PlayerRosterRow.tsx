@@ -5,10 +5,13 @@ import { sessionService } from '../../services/SessionManager';
 interface PlayerRosterRowProps {
     players: string[];
     onPlayersChange: (next: string[]) => void;
-    minPlayers: number;        // game-specific floor (Forecast 2, TOD 2, Imposter 3, Mafia 5)
-    maxPlayers: number;        // game-specific ceiling (Forecast 2, TOD 10, others ~15)
+    minPlayers: number;        // game-specific floor (Forecast 2, TOD 2)
+    maxPlayers: number;        // game-specific ceiling (Forecast 2, TOD 10)
     label?: string;            // override row label; defaults to "Player names"
     fixedSize?: boolean;       // when true, hide + and ✕ (e.g. Forecast: exactly 2)
+    hideWhenEmpty?: boolean;   // when true and roster is empty, render nothing.
+                               // Used by games (MLT, NHIE) that don't prompt
+                               // for entry but display existing roster.
 }
 
 // Sibling of TeamRosterRow but for individual human players. Same three-state
@@ -23,6 +26,7 @@ const PlayerRosterRow: React.FC<PlayerRosterRowProps> = ({
     maxPlayers,
     label = 'Player names',
     fixedSize = false,
+    hideWhenEmpty = false,
 }) => {
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState<string[]>(['', '']);
@@ -170,6 +174,11 @@ const PlayerRosterRow: React.FC<PlayerRosterRowProps> = ({
     }
 
     // ---------- Empty + collapsed (default) ----------
+    // Games that don't capture names locally (MLT, NHIE) pass hideWhenEmpty
+    // so the empty state renders nothing — they only display the pill if a
+    // roster was set elsewhere (Forecast / TOD).
+    if (hideWhenEmpty) return null;
+
     return (
         <button
             onClick={startEdit}

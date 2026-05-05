@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ScreenHeader } from '../ui/Layout';
 import type { MafiaPlayer, MafiaRole } from '../../types';
-import { Users, Lock, Shield, Eye, Crosshair, Skull, Award } from 'lucide-react';
-import { sessionService, shuffle } from '../../services/SessionManager';
-import PlayerRosterRow from '../ui/PlayerRosterRow';
-
-const MIN_MAFIA = 5;
-const MAX_MAFIA = 12;
-
-const namesToMafiaPlayers = (names: string[]): MafiaPlayer[] =>
-    names.map((name, i) => ({ id: `p-${i}-${Date.now()}`, name, role: 'VILLAGER', isAlive: true }));
+import { Users, UserPlus, Lock, Shield, Eye, Crosshair, Skull, Award } from 'lucide-react';
+import { shuffle } from '../../services/SessionManager';
 
 type GameState = 'SETUP' | 'ROLE_REVEAL' | 'NIGHT_TRANSITION' | 'NIGHT_ACTION' | 'DAY_REVEAL' | 'DAY_DEBATE' | 'DAY_VOTE' | 'VOTE_REVEAL' | 'GAME_OVER';
 
@@ -19,9 +12,8 @@ interface Props {
 
 export const MiniMafiaGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<GameState>('SETUP');
-    // Seed from the shared session roster — same crew that just played
-    // Forecast / TOD / Imposter lands here pre-populated.
-    const [players, setPlayers] = useState<MafiaPlayer[]>(() => namesToMafiaPlayers(sessionService.getPlayers()));
+    const [players, setPlayers] = useState<MafiaPlayer[]>([]);
+    const [newPlayerName, setNewPlayerName] = useState('');
     const [hardMode, setHardMode] = useState(false);
     const [showHowToPlay, setShowHowToPlay] = useState(false);
     const [savedGroups, setSavedGroups] = useState<Record<string, string[]>>({});
@@ -83,11 +75,15 @@ export const MiniMafiaGame: React.FC<Props> = ({ onExit }) => {
     };
 
     // --- SETUP PHASE ---
-    // PlayerRosterRow handles add/remove/rename inline. We rebuild Player[]
-    // wholesale from the saved name list — role/alive flags reset, which is
-    // the right behavior since editing the roster implies a new match.
-    const handleRosterChange = (names: string[]) => {
-        setPlayers(namesToMafiaPlayers(names));
+    const addPlayer = () => {
+        if (newPlayerName.trim().length > 0) {
+            setPlayers([...players, { id: Date.now().toString(), name: newPlayerName.trim(), role: 'VILLAGER', isAlive: true }]);
+            setNewPlayerName('');
+        }
+    };
+
+    const removePlayer = (id: string) => {
+        setPlayers(players.filter(p => p.id !== id));
     };
 
     const saveCurrentGroup = () => {
@@ -100,10 +96,7 @@ export const MiniMafiaGame: React.FC<Props> = ({ onExit }) => {
     };
 
     const loadGroup = (names: string[]) => {
-        // Pushed onto the shared session roster too, so loading a saved
-        // Mafia crew also auto-fills Imposter / TOD / Forecast.
-        sessionService.setPlayers(names);
-        setPlayers(namesToMafiaPlayers(names));
+        setPlayers(names.map((name, i) => ({ id: `saved-${i}-${Date.now()}`, name, role: 'VILLAGER', isAlive: true })));
     };
 
     const startGame = () => {
@@ -318,18 +311,18 @@ export const MiniMafiaGame: React.FC<Props> = ({ onExit }) => {
                             </div>
                         )}
                         
-                        <div className="mt-6 relative z-10">
-                            {/* Shared player roster — names auto-fill across
-                                Forecast / TOD / Imposter / Mafia. The component's
-                                generic surface styling sits inside the dark
-                                castle frame; the contrast is intentional. */}
-                            <PlayerRosterRow
-                                players={players.map(p => p.name).filter(Boolean)}
-                                onPlayersChange={handleRosterChange}
-                                minPlayers={MIN_MAFIA}
-                                maxPlayers={MAX_MAFIA}
-                                label="Castle Roster"
+                        <div className="mt-6 flex space-x-2 relative z-10">
+                            <input
+                                type="text"
+                                value={newPlayerName}
+                                onChange={(e) => setNewPlayerName(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
+                                placeholder="Player Name"
+                                className="flex-1 bg-[#1a110e] border border-[#3a2518] rounded-xl px-4 py-3 text-[#d4af37] placeholder-[#6b5032] focus:outline-none focus:border-[#d4af37]/50"
                             />
+                            <button onClick={addPlayer} className="bg-[#2a1812] hover:bg-[#3a2016] border border-[#4a2e1b] px-4 rounded-xl text-[#d4af37] font-bold transition shadow-lg">
+                                <UserPlus size={20} />
+                            </button>
                         </div>
 
                         <div className="mt-5 flex items-center justify-between bg-[#1a110e] p-3 rounded-lg border border-[#3a2518] relative z-10">
@@ -356,16 +349,25 @@ export const MiniMafiaGame: React.FC<Props> = ({ onExit }) => {
                         </div>
                     )}
 
-                    {/* The Save Group action lives at the bottom now since the
-                        old per-player list (with its inline Save link) was
-                        replaced by PlayerRosterRow above. */}
-                    {players.length >= MIN_MAFIA && (
-                        <div className="flex justify-end mt-2">
+                    <div className="flex justify-between items-end mb-1 mt-2">
+                        <h3 className="text-[#8c6d46] font-cinzel font-bold text-xs uppercase tracking-[0.2em]">Players ({players.length})</h3>
+                        {players.length >= 5 && (
                             <button onClick={saveCurrentGroup} className="text-[10px] text-[#ff4d4d] hover:text-[#ff4d4d] font-cinzel font-bold uppercase tracking-widest">
                                 Save Current Group
                             </button>
-                        </div>
-                    )}
+                        )}
+                    </div>
+
+                    <div className="grid gap-2">
+                        {players.map((p, i) => (
+                            <div key={p.id} className="flex justify-between items-center bg-[#120c0a] px-4 py-3 border border-[#3a2518] shadow-sm">
+                                <span className="font-bold text-[#d4af37] font-cinzel uppercase tracking-widest text-sm flex items-center gap-3">
+                                    <span className="text-[#5c452b] text-[10px] w-4">{i + 1}.</span> {p.name}
+                                </span>
+                                <button onClick={() => removePlayer(p.id)} className="text-[#ff4d4d] hover:text-[#ff4d4d] text-[10px] font-cinzel font-bold uppercase tracking-widest">Ban</button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="p-4 bg-[#0a0604] border-t border-[#3a2518]">

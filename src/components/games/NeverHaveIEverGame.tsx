@@ -5,6 +5,7 @@ import neverHaveIEverData from '../../data/never_have_i_ever.json';
 import { generateNeverHaveIEver, generateCustomNeverHaveIEver } from '../../services/geminiService';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
+import PlayerRosterRow from '../ui/PlayerRosterRow';
 import type { LucideIcon } from 'lucide-react';
 import { Sparkles, Lock, ChevronRight, Hand, Users, Wand2, ShieldCheck, Flame, Smile } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -91,6 +92,11 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     // still being tuned in production. Same PIN as adult content. Drop
     // showPinGate + the gate intercept once Custom Vibe is signed off.
     const [showPinGate, setShowPinGate] = useState(false);
+    // NHIE doesn't capture player names of its own — we just display the
+    // shared session roster as a "Playing as: …" pill if names were entered
+    // earlier (Forecast / TOD). hideWhenEmpty makes the row invisible when
+    // no roster exists.
+    const [sessionPlayers, setSessionPlayers] = useState<string[]>(() => sessionService.getPlayers());
 
     const wordCount = customContext.trim().split(/\s+/).filter(Boolean).length;
 
@@ -197,6 +203,14 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                     <p className="text-muted mb-4 text-sm text-center">
                         Pick a category. Stand up if you've done it. Last one sitting wins.
                     </p>
+                    <PlayerRosterRow
+                        players={sessionPlayers}
+                        onPlayersChange={setSessionPlayers}
+                        minPlayers={2}
+                        maxPlayers={10}
+                        label="Playing as"
+                        hideWhenEmpty
+                    />
 
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {NEVER_HAVE_I_EVER_CATEGORIES.map((cat) => {

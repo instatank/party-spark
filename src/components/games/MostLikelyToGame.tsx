@@ -5,6 +5,7 @@ import { MOST_LIKELY_TO_CATEGORIES } from '../../constants';
 import { Users, ChevronRight, Hand, AlertTriangle, Sparkles, Flame, Zap, Wand2, ArrowLeft, Home } from 'lucide-react';
 import MOST_LIKELY_TO_DATA from '../../data/most_likely_to.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
+import PlayerRosterRow from '../ui/PlayerRosterRow';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -90,6 +91,11 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
     const [customError, setCustomError] = useState('');
     const [showPinGate, setShowPinGate] = useState(false);
     const [pendingAdultCat, setPendingAdultCat] = useState<any>(null);
+    // MLT doesn't capture player names of its own — we just display the
+    // shared session roster as a "Playing as: …" pill if names were entered
+    // earlier in the session (Forecast / TOD). hideWhenEmpty makes the row
+    // invisible when no roster exists, so MLT never prompts for entry.
+    const [sessionPlayers, setSessionPlayers] = useState<string[]>(() => sessionService.getPlayers());
 
     const ADULT_CATEGORY_IDS = ['adult', 'scandalous'];
 
@@ -388,6 +394,14 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                 <p className="text-muted mb-4 text-sm text-center">
                     Pick a vibe. Read the card. Everyone points on 3!
                 </p>
+                <PlayerRosterRow
+                    players={sessionPlayers}
+                    onPlayersChange={setSessionPlayers}
+                    minPlayers={2}
+                    maxPlayers={10}
+                    label="Playing as"
+                    hideWhenEmpty
+                />
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {MOST_LIKELY_TO_CATEGORIES.map((cat: any) => {
