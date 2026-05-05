@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, ScreenHeader } from '../ui/Layout';
-import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles } from 'lucide-react';
+import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles, Trophy } from 'lucide-react';
 import { generateCharadesWords } from '../../services/geminiService';
 import { useContent } from '../../contexts/ContentContext';
 import { CHARADES_CATEGORIES } from '../../constants';
@@ -8,6 +8,7 @@ import gamesDataRaw from '../../data/games_data.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { useTheme } from '../../contexts/ThemeContext';
+import TeamRosterRow from '../ui/TeamRosterRow';
 
 interface Props {
     onExit: () => void;
@@ -33,14 +34,40 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     const [words, setWords] = useState<string[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [gameState, setGameState] = useState<'SETUP' | 'PLAYING' | 'SUMMARY'>('SETUP');
+    const [gameState, setGameState] = useState<'SETUP' | 'TEAM_INTRO' | 'PLAYING' | 'SUMMARY'>('SETUP');
     const [score, setScore] = useState(0);
     const [timeLeft, setTimeLeft] = useState(60);
     const [category, setCategory] = useState("mix_movies");
     const { prefetchGameContent } = useContent();
 
+    // Team mode is opt-in via TeamRosterRow on the SETUP screen. When teams.length
+    // >= 2, the match becomes a sequence of 60s rounds — one per team — with a
+    // TEAM_INTRO ("pass the phone") screen between them. teamScores accumulates
+    // each team's final round score for the SUMMARY ranking. Empty teams = the
+    // original single-round / single-score flow.
+    const [teams, setTeams] = useState<string[]>(() => sessionService.getTeams());
+    const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
+    const [teamScores, setTeamScores] = useState<number[]>([]);
+
     // const categories = ["Movies", "Animals", "Actions", "Celebrities", "Objects"]; // Replaced by constant
     const categories = CHARADES_CATEGORIES;
+
+    // Tile tap from SETUP. In team mode, this only stages the category and
+    // routes to the TEAM_INTRO screen for the first team; the actual round
+    // (word-load + timer start) happens on TEAM_INTRO's Start button. In solo
+    // mode, this calls startGame directly to preserve the existing one-tap
+    // flow.
+    const handleCategoryTap = (cat: string) => {
+        if (teams.length >= 2) {
+            setCategory(cat);
+            setCurrentTeamIndex(0);
+            setTeamScores([]);
+            setScore(0);
+            setGameState('TEAM_INTRO');
+        } else {
+            startGame(cat);
+        }
+    };
 
     // Optional `selectedCat` lets a tile tap immediately start with the tapped
     // category (avoids a stale-state read since setCategory is async and the
@@ -122,14 +149,31 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         setTimeLeft(60);
     };
 
+    // End the current team's round. In team mode, push the score onto the
+    // tally and either pass the phone to the next team or roll into SUMMARY.
+    // In solo mode, just go straight to SUMMARY.
+    const endRound = () => {
+        if (teams.length >= 2) {
+            const tallied = [...teamScores, score];
+            setTeamScores(tallied);
+            if (currentTeamIndex < teams.length - 1) {
+                setCurrentTeamIndex(i => i + 1);
+                setGameState('TEAM_INTRO');
+                return;
+            }
+        }
+        setGameState('SUMMARY');
+    };
+
     useEffect(() => {
         let interval: ReturnType<typeof setInterval>;
         if (gameState === 'PLAYING' && timeLeft > 0) {
             interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
-        } else if (timeLeft === 0) {
-            setGameState('SUMMARY');
+        } else if (timeLeft === 0 && gameState === 'PLAYING') {
+            endRound();
         }
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameState, timeLeft]);
 
     const handleCorrect = () => {
@@ -160,8 +204,9 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         if (currentIndex < words.length - 1) {
             setCurrentIndex(c => c + 1);
         } else {
-            // Loop or end
-            setGameState('SUMMARY');
+            // Word pool exhausted before the timer expired — end this team's
+            // round (or the whole match in solo mode).
+            endRound();
         }
     };
 
@@ -197,6 +242,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                 <p className="text-muted mb-4 text-sm text-center">
                     Pick a category. 60-second round, act them out silently.
                 </p>
+                <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {categories.map(c => {
@@ -206,7 +252,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                             return (
                                 <button
                                     key={c.id}
-                                    onClick={() => startGame(c.id)}
+                                    onClick={() => handleCategoryTap(c.id)}
                                     className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
                                 >
                                     <div className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden">
@@ -238,19 +284,100 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
+    if (gameState === 'TEAM_INTRO') {
+        const upName = teams[currentTeamIndex] || `Team ${currentTeamIndex + 1}`;
+        const isFirst = currentTeamIndex === 0;
+        return (
+            <div className="h-full flex flex-col">
+                <ScreenHeader
+                    title={isFirst ? 'Charades' : `Round ${currentTeamIndex + 1} of ${teams.length}`}
+                    onBack={() => setGameState('SETUP')}
+                    onHome={onExit}
+                />
+                <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-slide-up px-4">
+                    <div className="text-center">
+                        <p className="text-sm uppercase tracking-[0.18em] text-muted mb-3">Up next</p>
+                        <h2 className="text-5xl font-black text-ink">{upName}</h2>
+                    </div>
+                    {!isFirst && (
+                        <div className="bg-surface-alt border border-divider rounded-xl px-4 py-3 max-w-[280px] w-full">
+                            <p className="text-xs uppercase tracking-wider text-muted mb-1.5 text-center">Standings</p>
+                            <div className="space-y-1">
+                                {teamScores.map((s, i) => (
+                                    <div key={i} className="flex justify-between text-sm">
+                                        <span className="text-ink-soft truncate">{teams[i] || `Team ${i + 1}`}</span>
+                                        <span className="font-bold text-ink ml-3">{s}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    <p className="text-muted text-sm text-center max-w-[280px]">
+                        Pass the phone. 60-second round — act them out silently.
+                    </p>
+                    <Button onClick={() => startGame(category)} fullWidth className="h-14 text-lg">
+                        Start {upName}'s Round
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
     if (gameState === 'SUMMARY') {
+        const inTeamMode = teamScores.length > 0;
+        const ranked = inTeamMode
+            ? teamScores
+                .map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }))
+                .sort((a, b) => b.score - a.score)
+            : [];
+        const winner = ranked[0];
+        const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Game Over" onBack={() => setGameState('SETUP')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-slide-up">
-                    <div className="text-center">
-                        <h2 className="text-4xl font-bold mb-2 text-ink">Time's Up!</h2>
-                        <p className="text-muted">You got</p>
-                    </div>
-
-                    <div className="text-8xl font-black text-accent">
-                        {score}
-                    </div>
+                    {inTeamMode ? (
+                        <>
+                            <div className="text-center">
+                                <h2 className="text-3xl font-bold mb-1 text-ink">Time's Up!</h2>
+                                {tiedTop ? (
+                                    <p className="text-muted">It's a tie at the top.</p>
+                                ) : (
+                                    <p className="text-muted">
+                                        <span className="font-bold text-ink">{winner.name}</span> takes it.
+                                    </p>
+                                )}
+                            </div>
+                            <div className="w-full max-w-[320px] space-y-2">
+                                {ranked.map((r, i) => (
+                                    <div
+                                        key={i}
+                                        className={`flex items-center justify-between rounded-xl px-4 py-3 border ${
+                                            i === 0
+                                                ? 'bg-accent-soft border-accent text-ink'
+                                                : 'bg-surface border-divider text-ink-soft'
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            {i === 0 && <Trophy size={16} className="text-accent flex-shrink-0" />}
+                                            <span className="font-bold truncate">{r.name}</span>
+                                        </div>
+                                        <span className="text-2xl font-black ml-3">{r.score}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="text-center">
+                                <h2 className="text-4xl font-bold mb-2 text-ink">Time's Up!</h2>
+                                <p className="text-muted">You got</p>
+                            </div>
+                            <div className="text-8xl font-black text-accent">
+                                {score}
+                            </div>
+                        </>
+                    )}
 
                     <div className="flex flex-col gap-3 w-full">
                         <Button onClick={() => setGameState('SETUP')} fullWidth>Play Again</Button>
@@ -270,7 +397,12 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                     <Timer size={18} className={timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-ink-soft'} />
                     <span className={`font-mono font-bold ${timeLeft < 10 ? 'text-red-500' : 'text-ink'}`}>{timeLeft}s</span>
                 </div>
-                <div className="font-bold text-xl text-ink">Score: {score}</div>
+                <div className="font-bold text-xl text-ink">
+                    {teams.length >= 2
+                        ? <><span className="text-muted text-sm font-semibold mr-1.5">{teams[currentTeamIndex] || `Team ${currentTeamIndex + 1}`}:</span>{score}</>
+                        : <>Score: {score}</>
+                    }
+                </div>
             </div>
 
             <div className="flex-1 flex items-center justify-center perspective-1000">

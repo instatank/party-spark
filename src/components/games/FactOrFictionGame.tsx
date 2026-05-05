@@ -5,6 +5,7 @@ import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight } from 'lucide-react
 import factData from '../../data/fact_or_fiction.json';
 import { sessionService } from '../../services/SessionManager';
 import { GameType } from '../../types';
+import TeamRosterRow from '../ui/TeamRosterRow';
 
 interface Question {
     id: string;
@@ -29,7 +30,16 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
     const [score, setScore] = useState(0);
     const [strikes, setStrikes] = useState(0);
     const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
-    const [gameState, setGameState] = useState<'category_select' | 'playing' | 'answer_reveal' | 'round_over'>('category_select');
+    const [gameState, setGameState] = useState<'category_select' | 'playing' | 'answer_reveal' | 'team_transition' | 'round_over'>('category_select');
+
+    // Team mode: opt-in via TeamRosterRow on the category-select screen. Each
+    // team plays solo until they hit 3 strikes, then passes the phone. Strikes
+    // and difficulty reset per team; the question pool is shared (so Team B
+    // gets questions Team A didn't see). Solo mode (teams=[]) preserves the
+    // original single-player flow.
+    const [teams, setTeams] = useState<string[]>(() => sessionService.getTeams());
+    const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
+    const [teamScores, setTeamScores] = useState<number[]>([]);
     
     // Tracks state of current question
     const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null);
@@ -59,9 +69,32 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
         setStrikes(0);
         setWrongStreak(0);
         answeredRef.current = false;
+        // Team mode setup: zero out match-level state on first entry.
+        setCurrentTeamIndex(0);
+        setTeamScores([]);
+        if (teams.length >= 2) {
+            // Don't auto-start — let the first team see who's up via the
+            // team_transition screen.
+            setGameState('team_transition');
+            setTimeLeft(TIMER_SECONDS);
+            return;
+        }
         loadNextQuestion(startingPool, 1, category.id);
         setGameState('playing');
         setTimeLeft(TIMER_SECONDS);
+    };
+
+    // Pull the next question and put the new team on the clock. Used both
+    // on initial entry into team mode and on every team-handoff after that.
+    const startCurrentTeamRound = () => {
+        setScore(0);
+        setStrikes(0);
+        setWrongStreak(0);
+        setDifficulty(1);
+        setTimeLeft(TIMER_SECONDS);
+        answeredRef.current = false;
+        loadNextQuestion(availableQuestions, 1);
+        setGameState('playing');
     };
 
     // categoryIdOverride is only needed on the very first load — at that point
@@ -169,6 +202,17 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
 
     const nextRound = () => {
         if (strikes >= MAX_STRIKES) {
+            // This team is out. In team mode with more teams to go, hand off
+            // via the team_transition screen; otherwise wrap up the match.
+            if (teams.length >= 2) {
+                const tallied = [...teamScores, score];
+                setTeamScores(tallied);
+                if (currentTeamIndex < teams.length - 1) {
+                    setCurrentTeamIndex(i => i + 1);
+                    setGameState('team_transition');
+                    return;
+                }
+            }
             setGameState('round_over');
         } else {
             loadNextQuestion(availableQuestions, difficulty);
@@ -189,6 +233,7 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                     <p className="text-ink-soft text-center mb-6">
                         Race the clock to determine the truth. Getting it right makes it harder.
                     </p>
+                    <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
                     <div className="space-y-3">
                         {categories.map(cat => (
                             <button
@@ -209,21 +254,98 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
         );
     }
 
+    if (gameState === 'team_transition') {
+        const upName = teams[currentTeamIndex] || `Team ${currentTeamIndex + 1}`;
+        const isFirst = currentTeamIndex === 0;
+        return (
+            <div className="flex flex-col h-full animate-fade-in relative z-10">
+                <ScreenHeader
+                    title={`Team ${currentTeamIndex + 1} of ${teams.length}`}
+                    onBack={() => setGameState('category_select')}
+                    onHome={onExit}
+                />
+                <Card className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+                    <p className="text-xs uppercase tracking-[0.18em] text-muted mb-3">Up next</p>
+                    <h2 className="text-5xl font-black text-ink mb-6">{upName}</h2>
+                    {!isFirst && teamScores.length > 0 && (
+                        <div className="bg-surface-alt border border-divider rounded-xl px-4 py-3 max-w-[280px] w-full mb-6">
+                            <p className="text-xs uppercase tracking-wider text-muted mb-1.5 text-center">Standings so far</p>
+                            <div className="space-y-1">
+                                {teamScores.map((s, i) => (
+                                    <div key={i} className="flex justify-between text-sm">
+                                        <span className="text-ink-soft truncate">{teams[i] || `Team ${i + 1}`}</span>
+                                        <span className="font-bold text-ink ml-3">{s}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    <p className="text-muted mb-8 max-w-[280px]">
+                        Pass the phone. {MAX_STRIKES} strikes and your turn ends.
+                    </p>
+                    <Button onClick={startCurrentTeamRound} className="w-full">
+                        Start {upName}'s Turn
+                    </Button>
+                </Card>
+            </div>
+        );
+    }
+
     if (gameState === 'round_over') {
+        const inTeamMode = teamScores.length > 0;
+        const ranked = inTeamMode
+            ? teamScores
+                .map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }))
+                .sort((a, b) => b.score - a.score)
+            : [];
+        const winner = ranked[0];
+        const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
                 <ScreenHeader title="Round Summary" onBack={() => setGameState('category_select')} onHome={onExit} />
                 <Card className="flex-1 flex flex-col items-center justify-center p-8 text-center border-rose-500/30">
                     <Trophy size={64} className="text-rose-500 mb-6" />
-                    <h2 className="text-3xl font-serif font-bold text-ink mb-2">Game Over!</h2>
-                    <p className="text-muted mb-6">
-                        You survived {score} rapid-fire questions in {selectedCategory?.name}!
-                    </p>
-                    
-                    <div className="bg-surface-alt w-full p-6 rounded-2xl border border-divider-soft mb-8">
-                        <p className="text-sm uppercase tracking-widest text-muted font-bold mb-2">Survived</p>
-                        <p className="text-6xl font-black text-rose-500">{score}<span className="text-3xl text-muted"> Facts</span></p>
-                    </div>
+                    {inTeamMode ? (
+                        <>
+                            <h2 className="text-3xl font-serif font-bold text-ink mb-1">Match Over</h2>
+                            {tiedTop ? (
+                                <p className="text-muted mb-6">It's a tie at the top.</p>
+                            ) : (
+                                <p className="text-muted mb-6">
+                                    <span className="font-bold text-ink">{winner.name}</span> takes the round.
+                                </p>
+                            )}
+                            <div className="w-full max-w-[320px] space-y-2 mb-8">
+                                {ranked.map((r, i) => (
+                                    <div
+                                        key={i}
+                                        className={`flex items-center justify-between rounded-xl px-4 py-3 border ${
+                                            i === 0
+                                                ? 'bg-rose-500/15 border-rose-500/50 text-ink'
+                                                : 'bg-surface-alt border-divider text-ink-soft'
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            {i === 0 && <Trophy size={16} className="text-rose-500 flex-shrink-0" />}
+                                            <span className="font-bold truncate">{r.name}</span>
+                                        </div>
+                                        <span className="text-2xl font-black ml-3">{r.score}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <h2 className="text-3xl font-serif font-bold text-ink mb-2">Game Over!</h2>
+                            <p className="text-muted mb-6">
+                                You survived {score} rapid-fire questions in {selectedCategory?.name}!
+                            </p>
+                            <div className="bg-surface-alt w-full p-6 rounded-2xl border border-divider-soft mb-8">
+                                <p className="text-sm uppercase tracking-widest text-muted font-bold mb-2">Survived</p>
+                                <p className="text-6xl font-black text-rose-500">{score}<span className="text-3xl text-muted"> Facts</span></p>
+                            </div>
+                        </>
+                    )}
 
                     <Button onClick={() => setGameState('category_select')} className="w-full mb-3" variant="primary">
                         Play Another Category
@@ -267,7 +389,10 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                     </div>
 
                     <Button onClick={nextRound} className="w-full py-4 text-lg">
-                        Next Question <ArrowRight className="inline ml-2" size={20} />
+                        {strikes >= MAX_STRIKES && teams.length >= 2 && currentTeamIndex < teams.length - 1
+                            ? <>Pass to {teams[currentTeamIndex + 1] || `Team ${currentTeamIndex + 2}`} <ArrowRight className="inline ml-2" size={20} /></>
+                            : <>Next Question <ArrowRight className="inline ml-2" size={20} /></>
+                        }
                     </Button>
                 </Card>
             </div>
@@ -283,7 +408,13 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
             <div className="flex justify-between items-center px-2 mb-4">
                 <div className="flex items-center gap-2">
                     <span className="text-rose-500 font-black text-xl">{score}</span>
-                    <span className="text-xs text-muted font-bold tracking-widest uppercase">Score</span>
+                    {teams.length >= 2 ? (
+                        <span className="text-xs text-muted font-bold tracking-wider uppercase truncate max-w-[100px]">
+                            {teams[currentTeamIndex] || `Team ${currentTeamIndex + 1}`}
+                        </span>
+                    ) : (
+                        <span className="text-xs text-muted font-bold tracking-widest uppercase">Score</span>
+                    )}
                 </div>
                 <div className="flex items-center gap-2 bg-surface-alt px-3 py-1.5 rounded-full border border-divider">
                     <AlertTriangle size={14} className="text-amber-500" />
