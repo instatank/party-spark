@@ -245,9 +245,14 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="The Forecast" onBack={onExit} onHome={onExit} />
+                {/* Compact game-home hero: emoji icon (sized down ~50% from
+                    the original text-5xl), tagline, and a one-line sub-text.
+                    text-lg on the tagline keeps it single-line on every modern
+                    phone width without resorting to whitespace-nowrap (which
+                    would horizontally overflow on iPhone-SE-class devices). */}
                 <div className="text-center mb-4">
-                    <p className="text-5xl mb-2">🔮</p>
-                    <h2 className="text-xl font-serif font-bold text-ink mb-1">How well do you <em>really</em> know each other?</h2>
+                    <p className="text-3xl mb-1.5 leading-none">🔮</p>
+                    <h2 className="text-lg font-serif font-bold text-ink mb-0.5">How well do you <em>really</em> know each other?</h2>
                     <p className="text-muted text-sm">Predict their answers. Discover the truth.</p>
                 </div>
                 <div className="flex-1 overflow-y-auto pb-8">
