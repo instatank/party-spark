@@ -17,6 +17,11 @@ interface SessionData {
     // usedContent. Empty array (or absent) means "no teams set" — games fall
     // back to anonymous scoring.
     teams?: string[];
+    // Optional individual player names shared across player-based games
+    // (Forecast, Truth or Drink, Imposter, Mini Mafia). Same sliding-window
+    // persistence as the team roster; absent/empty means "no players set"
+    // and games fall back to their anonymous / per-game-input flow.
+    players?: string[];
 }
 
 class SessionService {
@@ -40,6 +45,7 @@ class SessionService {
                         lastActivity,
                         usedContent: data.usedContent ?? {},
                         teams: data.teams,
+                        players: data.players,
                     };
                 }
             }
@@ -129,6 +135,30 @@ class SessionService {
 
     public clearTeams() {
         this.session.teams = undefined;
+        this.session.lastActivity = Date.now();
+        this.saveSession();
+    }
+
+    // -------- Player roster (shared across player-based games) --------
+    // Different concept from teams — these are individual humans whose names
+    // are used for in-game roles (Forecast A/B, TOD turn rotation, Imposter
+    // assignment, Mafia roles). Each game enforces its own min/max but they
+    // all read/write to the same array so names auto-fill across games.
+    public getPlayers(): string[] {
+        return this.session.players ?? [];
+    }
+
+    // Save the player roster. Trims whitespace, filters empties. Pass an
+    // empty array (or call clearPlayers) to revert to game-specific defaults.
+    public setPlayers(names: string[]) {
+        const cleaned = names.map(n => n.trim()).filter(Boolean);
+        this.session.players = cleaned.length > 0 ? cleaned : undefined;
+        this.session.lastActivity = Date.now();
+        this.saveSession();
+    }
+
+    public clearPlayers() {
+        this.session.players = undefined;
         this.session.lastActivity = Date.now();
         this.saveSession();
     }
