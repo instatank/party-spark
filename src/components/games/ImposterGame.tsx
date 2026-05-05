@@ -6,6 +6,15 @@ import { IMPOSTER_CATEGORIES } from '../../constants';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { generateImposterContent } from '../../services/geminiService';
 import { GameType } from '../../types';
+import PlayerRosterRow from '../ui/PlayerRosterRow';
+
+const MIN_PLAYERS = 3;
+const MAX_PLAYERS = 12;
+
+// Build a fresh Player[] from a flat name list. Used when seeding from the
+// shared session roster and after PlayerRosterRow saves an edit.
+const namesToPlayers = (names: string[]): Player[] =>
+    names.map((name, i) => ({ id: `p-${i}-${Date.now()}`, name, isImposter: false }));
 
 interface Player {
     id: string;
@@ -22,11 +31,10 @@ interface ImposterGameProps {
 
 export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
     const [gameState, setGameState] = useState<GameState>('SETUP');
-    const [players, setPlayers] = useState<Player[]>([
-        { id: '1', name: '', isImposter: false },
-        { id: '2', name: '', isImposter: false },
-        { id: '3', name: '', isImposter: false }
-    ]);
+    // Seed from the shared session roster — a couple coming from Forecast
+    // lands here with their 2 names already filled in (the row prompts them
+    // to add a third for Imposter's MIN_PLAYERS=3 floor).
+    const [players, setPlayers] = useState<Player[]>(() => namesToPlayers(sessionService.getPlayers()));
     const [savedGroups, setSavedGroups] = useState<Record<string, string[]>>({});
     const [showHowToPlay, setShowHowToPlay] = useState(false);
 
@@ -44,18 +52,10 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
     const [imposterName, setImposterName] = useState('');
     const [isHardMode, setIsHardMode] = useState(false);
 
-    const handleAddPlayer = () => {
-        setPlayers([...players, { id: Date.now().toString(), name: '', isImposter: false }]);
-    };
-
-    const handleRemovePlayer = (id: string) => {
-        if (players.length > 3) {
-            setPlayers(players.filter(p => p.id !== id));
-        }
-    };
-
-    const updateName = (id: string, name: string) => {
-        setPlayers(players.map(p => p.id === id ? { ...p, name } : p));
+    // Adopt the new roster wholesale: PlayerRosterRow already wrote it to
+    // the session, so we just rebuild Player[] from the name list.
+    const handleRosterChange = (names: string[]) => {
+        setPlayers(namesToPlayers(names));
     };
 
     const saveCurrentGroup = () => {
@@ -69,7 +69,10 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
     };
 
     const loadGroup = (names: string[]) => {
-        setPlayers(names.map((name, i) => ({ id: `saved-${i}-${Date.now()}`, name, isImposter: false })));
+        // Loading a saved group also pushes the names onto the shared session
+        // roster so other games (TOD, Mafia, Forecast) see the same crew.
+        sessionService.setPlayers(names);
+        setPlayers(namesToPlayers(names));
     };
 
     const startGame = async () => {
@@ -157,12 +160,11 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
     };
 
     const resetGame = () => {
+        // Names stay on the session roster (use the ✕ on the row to clear).
+        // We rebuild Player[] from the current roster so role flags / reveal
+        // state from the previous game are wiped.
         setGameState('SETUP');
-        setPlayers([
-            { id: '1', name: '', isImposter: false },
-            { id: '2', name: '', isImposter: false },
-            { id: '3', name: '', isImposter: false }
-        ]);
+        setPlayers(namesToPlayers(sessionService.getPlayers()));
         setWinner(null);
         setCurrentPlayerIndex(0);
         setIsRevealing(false);
@@ -208,46 +210,33 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
                             <div className={`w-4 h-4 bg-white rounded-full transition-transform shadow-md ${isHardMode ? 'translate-x-6' : ''}`} />
                         </div>
                     </div>
-                    <div className="flex justify-between items-end mb-3">
-                        <label className="block text-sm font-medium text-muted">Players ({players.length})</label>
-                        {players.filter(p => p.name.trim() !== '').length >= 3 && (
+                    <div className="flex justify-between items-center mb-3">
+                        <label className="block text-sm font-medium text-muted">
+                            Players {players.length > 0 ? `(${players.length})` : ''}
+                        </label>
+                        {players.filter(p => p.name.trim() !== '').length >= MIN_PLAYERS && (
                             <button onClick={saveCurrentGroup} className="text-xs text-party-accent hover:opacity-80 font-bold">
                                 Save Current Group
                             </button>
                         )}
                     </div>
-                    <div className="space-y-3 mb-8">
-                        {players.map((player, idx) => (
-                            <div key={player.id} className="flex gap-2">
-                                <input
-                                    type="text"
-                                    placeholder={`Player ${idx + 1}`}
-                                    value={player.name}
-                                    onChange={(e) => updateName(player.id, e.target.value)}
-                                    className="flex-1 bg-surface-alt border border-divider rounded-xl px-4 py-3 text-ink placeholder:text-muted focus:outline-none focus:border-party-accent focus:ring-1 focus:ring-party-accent"
-                                />
-                                {players.length > 3 && (
-                                    <button
-                                        onClick={() => handleRemovePlayer(player.id)}
-                                        className="px-3 text-muted hover:text-red-500"
-                                    >
-                                        ×
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                        <button
-                            onClick={handleAddPlayer}
-                            className="text-sm text-party-accent hover:underline pl-1"
-                        >
-                            + Add Player
-                        </button>
-                    </div>
+                    <PlayerRosterRow
+                        players={players.map(p => p.name).filter(Boolean)}
+                        onPlayersChange={handleRosterChange}
+                        minPlayers={MIN_PLAYERS}
+                        maxPlayers={MAX_PLAYERS}
+                        label="Player names"
+                    />
+                    {players.filter(p => p.name.trim()).length < MIN_PLAYERS && (
+                        <p className="text-xs text-muted text-center mb-6">
+                            Add at least {MIN_PLAYERS} players to start.
+                        </p>
+                    )}
 
                     <Button
                         onClick={startGame}
-                        className="w-full py-4 text-lg font-bold bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-400 hover:to-orange-500 shadow-xl"
-                        disabled={players.filter(p => p.name.trim()).length < 3}
+                        className="w-full py-4 text-lg font-bold bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-400 hover:to-orange-500 shadow-xl mt-4"
+                        disabled={players.filter(p => p.name.trim()).length < MIN_PLAYERS}
                     >
                         Start Game <ArrowRight className="ml-2 inline" size={20} />
                     </Button>
