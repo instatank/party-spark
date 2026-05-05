@@ -244,11 +244,12 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
 
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="🔮 The Forecast" onBack={onExit} onHome={onExit} />
-                {/* Icon now lives inline with the screen title (saves a chunk
-                    of vertical space). Hero block reduces to just the tagline
-                    + sub-text below. */}
-                <div className="text-center mb-4">
+                <ScreenHeader title="The Forecast" onBack={onExit} onHome={onExit} />
+                {/* Compact game-home hero. Icon is its own line under the
+                    screen title; -mt-3 pulls the block up to close the dead
+                    space ScreenHeader's mb-6 leaves below it. */}
+                <div className="text-center mb-4 -mt-3">
+                    <p className="text-3xl mb-1.5 leading-none">🔮</p>
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">How well do you <em>really</em> know each other?</h2>
                     <p className="text-muted text-sm">Predict their answers. Discover the truth.</p>
                 </div>
