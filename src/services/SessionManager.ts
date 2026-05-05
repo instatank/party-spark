@@ -11,7 +11,12 @@ interface SessionData {
         [gameId: string]: {
             [category: string]: string[]; // Array of used IDs or content hashes
         }
-    }
+    };
+    // Optional team names shared across team-supporting games (Charades,
+    // Taboo, Fact or Fiction). Persisted under the same sliding window as
+    // usedContent. Empty array (or absent) means "no teams set" — games fall
+    // back to anonymous scoring.
+    teams?: string[];
 }
 
 class SessionService {
@@ -34,6 +39,7 @@ class SessionService {
                         startTime: data.startTime ?? Date.now(),
                         lastActivity,
                         usedContent: data.usedContent ?? {},
+                        teams: data.teams,
                     };
                 }
             }
@@ -103,6 +109,27 @@ class SessionService {
             lastActivity: now,
             usedContent: {},
         };
+        this.saveSession();
+    }
+
+    // -------- Team roster (shared across team-supporting games) --------
+    // Returns the saved team names, or an empty array if none set.
+    public getTeams(): string[] {
+        return this.session.teams ?? [];
+    }
+
+    // Save a team roster. Pass an empty array (or call clearTeams) to revert
+    // to the anonymous-score default. Bumps the sliding-window timer.
+    public setTeams(names: string[]) {
+        const cleaned = names.map(n => n.trim()).filter(Boolean);
+        this.session.teams = cleaned.length > 0 ? cleaned : undefined;
+        this.session.lastActivity = Date.now();
+        this.saveSession();
+    }
+
+    public clearTeams() {
+        this.session.teams = undefined;
+        this.session.lastActivity = Date.now();
         this.saveSession();
     }
 }

@@ -3,11 +3,12 @@ import { Button, Card, ScreenHeader } from '../ui/Layout';
 // generateTabooCards removed — full local deck is loaded each round
 import { useContent } from '../../contexts/ContentContext';
 import type { TabooCard } from '../../types';
-import { Timer, ThumbsUp, X, Ban } from 'lucide-react';
+import { Timer, ThumbsUp, X, Ban, Trophy } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import gamesDataRaw from '../../data/games_data.json';
 import { TABOO_CATEGORIES } from '../../constants';
+import TeamRosterRow from '../ui/TeamRosterRow';
 
 interface Props {
     onExit: () => void;
@@ -21,6 +22,25 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     const [timeLeft, setTimeLeft] = useState(60);
     const [currentCategory, setCurrentCategory] = useState("");
     const { prefetchGameContent } = useContent();
+
+    // Team mode: opt-in via TeamRosterRow on the CATEGORY screen. When teams
+    // are set, each team plays its own 60-second round on the same category;
+    // session dedupe ensures Team B gets fresh cards Team A didn't touch.
+    // Solo mode (teams=[]) preserves the original single-round flow.
+    const [teams, setTeams] = useState<string[]>(() => sessionService.getTeams());
+    const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
+    const [teamScores, setTeamScores] = useState<number[]>([]);
+
+    // Initial category tap from CATEGORY screen. Resets team-match state
+    // (team index, accumulated team scores) before entering the load flow.
+    // In solo mode, this is just a thin wrapper around startGame.
+    const handleCategoryTap = (category: string) => {
+        if (teams.length >= 2) {
+            setCurrentTeamIndex(0);
+            setTeamScores([]);
+        }
+        startGame(category);
+    };
 
     const startGame = async (category: string) => {
         setCurrentCategory(category);
@@ -75,14 +95,32 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
         setGameState('PLAYING');
     };
 
+    // End the current team's round. In team mode, push the score onto the
+    // tally and either pass the phone to the next team (re-load fresh cards
+    // via startGame, which routes back through LOADING → READY) or roll into
+    // SUMMARY. In solo mode, jump straight to SUMMARY.
+    const endRound = () => {
+        if (teams.length >= 2) {
+            const tallied = [...teamScores, score];
+            setTeamScores(tallied);
+            if (currentTeamIndex < teams.length - 1) {
+                setCurrentTeamIndex(i => i + 1);
+                startGame(currentCategory);
+                return;
+            }
+        }
+        setGameState('SUMMARY');
+    };
+
     useEffect(() => {
         let interval: ReturnType<typeof setInterval>;
         if (gameState === 'PLAYING' && timeLeft > 0) {
             interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
         } else if (timeLeft === 0 && gameState === 'PLAYING') {
-            setGameState('SUMMARY');
+            endRound();
         }
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameState, timeLeft]);
 
     const handleCorrect = () => {
@@ -103,8 +141,9 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
         if (currentIndex < cards.length - 1) {
             setCurrentIndex(c => c + 1);
         } else {
-            // Entire deck exhausted during this round — end round
-            setGameState('SUMMARY');
+            // Deck exhausted before the timer ran out — end this team's
+            // round (or the whole match in solo mode).
+            endRound();
         }
     };
 
@@ -113,11 +152,12 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Taboo Categories" onBack={onExit} onHome={onExit} />
                 <p className="text-muted mb-4 text-sm">Pick a topic. Describe the word without using forbidden words!</p>
+                <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
                 <div className="grid grid-cols-2 gap-3 overflow-y-auto pb-4">
                     {TABOO_CATEGORIES.map(cat => (
                         <button
                             key={cat.id}
-                            onClick={() => startGame(cat.id)}
+                            onClick={() => handleCategoryTap(cat.id)}
                             className={`p-4 rounded-xl flex flex-col items-center gap-3 transition-all active:scale-95 bg-surface hover:bg-surface-alt border-2 ${(cat as any).borderColor || 'border-divider-soft'}`}
                         >
                             <div className={`p-2 rounded-full bg-surface-alt ${cat.color}`}>
@@ -146,17 +186,50 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     }
 
     if (gameState === 'READY') {
+        const inTeamMode = teams.length >= 2;
+        const upName = inTeamMode ? (teams[currentTeamIndex] || `Team ${currentTeamIndex + 1}`) : null;
+        const isFirstTeam = currentTeamIndex === 0;
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Ready?" onBack={() => setGameState('CATEGORY')} onHome={onExit} />
+                <ScreenHeader
+                    title={inTeamMode ? `Round ${currentTeamIndex + 1} of ${teams.length}` : 'Ready?'}
+                    onBack={() => setGameState('CATEGORY')}
+                    onHome={onExit}
+                />
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8">
                     <Card className="w-full text-center py-12 bg-surface border border-divider-soft shadow-xl">
-                        <h2 className="text-2xl font-bold mb-4 font-serif text-ink">Pass the phone to the<br />Clue Giver!</h2>
-                        <div className="text-6xl mb-4">🤫</div>
-                        <p className="text-muted text-sm px-6">
-                            When you're ready, hit start. You have 60 seconds to describe as many words as possible.
-                        </p>
+                        {inTeamMode ? (
+                            <>
+                                <p className="text-xs uppercase tracking-[0.18em] text-muted mb-2">Pass the phone to</p>
+                                <h2 className="text-4xl font-black mb-4 text-ink">{upName}</h2>
+                                <div className="text-6xl mb-4">🤫</div>
+                                <p className="text-muted text-sm px-6">
+                                    60 seconds to describe as many words as possible — no forbidden words.
+                                </p>
+                            </>
+                        ) : (
+                            <>
+                                <h2 className="text-2xl font-bold mb-4 font-serif text-ink">Pass the phone to the<br />Clue Giver!</h2>
+                                <div className="text-6xl mb-4">🤫</div>
+                                <p className="text-muted text-sm px-6">
+                                    When you're ready, hit start. You have 60 seconds to describe as many words as possible.
+                                </p>
+                            </>
+                        )}
                     </Card>
+                    {inTeamMode && !isFirstTeam && teamScores.length > 0 && (
+                        <div className="bg-surface-alt border border-divider rounded-xl px-4 py-3 max-w-[280px] w-full">
+                            <p className="text-xs uppercase tracking-wider text-muted mb-1.5 text-center">Standings</p>
+                            <div className="space-y-1">
+                                {teamScores.map((s, i) => (
+                                    <div key={i} className="flex justify-between text-sm">
+                                        <span className="text-ink-soft truncate">{teams[i] || `Team ${i + 1}`}</span>
+                                        <span className="font-bold text-ink ml-3">{s}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     <Button fullWidth onClick={startRound} className="h-16 text-xl">START TIMER</Button>
                 </div>
             </div>
@@ -164,18 +237,60 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     }
 
     if (gameState === 'SUMMARY') {
+        const inTeamMode = teamScores.length > 0;
+        const ranked = inTeamMode
+            ? teamScores
+                .map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }))
+                .sort((a, b) => b.score - a.score)
+            : [];
+        const winner = ranked[0];
+        const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Time's Up!" onBack={() => setGameState('CATEGORY')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-slide-up">
-                    <div className="text-center">
-                        <h2 className="text-4xl font-bold mb-2">Round Over</h2>
-                        <p className="text-muted">Team Score</p>
-                    </div>
-
-                    <div className="text-9xl font-black text-party-secondary drop-shadow-lg">
-                        {score}
-                    </div>
+                    {inTeamMode ? (
+                        <>
+                            <div className="text-center">
+                                <h2 className="text-3xl font-bold mb-1">Round Over</h2>
+                                {tiedTop ? (
+                                    <p className="text-muted">It's a tie at the top.</p>
+                                ) : (
+                                    <p className="text-muted">
+                                        <span className="font-bold text-ink">{winner.name}</span> takes it.
+                                    </p>
+                                )}
+                            </div>
+                            <div className="w-full max-w-[320px] space-y-2">
+                                {ranked.map((r, i) => (
+                                    <div
+                                        key={i}
+                                        className={`flex items-center justify-between rounded-xl px-4 py-3 border ${
+                                            i === 0
+                                                ? 'bg-accent-soft border-accent text-ink'
+                                                : 'bg-surface border-divider text-ink-soft'
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            {i === 0 && <Trophy size={16} className="text-accent flex-shrink-0" />}
+                                            <span className="font-bold truncate">{r.name}</span>
+                                        </div>
+                                        <span className="text-2xl font-black ml-3">{r.score}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="text-center">
+                                <h2 className="text-4xl font-bold mb-2">Round Over</h2>
+                                <p className="text-muted">Team Score</p>
+                            </div>
+                            <div className="text-9xl font-black text-party-secondary drop-shadow-lg">
+                                {score}
+                            </div>
+                        </>
+                    )}
 
                     <div className="flex flex-col gap-3 w-full">
                         <Button onClick={() => setGameState('CATEGORY')} fullWidth>Next Category</Button>
@@ -208,8 +323,17 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                     <Timer size={18} className={timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-party-accent'} />
                     <span className={`font-mono font-bold text-xl ${timeLeft < 10 ? 'text-red-500' : 'text-ink'}`}>{timeLeft}</span>
                 </div>
-                <div className="font-bold text-xl text-party-primary w-[50px] text-right">
-                    {score}
+                <div className="font-bold text-party-primary text-right min-w-[60px]">
+                    {teams.length >= 2 ? (
+                        <div className="flex flex-col items-end leading-tight">
+                            <span className="text-[10px] uppercase tracking-wider text-muted truncate max-w-[80px]">
+                                {teams[currentTeamIndex] || `Team ${currentTeamIndex + 1}`}
+                            </span>
+                            <span className="text-xl">{score}</span>
+                        </div>
+                    ) : (
+                        <span className="text-xl">{score}</span>
+                    )}
                 </div>
             </div>
 
