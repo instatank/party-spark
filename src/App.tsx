@@ -19,6 +19,7 @@ import { FactOrFictionGame } from './components/games/FactOrFictionGame';
 import { CompatibilityTestGame } from './components/games/CompatibilityTestGame';
 import { TruthOrDrinkGame } from './components/games/TruthOrDrinkGame';
 import { FiveAliveGame } from './components/games/FiveAliveGame';
+import { LinkedGame } from './components/games/LinkedGame';
 
 const SplashScreen = () => (
   <div className="fixed inset-0 z-[100] bg-app flex items-center justify-center overflow-hidden font-sans">
@@ -97,6 +98,8 @@ const App = () => {
         return <TruthOrDrinkGame onExit={() => setActiveGame(GameType.HOME)} />;
       case GameType.FIVE_ALIVE:
         return <FiveAliveGame onExit={() => setActiveGame(GameType.HOME)} />;
+      case GameType.LINKED:
+        return <LinkedGame onExit={() => setActiveGame(GameType.HOME)} />;
       default:
         return <HomeMenu onSelectGame={setActiveGame} />;
     }
@@ -161,6 +164,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
   // Coming-soon list. Order here drives display order in the Coming Soon
   // tab (the filter below preserves it via comingSoonGameIds.map).
   const comingSoonGameIds = [
+    GameType.LINKED,
     GameType.FIVE_ALIVE,
     GameType.WOULD_I_LIE_TO_YOU,
     GameType.ICEBREAKERS,

@@ -1,6 +1,6 @@
 import { GameType, type GameMeta } from './types';
 
-import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer } from 'lucide-react';
+import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2 } from 'lucide-react';
 
 export const GAMES: GameMeta[] = [
     {
@@ -115,6 +115,14 @@ export const GAMES: GameMeta[] = [
         color: "bg-emerald-500",
         minPlayers: 2
     },
+    {
+        id: GameType.LINKED,
+        title: "Linked",
+        description: "Find the word that connects all three.",
+        icon: "link",
+        color: "bg-indigo-500",
+        minPlayers: 1
+    },
 ];
 
 // =============================================================================
@@ -144,6 +152,7 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.TRUTH_OR_DRINK]:      { vibe: 'Deep',     duration: '15 min', players: '2+',   tags: ['adult', 'honest', 'spicy', 'couples'] },
     [GameType.COMPATIBILITY_TEST]:  { vibe: 'Connect',  duration: '15 min', players: '2',    tags: ['couple', 'know', 'couples', 'spicy'] },
     [GameType.FIVE_ALIVE]:          { vibe: 'Speed',    duration: '2 min',  players: '2+',   tags: ['quick', 'speed', 'recall', 'party', 'classic'] },
+    [GameType.LINKED]:              { vibe: 'Puzzle',   duration: '5 min',  players: '1+',   tags: ['quick', 'words', 'puzzle', 'classic'] },
 };
 
 export const HOME_FILTERS = [
@@ -232,6 +241,11 @@ export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
         { label: 'Easy', tags: ['easy', 'casual', 'family', 'quick'] },
         { label: 'Hard', tags: ['hard', 'challenging', 'specialist'] },
     ],
+    [GameType.LINKED]: [
+        { label: 'Easy',      tags: ['easy', 'casual', 'family', 'words'] },
+        { label: 'Hard',      tags: ['hard', 'challenging', 'words'] },
+        { label: 'Just Play', tags: ['casual', 'group', 'no-timer'] },
+    ],
 };
 
 // Returns the labels of any sub-categories whose label or tags match the
@@ -268,6 +282,7 @@ export const getIcon = (name: string, size: number = 24) => {
         case 'wine': return <Wine size={size} />;
         case 'heart': return <Heart size={size} />;
         case 'timer': return <Timer size={size} />;
+        case 'link': return <Link2 size={size} />;
         default: return <Sparkles size={size} />;
     }
 };
