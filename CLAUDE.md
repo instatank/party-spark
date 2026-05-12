@@ -98,6 +98,12 @@ This bit us several times. If you add a new accent color, verify it in the compi
 | The Forecast (Compatibility Test) | `COMPATIBILITY_TEST` | Player A predicts Player B's answers | Static (`compatibility_test.json`) | Adult-gated. Modes: Couples / Friends / Bunny. Known issue: deeper screens use dynamic Tailwind classes — see Known Issues. |
 | **Truth or Drink** | `TRUTH_OR_DRINK` | Confess or sip | **Claude → Gemini fallback** | Adult-gated. 5 decks (Classic/Spicy/Deep Cuts/Ex Files/Chaos) + "Create Your Vibe" AI custom deck. 2-10 players, 10 rounds. |
 
+### In testing — Coming Soon tab only
+
+| Game | GameType | Mechanic | AI | Notes |
+|---|---|---|---|---|
+| 5 Alive | `FIVE_ALIVE` | Name N in N seconds vs a buzzer | None (offline) | Currently listed under `comingSoonGameIds` in `App.tsx` while it's tested. 5 descending rounds (5/4/3/2/1), perfect-round bonus, judge tallies. Easy + Hard category pools in `src/data/five_alive.json`. Buzzer + tick are synthesized via Web Audio (no bundled assets). Also has a "Just Play" no-scoring mode like TOD. **Single game (5 rounds) per player** — the "rounds-per-player ×2/×3" option from the handoff spec was deliberately left out of the minimal PR. |
+
 ### Previously orphaned (deleted 2026-04-21)
 
 Three components — Trivia, Simple Selfie, Agra Quest — used to exist as unrouted files. They were deleted along with their GameType enum entries, their TRIVIA_CATEGORIES and TriviaQuestion type, the `generateTriviaQuestions` service function, and the trivia buffer path in `ContentContext`. If you want any of them back, start from scratch rather than restoring old code.

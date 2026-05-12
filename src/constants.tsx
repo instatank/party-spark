@@ -1,6 +1,6 @@
 import { GameType, type GameMeta } from './types';
 
-import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart } from 'lucide-react';
+import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer } from 'lucide-react';
 
 export const GAMES: GameMeta[] = [
     {
@@ -107,6 +107,14 @@ export const GAMES: GameMeta[] = [
         color: "bg-pink-500",
         minPlayers: 2
     },
+    {
+        id: GameType.FIVE_ALIVE,
+        title: "5 Alive",
+        description: "Name 5 in 5 seconds — beat the buzzer.",
+        icon: "timer",
+        color: "bg-emerald-500",
+        minPlayers: 2
+    },
 ];
 
 // =============================================================================
@@ -135,6 +143,7 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.WOULD_I_LIE_TO_YOU]:  { vibe: 'Bluff',    duration: '10 min', players: '3+',   tags: ['story', 'read', 'crowd'] },
     [GameType.TRUTH_OR_DRINK]:      { vibe: 'Deep',     duration: '15 min', players: '2+',   tags: ['adult', 'honest', 'spicy', 'couples'] },
     [GameType.COMPATIBILITY_TEST]:  { vibe: 'Connect',  duration: '15 min', players: '2',    tags: ['couple', 'know', 'couples', 'spicy'] },
+    [GameType.FIVE_ALIVE]:          { vibe: 'Speed',    duration: '2 min',  players: '2+',   tags: ['quick', 'speed', 'recall', 'party', 'classic'] },
 };
 
 export const HOME_FILTERS = [
@@ -219,6 +228,10 @@ export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
         { label: 'Medium Mode', tags: ['medium'] },
         { label: 'Hard Mode',   tags: ['hard', 'challenging'] },
     ],
+    [GameType.FIVE_ALIVE]: [
+        { label: 'Easy', tags: ['easy', 'casual', 'family', 'quick'] },
+        { label: 'Hard', tags: ['hard', 'challenging', 'specialist'] },
+    ],
 };
 
 // Returns the labels of any sub-categories whose label or tags match the
@@ -254,6 +267,7 @@ export const getIcon = (name: string, size: number = 24) => {
         case 'check_circle': return <CheckCircle2 size={size} />;
         case 'wine': return <Wine size={size} />;
         case 'heart': return <Heart size={size} />;
+        case 'timer': return <Timer size={size} />;
         default: return <Sparkles size={size} />;
     }
 };
