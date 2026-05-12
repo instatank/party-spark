@@ -193,11 +193,13 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                     />
                 )}
 
-                <div className="flex-1 overflow-y-auto pb-8">
-                    <p className="text-muted mb-4 text-sm text-center">
-                        Pick a category. Stand up if you've done it. Last one sitting wins.
-                    </p>
+                <div className="text-center mb-4 -mt-3">
+                    <p className="text-3xl mb-1.5 leading-none">🫣</p>
+                    <h2 className="text-lg font-serif font-bold text-ink mb-0.5">What <em>haven't</em> you done?</h2>
+                    <p className="text-muted text-sm">Stand up if you've done it. Last one sitting wins.</p>
+                </div>
 
+                <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {NEVER_HAVE_I_EVER_CATEGORIES.map((cat) => {
                             const meta = catPalette(cat.id);

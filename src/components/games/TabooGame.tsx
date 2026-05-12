@@ -150,8 +150,12 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     if (gameState === 'CATEGORY') {
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Taboo Categories" onBack={onExit} onHome={onExit} />
-                <p className="text-muted mb-4 text-sm">Pick a topic. Describe the word without using forbidden words!</p>
+                <ScreenHeader title="Taboo" onBack={onExit} onHome={onExit} />
+                <div className="text-center mb-4 -mt-3">
+                    <p className="text-3xl mb-1.5 leading-none">🚫</p>
+                    <h2 className="text-lg font-serif font-bold text-ink mb-0.5">Describe it — without saying <em>it</em>.</h2>
+                    <p className="text-muted text-sm">60 seconds. Avoid the forbidden words.</p>
+                </div>
                 <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
                 <div className="grid grid-cols-2 gap-3 overflow-y-auto pb-4">
                     {TABOO_CATEGORIES.map(cat => (
