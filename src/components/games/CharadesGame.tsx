@@ -239,9 +239,11 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Charades" onBack={onExit} onHome={onExit} />
-                <p className="text-muted mb-4 text-sm text-center">
-                    Pick a category. 60-second round, act them out silently.
-                </p>
+                <div className="text-center mb-4 -mt-3">
+                    <p className="text-3xl mb-1.5 leading-none">🎭</p>
+                    <h2 className="text-lg font-serif font-bold text-ink mb-0.5">All mime, <em>no</em> words.</h2>
+                    <p className="text-muted text-sm">60 seconds to act it out.</p>
+                </div>
                 <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
