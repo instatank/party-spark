@@ -151,18 +151,20 @@ const SlimTile: React.FC<{ title: string; tagline: string; color: string; onClic
     </button>
 );
 
-// One clue chip. Unrevealed: clue + a dim blank on the connector side (position
-// is the only hint). Revealed: the full compound, connector uppercase + accent.
-const ClueChip: React.FC<{ clue: string; answer: string; position: Position; revealed: boolean }> = ({ clue, answer, position, revealed }) => {
-    const blank = <span className="text-indigo-400/50 font-bold tracking-[0.05em]">_ _ _</span>;
-    const conn = <span className="font-extrabold uppercase tracking-[0.04em] text-indigo-500">{answer}</span>;
-    const clueEl = <span className="font-bold text-ink">{clue}</span>;
+// One clue line inside the play-screen card. Unrevealed: clue + a dim blank on
+// the connector side (position is the only hint). Revealed: the full compound,
+// connector uppercase + accent. Playfair, centered — same voice as the prompt
+// cards in NHIE / MLT / 5 Alive.
+const ClueLine: React.FC<{ clue: string; answer: string; position: Position; revealed: boolean }> = ({ clue, answer, position, revealed }) => {
+    const blank = <span className="text-indigo-400/45">_ _ _</span>;
+    const conn = <span className="uppercase text-indigo-500">{answer}</span>;
+    const clueEl = <span className="text-ink">{clue}</span>;
     return (
-        <div className="flex items-center justify-center gap-2 bg-surface-alt border border-divider rounded-xl py-3.5 px-4 text-xl">
+        <p className="font-serif font-semibold text-[22px] leading-[1.25] tracking-[-0.01em] text-center break-words">
             {revealed
-                ? <span className="break-words">{position === 'prefix' ? <>{conn}{clueEl}</> : <>{clueEl}{conn}</>}</span>
-                : <span className="flex items-center gap-2">{position === 'prefix' ? <>{blank}{clueEl}</> : <>{clueEl}{blank}</>}</span>}
-        </div>
+                ? (position === 'prefix' ? <>{conn}{clueEl}</> : <>{clueEl}{conn}</>)
+                : (position === 'prefix' ? <>{blank} {clueEl}</> : <>{clueEl} {blank}</>)}
+        </p>
     );
 };
 
@@ -493,37 +495,60 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                         )}
                     </div>
 
-                    {/* Puzzle */}
-                    <div className="flex-1 flex flex-col items-center justify-center gap-3 w-full max-w-[340px] mx-auto animate-slide-up">
-                        {puzzle ? (
-                            <>
-                                <div key={`q-${turnId}-${qIndex}`} className="grid gap-2.5 w-full animate-slide-up">
-                                    {puzzle.clues.map((c, i) => (
-                                        <ClueChip key={i} clue={c} answer={puzzle.answer} position={pos} revealed={revealed} />
-                                    ))}
+                    {/* Puzzle — portrait prompt card, same family as NHIE / MLT / 5 Alive */}
+                    <div className="flex-1 flex items-center justify-center w-full">
+                        <div className="w-full max-w-sm relative z-10">
+                            <div
+                                className="w-full aspect-[3/4] max-h-[460px] bg-surface border border-divider rounded-[22px] p-7 flex flex-col relative overflow-hidden"
+                                style={{ boxShadow: 'var(--shadow-card)' }}
+                            >
+                                <div
+                                    className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none"
+                                    style={{ background: 'rgba(99, 102, 241, 0.18)' }}
+                                />
+                                <div
+                                    className="self-start text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md relative z-10"
+                                    style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366F1' }}
+                                >
+                                    Linked
                                 </div>
-                                {/* Connector slot */}
-                                <div className="mt-2 flex flex-col items-center">
-                                    {revealed ? (
-                                        <div key={`rev-${turnId}-${qIndex}`} className="text-center animate-slide-up">
-                                            <p className="text-[10px] uppercase tracking-[0.2em] text-muted mb-1">The link is</p>
-                                            <p className="font-serif font-black text-4xl uppercase tracking-wide text-indigo-500">{puzzle.answer}</p>
-                                        </div>
+
+                                <div className="flex-1 flex flex-col items-center justify-center gap-5 relative z-10">
+                                    {puzzle ? (
+                                        <>
+                                            <div key={`q-${turnId}-${qIndex}`} className="space-y-2.5 w-full animate-slide-up">
+                                                {puzzle.clues.map((c, i) => (
+                                                    <ClueLine key={i} clue={c} answer={puzzle.answer} position={pos} revealed={revealed} />
+                                                ))}
+                                            </div>
+                                            <div className="w-2/3 h-px bg-divider" />
+                                            {revealed ? (
+                                                <div key={`rev-${turnId}-${qIndex}`} className="text-center animate-slide-up">
+                                                    <p className="text-[10px] uppercase tracking-[0.2em] text-muted mb-0.5">The link is</p>
+                                                    <p className="font-serif font-black text-3xl uppercase tracking-wide text-indigo-500">{puzzle.answer}</p>
+                                                </div>
+                                            ) : (
+                                                <div className="text-center">
+                                                    <p className="text-[10px] uppercase tracking-[0.2em] text-muted mb-0.5">{pos === 'prefix' ? 'goes in front' : 'goes on the end'}</p>
+                                                    <p className="font-serif font-black text-3xl text-indigo-400/40">?</p>
+                                                </div>
+                                            )}
+                                        </>
                                     ) : (
-                                        <div className="text-center">
-                                            <p className="text-[10px] uppercase tracking-[0.2em] text-muted mb-1">{pos === 'prefix' ? 'goes in front' : 'goes on the end'}</p>
-                                            <p className="font-serif font-black text-4xl text-indigo-400/40">?</p>
-                                        </div>
+                                        <p className="text-muted text-sm">Loading puzzles…</p>
                                     )}
                                 </div>
-                            </>
-                        ) : (
-                            <p className="text-muted text-sm">Loading puzzles…</p>
-                        )}
+
+                                <div className="text-[11px] text-muted flex items-center justify-between relative z-10">
+                                    <span>{difficulty === 'easy' ? 'Easy' : 'Hard'}{isPass ? ` · ${roundGot} found` : ''}</span>
+                                    <span className="font-serif italic text-[12px] text-indigo-500">PartySpark</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="w-full max-w-[340px] mx-auto mt-3">
+                    <div className="w-full max-w-sm mx-auto mt-5">
                         {isPass ? (
                             revealed ? (
                                 <div className="h-14 flex items-center justify-center rounded-2xl bg-indigo-500/12 text-indigo-500 font-bold text-sm">
