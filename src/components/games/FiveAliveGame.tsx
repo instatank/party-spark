@@ -19,14 +19,15 @@ type GameState =
     | 'TALLY'            // judge enters score (named) or "Next round" (just play)
     | 'END';             // leaderboard (named) or "Play again" (just play)
 
-// Five rounds, descending: name N in N seconds. Perfect round = +1 bonus.
-// Max per round = count + 1 (bonus). Max game = 6+5+4+3+2 = 20.
+// Five rounds, descending: name N in N+1 seconds (the extra second covers
+// reading the clue). Perfect round = +1 bonus. Max per round = count + 1
+// (bonus). Max game = 6+5+4+3+2 = 20.
 const ROUNDS: { time: number; count: number }[] = [
-    { time: 5, count: 5 },
-    { time: 4, count: 4 },
-    { time: 3, count: 3 },
-    { time: 2, count: 2 },
-    { time: 1, count: 1 },
+    { time: 6, count: 5 },
+    { time: 5, count: 4 },
+    { time: 4, count: 3 },
+    { time: 3, count: 2 },
+    { time: 2, count: 1 },
 ];
 const TOTAL_ROUNDS = ROUNDS.length;
 
