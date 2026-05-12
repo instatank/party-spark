@@ -416,36 +416,50 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
-    // ---- PLAYING — category + live timer (no Start button: the timer starts
-    //      the instant this screen mounts, simultaneous with the reveal) ----
+    // ---- PLAYING — clue card centerstage, compact timer strip on top. The
+    //      timer starts the instant this screen mounts (no Start button), so
+    //      the reveal and the countdown are simultaneous. ----
     if (gameState === 'PLAYING') {
         const totalMs = round.time * 1000;
         const progress = Math.max(0, Math.min(1, remainingMs / totalMs));
         const displaySec = Math.max(1, Math.ceil(remainingMs / 1000));
         const tier = TIMER_TIERS[tierForSecond(displaySec)];
-        const R = 125, C = 2 * Math.PI * R;
         const cat = turnCategories[roundIndex] || '…';
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title={`Round ${roundIndex + 1} of ${TOTAL_ROUNDS}`} onBack={() => setGameState(mode === 'just_play' ? 'SETUP' : 'PASS')} onHome={onExit} />
+                {/* Compact timer — small color-shifting number + draining bar.
+                    Deliberately small: the clue card below is the centerpiece. */}
+                <div className="flex items-center gap-3 max-w-[340px] mx-auto w-full px-1 mb-4">
+                    <span className={`font-black tabular-nums leading-none ${tier.text}`} style={{ fontSize: '32px', minWidth: '34px' }}>
+                        {displaySec}
+                    </span>
+                    <div className="flex-1 h-3 rounded-full bg-surface-alt overflow-hidden">
+                        <div
+                            className="h-full rounded-full"
+                            style={{ width: `${progress * 100}%`, background: tier.ring, transition: 'width 80ms linear' }}
+                        />
+                    </div>
+                </div>
+                {/* Clue card — the centerpiece. Same surface + decorative-blob
+                    language as the other game play screens. */}
                 <div className="flex-1 flex flex-col items-center justify-center px-4 animate-slide-up">
-                    <h2 className="font-serif font-bold text-[30px] leading-[1.05] tracking-[-0.015em] text-ink text-center break-words mb-1.5">
-                        {cat}
-                    </h2>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted mb-5">
-                        Name {round.count}
-                    </p>
-                    <div className="relative w-[280px] h-[280px] flex items-center justify-center">
-                        <svg className="absolute inset-0 -rotate-90" viewBox="0 0 280 280">
-                            <circle cx="140" cy="140" r={R} fill="none" stroke="var(--c-border)" strokeWidth="14" />
-                            <circle
-                                cx="140" cy="140" r={R} fill="none" strokeWidth="14" strokeLinecap="round"
-                                style={{ stroke: tier.ring, strokeDasharray: C, strokeDashoffset: C * (1 - progress), transition: 'stroke-dashoffset 80ms linear' }}
-                            />
-                        </svg>
-                        <span className={`font-black tabular-nums leading-none ${tier.text}`} style={{ fontSize: '110px' }}>
-                            {displaySec}
-                        </span>
+                    <div
+                        className="w-full max-w-[340px] aspect-[3/4] max-h-[420px] bg-surface border border-divider rounded-[22px] p-6 flex flex-col items-center justify-center relative overflow-hidden"
+                        style={{ boxShadow: 'var(--shadow-card)' }}
+                    >
+                        <div className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none bg-emerald-500/15" />
+                        <div className="self-start text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-500 relative z-10">
+                            5 Alive
+                        </div>
+                        <div className="flex-1 flex items-center justify-center relative z-10 px-2">
+                            <h2 className="font-serif font-bold text-[44px] leading-[1.05] tracking-[-0.015em] text-ink text-center break-words">
+                                {cat}
+                            </h2>
+                        </div>
+                        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted relative z-10">
+                            Name {round.count} in {round.time} second{round.time === 1 ? '' : 's'}
+                        </p>
                     </div>
                     <p className="text-muted text-sm mt-5">Say them out loud — go!</p>
                 </div>
