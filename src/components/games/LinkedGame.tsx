@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Link2, ChevronRight, Plus, X, Trophy, ArrowRight, Eye, Check } from 'lucide-react';
+import { Link2, ChevronRight, Plus, X, Zap, Trophy, ArrowRight, Eye, Check } from 'lucide-react';
 import linkedData from '../../data/linked.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
@@ -13,9 +13,8 @@ type Difficulty = 'easy' | 'hard';
 type Mode = 'just_play' | 'pass';
 type Position = 'prefix' | 'suffix';
 type GameState =
-    | 'MODE_SELECT'        // Just Play / Pass and Play
+    | 'SETUP'              // player names + "Just Play" — the landing screen; the action taken picks the mode
     | 'DIFFICULTY_SELECT'  // Easy / Hard
-    | 'SETUP'              // player names (pass mode only)
     | 'READY'              // "Pass to <player>" gate (pass mode only)
     | 'PLAY'               // the puzzle screen (both modes; 60s timer in pass mode)
     | 'ROUND_OVER'         // player's round score + "Pass to next" (pass mode only)
@@ -41,14 +40,7 @@ const MIN_FRESH_BUFFER = 10;
 // How long the answer flashes after "Got it!" in pass mode before auto-advance.
 const GOT_IT_FLASH_MS = 1200;
 
-const ACCENT = '#6366F1'; // indigo-500 — the game's brand accent
-
-// Slim-row tiles. Colors are inline hex (drive the left accent bar + icon).
-const MODE_TILES: { id: Mode; title: string; tagline: string; color: string }[] = [
-    { id: 'pass',      title: 'Pass and Play', tagline: '60 seconds each — most links wins.', color: '#10B981' },
-    { id: 'just_play', title: 'Just Play',     tagline: 'No timer. Shout it out together.',   color: ACCENT },
-];
-
+// Slim-row difficulty tiles. Colors are inline hex (drive the left accent bar + icon).
 const DIFFICULTY_TILES: { id: Difficulty; title: string; tagline: string; color: string }[] = [
     { id: 'easy', title: 'Easy', tagline: 'Everyday words — warm-up territory.', color: '#10B981' },
     { id: 'hard', title: 'Hard', tagline: 'Trickier connectors. Brains on.',     color: '#E11D48' },
@@ -175,7 +167,7 @@ const ClueChip: React.FC<{ clue: string; answer: string; position: Position; rev
 };
 
 export const LinkedGame: React.FC<Props> = ({ onExit }) => {
-    const [gameState, setGameState] = useState<GameState>('MODE_SELECT');
+    const [gameState, setGameState] = useState<GameState>('SETUP');
     const [mode, setMode] = useState<Mode>('pass');
     const [difficulty, setDifficulty] = useState<Difficulty>('easy');
     const [players, setPlayers] = useState<string[]>(['', '']);
@@ -284,7 +276,20 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     // -----------------------------------------------------------------------
     // Flow handlers
     // -----------------------------------------------------------------------
-    const handlePickMode = (m: Mode) => { unlockAudio(); setMode(m); setGameState('DIFFICULTY_SELECT'); };
+    // SETUP → DIFFICULTY_SELECT. Entering names + "Start" picks timed (pass)
+    // mode; "Just Play" picks group-shout mode. Difficulty is chosen next.
+    const handleStartNamed = () => {
+        unlockAudio();
+        setMode('pass');
+        setScores(trimmedPlayers.map(name => ({ name, score: 0 })));
+        setPlayerIndex(0);
+        setGameState('DIFFICULTY_SELECT');
+    };
+    const handleJustPlay = () => {
+        unlockAudio();
+        setMode('just_play');
+        setGameState('DIFFICULTY_SELECT');
+    };
 
     const handlePickDifficulty = (diff: Difficulty) => {
         unlockAudio();
@@ -293,15 +298,8 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
             startQueue(diff);
             setGameState('PLAY');
         } else {
-            setGameState('SETUP');
+            setGameState('READY');
         }
-    };
-
-    const handleStartPass = () => {
-        unlockAudio();
-        setScores(trimmedPlayers.map(name => ({ name, score: 0 })));
-        setPlayerIndex(0);
-        setGameState('READY');
     };
 
     // READY → PLAY: fresh queue + fresh 60s timer for this player.
@@ -347,7 +345,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
         setGameState('READY');
     };
 
-    const backToModeSelect = () => { clearFlash(); setGameState('MODE_SELECT'); };
+    const backToSetup = () => { clearFlash(); setGameState('SETUP'); };
 
     // -----------------------------------------------------------------------
     // Player-setup field handlers
@@ -360,63 +358,21 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     // RENDER
     // =======================================================================
 
-    // ---- MODE_SELECT ----
-    if (gameState === 'MODE_SELECT') {
-        return (
-            <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="Linked" onBack={onExit} onHome={onExit} />
-                <div className="text-center mb-4 -mt-3">
-                    <p className="text-3xl mb-1.5 leading-none">🔗</p>
-                    <h2 className="text-lg font-serif font-bold text-ink mb-0.5">What's the word that <em>links</em> all three?</h2>
-                    <p className="text-muted text-sm">Three clues. One connector. Say it out loud.</p>
-                </div>
-                <div className="flex-1 overflow-y-auto pb-8">
-                    <div className="grid gap-3 max-w-[340px] mx-auto w-full">
-                        {MODE_TILES.map(t => (
-                            <SlimTile key={t.id} title={t.title} tagline={t.tagline} color={t.color} onClick={() => handlePickMode(t.id)} />
-                        ))}
-                    </div>
-                    <p className="text-center text-xs text-muted mt-6 max-w-[300px] mx-auto leading-relaxed">
-                        e.g. <span className="text-ink font-semibold">water</span> · <span className="text-ink font-semibold">down</span> · <span className="text-ink font-semibold">rain</span> → <span className="text-indigo-400 font-bold uppercase">fall</span>
-                    </p>
-                </div>
-            </div>
-        );
-    }
-
-    // ---- DIFFICULTY_SELECT ----
-    if (gameState === 'DIFFICULTY_SELECT') {
-        return (
-            <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="Pick a Level" onBack={backToModeSelect} onHome={onExit} />
-                <div className="text-center mb-4 -mt-3">
-                    <p className="text-muted text-sm">{mode === 'pass' ? 'Pass and Play · 60s per turn' : 'Just Play · no timer'}</p>
-                </div>
-                <div className="flex-1 overflow-y-auto pb-8">
-                    <div className="grid gap-3 max-w-[340px] mx-auto w-full">
-                        {DIFFICULTY_TILES.map(t => (
-                            <SlimTile key={t.id} title={t.title} tagline={t.tagline} color={t.color} onClick={() => handlePickDifficulty(t.id)} />
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // ---- SETUP (pass mode) ----
+    // ---- SETUP — the landing screen: enter names (→ timed mode) or Just Play (→ group shout) ----
     if (gameState === 'SETUP') {
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="Who's Playing?" onBack={() => setGameState('DIFFICULTY_SELECT')} onHome={onExit} />
+                <ScreenHeader title="Linked" onBack={onExit} onHome={onExit} />
                 <div className="px-2 pb-4 flex-1 flex flex-col">
-                    <div className="flex items-center gap-2 mb-4">
-                        <span className="text-xs font-bold uppercase tracking-widest text-indigo-500">
-                            {difficulty === 'easy' ? 'Easy' : 'Hard'} mode
-                        </span>
-                        <span className="text-muted">•</span>
-                        <span className="text-xs font-medium text-muted">60 sec each · 2–10 players</span>
+                    <div className="text-center mb-3 -mt-2">
+                        <p className="text-2xl mb-1 leading-none">🔗</p>
+                        <h2 className="text-base font-serif font-bold text-ink">What's the word that <em>links</em> all three?</h2>
+                        <p className="text-muted text-xs mt-0.5">
+                            e.g. <span className="text-ink font-semibold">water</span> · <span className="text-ink font-semibold">down</span> · <span className="text-ink font-semibold">rain</span> → <span className="text-indigo-400 font-bold uppercase">fall</span>
+                        </p>
                     </div>
 
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted mb-2">Add players for a timed game</p>
                     <div className="space-y-3 flex-1">
                         {players.map((name, i) => (
                             <div key={i} className="flex items-center gap-2">
@@ -453,12 +409,37 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                     </div>
 
                     <Button
-                        onClick={handleStartPass}
+                        onClick={handleStartNamed}
                         className={`w-full py-4 text-lg mt-6 ${!canStart ? 'opacity-40' : ''}`}
                         disabled={!canStart}
                     >
-                        Start <ArrowRight className="inline ml-2" size={20} />
+                        Start — 60s Each <ArrowRight className="inline ml-2" size={20} />
                     </Button>
+                    <button
+                        onClick={handleJustPlay}
+                        className="w-full mt-3 py-4 rounded-xl font-bold text-base text-indigo-600 bg-transparent border-2 border-indigo-500/60 hover:bg-indigo-500/10 hover:border-indigo-500 transition-colors flex items-center justify-center gap-2"
+                    >
+                        <Zap size={18} /> Just Play — No Timer, Shout It Out
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // ---- DIFFICULTY_SELECT ----
+    if (gameState === 'DIFFICULTY_SELECT') {
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Pick a Level" onBack={backToSetup} onHome={onExit} />
+                <div className="text-center mb-4 -mt-3">
+                    <p className="text-muted text-sm">{mode === 'pass' ? 'Timed · 60s per player' : 'Just Play · no timer'}</p>
+                </div>
+                <div className="flex-1 overflow-y-auto pb-8">
+                    <div className="grid gap-3 max-w-[340px] mx-auto w-full">
+                        {DIFFICULTY_TILES.map(t => (
+                            <SlimTile key={t.id} title={t.title} tagline={t.tagline} color={t.color} onClick={() => handlePickDifficulty(t.id)} />
+                        ))}
+                    </div>
                 </div>
             </div>
         );
@@ -468,7 +449,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     if (gameState === 'READY') {
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Pass the Phone" onBack={() => setGameState('SETUP')} onHome={onExit} />
+                <ScreenHeader title="Pass the Phone" onBack={() => setGameState('DIFFICULTY_SELECT')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-6 animate-slide-up">
                     <p className="text-xs uppercase tracking-[0.18em] text-muted">Hand the device to</p>
                     <h2 className="text-5xl font-black text-ink break-words">{currentName}</h2>
@@ -494,7 +475,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
             <div className="h-full flex flex-col">
                 <ScreenHeader
                     title="Linked"
-                    onBack={() => { clearFlash(); setGameState(isPass ? 'SETUP' : 'DIFFICULTY_SELECT'); }}
+                    onBack={() => { clearFlash(); setGameState('DIFFICULTY_SELECT'); }}
                     onHome={onExit}
                 />
                 <div className="flex-1 flex flex-col px-2 pb-4">
@@ -609,7 +590,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
         const tiedTop = ranked.filter(r => r.score === top.score).length > 1;
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Final Scores" onBack={backToModeSelect} onHome={onExit} />
+                <ScreenHeader title="Final Scores" onBack={backToSetup} onHome={onExit} />
                 <div className="flex-1 overflow-y-auto px-4 pb-8 animate-slide-up">
                     <div className="text-center mb-5">
                         <div className="text-5xl mb-2">🏆</div>
