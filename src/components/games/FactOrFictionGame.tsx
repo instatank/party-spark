@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
-import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Rocket, Brain, Landmark } from 'lucide-react';
+import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Atom, Lightbulb, Medal, Landmark, Brain } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import factData from '../../data/fact_or_fiction.json';
@@ -29,9 +29,9 @@ const MAX_STRIKES = 3;
 // category id in fact_or_fiction.json. Unknown ids fall back to a neutral pill.
 const TOPIC_META: Record<string, { tagline: string; color: string; Icon: LucideIcon }> = {
     animal_kingdom:    { tagline: 'Creatures, instincts, oddities.',  color: '#22C55E', Icon: PawPrint },
-    science:           { tagline: 'Physics, space, the very small.',  color: '#6366F1', Icon: Rocket },
-    general_knowledge: { tagline: 'A bit of everything — stay sharp.', color: '#F59E0B', Icon: Brain },
-    sports:            { tagline: 'Records, rules, legends.',         color: '#EF4444', Icon: Trophy },
+    science:           { tagline: 'Physics, space, the very small.',  color: '#6366F1', Icon: Atom },
+    general_knowledge: { tagline: 'A bit of everything — stay sharp.', color: '#F59E0B', Icon: Lightbulb },
+    sports:            { tagline: 'Records, rules, legends.',         color: '#EF4444', Icon: Medal },
     history:           { tagline: 'Empires, firsts, turning points.', color: '#A855F7', Icon: Landmark },
 };
 const TOPIC_DEFAULT = { color: '#EC4899', Icon: Brain };
