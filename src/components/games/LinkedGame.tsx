@@ -158,10 +158,14 @@ const ClueChip: React.FC<{ clue: string; answer: string; position: Position; rev
     const conn = <span className="font-extrabold uppercase tracking-[0.04em] text-indigo-500">{answer}</span>;
     const clueEl = <span className="font-bold text-ink">{clue}</span>;
     return (
-        <div className="flex items-center justify-center gap-2 bg-surface-alt border border-divider rounded-xl py-3.5 px-4 text-xl">
-            {revealed
-                ? <span className="break-words">{position === 'prefix' ? <>{conn}{clueEl}</> : <>{clueEl}{conn}</>}</span>
-                : <span className="flex items-center gap-2">{position === 'prefix' ? <>{blank}{clueEl}</> : <>{clueEl}{blank}</>}</span>}
+        <div className="relative bg-surface-alt backdrop-blur-sm border border-divider rounded-xl py-3.5 px-4 overflow-hidden">
+            <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px] bg-indigo-500" />
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px] bg-indigo-500" />
+            <div className="flex items-center justify-center gap-2 text-xl">
+                {revealed
+                    ? <span className="break-words">{position === 'prefix' ? <>{conn}{clueEl}</> : <>{clueEl}{conn}</>}</span>
+                    : <span className="flex items-center gap-2">{position === 'prefix' ? <>{blank}{clueEl}</> : <>{clueEl}{blank}</>}</span>}
+            </div>
         </div>
     );
 };
