@@ -3,12 +3,20 @@ import { Button, Card, ScreenHeader } from '../ui/Layout';
 // generateTabooCards removed — full local deck is loaded each round
 import { useContent } from '../../contexts/ContentContext';
 import type { TabooCard } from '../../types';
-import { Timer, ThumbsUp, X, Ban, Trophy } from 'lucide-react';
+import { Timer, ThumbsUp, X, Ban, Trophy, ChevronRight, Sparkles, Zap, Flame } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import gamesDataRaw from '../../data/games_data.json';
-import { TABOO_CATEGORIES } from '../../constants';
 import TeamRosterRow from '../ui/TeamRosterRow';
+
+// Difficulty tiles for the CATEGORY screen — Slim Row pattern (matches
+// 5 Alive / Linked). Inline hex colors drive the left accent bar + icon.
+const LEVEL_TILES: { id: 'easy' | 'medium' | 'hard'; title: string; tagline: string; color: string; Icon: LucideIcon }[] = [
+    { id: 'easy',   title: 'Easy',   tagline: 'Common words, gentle bans.',   color: '#22C55E', Icon: Sparkles },
+    { id: 'medium', title: 'Medium', tagline: 'Trickier words, tighter bans.', color: '#EAB308', Icon: Zap },
+    { id: 'hard',   title: 'Hard',   tagline: 'Obscure words, brutal bans.',   color: '#EF4444', Icon: Flame },
+];
 
 interface Props {
     onExit: () => void;
@@ -157,19 +165,32 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                     <p className="text-muted text-sm">60 seconds. Avoid the forbidden words.</p>
                 </div>
                 <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
-                <div className="grid grid-cols-2 gap-3 overflow-y-auto pb-4">
-                    {TABOO_CATEGORIES.map(cat => (
-                        <button
-                            key={cat.id}
-                            onClick={() => handleCategoryTap(cat.id)}
-                            className={`p-4 rounded-xl flex flex-col items-center gap-3 transition-all active:scale-95 bg-surface hover:bg-surface-alt border-2 ${(cat as any).borderColor || 'border-divider-soft'}`}
-                        >
-                            <div className={`p-2 rounded-full bg-surface-alt ${cat.color}`}>
-                                {cat.icon}
-                            </div>
-                            <span className="font-bold text-sm text-center text-ink">{cat.label}</span>
-                        </button>
-                    ))}
+                <div className="flex-1 overflow-y-auto pb-8">
+                    <div className="grid gap-3 max-w-[340px] mx-auto w-full">
+                        {LEVEL_TILES.map(t => {
+                            const Icon = t.Icon;
+                            return (
+                                <button
+                                    key={t.id}
+                                    onClick={() => handleCategoryTap(t.id)}
+                                    className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
+                                >
+                                    <div className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden">
+                                        <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]" style={{ background: t.color }} />
+                                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]" style={{ background: t.color }} />
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex-shrink-0" style={{ color: t.color }}><Icon size={16} /></span>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-base font-bold text-ink leading-tight">{t.title}</h3>
+                                                <p className="text-xs text-muted leading-snug truncate">{t.tagline}</p>
+                                            </div>
+                                            <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
+                                        </div>
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         );
