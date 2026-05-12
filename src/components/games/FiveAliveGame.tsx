@@ -15,8 +15,7 @@ type GameState =
     | 'CATEGORY_SELECT'  // pick Easy / Hard
     | 'SETUP'            // player names OR Just Play
     | 'PASS'             // "Pass to <player>" gate (named mode only)
-    | 'REVEAL'           // category shown + Start
-    | 'PLAYING'          // timer countdown
+    | 'PLAYING'          // category shown + timer running (auto-starts on entry — no Start button)
     | 'TALLY'            // judge enters score (named) or "Next round" (just play)
     | 'END';             // leaderboard (named) or "Play again" (just play)
 
@@ -205,12 +204,13 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     };
 
     // Start the first turn. Takes the mode explicitly so it doesn't have to
-    // wait for the setMode state flush.
+    // wait for the setMode state flush. just_play has no pass-the-phone gate,
+    // so it drops straight into PLAYING (category + timer fire together).
     const beginFirstTurn = (m: Mode) => {
         setTurnCategories(drawTurnCategories(difficulty));
         setRoundIndex(0);
         setTally(0);
-        setGameState(m === 'just_play' ? 'REVEAL' : 'PASS');
+        setGameState(m === 'just_play' ? 'PLAYING' : 'PASS');
     };
 
     const handleStartNamed = () => {
@@ -230,13 +230,12 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         beginFirstTurn('just_play');
     };
 
-    const handleReady = () => setGameState('REVEAL');           // PASS → REVEAL
-    const handleStartRound = () => {
-        unlockAudio();
-        setGameState('PLAYING');
-    };
+    // PASS → PLAYING: the category appears and the timer starts at the same
+    // instant the next player taps "I'm Ready" — no separate Start step.
+    const handleReady = () => { unlockAudio(); setGameState('PLAYING'); };
 
-    // TALLY → next round (or next player, or END).
+    // TALLY → next round (or next player, or END). The "Next Round" tap is
+    // the reveal+start trigger for the next round.
     const handleNextRound = () => {
         // Record the round's points for named mode.
         if (mode === 'named') {
@@ -248,9 +247,10 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         }
 
         if (roundIndex < TOTAL_ROUNDS - 1) {
+            unlockAudio();
             setRoundIndex(r => r + 1);
             setTally(0);
-            setGameState('REVEAL');
+            setGameState('PLAYING');
             return;
         }
 
@@ -277,7 +277,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         setTurnCategories(drawTurnCategories(difficulty));
         setRoundIndex(0);
         setTally(0);
-        setGameState(mode === 'just_play' ? 'REVEAL' : 'PASS');
+        setGameState(mode === 'just_play' ? 'PLAYING' : 'PASS');
     };
 
     // -----------------------------------------------------------------------
@@ -416,67 +416,38 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
-    // ---- REVEAL ----
-    if (gameState === 'REVEAL') {
-        const cat = turnCategories[roundIndex] || '…';
-        return (
-            <div className="h-full flex flex-col">
-                <ScreenHeader title={`Round ${roundIndex + 1} of ${TOTAL_ROUNDS}`} onBack={() => setGameState(mode === 'just_play' ? 'SETUP' : 'PASS')} onHome={onExit} />
-                <div className="flex-1 flex flex-col items-center justify-center px-4 animate-slide-up">
-                    {/* Portrait card — same surface + decorative blob language as
-                        the other game play screens. */}
-                    <div
-                        className="w-full max-w-[340px] aspect-[3/4] max-h-[400px] bg-surface border border-divider rounded-[22px] p-6 flex flex-col items-center justify-center relative overflow-hidden"
-                        style={{ boxShadow: 'var(--shadow-card)' }}
-                    >
-                        <div className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none bg-emerald-500/15" />
-                        <div className="self-start text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-500 relative z-10">
-                            5 Alive
-                        </div>
-                        <div className="flex-1 flex items-center justify-center relative z-10 px-2">
-                            <h2 className="font-serif font-bold text-[40px] leading-[1.05] tracking-[-0.015em] text-ink text-center break-words">
-                                {cat}
-                            </h2>
-                        </div>
-                        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted relative z-10">
-                            Name {round.count} in {round.time} second{round.time === 1 ? '' : 's'}
-                        </p>
-                    </div>
-                    <Button onClick={handleStartRound} fullWidth className="h-16 text-xl mt-6">
-                        Start ▶
-                    </Button>
-                </div>
-            </div>
-        );
-    }
-
-    // ---- PLAYING (timer) ----
+    // ---- PLAYING — category + live timer (no Start button: the timer starts
+    //      the instant this screen mounts, simultaneous with the reveal) ----
     if (gameState === 'PLAYING') {
         const totalMs = round.time * 1000;
         const progress = Math.max(0, Math.min(1, remainingMs / totalMs));
         const displaySec = Math.max(1, Math.ceil(remainingMs / 1000));
         const tier = TIMER_TIERS[tierForSecond(displaySec)];
-        const R = 130, C = 2 * Math.PI * R;
+        const R = 125, C = 2 * Math.PI * R;
+        const cat = turnCategories[roundIndex] || '…';
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title={`Round ${roundIndex + 1} of ${TOTAL_ROUNDS}`} onBack={() => setGameState('REVEAL')} onHome={onExit} />
-                <div className="flex-1 flex flex-col items-center justify-center px-4">
-                    <p className="text-sm uppercase tracking-[0.18em] text-muted mb-3 text-center">
-                        Name {round.count} · {turnCategories[roundIndex] || ''}
+                <ScreenHeader title={`Round ${roundIndex + 1} of ${TOTAL_ROUNDS}`} onBack={() => setGameState(mode === 'just_play' ? 'SETUP' : 'PASS')} onHome={onExit} />
+                <div className="flex-1 flex flex-col items-center justify-center px-4 animate-slide-up">
+                    <h2 className="font-serif font-bold text-[30px] leading-[1.05] tracking-[-0.015em] text-ink text-center break-words mb-1.5">
+                        {cat}
+                    </h2>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted mb-5">
+                        Name {round.count}
                     </p>
-                    <div className="relative w-[300px] h-[300px] flex items-center justify-center">
-                        <svg className="absolute inset-0 -rotate-90" viewBox="0 0 300 300">
-                            <circle cx="150" cy="150" r={R} fill="none" stroke="var(--c-border)" strokeWidth="14" />
+                    <div className="relative w-[280px] h-[280px] flex items-center justify-center">
+                        <svg className="absolute inset-0 -rotate-90" viewBox="0 0 280 280">
+                            <circle cx="140" cy="140" r={R} fill="none" stroke="var(--c-border)" strokeWidth="14" />
                             <circle
-                                cx="150" cy="150" r={R} fill="none" strokeWidth="14" strokeLinecap="round"
+                                cx="140" cy="140" r={R} fill="none" strokeWidth="14" strokeLinecap="round"
                                 style={{ stroke: tier.ring, strokeDasharray: C, strokeDashoffset: C * (1 - progress), transition: 'stroke-dashoffset 80ms linear' }}
                             />
                         </svg>
-                        <span className={`font-black tabular-nums leading-none ${tier.text}`} style={{ fontSize: '128px' }}>
+                        <span className={`font-black tabular-nums leading-none ${tier.text}`} style={{ fontSize: '110px' }}>
                             {displaySec}
                         </span>
                     </div>
-                    <p className="text-muted text-sm mt-4">Say them out loud — go!</p>
+                    <p className="text-muted text-sm mt-5">Say them out loud — go!</p>
                 </div>
             </div>
         );
