@@ -156,11 +156,13 @@ const SlimTile: React.FC<{ title: string; tagline: string; color: string; onClic
 // connector uppercase + accent. Playfair, centered — same voice as the prompt
 // cards in NHIE / MLT / 5 Alive.
 const ClueLine: React.FC<{ clue: string; answer: string; position: Position; revealed: boolean }> = ({ clue, answer, position, revealed }) => {
-    const blank = <span className="text-indigo-400/45">_ _ _</span>;
+    // A plain blank line (not dashes) on the connector side — an empty span with
+    // a bottom border, sized in em so it scales with the clue font.
+    const blank = <span aria-hidden className="inline-block align-bottom border-b-[3px] border-indigo-400/55" style={{ width: '1.6em', height: '1.05em' }} />;
     const conn = <span className="uppercase text-indigo-500">{answer}</span>;
     const clueEl = <span className="text-ink">{clue}</span>;
     return (
-        <p className="font-serif font-semibold text-[22px] leading-[1.25] tracking-[-0.01em] text-center break-words">
+        <p className="font-serif font-semibold text-[32px] leading-[1.3] tracking-[-0.015em] text-center break-words">
             {revealed
                 ? (position === 'prefix' ? <>{conn}{clueEl}</> : <>{clueEl}{conn}</>)
                 : (position === 'prefix' ? <>{blank} {clueEl}</> : <>{clueEl} {blank}</>)}
@@ -185,6 +187,9 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     const [queue, setQueue] = useState<Puzzle[]>([]);
     const [qIndex, setQIndex] = useState(0);
     const [revealed, setRevealed] = useState(false);
+    // Why the current puzzle is revealed (drives the post-action bar in pass
+    // mode): 'got' = scored, 'skip' = skipped, null = not from an action.
+    const [revealKind, setRevealKind] = useState<'got' | 'skip' | null>(null);
 
     // Live timer (pass mode)
     const [remainingMs, setRemainingMs] = useState(ROUND_SECONDS * 1000);
@@ -255,6 +260,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
         setQueue(q);
         setQIndex(0);
         setRevealed(false);
+        setRevealKind(null);
         if (q[0]) sessionService.markAsUsed(GameType.LINKED, diff, puzzleId(q[0]));
     };
 
@@ -263,6 +269,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     const advance = () => {
         clearFlash();
         setRevealed(false);
+        setRevealKind(null);
         const ni = qIndex + 1;
         if (ni < queue.length) {
             sessionService.markAsUsed(GameType.LINKED, difficulty, puzzleId(queue[ni]));
@@ -314,17 +321,26 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
         setGameState('PLAY');
     };
 
-    // Pass-mode actions during PLAY
+    // Pass-mode actions during PLAY. Both flash the answer for GOT_IT_FLASH_MS,
+    // then auto-advance — "Got it!" scores +1, "Skip" doesn't.
+    const flashThenAdvance = (kind: 'got' | 'skip') => {
+        setRevealKind(kind);
+        setRevealed(true);
+        clearFlash();
+        flashRef.current = setTimeout(() => { flashRef.current = null; advance(); }, GOT_IT_FLASH_MS);
+    };
     const handleGotIt = () => {
         if (revealed) return;
         playDing();
         setScores(prev => prev.map((s, i) => (i === playerIndex ? { ...s, score: s.score + 1 } : s)));
         setRoundGot(g => g + 1);
-        setRevealed(true);
-        clearFlash();
-        flashRef.current = setTimeout(() => { flashRef.current = null; advance(); }, GOT_IT_FLASH_MS);
+        flashThenAdvance('got');
     };
-    const handleSkip = () => { setRoundSkipped(s => s + 1); advance(); };
+    const handleSkip = () => {
+        if (revealed) return;
+        setRoundSkipped(s => s + 1);
+        flashThenAdvance('skip');
+    };
 
     // Just-play actions during PLAY
     const handleReveal = () => { setRevealed(true); };
@@ -530,7 +546,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                                             ) : (
                                                 <div className="text-center">
                                                     <p className="text-[10px] uppercase tracking-[0.2em] text-muted mb-0.5">{pos === 'prefix' ? 'goes in front' : 'goes on the end'}</p>
-                                                    <p className="font-serif font-black text-3xl text-indigo-400/40">?</p>
+                                                    <p className="font-serif font-black text-xl text-indigo-400/40">?</p>
                                                 </div>
                                             )}
                                         </>
@@ -551,9 +567,15 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                     <div className="w-full max-w-sm mx-auto mt-5">
                         {isPass ? (
                             revealed ? (
-                                <div className="h-14 flex items-center justify-center rounded-2xl bg-indigo-500/12 text-indigo-500 font-bold text-sm">
-                                    <Check size={18} className="mr-2" /> Nice — that's +1
-                                </div>
+                                revealKind === 'skip' ? (
+                                    <div className="h-14 flex items-center justify-center rounded-2xl bg-surface-alt border border-divider text-ink-soft font-bold text-sm">
+                                        <X size={18} className="mr-2" /> Skipped — onto the next
+                                    </div>
+                                ) : (
+                                    <div className="h-14 flex items-center justify-center rounded-2xl bg-indigo-500/12 text-indigo-500 font-bold text-sm">
+                                        <Check size={18} className="mr-2" /> Nice — that's +1
+                                    </div>
+                                )
                             ) : (
                                 <div className="grid grid-cols-[1fr_1.6fr] gap-2.5">
                                     <button
