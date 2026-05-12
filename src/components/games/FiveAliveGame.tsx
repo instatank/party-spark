@@ -113,7 +113,7 @@ function playTick() {
 interface PlayerScore { name: string; total: number; breakdown: number[] }
 
 export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
-    const [gameState, setGameState] = useState<GameState>('CATEGORY_SELECT');
+    const [gameState, setGameState] = useState<GameState>('SETUP');
     const [difficulty, setDifficulty] = useState<Difficulty>('easy');
     const [mode, setMode] = useState<Mode>('named');
     const [players, setPlayers] = useState<string[]>(['', '']);
