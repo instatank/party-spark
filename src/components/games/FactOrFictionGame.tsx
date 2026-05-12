@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
-import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Atom, Lightbulb, Medal, Landmark, Brain } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 import factData from '../../data/fact_or_fiction.json';
 import { sessionService } from '../../services/SessionManager';
@@ -23,6 +24,17 @@ interface Category {
 
 const TIMER_SECONDS = 15;
 const MAX_STRIKES = 3;
+
+// Per-topic Slim Row metadata (icon + accent + one-line tagline), keyed by the
+// category id in fact_or_fiction.json. Unknown ids fall back to a neutral pill.
+const TOPIC_META: Record<string, { tagline: string; color: string; Icon: LucideIcon }> = {
+    animal_kingdom:    { tagline: 'Creatures, instincts, oddities.',  color: '#22C55E', Icon: PawPrint },
+    science:           { tagline: 'Physics, space, the very small.',  color: '#6366F1', Icon: Atom },
+    general_knowledge: { tagline: 'A bit of everything — stay sharp.', color: '#F59E0B', Icon: Lightbulb },
+    sports:            { tagline: 'Records, rules, legends.',         color: '#EF4444', Icon: Medal },
+    history:           { tagline: 'Empires, firsts, turning points.', color: '#A855F7', Icon: Landmark },
+};
+const TOPIC_DEFAULT = { color: '#EC4899', Icon: Brain };
 
 export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -238,20 +250,33 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                 </div>
                 <div className="px-2 pb-6 flex-1 flex flex-col">
                     <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
-                    <div className="space-y-3">
-                        {categories.map(cat => (
-                            <button
-                                key={cat.id}
-                                onClick={() => handleCategorySelect(cat)}
-                                className="w-full bg-surface-alt border items-center border-divider hover:border-rose-500 rounded-xl p-5 text-left flex justify-between transition-all group active:scale-95"
-                            >
-                                <div>
-                                    <h3 className="font-bold text-lg text-ink group-hover:text-rose-500 transition-colors">{cat.name}</h3>
-                                    <p className="text-xs text-muted mt-1">{cat.questions.length} Questions</p>
-                                </div>
-                                <ArrowRight className="text-muted group-hover:text-rose-500" />
-                            </button>
-                        ))}
+                    <div className="grid gap-3 max-w-[340px] mx-auto w-full">
+                        {categories.map(cat => {
+                            const meta = TOPIC_META[cat.id];
+                            const color = meta?.color ?? TOPIC_DEFAULT.color;
+                            const Icon = meta?.Icon ?? TOPIC_DEFAULT.Icon;
+                            const tagline = meta?.tagline ?? `${cat.questions.length} questions`;
+                            return (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => handleCategorySelect(cat)}
+                                    className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
+                                >
+                                    <div className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden">
+                                        <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]" style={{ background: color }} />
+                                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]" style={{ background: color }} />
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex-shrink-0" style={{ color }}><Icon size={16} /></span>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-base font-bold text-ink leading-tight">{cat.name}</h3>
+                                                <p className="text-xs text-muted leading-snug truncate">{tagline}</p>
+                                            </div>
+                                            <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
+                                        </div>
+                                    </div>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
