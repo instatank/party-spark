@@ -417,7 +417,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                     </Button>
                     <button
                         onClick={handleJustPlay}
-                        className="w-full mt-3 py-4 rounded-xl font-bold text-base text-indigo-600 bg-transparent border-2 border-indigo-500/60 hover:bg-indigo-500/10 hover:border-indigo-500 transition-colors flex items-center justify-center gap-2"
+                        className="w-full mt-3 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors flex items-center justify-center gap-2"
                     >
                         <Zap size={18} /> Just Play — No Timer, Shout It Out
                     </button>

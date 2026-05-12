@@ -196,38 +196,34 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         return picked;
     };
 
-    // CATEGORY_SELECT tile tap → unlock audio, stash difficulty, go to SETUP.
-    const handlePickDifficulty = (diff: Difficulty) => {
-        unlockAudio();
-        setDifficulty(diff);
-        setGameState('SETUP');
-    };
-
-    // Start the first turn. Takes the mode explicitly so it doesn't have to
-    // wait for the setMode state flush. just_play has no pass-the-phone gate,
-    // so it drops straight into PLAYING (category + timer fire together).
-    const beginFirstTurn = (m: Mode) => {
-        setTurnCategories(drawTurnCategories(difficulty));
-        setRoundIndex(0);
-        setTally(0);
-        setGameState(m === 'just_play' ? 'PLAYING' : 'PASS');
-    };
-
+    // SETUP → CATEGORY_SELECT (Easy/Hard). "Start" picks the scored mode;
+    // "Just Play" picks the no-scoring mode. Difficulty is chosen next.
     const handleStartNamed = () => {
         unlockAudio();
         setMode('named');
         setScores(trimmedPlayers.map(name => ({ name, total: 0, breakdown: [] })));
         setPlayerIndex(0);
-        beginFirstTurn('named');
+        setGameState('CATEGORY_SELECT');
     };
 
     const handleJustPlay = () => {
         unlockAudio();
         setMode('just_play');
-        setPlayers(['', '']);
         setScores([]);
         setPlayerIndex(0);
-        beginFirstTurn('just_play');
+        setGameState('CATEGORY_SELECT');
+    };
+
+    // CATEGORY_SELECT tile tap → stash difficulty, draw this turn's categories,
+    // begin the first turn. just_play has no pass-the-phone gate, so it drops
+    // straight into PLAYING (category + timer fire together).
+    const handlePickDifficulty = (diff: Difficulty) => {
+        unlockAudio();
+        setDifficulty(diff);
+        setTurnCategories(drawTurnCategories(diff));
+        setRoundIndex(0);
+        setTally(0);
+        setGameState(mode === 'just_play' ? 'PLAYING' : 'PASS');
     };
 
     // PASS → PLAYING: the category appears and the timer starts at the same
@@ -291,15 +287,13 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     // RENDER
     // =======================================================================
 
-    // ---- CATEGORY_SELECT ----
+    // ---- CATEGORY_SELECT (difficulty picker — comes after the player screen) ----
     if (gameState === 'CATEGORY_SELECT') {
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="5 Alive" onBack={onExit} onHome={onExit} />
+                <ScreenHeader title="Pick a Level" onBack={() => setGameState('SETUP')} onHome={onExit} />
                 <div className="text-center mb-4 -mt-3">
-                    <p className="text-3xl mb-1.5 leading-none">⏱️</p>
-                    <h2 className="text-lg font-serif font-bold text-ink mb-0.5">Can you beat the <em>buzzer</em>?</h2>
-                    <p className="text-muted text-sm">5 in 5 seconds. Then 4 in 4. Then 3 in 3…</p>
+                    <p className="text-muted text-sm">{mode === 'just_play' ? 'Just Play · no scoring' : 'Scored · 5 rounds'}</p>
                 </div>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
@@ -329,20 +323,19 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
-    // ---- SETUP ----
+    // ---- SETUP — the landing screen: enter names (→ scored) or Just Play (→ no scoring) ----
     if (gameState === 'SETUP') {
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="Who's Playing?" onBack={() => setGameState('CATEGORY_SELECT')} onHome={onExit} />
+                <ScreenHeader title="5 Alive" onBack={onExit} onHome={onExit} />
                 <div className="px-2 pb-4 flex-1 flex flex-col">
-                    <div className="flex items-center gap-2 mb-4">
-                        <span className="text-xs font-bold uppercase tracking-widest text-emerald-500">
-                            {difficulty === 'easy' ? 'Easy' : 'Hard'} mode
-                        </span>
-                        <span className="text-muted">•</span>
-                        <span className="text-xs font-medium text-muted">5 rounds · ~30 sec each</span>
+                    <div className="text-center mb-3 -mt-2">
+                        <p className="text-2xl mb-1 leading-none">⏱️</p>
+                        <h2 className="text-base font-serif font-bold text-ink">Can you beat the <em>buzzer</em>?</h2>
+                        <p className="text-muted text-xs mt-0.5">5 in 5 seconds. Then 4 in 4. Then 3 in 3…</p>
                     </div>
 
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted mb-2">Add players to keep score</p>
                     <div className="space-y-3 flex-1">
                         {players.map((name, i) => (
                             <div key={i} className="flex items-center gap-2">
