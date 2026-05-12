@@ -156,11 +156,13 @@ const SlimTile: React.FC<{ title: string; tagline: string; color: string; onClic
 // connector uppercase + accent. Playfair, centered — same voice as the prompt
 // cards in NHIE / MLT / 5 Alive.
 const ClueLine: React.FC<{ clue: string; answer: string; position: Position; revealed: boolean }> = ({ clue, answer, position, revealed }) => {
-    const blank = <span className="text-indigo-400/45">_ _ _</span>;
+    // A plain blank line (not dashes) on the connector side — an empty span with
+    // a bottom border, sized in em so it scales with the clue font.
+    const blank = <span aria-hidden className="inline-block align-bottom border-b-[3px] border-indigo-400/55" style={{ width: '1.6em', height: '1.05em' }} />;
     const conn = <span className="uppercase text-indigo-500">{answer}</span>;
     const clueEl = <span className="text-ink">{clue}</span>;
     return (
-        <p className="font-serif font-semibold text-[22px] leading-[1.25] tracking-[-0.01em] text-center break-words">
+        <p className="font-serif font-semibold text-[32px] leading-[1.3] tracking-[-0.015em] text-center break-words">
             {revealed
                 ? (position === 'prefix' ? <>{conn}{clueEl}</> : <>{clueEl}{conn}</>)
                 : (position === 'prefix' ? <>{blank} {clueEl}</> : <>{clueEl} {blank}</>)}
@@ -530,7 +532,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                                             ) : (
                                                 <div className="text-center">
                                                     <p className="text-[10px] uppercase tracking-[0.2em] text-muted mb-0.5">{pos === 'prefix' ? 'goes in front' : 'goes on the end'}</p>
-                                                    <p className="font-serif font-black text-3xl text-indigo-400/40">?</p>
+                                                    <p className="font-serif font-black text-xl text-indigo-400/40">?</p>
                                                 </div>
                                             )}
                                         </>
