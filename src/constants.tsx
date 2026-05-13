@@ -12,28 +12,20 @@ export const GAMES: GameMeta[] = [
         minPlayers: 1
     },
     {
-        id: GameType.IMPOSTER,
-        title: "Imposter",
-        description: "Find the fake among your friends!",
-        icon: "spy",
-        color: "bg-red-500",
-        minPlayers: 3
+        id: GameType.LINKED,
+        title: "Linked",
+        description: "Find the word that connects all three.",
+        icon: "link",
+        color: "bg-indigo-500",
+        minPlayers: 1
     },
     {
-        id: GameType.TABOO,
-        title: "Taboo",
-        description: "Describe it without forbidden words.",
-        icon: "ban",
-        color: "bg-[#F0656D]",
-        minPlayers: 4
-    },
-    {
-        id: GameType.NEVER_HAVE_I_EVER,
-        title: "Never Have I Ever",
-        description: "Stand up if you've done it!",
-        icon: "hand",
-        color: "bg-cyan-600",
-        minPlayers: 3
+        id: GameType.FIVE_ALIVE,
+        title: "5 Alive",
+        description: "Name 5 in 5 seconds — beat the buzzer.",
+        icon: "timer",
+        color: "bg-emerald-500",
+        minPlayers: 2
     },
     {
         id: GameType.FACT_OR_FICTION,
@@ -108,20 +100,28 @@ export const GAMES: GameMeta[] = [
         minPlayers: 2
     },
     {
-        id: GameType.FIVE_ALIVE,
-        title: "5 Alive",
-        description: "Name 5 in 5 seconds — beat the buzzer.",
-        icon: "timer",
-        color: "bg-emerald-500",
-        minPlayers: 2
+        id: GameType.IMPOSTER,
+        title: "Imposter",
+        description: "Find the fake among your friends!",
+        icon: "spy",
+        color: "bg-red-500",
+        minPlayers: 3
     },
     {
-        id: GameType.LINKED,
-        title: "Linked",
-        description: "Find the word that connects all three.",
-        icon: "link",
-        color: "bg-indigo-500",
-        minPlayers: 1
+        id: GameType.TABOO,
+        title: "Taboo",
+        description: "Describe it without forbidden words.",
+        icon: "ban",
+        color: "bg-[#F0656D]",
+        minPlayers: 4
+    },
+    {
+        id: GameType.NEVER_HAVE_I_EVER,
+        title: "Never Have I Ever",
+        description: "Stand up if you've done it!",
+        icon: "hand",
+        color: "bg-cyan-600",
+        minPlayers: 3
     },
 ];
 
