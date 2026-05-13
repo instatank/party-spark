@@ -164,8 +164,6 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
   // Coming-soon list. Order here drives display order in the Coming Soon
   // tab (the filter below preserves it via comingSoonGameIds.map).
   const comingSoonGameIds = [
-    GameType.LINKED,
-    GameType.FIVE_ALIVE,
     GameType.WOULD_I_LIE_TO_YOU,
     GameType.ICEBREAKERS,
     GameType.MINI_MAFIA,
