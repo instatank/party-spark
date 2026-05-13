@@ -66,7 +66,18 @@
     { "clues": ["eye", "cheek", "jaw"], "answer": "bone" },
     { "clues": ["jaw", "wish", "back"], "answer": "bone" },
     { "clues": ["snow", "rain", "over"], "answer": "coat" },
-    { "clues": ["arm", "hand", "wrist"], "answer": "band" }
+    { "clues": ["arm", "hand", "wrist"], "answer": "band" },
+    { "clues": ["birth", "week", "holi"], "answer": "day" },
+    { "clues": ["wind", "sun", "green"], "answer": "screen" },
+    { "clues": ["over", "down", "up"], "answer": "load" },
+    { "clues": ["over", "day", "night"], "answer": "time" },
+    { "clues": ["over", "half", "bed"], "answer": "time" },
+    { "clues": ["tooth", "head", "back"], "answer": "ache" },
+    { "clues": ["un", "dis", "re"], "answer": "cover" },
+    { "clues": ["sun", "moon", "spot"], "answer": "lit" },
+    { "clues": ["spring", "summer", "winter"], "answer": "time" },
+    { "clues": ["wheel", "arm", "high"], "answer": "chair" },
+    { "clues": ["star", "sword", "jelly"], "answer": "fish" }
   ],
   "hard": [
     { "clues": ["cross", "wild", "back"], "answer": "fire" },
@@ -84,6 +95,26 @@
     { "clues": ["fire", "spot", "torch"], "answer": "light" },
     { "clues": ["air", "battle", "war"], "answer": "ship" },
     { "clues": ["snow", "hail", "rain"], "answer": "storm" },
-    { "clues": ["hard", "soft", "free"], "answer": "ware" }
+    { "clues": ["hard", "soft", "free"], "answer": "ware" },
+    { "clues": ["flag", "tomb", "corner"], "answer": "stone" },
+    { "clues": ["back", "breast", "side"], "answer": "stroke" },
+    { "clues": ["side", "drop", "place"], "answer": "kick" },
+    { "clues": ["sign", "lamp", "finger"], "answer": "post" },
+    { "clues": ["horse", "butter", "may"], "answer": "fly" },
+    { "clues": ["door", "place", "bath"], "answer": "mat" },
+    { "clues": ["hand", "air", "bean"], "answer": "bag" },
+    { "clues": ["match", "sword", "flag"], "answer": "stick" },
+    { "clues": ["back", "camp", "bon"], "answer": "fire" },
+    { "clues": ["dish", "table", "face"], "answer": "cloth" },
+    { "clues": ["drift", "fire", "ply"], "answer": "wood" },
+    { "clues": ["head", "tail", "cross"], "answer": "wind" },
+    { "clues": ["sun", "moon", "cross"], "answer": "beam" },
+    { "clues": ["sea", "land", "city"], "answer": "scape" },
+    { "clues": ["nut", "bomb", "egg"], "answer": "shell" },
+    { "clues": ["sun", "moon", "star"], "answer": "struck" },
+    { "clues": ["thunder", "awe", "dumb"], "answer": "struck" },
+    { "clues": ["over", "under", "side"], "answer": "arm" },
+    { "clues": ["back", "flood", "spot"], "answer": "light" },
+    { "clues": ["gun", "spit", "back"], "answer": "fire" }
   ]
 }
