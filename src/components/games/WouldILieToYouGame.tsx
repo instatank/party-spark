@@ -4,6 +4,7 @@ import gameData from '../../data/would_i_lie_to_you.json';
 import { generateContextualLies } from '../../services/geminiService';
 import { sessionService } from '../../services/SessionManager';
 import { GameType } from '../../types';
+import { useExitConfirm } from '../ui/Layout';
 
 // Pick a random index from the data, skipping topics already used this session.
 // Falls back to the full pool if every topic has been seen (so the game never
@@ -31,6 +32,8 @@ interface WouldILieToYouGameProps {
 
 export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }) => {
     const [gameState, setGameState] = useState<GameState>('truth-input');
+    // Guard accidental exits during gameplay (custom header below).
+    const { guard: guardExit, dialog: exitDialog } = useExitConfirm(true);
     const [currentPlayer, setCurrentPlayer] = useState('');
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
@@ -86,7 +89,7 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
             {/* Header */}
             <header className="flex items-center justify-between mb-6">
                 <button
-                    onClick={onExit}
+                    onClick={guardExit(onExit)}
                     className="p-2 -ml-2 text-muted hover:text-ink transition-colors"
                 >
                     <ChevronLeft size={28} />
@@ -329,6 +332,7 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
                 )}
 
             </div>
+            {exitDialog}
         </div>
     );
 };

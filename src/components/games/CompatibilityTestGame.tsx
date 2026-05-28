@@ -344,7 +344,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
         const roundNum = currentRound === 'round1' ? 1 : currentRound === 'round2' ? 2 : 3;
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title="The Forecast" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <ScreenHeader title="The Forecast" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-6">
                     <p className="text-7xl">{roundTheme.emojis[currentRound]}</p>
                     <div>
@@ -369,7 +369,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
     if (gameState === 'PASS_TO_PREDICTOR') {
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title={`Q${questionIndex + 1} of ${QUESTIONS_PER_ROUND}`} onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <ScreenHeader title={`Q${questionIndex + 1} of ${QUESTIONS_PER_ROUND}`} onBack={() => setGameState('MODE_SELECT')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-8">
                     <div className="w-20 h-20 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg shadow-amber-900/30">
                         <Eye size={36} className="text-white" />
@@ -395,7 +395,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
     if (gameState === 'PREDICT') {
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title={`${predictorName}'s Prediction`} onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <ScreenHeader title={`${predictorName}'s Prediction`} onBack={() => setGameState('MODE_SELECT')} onHome={onExit} confirmOnExit />
                 <div className="px-2 pb-4 flex-1 flex flex-col">
                     <div className="flex items-center gap-2 mb-4">
                         <Target size={16} className={accent.text500} />
@@ -433,7 +433,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
     if (gameState === 'PASS_TO_ANSWERER') {
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title="Prediction Locked In!" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <ScreenHeader title="Prediction Locked In!" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-8">
                     <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center shadow-lg shadow-emerald-900/30">
                         <EyeOff size={36} className="text-white" />
@@ -459,7 +459,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
     if (gameState === 'ANSWER') {
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title={`${answererName}'s Answer`} onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <ScreenHeader title={`${answererName}'s Answer`} onBack={() => setGameState('MODE_SELECT')} onHome={onExit} confirmOnExit />
                 <div className="px-2 pb-4 flex-1 flex flex-col">
                     <div className="flex items-center gap-2 mb-4">
                         <User size={16} className="text-emerald-500" />
@@ -498,7 +498,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
         const correct = prediction === answer;
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title="The Reveal" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <ScreenHeader title="The Reveal" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
                     {/* Result Icon */}
                     <div className={`w-24 h-24 rounded-full flex items-center justify-center ${correct ? 'bg-emerald-500 shadow-[0_0_40px_rgba(16,185,129,0.4)]' : 'bg-red-500/80 shadow-[0_0_40px_rgba(239,68,68,0.3)]'}`}>
@@ -541,7 +541,7 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
         const roundNum = currentRound === 'round1' ? 1 : currentRound === 'round2' ? 2 : 3;
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title={`Round ${roundNum} Complete`} onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <ScreenHeader title={`Round ${roundNum} Complete`} onBack={() => setGameState('MODE_SELECT')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
                     <p className="text-6xl">{roundTheme.emojis[currentRound]}</p>
                     <div className="text-center">

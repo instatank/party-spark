@@ -292,6 +292,7 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                     title={`Team ${currentTeamIndex + 1} of ${teams.length}`}
                     onBack={() => setGameState('category_select')}
                     onHome={onExit}
+                    confirmOnExit
                 />
                 <Card className="flex-1 flex flex-col items-center justify-center p-8 text-center">
                     <p className="text-xs uppercase tracking-[0.18em] text-muted mb-3">Up next</p>
@@ -331,7 +332,7 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
         const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title="Round Summary" onBack={() => setGameState('category_select')} onHome={onExit} />
+                <ScreenHeader title="Round Summary" onBack={() => setGameState('category_select')} onHome={onExit} confirmOnExit />
                 <Card className="flex-1 flex flex-col items-center justify-center p-8 text-center border-rose-500/30">
                     <Trophy size={64} className="text-rose-500 mb-6" />
                     {inTeamMode ? (
@@ -390,7 +391,7 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
     if (gameState === 'answer_reveal' && currentQuestion) {
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title="Result" onBack={() => setGameState('playing')} onHome={onExit} />
+                <ScreenHeader title="Result" onBack={() => setGameState('playing')} onHome={onExit} confirmOnExit />
                 <Card className={`flex-1 flex flex-col items-center justify-center p-8 text-center transition-colors duration-500 ${lastAnswerCorrect ? 'bg-green-900/20 border-green-500/30' : 'bg-red-900/20 border-red-500/30'}`}>
                     
                     {lastAnswerCorrect ? (
@@ -431,7 +432,7 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
     // PLAYING STATE
     return (
         <div className="flex flex-col h-full animate-fade-in relative z-10">
-            <ScreenHeader title={selectedCategory?.name || "Fact or Fiction"} onBack={() => setGameState('category_select')} onHome={onExit} />
+            <ScreenHeader title={selectedCategory?.name || "Fact or Fiction"} onBack={() => setGameState('category_select')} onHome={onExit} confirmOnExit />
             
             {/* Top Bar Details */}
             <div className="flex justify-between items-center px-2 mb-4">

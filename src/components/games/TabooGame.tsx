@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, ScreenHeader } from '../ui/Layout';
+import { Button, Card, ScreenHeader, useExitConfirm } from '../ui/Layout';
 // generateTabooCards removed — full local deck is loaded each round
 import { useContent } from '../../contexts/ContentContext';
 import type { TabooCard } from '../../types';
@@ -38,6 +38,9 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     const [teams, setTeams] = useState<string[]>(() => sessionService.getTeams());
     const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
     const [teamScores, setTeamScores] = useState<number[]>([]);
+
+    // Mid-game exit guard for the custom PLAYING-screen Quit button.
+    const { guard: guardPlay, dialog: playExitDialog } = useExitConfirm(gameState === 'PLAYING');
 
     // Initial category tap from CATEGORY screen. Resets team-match state
     // (team index, accumulated team scores) before entering the load flow.
@@ -220,6 +223,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                     title={inTeamMode ? `Round ${currentTeamIndex + 1} of ${teams.length}` : 'Ready?'}
                     onBack={() => setGameState('CATEGORY')}
                     onHome={onExit}
+                    confirmOnExit
                 />
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8">
                     <Card className="w-full text-center py-12 bg-surface border border-divider-soft shadow-xl">
@@ -341,7 +345,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     return (
         <div className="h-full flex flex-col">
             <div className="flex items-center justify-between mb-2 pt-2">
-                <Button variant="ghost" onClick={() => setGameState('CATEGORY')} className="!p-2">
+                <Button variant="ghost" onClick={guardPlay(() => setGameState('CATEGORY'))} className="!p-2">
                     <span className="text-muted">Quit</span>
                 </Button>
                 <div className="flex items-center gap-2 bg-surface border border-divider px-4 py-2 rounded-full shadow-lg">
@@ -420,6 +424,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                     <span className="text-sm uppercase font-bold tracking-wider text-slate-900">Correct</span>
                 </Button>
             </div>
+            {playExitDialog}
         </div>
     );
 };

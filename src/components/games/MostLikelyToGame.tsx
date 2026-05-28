@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScreenHeader } from '../ui/Layout';
+import { ScreenHeader, useExitConfirm } from '../ui/Layout';
 import { generateMostLikelyTo, generateCustomMostLikelyTo } from '../../services/geminiService';
 import { MOST_LIKELY_TO_CATEGORIES } from '../../constants';
 import { Users, ChevronRight, Hand, AlertTriangle, Sparkles, Flame, Zap, Wand2, ArrowLeft, Home } from 'lucide-react';
@@ -76,6 +76,8 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
         return { solid: entry.solid, tint: hexToRgba(entry.solid, entry.tintAlpha) };
     };
     const [gameState, setGameState] = useState<'CATEGORY' | 'CUSTOM_SETUP' | 'LOADING' | 'PLAYING'>('CATEGORY');
+    // Mid-play exit guard — covers the custom PLAY-screen back/home buttons.
+    const { guard: guardPlay, dialog: playExitDialog } = useExitConfirm(gameState === 'PLAYING');
     const [category, setCategory] = useState<any>(null);
     const [cards, setCards] = useState<string[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -493,7 +495,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
             {/* Top bar — back left, 2-line title center, home right. */}
             <div className="flex items-center justify-between px-4 pt-4 pb-2">
                 <button
-                    onClick={() => setGameState('CATEGORY')}
+                    onClick={guardPlay(() => setGameState('CATEGORY'))}
                     aria-label="Back to categories"
                     className="p-1.5 -ml-1.5 text-ink-soft hover:text-ink transition-colors disabled:opacity-50"
                     disabled={countingDown}
@@ -509,7 +511,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                     </div>
                 </div>
                 <button
-                    onClick={onExit}
+                    onClick={guardPlay(onExit)}
                     aria-label="Home"
                     className="w-8 h-8 rounded-[10px] bg-surface-alt border border-divider text-ink-soft hover:text-ink hover:bg-app-tint transition-colors flex items-center justify-center flex-shrink-0"
                     disabled={countingDown}
@@ -614,6 +616,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                     </button>
                 </div>
             </div>
+            {playExitDialog}
         </div>
     );
 };

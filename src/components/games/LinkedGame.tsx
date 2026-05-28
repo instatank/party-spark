@@ -467,7 +467,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     if (gameState === 'READY') {
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Pass the Phone" onBack={() => setGameState('DIFFICULTY_SELECT')} onHome={onExit} />
+                <ScreenHeader title="Pass the Phone" onBack={() => setGameState('DIFFICULTY_SELECT')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-6 animate-slide-up">
                     <p className="text-xs uppercase tracking-[0.18em] text-muted">Hand the device to</p>
                     <h2 className="text-5xl font-black text-ink break-words">{currentName}</h2>
@@ -495,6 +495,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                     title="Linked"
                     onBack={() => { clearFlash(); setGameState('DIFFICULTY_SELECT'); }}
                     onHome={onExit}
+                    confirmOnExit
                 />
                 <div className="flex-1 flex flex-col px-2 pb-4">
                     {/* Timer (pass) or mode pill (just play) */}
@@ -610,7 +611,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     if (gameState === 'ROUND_OVER') {
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Time!" onBack={onExit} onHome={onExit} />
+                <ScreenHeader title="Time!" onBack={onExit} onHome={onExit} confirmOnExit />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-5 animate-slide-up">
                     <div className="text-5xl">⏰</div>
                     <div>

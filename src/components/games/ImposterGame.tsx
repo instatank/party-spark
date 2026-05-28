@@ -278,7 +278,7 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
             const currentPlayer = players[currentPlayerIndex];
             return (
                 <div className="h-full flex flex-col">
-                    <ScreenHeader title="Your Role" onBack={() => setGameState('SETUP')} onHome={onExit} />
+                    <ScreenHeader title="Your Role" onBack={() => setGameState('SETUP')} onHome={onExit} confirmOnExit />
                     <Card className="p-6 text-center flex-1 flex flex-col justify-center animate-fade-in">
                         <div className="mb-8">
                             <div className="uppercase tracking-widest text-sm text-muted mb-2">Your Secret Word</div>
@@ -323,7 +323,7 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
 
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Find Your Name" onBack={() => setGameState('SETUP')} onHome={onExit} />
+                <ScreenHeader title="Find Your Name" onBack={() => setGameState('SETUP')} onHome={onExit} confirmOnExit />
                 <Card className="p-6 flex-1 flex flex-col">
                     <div className="text-center mb-6">
                         <p className="text-ink-soft text-sm leading-relaxed">
@@ -380,7 +380,7 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
     if (gameState === 'PLAY') {
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Discussion" onBack={() => setGameState('SETUP')} onHome={onExit} />
+                <ScreenHeader title="Discussion" onBack={() => setGameState('SETUP')} onHome={onExit} confirmOnExit />
                 <Card className="p-6 text-center flex-1">
                     <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-500">
                         <Eye size={32} />
@@ -402,7 +402,7 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
     if (gameState === 'VOTE') {
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Vote" onBack={() => setGameState('PLAY')} onHome={onExit} />
+                <ScreenHeader title="Vote" onBack={() => setGameState('PLAY')} onHome={onExit} confirmOnExit />
                 <Card className="p-6 flex-1">
                     <h2 className="text-2xl font-bold mb-6 text-center">Who is the Imposter?</h2>
                     <div className="grid gap-3">
