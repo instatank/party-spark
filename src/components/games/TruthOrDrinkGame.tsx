@@ -687,6 +687,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     title={isJustPlay ? `${categoryMeta.title} ${categoryMeta.emoji}` : `${currentPlayer}'s Turn`}
                     onBack={() => setGameState('CATEGORY_SELECT')}
                     onHome={onExit}
+                    confirmOnExit
                 />
                 <div className="px-2 pb-4 flex-1 flex flex-col">
                     {/* Card body — same MLT play-screen styling as MLT/Charades/

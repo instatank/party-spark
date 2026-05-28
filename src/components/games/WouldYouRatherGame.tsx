@@ -210,6 +210,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                 title={activeCategory?.name ?? 'Would You Rather?'}
                 onBack={goBackToCategory}
                 onHome={onExit}
+                confirmOnExit
             />
 
             <Card

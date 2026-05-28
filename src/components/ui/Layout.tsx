@@ -1,5 +1,7 @@
 import React from 'react';
 import { ChevronLeft, Home } from 'lucide-react';
+import { useExitConfirm } from './useExitConfirm';
+export { useExitConfirm } from './useExitConfirm';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -51,26 +53,42 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({ children, cla
 ));
 Card.displayName = 'Card';
 
-export const ScreenHeader: React.FC<{ title: string, onBack?: () => void, onHome?: () => void }> = ({ title, onBack, onHome }) => (
-    <div className="flex items-center justify-between mb-6 pt-4">
-        <div className="flex items-center gap-2">
-            {onBack && (
-                <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-surface-alt transition-colors text-ink-soft">
-                    <ChevronLeft className="w-6 h-6" />
-                </button>
-            )}
-            <h1 className="text-2xl font-bold text-ink font-serif tracking-wide">
-                {title}
-            </h1>
-        </div>
-        {onHome && (
-            <button
-                onClick={onHome}
-                className="p-2.5 rounded-xl bg-surface-alt border border-divider hover:bg-app-tint hover:border-gold/50 transition-all duration-300 text-ink-soft hover:text-gold shadow-sm overflow-hidden group"
-                aria-label="Home"
-            >
-                <Home className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" strokeWidth={2.25} />
-            </button>
-        )}
-    </div>
-);
+export const ScreenHeader: React.FC<{
+    title: string;
+    onBack?: () => void;
+    onHome?: () => void;
+    // When true, tapping back/home shows a confirm modal before navigating
+    // away, and the browser shows its native "Leave site?" prompt on tab
+    // close / refresh. Set this on a game's mid-play screens.
+    confirmOnExit?: boolean;
+    confirmTitle?: string;
+    confirmMessage?: string;
+}> = ({ title, onBack, onHome, confirmOnExit = false, confirmTitle, confirmMessage }) => {
+    const { guard, dialog } = useExitConfirm(confirmOnExit, { title: confirmTitle, message: confirmMessage });
+    return (
+        <>
+            <div className="flex items-center justify-between mb-6 pt-4">
+                <div className="flex items-center gap-2">
+                    {onBack && (
+                        <button onClick={guard(onBack)} className="p-2 -ml-2 rounded-full hover:bg-surface-alt transition-colors text-ink-soft">
+                            <ChevronLeft className="w-6 h-6" />
+                        </button>
+                    )}
+                    <h1 className="text-2xl font-bold text-ink font-serif tracking-wide">
+                        {title}
+                    </h1>
+                </div>
+                {onHome && (
+                    <button
+                        onClick={guard(onHome)}
+                        className="p-2.5 rounded-xl bg-surface-alt border border-divider hover:bg-app-tint hover:border-gold/50 transition-all duration-300 text-ink-soft hover:text-gold shadow-sm overflow-hidden group"
+                        aria-label="Home"
+                    >
+                        <Home className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" strokeWidth={2.25} />
+                    </button>
+                )}
+            </div>
+            {dialog}
+        </>
+    );
+};

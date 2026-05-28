@@ -405,7 +405,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     if (gameState === 'PASS') {
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Pass the Phone" onBack={() => setGameState('SETUP')} onHome={onExit} />
+                <ScreenHeader title="Pass the Phone" onBack={() => setGameState('SETUP')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-6 animate-slide-up">
                     <p className="text-xs uppercase tracking-[0.18em] text-muted">Hand the device to</p>
                     <h2 className="text-5xl font-black text-ink">{currentPlayerName || `Player ${playerIndex + 1}`}</h2>
@@ -432,7 +432,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         const cat = turnCategories[roundIndex] || '…';
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title={`Round ${roundIndex + 1} of ${TOTAL_ROUNDS}`} onBack={() => setGameState(mode === 'just_play' ? 'SETUP' : 'PASS')} onHome={onExit} />
+                <ScreenHeader title={`Round ${roundIndex + 1} of ${TOTAL_ROUNDS}`} onBack={() => setGameState(mode === 'just_play' ? 'SETUP' : 'PASS')} onHome={onExit} confirmOnExit />
                 {/* Compact timer — small color-shifting number + draining bar.
                     Deliberately small: the clue card below is the centerpiece. */}
                 <div className="flex items-center gap-3 max-w-[340px] mx-auto w-full px-1 mb-4">
@@ -486,7 +486,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                 : `Pass to ${trimmedPlayers[(playerIndex + 1) % trimmedPlayers.length] || 'next player'}`;
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title={`Round ${roundIndex + 1} of ${TOTAL_ROUNDS}`} onBack={onExit} onHome={onExit} />
+                <ScreenHeader title={`Round ${roundIndex + 1} of ${TOTAL_ROUNDS}`} onBack={onExit} onHome={onExit} confirmOnExit />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-5 animate-slide-up">
                     <div className="text-5xl">⏰</div>
                     <div>

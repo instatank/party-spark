@@ -430,10 +430,11 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
 
     return (
         <div className="flex flex-col h-full animate-fade-in">
-            <ScreenHeader 
-                title={NEVER_HAVE_I_EVER_CATEGORIES.find(c => c.id === category)?.label || "Never Have I Ever"} 
-                onBack={() => setGameState('SELECT')} 
+            <ScreenHeader
+                title={NEVER_HAVE_I_EVER_CATEGORIES.find(c => c.id === category)?.label || "Never Have I Ever"}
+                onBack={() => setGameState('SELECT')}
                 onHome={onExit}
+                confirmOnExit
             />
 
             <div className="flex-1 flex flex-col items-center justify-center px-4 relative">
