@@ -219,7 +219,7 @@ export const generateContextualLies = async (topic: string, trueStory: string): 
 // Roast Me — image-based
 // =============================================================================
 
-export type RoastTheme = 'animate' | 'tabloid' | 'movie' | 'disco' | 'agra' | 'worldcup';
+export type RoastTheme = 'animate' | 'tabloid' | 'movie' | 'rock' | 'agra' | 'worldcup';
 
 // `team` only applies to the 'worldcup' theme — picks the national-team jersey
 // + crowd + roast angle. Ignored by all other themes.
@@ -237,7 +237,7 @@ export const generateRoast = async (base64Image: string, theme: RoastTheme = 'an
 export const editImage = async (base64Image: string, themeOrPrompt: string, team?: string): Promise<string | null> => {
     // Backwards-compat: if callers pass a theme key, send it as `theme`; if they
     // pass a full prompt string (legacy call sites), send as `prompt`.
-    const KNOWN_THEMES = ['animate', 'tabloid', 'movie', 'disco', 'agra', 'worldcup'];
+    const KNOWN_THEMES = ['animate', 'tabloid', 'movie', 'rock', 'agra', 'worldcup'];
     const payload = KNOWN_THEMES.includes(themeOrPrompt)
         ? { base64Image, theme: themeOrPrompt, team }
         : { base64Image, prompt: themeOrPrompt };

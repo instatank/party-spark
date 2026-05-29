@@ -19,7 +19,7 @@ const THEMES: ThemeMeta[] = [
     { key: 'animate',  label: 'ANIMATE',    emoji: '🎨', color: '#E15B82' },
     { key: 'tabloid',  label: 'TABLOID',    emoji: '📰', color: '#0F1E33' },
     { key: 'movie',    label: 'MOVIE',      emoji: '🎬', color: '#D83A3A' },
-    { key: 'disco',    label: '80s DISCO',  emoji: '🕺', color: '#9266D2' },
+    { key: 'rock',     label: 'ROCK STAR',  emoji: '🎸', color: '#B91C1C' },
     { key: 'agra',     label: 'MUGHAL',     emoji: '🕌', color: '#B8922F' },
     { key: 'worldcup', label: 'FIFA 2026',  emoji: '⚽', color: '#1D4ED8' },
 ];
