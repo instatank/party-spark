@@ -20,7 +20,7 @@ const THEMES: ThemeMeta[] = [
     { key: 'tabloid',  label: 'TABLOID',    emoji: '📰', color: '#0F1E33' },
     { key: 'movie',    label: 'MOVIE',      emoji: '🎬', color: '#D83A3A' },
     { key: 'disco',    label: '80s DISCO',  emoji: '🕺', color: '#9266D2' },
-    { key: 'agra',     label: 'AGRA ROYAL', emoji: '🕌', color: '#B8922F' },
+    { key: 'agra',     label: 'MUGHAL',     emoji: '🕌', color: '#B8922F' },
     { key: 'worldcup', label: 'FIFA 2026',  emoji: '⚽', color: '#1D4ED8' },
 ];
 const TILE_ROTATIONS = [-2, 1.5, -1, 2, -1.5, 1];
