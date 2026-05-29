@@ -540,22 +540,21 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     }
 
     // ---- TURN_END — per-turn recap after the 1-guess round. Shows the total
-    //      + per-round breakdown. Named mode CTA passes the phone to the next
-    //      player; Just Play CTA wraps to the End screen. ----
+    //      + per-round breakdown. Named mode CTA passes the phone (or to the
+    //      leaderboard on the last player). Just Play folds the End screen
+    //      into this one — Play Again / Back to Home live right here. ----
     if (gameState === 'TURN_END') {
         const isJustPlay = mode === 'just_play';
         const me = scores[playerIndex] || { name: currentPlayerName || `Player ${playerIndex + 1}`, total: 0, breakdown: [] };
         const isLastTurn = !isJustPlay && playerIndex >= trimmedPlayers.length - 1;
-        const nextLabel = isJustPlay
-            ? 'See Final Score'
-            : isLastTurn
-                ? 'See Final Scores'
-                : `Pass to ${trimmedPlayers[(playerIndex + 1) % trimmedPlayers.length] || 'next player'}`;
+        const nextLabel = isLastTurn
+            ? 'See Final Scores'
+            : `Pass to ${trimmedPlayers[(playerIndex + 1) % trimmedPlayers.length] || 'next player'}`;
         return (
             <div className="h-full flex flex-col">
-                <ScreenHeader title="Turn Over" onBack={onExit} onHome={onExit} confirmOnExit />
+                <ScreenHeader title={isJustPlay ? 'Round Done' : 'Turn Over'} onBack={onExit} onHome={onExit} confirmOnExit />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-5 animate-slide-up">
-                    <div className="text-5xl">🎯</div>
+                    <div className="text-5xl">{isJustPlay ? '🏁' : '🎯'}</div>
                     <div>
                         <p className="text-xs uppercase tracking-[0.18em] text-muted mb-1">
                             {isJustPlay ? "Here's how it went" : "That's a wrap on"}
@@ -565,8 +564,11 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                         )}
                     </div>
                     <div className="flex flex-col items-center">
-                        <p className="text-xs uppercase tracking-[0.18em] text-muted mb-1">Turn total</p>
+                        <p className="text-xs uppercase tracking-[0.18em] text-muted mb-1">
+                            {isJustPlay ? 'Final score' : 'Turn total'}
+                        </p>
                         <span className="text-7xl font-black tabular-nums text-emerald-500 leading-none">{me.total}</span>
+                        {isJustPlay && <p className="text-xs text-muted mt-1">out of 20</p>}
                     </div>
                     <div className="w-full max-w-[340px] grid grid-cols-5 gap-1.5 mt-1">
                         {ROUNDS.map((r, ri) => {
@@ -584,37 +586,23 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                             );
                         })}
                     </div>
-                    <Button onClick={handleAfterTurn} fullWidth className="h-14 text-lg mt-2">
-                        {nextLabel} <ArrowRight className="inline ml-2" size={20} />
-                    </Button>
+                    {isJustPlay ? (
+                        <div className="flex flex-col gap-3 w-full max-w-[340px] mt-2">
+                            <Button onClick={handlePlayAgain} fullWidth>Play Again</Button>
+                            <Button onClick={onExit} variant="secondary" fullWidth>Back to Home</Button>
+                        </div>
+                    ) : (
+                        <Button onClick={handleAfterTurn} fullWidth className="h-14 text-lg mt-2">
+                            {nextLabel} <ArrowRight className="inline ml-2" size={20} />
+                        </Button>
+                    )}
                 </div>
             </div>
         );
     }
 
-    // ---- END ----
+    // ---- END (named-mode leaderboard only — just_play wraps inside TURN_END) ----
     if (gameState === 'END') {
-        if (mode === 'just_play') {
-            const myTotal = scores[0]?.total ?? 0;
-            return (
-                <div className="h-full flex flex-col">
-                    <ScreenHeader title="Round Done" onBack={() => setGameState('CATEGORY_SELECT')} onHome={onExit} />
-                    <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-5 animate-slide-up">
-                        <div className="text-6xl">🏁</div>
-                        <h2 className="text-3xl font-serif font-bold text-ink">Five rounds, done.</h2>
-                        <div className="flex flex-col items-center">
-                            <p className="text-xs uppercase tracking-[0.18em] text-muted mb-1">Final score</p>
-                            <span className="text-7xl font-black tabular-nums text-emerald-500 leading-none">{myTotal}</span>
-                            <p className="text-xs text-muted mt-1">out of 20</p>
-                        </div>
-                        <div className="flex flex-col gap-3 w-full mt-2">
-                            <Button onClick={handlePlayAgain} fullWidth>Play Again</Button>
-                            <Button onClick={onExit} variant="secondary" fullWidth>Back to Home</Button>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
         const ranked = [...scores].sort((a, b) => b.total - a.total);
         const top = ranked[0];
         const tiedTop = ranked.filter(r => r.total === top.total).length > 1;
