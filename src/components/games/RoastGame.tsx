@@ -21,6 +21,8 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
     const [resultImage, setResultImage] = useState<string | null>(null);
     const [roastText, setRoastText] = useState<string>('');
     const [theme, setTheme] = useState<RoastTheme>('animate');
+    // Only used by the worldcup theme — picks the national-team jersey/crowd.
+    const [team, setTeam] = useState<string>('argentina');
 
     const handleImageSelected = async (base64: string) => {
         // RATE LIMIT CHECK
@@ -38,9 +40,11 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
         try {
             const rawBase64 = cleanBase64(base64);
 
-            const roastPromise = generateRoast(rawBase64, theme);
+            // `team` is sent on every call but the server only uses it when
+            // theme === 'worldcup'.
+            const roastPromise = generateRoast(rawBase64, theme, team);
             const caricaturePrompt = getCaricaturePrompt(theme);
-            const caricaturePromise = editImage(rawBase64, caricaturePrompt);
+            const caricaturePromise = editImage(rawBase64, caricaturePrompt, team);
 
             const [roast, caricature] = await Promise.all([roastPromise, caricaturePromise]);
 
@@ -74,6 +78,8 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                 <ImageUpload
                     theme={theme}
                     onThemeChange={setTheme}
+                    team={team}
+                    onTeamChange={setTeam}
                     onImageSelected={handleImageSelected}
                     onClose={onExit}
                 />
