@@ -13,11 +13,12 @@ interface RoastResultProps {
 }
 
 const THEME_LABEL: Record<RoastTheme, string> = {
-    animate: 'ANIMATE',
-    tabloid: 'TABLOID',
-    movie:   'MOVIE',
-    disco:   '80S DISCO',
-    agra:    'AGRA ROYAL',
+    animate:  'ANIMATE',
+    tabloid:  'TABLOID',
+    movie:    'MOVIE',
+    disco:    '80S DISCO',
+    agra:     'AGRA ROYAL',
+    worldcup: 'FIFA 2026',
 };
 
 // Refinement chips — preset stylistic modifiers fired through the same

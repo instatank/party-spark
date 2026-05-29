@@ -13,8 +13,38 @@ import { getGemini } from './clients.js';
 const TEXT_MODEL = 'gemini-2.0-flash-001';
 const IMAGE_MODEL = 'gemini-3-pro-image-preview';
 
+// Team metadata for the WORLDCUP theme — keeps the jersey + flag specifics in
+// one place so both the caricature and the roast prompt stay in sync.
+const WORLDCUP_TEAMS: Record<string, { name: string; jersey: string; fans: string; angle: string }> = {
+    argentina: {
+        name: 'Argentina',
+        jersey: 'the official Argentina national-team home jersey — light-blue and white vertical stripes, dark navy collar, with the AFA crest on the chest',
+        fans: 'a sea of fans in light-blue and white, waving Argentine flags and scarves',
+        angle: "their bandwagon-fan energy post-2022, their inability to name three current Argentine players, the gap between their cheering and any actual knowledge of the game",
+    },
+    brazil: {
+        name: 'Brazil',
+        jersey: 'the official Brazil national-team home jersey — bright canary-yellow with green collar trim and the CBF crest on the chest',
+        fans: 'a sea of fans in yellow and green, waving Brazilian flags and beating samba drums',
+        angle: "their over-the-top samba celebrations despite zero rhythm, the fact that they only know about Neymar, and how they'd cry if asked who plays right-back",
+    },
+    england: {
+        name: 'England',
+        jersey: 'the official England national-team home jersey — plain white with the Three Lions crest on the chest',
+        fans: 'a sea of fans in white, waving St. George\'s Cross flags and singing "Three Lions"',
+        angle: "their unshakeable belief that football is coming home (it isn't), their pre-emptive sense of grievance, their tactical takes based entirely on commentary they half-listened to",
+    },
+    india: {
+        name: 'India',
+        jersey: 'the official India national-team football jersey — sky-blue and white with the AIFF crest on the chest',
+        fans: 'a confused crowd around them — India did not qualify for the 2026 World Cup, so this is wishful thinking made manifest',
+        angle: "the small fact that India isn't even at this World Cup, their commitment to a team that watched the tournament on TV at home, the sheer audacity of celebrating a goal that doesn't involve them",
+    },
+};
+const DEFAULT_WORLDCUP_TEAM = 'argentina';
+
 // Caricature theme → image generation prompt
-const getCaricaturePrompt = (theme: string): string => {
+const getCaricaturePrompt = (theme: string, team?: string): string => {
     const randomSubTheme = (options: string[]) => ` ${options[Math.floor(Math.random() * options.length)]}`;
 
     switch (theme) {
@@ -54,6 +84,16 @@ const getCaricaturePrompt = (theme: string): string => {
             ];
             return `CRITICAL INSTRUCTION: Perfectly preserve the exact facial identities, bone structure, and likeness of every person in the uploaded photo. Do not generate new faces. Edit the people into an over-the-top, majestic Mughal-era portrait set at the Taj Mahal. Dress them in flamboyant, overly-ornate historical Mughal royalty attire—think heavy jewel-encrusted sherwanis, oversized jeweled turbans, and heavily embroidered lehengas. They should look completely out of place, like modern tourists trying way too hard to look like an emperor or empress. The background MUST be a stunning, grand view of the Taj Mahal with intricate marble arches and reflecting pools.${randomSubTheme(modifiers)}`;
         }
+        case 'worldcup': {
+            const t = WORLDCUP_TEAMS[team || DEFAULT_WORLDCUP_TEAM] || WORLDCUP_TEAMS[DEFAULT_WORLDCUP_TEAM];
+            const modifiers = [
+                'Confetti falls through the floodlights overhead.',
+                'A flare smokes red-orange in the row behind them.',
+                'The closest pitch-side advertising hoarding has the FIFA World Cup 2026 logo glowing.',
+                'A giant flag is being passed across the section behind their head.',
+            ];
+            return `CRITICAL INSTRUCTION: Perfectly preserve the exact facial identity, bone structure, eyes, and likeness of the person in the uploaded photo. They must remain instantly recognisable — do not invent a new face. Re-render the photo as a vivid, photorealistic shot of them inside the stadium crowd at a 2026 FIFA World Cup match, the moment a goal has just been scored. They are wearing ${t.jersey}. Their arms are raised mid-celebration, mouth open in a joyful shout, eyes wide. Around them: ${t.fans}. In the middle distance behind them, the stadium pitch is visible — players are celebrating the goal, floodlights blaze, and the official FIFA World Cup 2026 LED branding glows on the pitch-side advertising boards. Stadium architecture and crowd extend into the background. Cinematic lighting, vibrant colours, sharp focus on the person.${randomSubTheme(modifiers)}`;
+        }
         case 'animate':
         default: {
             const modifiers = [
@@ -68,7 +108,7 @@ const getCaricaturePrompt = (theme: string): string => {
 };
 
 // Roast caption system prompt per theme
-const getRoastSystemPrompt = (theme: string): string => {
+const getRoastSystemPrompt = (theme: string, team?: string): string => {
     const randomVibe = (options: string[]) => ` ${options[Math.floor(Math.random() * options.length)]}`;
 
     switch (theme) {
@@ -108,6 +148,16 @@ const getRoastSystemPrompt = (theme: string): string => {
             ];
             return `You are a hilariously strict, easily-offended royal court historian from the Mughal Empire. Roast the people in this photo who are clearly just tourists pretending to be royalty during their trip to Agra. Brutally mock their "cheap modern fabrics," their total lack of royal grace, or their absurd expressions as an insult to the dynasty and the Taj Mahal. Throw in some dramatically petty but historically-flavored insults. Keep it under 280 characters.${randomVibe(vibes)}`;
         }
+        case 'worldcup': {
+            const t = WORLDCUP_TEAMS[team || DEFAULT_WORLDCUP_TEAM] || WORLDCUP_TEAMS[DEFAULT_WORLDCUP_TEAM];
+            const vibes = [
+                "Phrase it as a TV broadcast chyron at the bottom of the screen.",
+                "Phrase it as a one-line punditry verdict, like Roy Keane half-listening at half-time.",
+                "Phrase it as a stadium-cam caption you'd see flash up under their face.",
+                "Phrase it as a confused commentator's aside that wasn't supposed to go on air.",
+            ];
+            return `You are a sardonic football pundit / TV broadcast operator writing a single short caption to flash under a fan-cam shot at the 2026 FIFA World Cup. The person in the image is in the ${t.name} section, jersey on, mid-celebration as a goal goes in. Roast them in a punchy, affectionate-but-ribbing tone. Go after ${t.angle}. Light to medium roast — they're a fan, not the enemy. STRICT FORMAT: one or two sentences MAX. Under 220 characters. No emoji. No hashtags. No quotes around the line.${randomVibe(vibes)}`;
+        }
         case 'animate':
         default: {
             const vibes = [
@@ -129,13 +179,13 @@ Keep it under 280 characters.${randomVibe(vibes)}`;
 // Roast caption from image
 // =============================================================================
 
-export const handleGenerateRoast = async (params: { base64Image: string; theme?: string }): Promise<string> => {
+export const handleGenerateRoast = async (params: { base64Image: string; theme?: string; team?: string }): Promise<string> => {
     const gemini = await getGemini();
     if (!gemini) return "🔥 ROAST PROTOCOL DISABLED: API Key missing on server.";
-    const { base64Image, theme = 'animate' } = params;
+    const { base64Image, theme = 'animate', team } = params;
 
     try {
-        const systemPrompt = getRoastSystemPrompt(theme);
+        const systemPrompt = getRoastSystemPrompt(theme, team);
         const response = await gemini.models.generateContent({
             model: TEXT_MODEL,
             contents: {
@@ -156,14 +206,15 @@ export const handleGenerateRoast = async (params: { base64Image: string; theme?:
 // Caricature image edit (image in → image out)
 // =============================================================================
 
-export const handleEditImage = async (params: { base64Image: string; theme?: string; prompt?: string }): Promise<string | null> => {
+export const handleEditImage = async (params: { base64Image: string; theme?: string; team?: string; prompt?: string }): Promise<string | null> => {
     const gemini = await getGemini();
     if (!gemini) return null;
-    const { base64Image, theme, prompt } = params;
+    const { base64Image, theme, team, prompt } = params;
 
     // Allow either an explicit prompt or a theme key. Theme takes precedence if
-    // both are given (themes drive the existing UI flow).
-    const effectivePrompt = theme ? getCaricaturePrompt(theme) : (prompt || getCaricaturePrompt('animate'));
+    // both are given (themes drive the existing UI flow). `team` only matters
+    // for the worldcup theme.
+    const effectivePrompt = theme ? getCaricaturePrompt(theme, team) : (prompt || getCaricaturePrompt('animate'));
 
     try {
         const response = await gemini.models.generateContent({
