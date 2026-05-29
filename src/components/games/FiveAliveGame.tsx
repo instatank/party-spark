@@ -17,6 +17,7 @@ type GameState =
     | 'PASS'             // "Pass to <player>" gate (named mode only)
     | 'PLAYING'          // category shown + timer running (auto-starts on entry — no Start button)
     | 'TALLY'            // judge enters score (named) or "Next round" (just play)
+    | 'TURN_END'         // per-player turn recap (named only) — total + per-round breakdown
     | 'END';             // leaderboard (named) or "Play again" (just play)
 
 // Five rounds, descending: name N in N+1 seconds (the extra second covers
@@ -262,8 +263,18 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
             return;
         }
 
-        // Turn over.
-        if (mode === 'named' && playerIndex < trimmedPlayers.length - 1) {
+        // Turn over. In named mode, show a per-player recap before passing
+        // the phone or wrapping the match.
+        if (mode === 'named') {
+            setGameState('TURN_END');
+            return;
+        }
+        setGameState('END');
+    };
+
+    // TURN_END CTA — advance to the next player or to the match END.
+    const handleAfterTurn = () => {
+        if (playerIndex < trimmedPlayers.length - 1) {
             const next = playerIndex + 1;
             setPlayerIndex(next);
             setTurnCategories(drawTurnCategories(difficulty));
@@ -478,12 +489,11 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         const isJustPlay = mode === 'just_play';
         const isPerfect = !isJustPlay && tally === round.count;
         const last = roundIndex === TOTAL_ROUNDS - 1;
-        const isLastTurn = mode === 'named' && playerIndex >= trimmedPlayers.length - 1;
         const ctaLabel = !last
             ? 'Next Round'
-            : (isJustPlay || isLastTurn)
+            : isJustPlay
                 ? 'See Results'
-                : `Pass to ${trimmedPlayers[(playerIndex + 1) % trimmedPlayers.length] || 'next player'}`;
+                : 'See My Total';
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title={`Round ${roundIndex + 1} of ${TOTAL_ROUNDS}`} onBack={onExit} onHome={onExit} confirmOnExit />
@@ -532,6 +542,52 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
 
                     <Button onClick={handleNextRound} fullWidth className="h-14 text-lg mt-2">
                         {ctaLabel} <ArrowRight className="inline ml-2" size={20} />
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
+    // ---- TURN_END (named mode only) — per-player recap after the 1-guess round.
+    //      Shows the total + a per-round breakdown, then offers Pass to next /
+    //      See Final Scores. ----
+    if (gameState === 'TURN_END') {
+        const me = scores[playerIndex] || { name: currentPlayerName || `Player ${playerIndex + 1}`, total: 0, breakdown: [] };
+        const isLastTurn = playerIndex >= trimmedPlayers.length - 1;
+        const nextLabel = isLastTurn
+            ? 'See Final Scores'
+            : `Pass to ${trimmedPlayers[(playerIndex + 1) % trimmedPlayers.length] || 'next player'}`;
+        return (
+            <div className="h-full flex flex-col">
+                <ScreenHeader title="Turn Over" onBack={onExit} onHome={onExit} confirmOnExit />
+                <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-5 animate-slide-up">
+                    <div className="text-5xl">🎯</div>
+                    <div>
+                        <p className="text-xs uppercase tracking-[0.18em] text-muted mb-1">That's a wrap on</p>
+                        <h2 className="font-serif font-bold text-3xl text-ink break-words">{me.name}</h2>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <p className="text-xs uppercase tracking-[0.18em] text-muted mb-1">Turn total</p>
+                        <span className="text-7xl font-black tabular-nums text-emerald-500 leading-none">{me.total}</span>
+                    </div>
+                    <div className="w-full max-w-[340px] grid grid-cols-5 gap-1.5 mt-1">
+                        {ROUNDS.map((r, ri) => {
+                            const pts = me.breakdown[ri] ?? 0;
+                            const perfect = pts === r.count + 1;
+                            return (
+                                <div
+                                    key={ri}
+                                    className={`text-center rounded-md py-2 border ${perfect ? 'bg-emerald-500/15 border-emerald-500/50' : 'bg-surface-alt border-divider'}`}
+                                >
+                                    <div className="text-[9px] uppercase tracking-wider text-muted">R{ri + 1}</div>
+                                    <div className="text-base font-bold text-ink leading-tight">{pts}</div>
+                                    {perfect && <div className="text-[8px] uppercase tracking-wider text-emerald-500 font-black">+1</div>}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <Button onClick={handleAfterTurn} fullWidth className="h-14 text-lg mt-2">
+                        {nextLabel} <ArrowRight className="inline ml-2" size={20} />
                     </Button>
                 </div>
             </div>
