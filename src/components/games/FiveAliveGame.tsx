@@ -17,7 +17,7 @@ type GameState =
     | 'PASS'             // "Pass to <player>" gate (named mode only)
     | 'PLAYING'          // category shown + timer running (auto-starts on entry — no Start button)
     | 'TALLY'            // judge enters score (named) or "Next round" (just play)
-    | 'TURN_END'         // per-player turn recap (named only) — total + per-round breakdown
+    | 'TURN_END'         // per-player turn recap (both modes) — total + per-round breakdown
     | 'END';             // leaderboard (named) or "Play again" (just play)
 
 // Five rounds, descending: name N in N+1 seconds (the extra second covers
@@ -222,7 +222,9 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     const handleJustPlay = () => {
         unlockAudio();
         setMode('just_play');
-        setScores([]);
+        // One pseudo-player slot so the round-by-round tally still has
+        // somewhere to write to. The TURN_END recap reads from this slot.
+        setScores([{ name: 'Just Play', total: 0, breakdown: [] }]);
         setPlayerIndex(0);
         setGameState('CATEGORY_SELECT');
     };
@@ -246,14 +248,13 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     // TALLY → next round (or next player, or END). The "Next Round" tap is
     // the reveal+start trigger for the next round.
     const handleNextRound = () => {
-        // Record the round's points for named mode.
-        if (mode === 'named') {
-            const perfect = tally === round.count;
-            const pts = tally + (perfect ? 1 : 0);
-            setScores(prev => prev.map((s, i) =>
-                i === playerIndex ? { ...s, total: s.total + pts, breakdown: [...s.breakdown, pts] } : s
-            ));
-        }
+        // Record the round's points. Both named and just-play modes track
+        // scores now — just-play uses a single pseudo-player slot.
+        const perfect = tally === round.count;
+        const pts = tally + (perfect ? 1 : 0);
+        setScores(prev => prev.map((s, i) =>
+            i === playerIndex ? { ...s, total: s.total + pts, breakdown: [...s.breakdown, pts] } : s
+        ));
 
         if (roundIndex < TOTAL_ROUNDS - 1) {
             unlockAudio();
@@ -263,18 +264,14 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
             return;
         }
 
-        // Turn over. In named mode, show a per-player recap before passing
-        // the phone or wrapping the match.
-        if (mode === 'named') {
-            setGameState('TURN_END');
-            return;
-        }
-        setGameState('END');
+        // Turn over — show the per-turn recap before passing the phone
+        // (named) or wrapping the just-play session.
+        setGameState('TURN_END');
     };
 
     // TURN_END CTA — advance to the next player or to the match END.
     const handleAfterTurn = () => {
-        if (playerIndex < trimmedPlayers.length - 1) {
+        if (mode === 'named' && playerIndex < trimmedPlayers.length - 1) {
             const next = playerIndex + 1;
             setPlayerIndex(next);
             setTurnCategories(drawTurnCategories(difficulty));
@@ -290,6 +287,8 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         // Same difficulty + same player roster; reset scores/turn state.
         if (mode === 'named') {
             setScores(trimmedPlayers.map(name => ({ name, total: 0, breakdown: [] })));
+        } else {
+            setScores([{ name: 'Just Play', total: 0, breakdown: [] }]);
         }
         setPlayerIndex(0);
         setExpandedPlayer(null);
@@ -316,7 +315,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Pick a Level" onBack={() => setGameState('SETUP')} onHome={onExit} />
                 <div className="text-center mb-4 -mt-3">
-                    <p className="text-muted text-sm">{mode === 'just_play' ? 'Just Play · no scoring' : 'Scored · 5 rounds'}</p>
+                    <p className="text-muted text-sm">{mode === 'just_play' ? 'Just Play · solo · 5 rounds' : 'Scored · 5 rounds'}</p>
                 </div>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
@@ -487,13 +486,9 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     if (gameState === 'TALLY') {
         const cat = turnCategories[roundIndex] || '';
         const isJustPlay = mode === 'just_play';
-        const isPerfect = !isJustPlay && tally === round.count;
+        const isPerfect = tally === round.count;
         const last = roundIndex === TOTAL_ROUNDS - 1;
-        const ctaLabel = !last
-            ? 'Next Round'
-            : isJustPlay
-                ? 'See Results'
-                : 'See My Total';
+        const ctaLabel = !last ? 'Next Round' : 'See My Total';
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title={`Round ${roundIndex + 1} of ${TOTAL_ROUNDS}`} onBack={onExit} onHome={onExit} confirmOnExit />
@@ -504,40 +499,36 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                         <h2 className="font-serif font-bold text-2xl text-ink">{cat}</h2>
                     </div>
 
-                    {isJustPlay ? (
-                        <p className="text-muted text-sm max-w-[280px]">Did they get {round.count}? Decide among yourselves — no scores in Just Play.</p>
-                    ) : (
-                        <>
-                            <p className="text-sm text-ink-soft">
-                                How many did <span className="font-bold text-ink">{currentPlayerName || `Player ${playerIndex + 1}`}</span> get right?
-                                {judgeName && <><br /><span className="text-muted text-xs">Judge: {judgeName}</span></>}
-                            </p>
-                            <div className="flex items-center gap-5">
-                                <button
-                                    onClick={() => setTally(t => Math.max(0, t - 1))}
-                                    disabled={tally <= 0}
-                                    aria-label="Decrease"
-                                    className="w-12 h-12 rounded-full bg-surface-alt border border-divider text-ink disabled:opacity-30 flex items-center justify-center hover:bg-app-tint transition-colors"
-                                >
-                                    <Minus size={22} />
-                                </button>
-                                <span className="text-6xl font-black tabular-nums text-ink w-20">{tally}</span>
-                                <button
-                                    onClick={() => setTally(t => Math.min(round.count, t + 1))}
-                                    disabled={tally >= round.count}
-                                    aria-label="Increase"
-                                    className="w-12 h-12 rounded-full bg-surface-alt border border-divider text-ink disabled:opacity-30 flex items-center justify-center hover:bg-app-tint transition-colors"
-                                >
-                                    <Plus size={22} />
-                                </button>
-                            </div>
-                            <p className="text-xs text-muted">out of {round.count}</p>
-                            {isPerfect && (
-                                <div className="px-4 py-2 rounded-full bg-emerald-500/15 text-emerald-500 font-black tracking-wide text-sm animate-bounce">
-                                    🎉 +1 PERFECT-ROUND BONUS!
-                                </div>
-                            )}
-                        </>
+                    <p className="text-sm text-ink-soft">
+                        How many did {isJustPlay
+                            ? <span className="font-bold text-ink">you</span>
+                            : <span className="font-bold text-ink">{currentPlayerName || `Player ${playerIndex + 1}`}</span>} get right?
+                        {!isJustPlay && judgeName && <><br /><span className="text-muted text-xs">Judge: {judgeName}</span></>}
+                    </p>
+                    <div className="flex items-center gap-5">
+                        <button
+                            onClick={() => setTally(t => Math.max(0, t - 1))}
+                            disabled={tally <= 0}
+                            aria-label="Decrease"
+                            className="w-12 h-12 rounded-full bg-surface-alt border border-divider text-ink disabled:opacity-30 flex items-center justify-center hover:bg-app-tint transition-colors"
+                        >
+                            <Minus size={22} />
+                        </button>
+                        <span className="text-6xl font-black tabular-nums text-ink w-20">{tally}</span>
+                        <button
+                            onClick={() => setTally(t => Math.min(round.count, t + 1))}
+                            disabled={tally >= round.count}
+                            aria-label="Increase"
+                            className="w-12 h-12 rounded-full bg-surface-alt border border-divider text-ink disabled:opacity-30 flex items-center justify-center hover:bg-app-tint transition-colors"
+                        >
+                            <Plus size={22} />
+                        </button>
+                    </div>
+                    <p className="text-xs text-muted">out of {round.count}</p>
+                    {isPerfect && (
+                        <div className="px-4 py-2 rounded-full bg-emerald-500/15 text-emerald-500 font-black tracking-wide text-sm animate-bounce">
+                            🎉 +1 PERFECT-ROUND BONUS!
+                        </div>
                     )}
 
                     <Button onClick={handleNextRound} fullWidth className="h-14 text-lg mt-2">
@@ -548,23 +539,30 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
-    // ---- TURN_END (named mode only) — per-player recap after the 1-guess round.
-    //      Shows the total + a per-round breakdown, then offers Pass to next /
-    //      See Final Scores. ----
+    // ---- TURN_END — per-turn recap after the 1-guess round. Shows the total
+    //      + per-round breakdown. Named mode CTA passes the phone to the next
+    //      player; Just Play CTA wraps to the End screen. ----
     if (gameState === 'TURN_END') {
+        const isJustPlay = mode === 'just_play';
         const me = scores[playerIndex] || { name: currentPlayerName || `Player ${playerIndex + 1}`, total: 0, breakdown: [] };
-        const isLastTurn = playerIndex >= trimmedPlayers.length - 1;
-        const nextLabel = isLastTurn
-            ? 'See Final Scores'
-            : `Pass to ${trimmedPlayers[(playerIndex + 1) % trimmedPlayers.length] || 'next player'}`;
+        const isLastTurn = !isJustPlay && playerIndex >= trimmedPlayers.length - 1;
+        const nextLabel = isJustPlay
+            ? 'See Final Score'
+            : isLastTurn
+                ? 'See Final Scores'
+                : `Pass to ${trimmedPlayers[(playerIndex + 1) % trimmedPlayers.length] || 'next player'}`;
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Turn Over" onBack={onExit} onHome={onExit} confirmOnExit />
                 <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-5 animate-slide-up">
                     <div className="text-5xl">🎯</div>
                     <div>
-                        <p className="text-xs uppercase tracking-[0.18em] text-muted mb-1">That's a wrap on</p>
-                        <h2 className="font-serif font-bold text-3xl text-ink break-words">{me.name}</h2>
+                        <p className="text-xs uppercase tracking-[0.18em] text-muted mb-1">
+                            {isJustPlay ? "Here's how it went" : "That's a wrap on"}
+                        </p>
+                        {!isJustPlay && (
+                            <h2 className="font-serif font-bold text-3xl text-ink break-words">{me.name}</h2>
+                        )}
                     </div>
                     <div className="flex flex-col items-center">
                         <p className="text-xs uppercase tracking-[0.18em] text-muted mb-1">Turn total</p>
@@ -597,14 +595,19 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     // ---- END ----
     if (gameState === 'END') {
         if (mode === 'just_play') {
+            const myTotal = scores[0]?.total ?? 0;
             return (
                 <div className="h-full flex flex-col">
                     <ScreenHeader title="Round Done" onBack={() => setGameState('CATEGORY_SELECT')} onHome={onExit} />
-                    <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-6 animate-slide-up">
+                    <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-5 animate-slide-up">
                         <div className="text-6xl">🏁</div>
                         <h2 className="text-3xl font-serif font-bold text-ink">Five rounds, done.</h2>
-                        <p className="text-muted text-sm max-w-[260px]">Pass the phone and run it back — or head home.</p>
-                        <div className="flex flex-col gap-3 w-full">
+                        <div className="flex flex-col items-center">
+                            <p className="text-xs uppercase tracking-[0.18em] text-muted mb-1">Final score</p>
+                            <span className="text-7xl font-black tabular-nums text-emerald-500 leading-none">{myTotal}</span>
+                            <p className="text-xs text-muted mt-1">out of 20</p>
+                        </div>
+                        <div className="flex flex-col gap-3 w-full mt-2">
                             <Button onClick={handlePlayAgain} fullWidth>Play Again</Button>
                             <Button onClick={onExit} variant="secondary" fullWidth>Back to Home</Button>
                         </div>
