@@ -66,14 +66,50 @@ const getCaricaturePrompt = (theme: string, team?: string): string => {
             ];
             return `Transform the person in this photo into the star of a gritty, high-stakes action-thriller or cyberpunk movie poster. IT IS CRITICAL TO RETAIN THE EXACT FACIAL IDENTITY of the persons in the original photo—do not change their face. Upgrade their outfit into a rugged, battle-worn survivor or sleek undercover rogue aesthetic. Add polished, professional movie poster text overlays: invent a bold, gritty Movie Title that suits their look, and include a subtle, hilariously underwhelming or mundane tagline underneath it. Use dramatic chiaroscuro lighting, heavy film grain, and a cinematic color grading.${randomSubTheme(modifiers)}`;
         }
-        case 'disco': {
-            const modifiers = [
-                'They should be posing awkwardly near a giant, glowing jukebox.',
-                'They should look like they are caught mid-fall while attempting a risky roller skating trick.',
-                'Add a hazy, colorful smoke-machine fog covering the roller rink floor.',
-                'They should be striking a dramatically bad dance pose under an intense neon laser light.',
+        case 'rock': {
+            // 4 scene variants — 2 punk (basement / pit) and 2 classic rock
+            // (stadium / backstage). One is picked at random per generation
+            // so repeated shots don't all look the same.
+            const scenes = [
+                // Punk #1 — in the pit
+                {
+                    label: 'late-70s punk pit',
+                    look: 'a black leather jacket plastered with band patches and safety pins, ripped black skinny jeans, scuffed Doc Martens, a torn band t-shirt, and a spiked-up or freshly bleached mohawk haircut. Black eyeliner smudged from sweat',
+                    pose: 'mid-shout in the middle of a packed pit, one fist raised, mouth open in a snarl, sweat-soaked',
+                    set: 'a tiny dimly-lit basement venue, plaster walls behind them covered in flyers and graffiti, bodies pressed close, low ceiling, single bare bulb overhead casting harsh shadows. Style of London 1977 — Sex Pistols / Clash era — gritty, grainy, photographic',
+                },
+                // Punk #2 — onstage
+                {
+                    label: 'punk band onstage',
+                    look: 'a battered Gibson SG slung low on a leather strap, a sleeveless ripped band shirt, black jeans, studded belt, snarl curl on the lip, smudged eyeliner, hair lacquered into spikes',
+                    pose: 'leaning into a vintage SM58 mic on a boom stand, knees bent, guitar pointed at the audience, mid-roar',
+                    set: 'a low basement stage, beer-sticky floor, single red wash from a cheap par can, a chaotic crowd silhouetted at the lip of the stage. Style of CBGB 1978 — gritty, harsh flash, grainy, photographic',
+                },
+                // Classic rock #1 — stadium
+                {
+                    label: 'stadium-rock anthem',
+                    look: 'a denim jacket with embroidered band patches over a faded vintage tour t-shirt, tight worn jeans, brown leather boots, hair big and feathered, leather wrist cuff. Aviator sunglasses pushed up on the head',
+                    pose: 'fist raised high, head tipped back, mouth open in a triumphant shout, mid-anthem',
+                    set: 'a packed open-air stadium late afternoon, golden-hour sunlight, a sea of upraised hands and flickering lighters in the crowd behind them, a massive stage rigged with par cans glowing in the distance. Style of Wembley Live Aid 1985 — warm, cinematic, photographic',
+                },
+                // Classic rock #2 — backstage
+                {
+                    label: 'classic-rock backstage',
+                    look: 'leather pants, an open silk shirt over a band tee, layered chains and pendants, big tousled 70s rock hair, statement rings on every finger, a Les Paul slung over the shoulder',
+                    pose: 'leaning against a dressing-room counter looking straight at the camera, half a smirk, mid-pose like a tour-doc still',
+                    set: 'a cluttered backstage dressing room, bulb-lit makeup mirror behind them, setlist taped to the wall, a battered flight case on the floor, beer bottles, hand-towels. Style of Cameron Crowe 1973 — warm tungsten light, slightly grainy, photographic',
+                },
             ];
-            return `CRITICAL INSTRUCTION: You must perfectly preserve the exact facial identities, bone structure, eyes, and likeness of every person in the uploaded photo. Do not generate new faces. Edit the people into a funky, neon-drenched retro-futuristic 1970s roller disco aesthetic by changing ONLY their hair, clothing, and the environment. For ALL subjects: Keep their faces identical. Style their hair into massive afros, feathered shags, or glittery styling. Dress them in flamboyant, horribly clashing outfits like flared sequined jumpsuits, metallic bell-bottoms, oversized tinted aviator shades, and platform roller skates. The background MUST be a vibrant neon roller rink with geometric light-up floors, arcade cabinets in the distance, and intense lens flares.${randomSubTheme(modifiers)}`;
+            const scene = scenes[Math.floor(Math.random() * scenes.length)];
+            const modifiers = [
+                'A bit of motion blur on the edges suggests the movement of the moment.',
+                'Faint stage haze drifts in from one side.',
+                'A single dramatic rim-light catches their silhouette from behind.',
+                'Grain texture across the whole frame suggests film stock.',
+            ];
+            return `IDENTITY LOCK — TOP PRIORITY: You must preserve the EXACT facial identity of the person in the uploaded photo. Do not generate a new face. Do not idealise, beautify, slim, or "improve" their features. Keep the same face shape, jaw line, nose, eyes, eye spacing, eyebrows, lips, ears, hairline (unless the hair style explicitly changes), skin tone, facial hair, and any visible distinguishing marks (moles, scars, freckles, glasses if present). A friend looking at the result must say "that's clearly them" — not "that looks like a version of them". A change of expression (snarling, shouting, smirking) is fine AS LONG AS THE UNDERLYING FACE IS UNMISTAKABLY THE SAME PERSON. If you cannot preserve the face exactly, prefer to keep the original face untouched and only re-render the outfit, hair, and background around it.
+
+Re-render the photo as a ${scene.label} portrait. The subject is wearing ${scene.look}. ${scene.pose}. Background and setting: ${scene.set}. Sharp focus on the subject, shallow depth of field on the background.${randomSubTheme(modifiers)}`;
         }
         case 'agra': {
             const modifiers = [
@@ -153,14 +189,16 @@ const getRoastSystemPrompt = (theme: string, team?: string): string => {
             ];
             return `You are a gravelly-voiced, overly-serious movie trailer narrator pitching a gritty, dark action-thriller starring the person in this photo. Based purely on their outfit, expression, or background in the image, invent a hilariously mundane "fatal flaw" or anticlimactic mission for them. Write a short, punchy, cinematic teaser trailer script. Start with an epic overarching statement, followed by the absurd reality of their role. Be funny, slightly roasting, and dramatic. Keep it under 280 characters.${randomVibe(vibes)}`;
         }
-        case 'disco': {
+        case 'rock': {
             const vibes = [
-                'Complain about how their outfit is physically blinding you.',
-                'Roast their total absolute lack of rhythm and rhythm-less facial expression.',
-                "Accuse them of ruining your roller rink's pristine carpet.",
-                'Tell them they look like a cheap disco-ball ordered off the internet.',
+                "Mock their commitment to the bit — suburban kid LARPing as a rock god.",
+                "Imply they only know two songs from the band on their t-shirt.",
+                "Roast their pose as something they practised in the bathroom mirror.",
+                "Suggest they'd be the first one tapped out after one song.",
+                "Frame it as a Pitchfork mini-review of their entire vibe (4.2 / 10).",
+                "Read them as a snarling NME live-review caption with a pull-quote.",
             ];
-            return `You are a washed-up, extremely flamboyant 1970s roller-disco DJ who thinks they are still cool. Roast the people in this photo as if they are terrible dancers who just stumbled onto your roller rink floor. Use excessive 70s slang (groovy, jive, far out) but in a condescending way. Make fun of their awkward vibe, their expression, or their outfits as if they ruined your groove. Be funny, theatrical, and slightly petty. Keep it under 280 characters.${randomVibe(vibes)}`;
+            return `You are a sardonic music critic — half Pitchfork reviewer, half jaded NME live correspondent — writing a single short caption for a posed publicity shot. The person in the image is dressed and posing as either a 70s punk or a stadium-era classic-rock star (it'll be obvious from the photo). Roast them in the appropriate voice: a snarling sneer for punk, a world-weary "back in my day" eye-roll for classic rock. Light to medium roast — they're playing dress-up, not actually hurting anyone. STRICT FORMAT: one or two sentences MAX. Under 240 characters. No emoji. No hashtags. No quotes around the line.${randomVibe(vibes)}`;
         }
         case 'agra': {
             const vibes = [
