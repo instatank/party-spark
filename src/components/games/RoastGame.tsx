@@ -40,11 +40,16 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
         try {
             const rawBase64 = cleanBase64(base64);
 
-            // `team` is sent on every call but the server only uses it when
-            // theme === 'worldcup'.
-            const roastPromise = generateRoast(rawBase64, theme, team);
+            // Pick a sub-vibe ONCE per submit so the image and the roast
+            // caption land on the same side of any theme that has variants.
+            //   - rock → 'punk' | 'classic' (50/50)
+            //   - other themes ignore `variant` on the server.
+            const variant = theme === 'rock' ? (Math.random() < 0.5 ? 'punk' : 'classic') : undefined;
+
+            // `team` only matters for worldcup; `variant` only for rock.
+            const roastPromise = generateRoast(rawBase64, theme, team, variant);
             const caricaturePrompt = getCaricaturePrompt(theme);
-            const caricaturePromise = editImage(rawBase64, caricaturePrompt, team);
+            const caricaturePromise = editImage(rawBase64, caricaturePrompt, team, variant);
 
             const [roast, caricature] = await Promise.all([roastPromise, caricaturePromise]);
 

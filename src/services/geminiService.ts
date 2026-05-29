@@ -221,10 +221,12 @@ export const generateContextualLies = async (topic: string, trueStory: string): 
 
 export type RoastTheme = 'animate' | 'tabloid' | 'movie' | 'rock' | 'agra' | 'worldcup';
 
-// `team` only applies to the 'worldcup' theme — picks the national-team jersey
-// + crowd + roast angle. Ignored by all other themes.
-export const generateRoast = async (base64Image: string, theme: RoastTheme = 'animate', team?: string): Promise<string> => {
-    const data = await callAI<string>('generate_roast', { base64Image, theme, team });
+// `team` only applies to the 'worldcup' theme. `variant` only applies to the
+// 'rock' theme ('punk' or 'classic'). Both are ignored by other themes — the
+// caller picks once and forwards the same value to both calls so the image
+// and the roast caption stay on the same vibe.
+export const generateRoast = async (base64Image: string, theme: RoastTheme = 'animate', team?: string, variant?: string): Promise<string> => {
+    const data = await callAI<string>('generate_roast', { base64Image, theme, team, variant });
     return data || 'Roast failed (API error).';
 };
 
@@ -232,14 +234,15 @@ export const generateRoast = async (base64Image: string, theme: RoastTheme = 'an
  * Edit the image based on a theme or explicit prompt.
  * The UI currently passes themes via getCaricaturePrompt() below, but we now
  * prefer passing the theme key directly so the server owns the prompt text.
- * `team` is only meaningful when themeOrPrompt is 'worldcup'.
+ * `team` is only meaningful when themeOrPrompt is 'worldcup'; `variant` only
+ * when it is 'rock'.
  */
-export const editImage = async (base64Image: string, themeOrPrompt: string, team?: string): Promise<string | null> => {
+export const editImage = async (base64Image: string, themeOrPrompt: string, team?: string, variant?: string): Promise<string | null> => {
     // Backwards-compat: if callers pass a theme key, send it as `theme`; if they
     // pass a full prompt string (legacy call sites), send as `prompt`.
     const KNOWN_THEMES = ['animate', 'tabloid', 'movie', 'rock', 'agra', 'worldcup'];
     const payload = KNOWN_THEMES.includes(themeOrPrompt)
-        ? { base64Image, theme: themeOrPrompt, team }
+        ? { base64Image, theme: themeOrPrompt, team, variant }
         : { base64Image, prompt: themeOrPrompt };
     return callAI<string | null>('edit_image', payload);
 };
