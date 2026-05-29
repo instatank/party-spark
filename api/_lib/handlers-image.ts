@@ -86,13 +86,36 @@ const getCaricaturePrompt = (theme: string, team?: string): string => {
         }
         case 'worldcup': {
             const t = WORLDCUP_TEAMS[team || DEFAULT_WORLDCUP_TEAM] || WORLDCUP_TEAMS[DEFAULT_WORLDCUP_TEAM];
-            const modifiers = [
-                'Confetti falls through the floodlights overhead.',
-                'A flare smokes red-orange in the row behind them.',
-                'The closest pitch-side advertising hoarding has the FIFA World Cup 2026 logo glowing.',
-                'A giant flag is being passed across the section behind their head.',
+            // Three distinct scene variants so repeated generations don't all
+            // converge on the same shot. Each defines the action + camera vibe;
+            // jersey / crowd / branding stay consistent across all three.
+            const scenes = [
+                {
+                    action: 'Their arms are raised high mid-celebration, mouth open in a joyful shout, eyes wide as a goal is scored',
+                    camera: 'shot from low and slightly to the side as if a fellow fan grabbed it on a phone, tight on them with the celebrating pitch visible past their shoulder',
+                    detail: 'In the middle distance, players in the same team kit are celebrating the goal; floodlights blaze overhead',
+                },
+                {
+                    action: 'They are holding up a phone for a stadium selfie, beaming, scarf draped around their neck, the pitch visible behind them mid-match',
+                    camera: 'shot at eye level, slight wide-angle lens distortion suggesting a real selfie, the stadium curving away behind them',
+                    detail: 'A play is unfolding on the pitch behind them — figures in motion, ball in the air — and the giant scoreboard glows in the background',
+                },
+                {
+                    action: 'They are standing for the national anthem before kickoff, scarf held high above their head with both hands, mouth open mid-song, expression proud and a little emotional',
+                    camera: 'shot from below as if by someone seated in front of them, the stadium lights glowing behind their silhouette',
+                    detail: 'The teams are lined up on the pitch in the distance facing the centre, the floodlit grass green and pristine, and a sea of scarves rises across the section',
+                },
             ];
-            return `CRITICAL INSTRUCTION: Perfectly preserve the exact facial identity, bone structure, eyes, and likeness of the person in the uploaded photo. They must remain instantly recognisable — do not invent a new face. Re-render the photo as a vivid, photorealistic shot of them inside the stadium crowd at a 2026 FIFA World Cup match, the moment a goal has just been scored. They are wearing ${t.jersey}. Their arms are raised mid-celebration, mouth open in a joyful shout, eyes wide. Around them: ${t.fans}. In the middle distance behind them, the stadium pitch is visible — players are celebrating the goal, floodlights blaze, and the official FIFA World Cup 2026 LED branding glows on the pitch-side advertising boards. Stadium architecture and crowd extend into the background. Cinematic lighting, vibrant colours, sharp focus on the person.${randomSubTheme(modifiers)}`;
+            const scene = scenes[Math.floor(Math.random() * scenes.length)];
+            const modifiers = [
+                'Confetti and bits of streamer fall through the floodlights overhead.',
+                'A red-orange flare smokes in the row behind them.',
+                'The closest pitch-side advertising hoarding has the FIFA World Cup 2026 logo glowing.',
+                'A giant team flag is being passed across the section behind their head.',
+            ];
+            return `IDENTITY LOCK — TOP PRIORITY: You must preserve the EXACT facial identity of the person in the uploaded photo. Do not generate a new face. Do not idealise, beautify, slim, or "improve" their features. Keep the same face shape, jaw line, nose, eyes, eye spacing, eyebrows, lips, ears, hairline, hair colour and texture, skin tone, facial hair, and any visible distinguishing marks (moles, scars, freckles, glasses if present). A friend looking at the result must say "that's clearly them" — not "that looks like a version of them". A change of expression (open mouth, shouting, smiling, eyes wider) is fine AS LONG AS THE UNDERLYING FACE IS UNMISTAKABLY THE SAME PERSON. If you cannot preserve the face exactly, prefer to keep the original face untouched and only re-render the outfit and background around it.
+
+Re-render the photo as a vivid, photorealistic shot of them inside the stadium crowd at a 2026 FIFA World Cup match. They are wearing ${t.jersey}. ${scene.action}. Around them: ${t.fans}. ${scene.detail}. The official FIFA World Cup 2026 LED branding glows on the pitch-side advertising boards. Stadium architecture and crowd extend into the background. ${scene.camera}. Cinematic lighting, vibrant colours, sharp focus on the person, shallow depth of field on the background.${randomSubTheme(modifiers)}`;
         }
         case 'animate':
         default: {
