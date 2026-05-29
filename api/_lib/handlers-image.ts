@@ -44,7 +44,7 @@ const WORLDCUP_TEAMS: Record<string, { name: string; jersey: string; fans: strin
 const DEFAULT_WORLDCUP_TEAM = 'argentina';
 
 // Caricature theme → image generation prompt
-const getCaricaturePrompt = (theme: string, team?: string): string => {
+const getCaricaturePrompt = (theme: string, team?: string, variant?: string): string => {
     const randomSubTheme = (options: string[]) => ` ${options[Math.floor(Math.random() * options.length)]}`;
 
     switch (theme) {
@@ -68,31 +68,31 @@ const getCaricaturePrompt = (theme: string, team?: string): string => {
         }
         case 'rock': {
             // 4 scene variants — 2 punk (basement / pit) and 2 classic rock
-            // (stadium / backstage). One is picked at random per generation
-            // so repeated shots don't all look the same.
-            const scenes = [
-                // Punk #1 — in the pit
+            // (stadium / backstage). Client passes a `variant` ('punk' or
+            // 'classic') so the chosen image and the chosen roast caption
+            // both belong to the same vibe. Falls back to all-four when no
+            // variant is given.
+            const punkScenes = [
                 {
                     label: 'late-70s punk pit',
                     look: 'a black leather jacket plastered with band patches and safety pins, ripped black skinny jeans, scuffed Doc Martens, a torn band t-shirt, and a spiked-up or freshly bleached mohawk haircut. Black eyeliner smudged from sweat',
                     pose: 'mid-shout in the middle of a packed pit, one fist raised, mouth open in a snarl, sweat-soaked',
                     set: 'a tiny dimly-lit basement venue, plaster walls behind them covered in flyers and graffiti, bodies pressed close, low ceiling, single bare bulb overhead casting harsh shadows. Style of London 1977 — Sex Pistols / Clash era — gritty, grainy, photographic',
                 },
-                // Punk #2 — onstage
                 {
                     label: 'punk band onstage',
                     look: 'a battered Gibson SG slung low on a leather strap, a sleeveless ripped band shirt, black jeans, studded belt, snarl curl on the lip, smudged eyeliner, hair lacquered into spikes',
                     pose: 'leaning into a vintage SM58 mic on a boom stand, knees bent, guitar pointed at the audience, mid-roar',
                     set: 'a low basement stage, beer-sticky floor, single red wash from a cheap par can, a chaotic crowd silhouetted at the lip of the stage. Style of CBGB 1978 — gritty, harsh flash, grainy, photographic',
                 },
-                // Classic rock #1 — stadium
+            ];
+            const classicScenes = [
                 {
                     label: 'stadium-rock anthem',
                     look: 'a denim jacket with embroidered band patches over a faded vintage tour t-shirt, tight worn jeans, brown leather boots, hair big and feathered, leather wrist cuff. Aviator sunglasses pushed up on the head',
                     pose: 'fist raised high, head tipped back, mouth open in a triumphant shout, mid-anthem',
                     set: 'a packed open-air stadium late afternoon, golden-hour sunlight, a sea of upraised hands and flickering lighters in the crowd behind them, a massive stage rigged with par cans glowing in the distance. Style of Wembley Live Aid 1985 — warm, cinematic, photographic',
                 },
-                // Classic rock #2 — backstage
                 {
                     label: 'classic-rock backstage',
                     look: 'leather pants, an open silk shirt over a band tee, layered chains and pendants, big tousled 70s rock hair, statement rings on every finger, a Les Paul slung over the shoulder',
@@ -100,7 +100,10 @@ const getCaricaturePrompt = (theme: string, team?: string): string => {
                     set: 'a cluttered backstage dressing room, bulb-lit makeup mirror behind them, setlist taped to the wall, a battered flight case on the floor, beer bottles, hand-towels. Style of Cameron Crowe 1973 — warm tungsten light, slightly grainy, photographic',
                 },
             ];
-            const scene = scenes[Math.floor(Math.random() * scenes.length)];
+            const pool = variant === 'punk' ? punkScenes
+                : variant === 'classic' ? classicScenes
+                : [...punkScenes, ...classicScenes];
+            const scene = pool[Math.floor(Math.random() * pool.length)];
             const modifiers = [
                 'A bit of motion blur on the edges suggests the movement of the moment.',
                 'Faint stage haze drifts in from one side.',
@@ -167,7 +170,7 @@ Re-render the photo as a vivid, photorealistic shot of them inside the stadium c
 };
 
 // Roast caption system prompt per theme
-const getRoastSystemPrompt = (theme: string, team?: string): string => {
+const getRoastSystemPrompt = (theme: string, team?: string, variant?: string): string => {
     const randomVibe = (options: string[]) => ` ${options[Math.floor(Math.random() * options.length)]}`;
 
     switch (theme) {
@@ -190,15 +193,29 @@ const getRoastSystemPrompt = (theme: string, team?: string): string => {
             return `You are a gravelly-voiced, overly-serious movie trailer narrator pitching a gritty, dark action-thriller starring the person in this photo. Based purely on their outfit, expression, or background in the image, invent a hilariously mundane "fatal flaw" or anticlimactic mission for them. Write a short, punchy, cinematic teaser trailer script. Start with an epic overarching statement, followed by the absurd reality of their role. Be funny, slightly roasting, and dramatic. Keep it under 280 characters.${randomVibe(vibes)}`;
         }
         case 'rock': {
+            // The client picks `variant` ('punk' or 'classic') and sends the
+            // SAME value to both the image and the roast call, so the
+            // generated photo and the caption sit on the same side of the
+            // genre line. Default to picking randomly if no variant arrived.
+            const chosen = variant === 'punk' || variant === 'classic'
+                ? variant
+                : (Math.random() < 0.5 ? 'punk' : 'classic');
+            if (chosen === 'punk') {
+                const vibes = [
+                    "Frame it as a snarling NME live-review pull-quote.",
+                    "Mock their commitment to the bit — suburban kid LARPing as Sid Vicious.",
+                    "Imply they only own one Clash record and it's the greatest-hits CD.",
+                    "Roast the pose as something they practised in the bathroom mirror.",
+                ];
+                return `You are a snarling late-70s punk-zine critic — bitter, fast-typing, allergic to pretension. Write a single short caption mocking the person in the photo, who is dressed and posed as a 70s punk (mohawk, leather, patches, basement venue). Voice: sneering, contemptuous, "you wouldn't have lasted one song" energy. STRICT FORMAT: one or two sentences MAX. Under 240 characters. No emoji. No hashtags. No quotes around the line. Do not mention classic rock, stadium rock, or "the 80s" — stay fully in the punk lane.${randomVibe(vibes)}`;
+            }
             const vibes = [
-                "Mock their commitment to the bit — suburban kid LARPing as a rock god.",
-                "Imply they only know two songs from the band on their t-shirt.",
-                "Roast their pose as something they practised in the bathroom mirror.",
-                "Suggest they'd be the first one tapped out after one song.",
-                "Frame it as a Pitchfork mini-review of their entire vibe (4.2 / 10).",
-                "Read them as a snarling NME live-review caption with a pull-quote.",
+                "Frame it as a world-weary 'back in my day' Rolling Stone retrospective line.",
+                "Mock the pose as a try-hard album-cover audition.",
+                "Imply they couldn't name a Zeppelin song that wasn't Stairway.",
+                "Hit them as a Pitchfork mini-review (5.7 / 10, faint praise, fatal damning).",
             ];
-            return `You are a sardonic music critic — half Pitchfork reviewer, half jaded NME live correspondent — writing a single short caption for a posed publicity shot. The person in the image is dressed and posing as either a 70s punk or a stadium-era classic-rock star (it'll be obvious from the photo). Roast them in the appropriate voice: a snarling sneer for punk, a world-weary "back in my day" eye-roll for classic rock. Light to medium roast — they're playing dress-up, not actually hurting anyone. STRICT FORMAT: one or two sentences MAX. Under 240 characters. No emoji. No hashtags. No quotes around the line.${randomVibe(vibes)}`;
+            return `You are a world-weary classic-rock critic — Cameron Crowe written by Lester Bangs after three whiskies. Write a single short caption mocking the person in the photo, who is dressed and posed as a stadium-era classic rock star (denim, leather pants, big hair, Les Paul, golden-hour or backstage). Voice: nostalgic eye-roll, "kid, you wouldn't have made it past the soundcheck" energy. STRICT FORMAT: one or two sentences MAX. Under 240 characters. No emoji. No hashtags. No quotes around the line. Do not mention punk, mohawks, or "the kids today" — stay fully in the classic-rock lane.${randomVibe(vibes)}`;
         }
         case 'agra': {
             const vibes = [
@@ -240,13 +257,13 @@ Keep it under 280 characters.${randomVibe(vibes)}`;
 // Roast caption from image
 // =============================================================================
 
-export const handleGenerateRoast = async (params: { base64Image: string; theme?: string; team?: string }): Promise<string> => {
+export const handleGenerateRoast = async (params: { base64Image: string; theme?: string; team?: string; variant?: string }): Promise<string> => {
     const gemini = await getGemini();
     if (!gemini) return "🔥 ROAST PROTOCOL DISABLED: API Key missing on server.";
-    const { base64Image, theme = 'animate', team } = params;
+    const { base64Image, theme = 'animate', team, variant } = params;
 
     try {
-        const systemPrompt = getRoastSystemPrompt(theme, team);
+        const systemPrompt = getRoastSystemPrompt(theme, team, variant);
         const response = await gemini.models.generateContent({
             model: TEXT_MODEL,
             contents: {
@@ -267,15 +284,15 @@ export const handleGenerateRoast = async (params: { base64Image: string; theme?:
 // Caricature image edit (image in → image out)
 // =============================================================================
 
-export const handleEditImage = async (params: { base64Image: string; theme?: string; team?: string; prompt?: string }): Promise<string | null> => {
+export const handleEditImage = async (params: { base64Image: string; theme?: string; team?: string; variant?: string; prompt?: string }): Promise<string | null> => {
     const gemini = await getGemini();
     if (!gemini) return null;
-    const { base64Image, theme, team, prompt } = params;
+    const { base64Image, theme, team, variant, prompt } = params;
 
     // Allow either an explicit prompt or a theme key. Theme takes precedence if
     // both are given (themes drive the existing UI flow). `team` only matters
-    // for the worldcup theme.
-    const effectivePrompt = theme ? getCaricaturePrompt(theme, team) : (prompt || getCaricaturePrompt('animate'));
+    // for the worldcup theme; `variant` only for the rock theme.
+    const effectivePrompt = theme ? getCaricaturePrompt(theme, team, variant) : (prompt || getCaricaturePrompt('animate'));
 
     try {
         const response = await gemini.models.generateContent({
