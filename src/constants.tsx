@@ -5,6 +5,14 @@ import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Use
 export const GAMES: GameMeta[] = [
     // --- Play Now (ranked) ---
     {
+        id: GameType.ROAST,
+        title: "Roast Me",
+        description: "Upload a pic for a brutal AI roast!",
+        icon: "flame",
+        color: "bg-orange-600",
+        minPlayers: 1
+    },
+    {
         id: GameType.MOST_LIKELY_TO,
         title: "Most Likely To...",
         description: "Point fingers & expose friends!",
@@ -58,14 +66,6 @@ export const GAMES: GameMeta[] = [
         description: "Find the word that connects all three.",
         icon: "link",
         color: "bg-indigo-500",
-        minPlayers: 1
-    },
-    {
-        id: GameType.ROAST,
-        title: "Roast Me",
-        description: "Upload a pic for a brutal AI roast!",
-        icon: "flame",
-        color: "bg-orange-600",
         minPlayers: 1
     },
     {
