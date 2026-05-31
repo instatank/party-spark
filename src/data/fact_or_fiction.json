@@ -2308,6 +2308,48 @@
           "text": "Mexico has hosted the men's FIFA World Cup more than once.",
           "isFact": true,
           "explanation": "Fact: Mexico hosted the tournament in 1970 and 1986, and is a co-host again in 2026."
+        },
+        {
+          "id": "fwc_076",
+          "difficultyLevel": 10,
+          "text": "Scotland were eliminated from the 1974 World Cup without losing a match.",
+          "isFact": true,
+          "explanation": "Fact: Scotland beat Zaire and drew with Brazil and Yugoslavia, but went out on goal difference."
+        },
+        {
+          "id": "fwc_081",
+          "difficultyLevel": 10,
+          "text": "The 1974 World Cup was the first to use the current trophy design.",
+          "isFact": true,
+          "explanation": "Fact: The current FIFA World Cup Trophy debuted in 1974 after Brazil kept the Jules Rimet Trophy."
+        },
+        {
+          "id": "fwc_082",
+          "difficultyLevel": 10,
+          "text": "A team once won the World Cup after scoring only eight goals in the tournament.",
+          "isFact": true,
+          "explanation": "Fact: Spain won the 2010 World Cup while scoring only eight goals in seven matches."
+        },
+        {
+          "id": "fwc_083",
+          "difficultyLevel": 10,
+          "text": "Spain won every knockout match at the 2010 World Cup by the same scoreline.",
+          "isFact": true,
+          "explanation": "Fact: Spain won all four knockout matches in 2010 by 1-0."
+        },
+        {
+          "id": "fwc_084",
+          "difficultyLevel": 10,
+          "text": "The first World Cup final used the same ball for both halves.",
+          "isFact": false,
+          "explanation": "Fiction: The 1930 final used Argentina's ball in the first half and Uruguay's ball in the second."
+        },
+        {
+          "id": "fwc_085",
+          "difficultyLevel": 10,
+          "text": "A defending champion has been eliminated from the next World Cup group stage.",
+          "isFact": true,
+          "explanation": "Fact: Several defending champions have gone out in the group stage, including France in 2002, Italy in 2010, Spain in 2014, and Germany in 2018."
         }
       ]
     }
