@@ -1779,6 +1779,537 @@
           "difficultyLevel": 8
         }
       ]
+    },
+    {
+      "id": "fifa_world_cup_football",
+      "name": "FIFA World Cup Football",
+      "questions": [
+        {
+          "id": "fwc_001",
+          "difficultyLevel": 1,
+          "text": "The FIFA World Cup is contested by national teams, not clubs.",
+          "isFact": true,
+          "explanation": "Fact: The men's FIFA World Cup is played by national teams representing their countries."
+        },
+        {
+          "id": "fwc_002",
+          "difficultyLevel": 1,
+          "text": "The first FIFA World Cup was held in Uruguay.",
+          "isFact": true,
+          "explanation": "Fact: Uruguay hosted the first FIFA World Cup in 1930 and also won it."
+        },
+        {
+          "id": "fwc_003",
+          "difficultyLevel": 1,
+          "text": "The World Cup final is played over two legs.",
+          "isFact": false,
+          "explanation": "Fiction: The World Cup final is a single match."
+        },
+        {
+          "id": "fwc_004",
+          "difficultyLevel": 1,
+          "text": "A World Cup group-stage match can end in a draw.",
+          "isFact": true,
+          "explanation": "Fact: Group-stage matches can finish level, with each team receiving one point."
+        },
+        {
+          "id": "fwc_005",
+          "difficultyLevel": 1,
+          "text": "A team must win every match to win the World Cup.",
+          "isFact": false,
+          "explanation": "Fiction: Teams can draw or even lose earlier matches and still win the tournament."
+        },
+        {
+          "id": "fwc_006",
+          "difficultyLevel": 2,
+          "text": "The World Cup has always been played every four years without interruption.",
+          "isFact": false,
+          "explanation": "Fiction: The 1942 and 1946 tournaments were cancelled because of World War II."
+        },
+        {
+          "id": "fwc_007",
+          "difficultyLevel": 2,
+          "text": "Brazil has won more men's World Cups than any other country.",
+          "isFact": true,
+          "explanation": "Fact: Brazil have won the men's FIFA World Cup five times."
+        },
+        {
+          "id": "fwc_008",
+          "difficultyLevel": 2,
+          "text": "Only European teams have ever won the men's FIFA World Cup.",
+          "isFact": false,
+          "explanation": "Fiction: South American teams such as Brazil, Argentina, and Uruguay have won it."
+        },
+        {
+          "id": "fwc_009",
+          "difficultyLevel": 2,
+          "text": "The host nation automatically qualifies for the World Cup.",
+          "isFact": true,
+          "explanation": "Fact: The host nation receives automatic qualification for the tournament."
+        },
+        {
+          "id": "fwc_010",
+          "difficultyLevel": 2,
+          "text": "Argentina won the 2022 FIFA World Cup.",
+          "isFact": true,
+          "explanation": "Fact: Argentina beat France in the 2022 final in Qatar."
+        },
+        {
+          "id": "fwc_011",
+          "difficultyLevel": 2,
+          "text": "The 2022 World Cup was played during the usual June-July window.",
+          "isFact": false,
+          "explanation": "Fiction: Qatar 2022 was played in November and December."
+        },
+        {
+          "id": "fwc_012",
+          "difficultyLevel": 2,
+          "text": "Penalty shoot-outs can decide World Cup knockout matches.",
+          "isFact": true,
+          "explanation": "Fact: Knockout matches tied after extra time can be decided by penalties."
+        },
+        {
+          "id": "fwc_013",
+          "difficultyLevel": 3,
+          "text": "The winner keeps the original World Cup trophy forever.",
+          "isFact": false,
+          "explanation": "Fiction: Winners receive the trophy temporarily and are given a replica to keep."
+        },
+        {
+          "id": "fwc_014",
+          "difficultyLevel": 3,
+          "text": "South Africa hosted the first World Cup on African soil.",
+          "isFact": true,
+          "explanation": "Fact: South Africa 2010 was the first men's FIFA World Cup hosted in Africa."
+        },
+        {
+          "id": "fwc_015",
+          "difficultyLevel": 3,
+          "text": "Qatar hosted the first World Cup held in the Middle East.",
+          "isFact": true,
+          "explanation": "Fact: Qatar 2022 was the first men's FIFA World Cup held in the Middle East."
+        },
+        {
+          "id": "fwc_016",
+          "difficultyLevel": 3,
+          "text": "The 2026 World Cup will have 48 teams.",
+          "isFact": true,
+          "explanation": "Fact: The 2026 men's World Cup expands from 32 to 48 teams."
+        },
+        {
+          "id": "fwc_017",
+          "difficultyLevel": 3,
+          "text": "The 2026 World Cup will be hosted by two countries.",
+          "isFact": false,
+          "explanation": "Fiction: It will be hosted by Canada, Mexico, and the United States."
+        },
+        {
+          "id": "fwc_018",
+          "difficultyLevel": 3,
+          "text": "Brazil has missed at least one men's World Cup.",
+          "isFact": false,
+          "explanation": "Fiction: Brazil have appeared in every men's FIFA World Cup through 2022."
+        },
+        {
+          "id": "fwc_019",
+          "difficultyLevel": 3,
+          "text": "Morocco was the first African team to reach a men's World Cup semi-final.",
+          "isFact": true,
+          "explanation": "Fact: Morocco reached the semi-finals at Qatar 2022."
+        },
+        {
+          "id": "fwc_020",
+          "difficultyLevel": 3,
+          "text": "A red card means the player can be replaced immediately.",
+          "isFact": false,
+          "explanation": "Fiction: A sent-off player cannot be replaced during the match."
+        },
+        {
+          "id": "fwc_021",
+          "difficultyLevel": 3,
+          "text": "The World Cup includes a group stage before knockouts.",
+          "isFact": true,
+          "explanation": "Fact: Modern World Cups use a group phase followed by knockout rounds."
+        },
+        {
+          "id": "fwc_022",
+          "difficultyLevel": 3,
+          "text": "England has won the men's World Cup more than once.",
+          "isFact": false,
+          "explanation": "Fiction: England's only men's World Cup title came in 1966."
+        },
+        {
+          "id": "fwc_023",
+          "difficultyLevel": 3,
+          "text": "Pele won three men's World Cups as a player.",
+          "isFact": true,
+          "explanation": "Fact: Pele was part of Brazil's winning squads in 1958, 1962, and 1970."
+        },
+        {
+          "id": "fwc_024",
+          "difficultyLevel": 3,
+          "text": "The first World Cup final was played between Uruguay and Argentina.",
+          "isFact": true,
+          "explanation": "Fact: Uruguay beat Argentina 4-2 in the 1930 final."
+        },
+        {
+          "id": "fwc_025",
+          "difficultyLevel": 3,
+          "text": "The World Cup final has always avoided penalty shoot-outs.",
+          "isFact": false,
+          "explanation": "Fiction: The 1994 final was decided by a penalty shoot-out."
+        },
+        {
+          "id": "fwc_026",
+          "difficultyLevel": 4,
+          "text": "The 1950 World Cup did not have a traditional one-match final.",
+          "isFact": true,
+          "explanation": "Fact: The champion was decided through a final round-robin group."
+        },
+        {
+          "id": "fwc_027",
+          "difficultyLevel": 4,
+          "text": "The first World Cup penalty shoot-out happened before the 1980s.",
+          "isFact": false,
+          "explanation": "Fiction: The first World Cup penalty shoot-out was West Germany vs France in 1982."
+        },
+        {
+          "id": "fwc_028",
+          "difficultyLevel": 4,
+          "text": "The 1998 World Cup was the first men's edition with 32 teams.",
+          "isFact": true,
+          "explanation": "Fact: France 1998 expanded the tournament to 32 teams."
+        },
+        {
+          "id": "fwc_029",
+          "difficultyLevel": 4,
+          "text": "The 1970 World Cup introduced yellow and red cards.",
+          "isFact": true,
+          "explanation": "Fact: The yellow and red card system was introduced at Mexico 1970."
+        },
+        {
+          "id": "fwc_030",
+          "difficultyLevel": 4,
+          "text": "The first physical red card at a World Cup was shown in 1970.",
+          "isFact": false,
+          "explanation": "Fiction: The card system began in 1970, but the first physical red card came in 1974."
+        },
+        {
+          "id": "fwc_031",
+          "difficultyLevel": 5,
+          "text": "The World Cup trophy was once found by a dog.",
+          "isFact": true,
+          "explanation": "Fact: The stolen Jules Rimet Trophy was found in 1966 by a dog named Pickles."
+        },
+        {
+          "id": "fwc_032",
+          "difficultyLevel": 5,
+          "text": "The original Jules Rimet Trophy is still displayed at FIFA headquarters.",
+          "isFact": false,
+          "explanation": "Fiction: It was stolen in Brazil in 1983 and has never been recovered."
+        },
+        {
+          "id": "fwc_033",
+          "difficultyLevel": 5,
+          "text": "The current FIFA World Cup Trophy replaced the Jules Rimet Trophy after 1970.",
+          "isFact": true,
+          "explanation": "Fact: The current trophy was introduced after Brazil kept the Jules Rimet Trophy permanently."
+        },
+        {
+          "id": "fwc_034",
+          "difficultyLevel": 5,
+          "text": "The Jules Rimet Trophy was stolen twice.",
+          "isFact": true,
+          "explanation": "Fact: It was stolen in England in 1966 and again in Brazil in 1983."
+        },
+        {
+          "id": "fwc_035",
+          "difficultyLevel": 5,
+          "text": "The original Jules Rimet Trophy was recovered after its 1983 theft.",
+          "isFact": false,
+          "explanation": "Fiction: It was stolen in Brazil in 1983 and has never been recovered."
+        },
+        {
+          "id": "fwc_036",
+          "difficultyLevel": 5,
+          "text": "The black-and-white Telstar ball was designed partly for television visibility.",
+          "isFact": true,
+          "explanation": "Fact: Its design helped the ball stand out on black-and-white television."
+        },
+        {
+          "id": "fwc_037",
+          "difficultyLevel": 5,
+          "text": "The 1970 World Cup used the first adidas World Cup match ball.",
+          "isFact": true,
+          "explanation": "Fact: The adidas Telstar debuted at Mexico 1970."
+        },
+        {
+          "id": "fwc_038",
+          "difficultyLevel": 6,
+          "text": "Miroslav Klose is the top scorer in men's World Cup history.",
+          "isFact": true,
+          "explanation": "Fact: Klose scored 16 World Cup goals for Germany."
+        },
+        {
+          "id": "fwc_039",
+          "difficultyLevel": 6,
+          "text": "Ronaldo Nazario scored more World Cup goals than Miroslav Klose.",
+          "isFact": false,
+          "explanation": "Fiction: Ronaldo scored 15; Klose holds the men's record with 16."
+        },
+        {
+          "id": "fwc_040",
+          "difficultyLevel": 6,
+          "text": "Just Fontaine scored all his World Cup goals in one tournament.",
+          "isFact": true,
+          "explanation": "Fact: Fontaine scored 13 goals at the 1958 World Cup."
+        },
+        {
+          "id": "fwc_041",
+          "difficultyLevel": 6,
+          "text": "No player has scored more than ten goals in a single men's World Cup.",
+          "isFact": false,
+          "explanation": "Fiction: Just Fontaine scored 13 goals in 1958."
+        },
+        {
+          "id": "fwc_042",
+          "difficultyLevel": 6,
+          "text": "Pele scored in a World Cup final before turning 18.",
+          "isFact": true,
+          "explanation": "Fact: Pele scored in the 1958 final as a 17-year-old."
+        },
+        {
+          "id": "fwc_043",
+          "difficultyLevel": 6,
+          "text": "A player has scored five goals in one men's World Cup match.",
+          "isFact": true,
+          "explanation": "Fact: Oleg Salenko scored five for Russia against Cameroon in 1994."
+        },
+        {
+          "id": "fwc_044",
+          "difficultyLevel": 6,
+          "text": "The most goals by one player in a World Cup match is four.",
+          "isFact": false,
+          "explanation": "Fiction: Oleg Salenko scored five in one match in 1994."
+        },
+        {
+          "id": "fwc_045",
+          "difficultyLevel": 7,
+          "text": "Roger Milla scored at a men's World Cup after turning 40.",
+          "isFact": true,
+          "explanation": "Fact: Milla scored for Cameroon at age 42 in 1994."
+        },
+        {
+          "id": "fwc_046",
+          "difficultyLevel": 7,
+          "text": "Lionel Messi has more men's World Cup appearances than any other player.",
+          "isFact": true,
+          "explanation": "Fact: Messi reached 26 men's World Cup appearances."
+        },
+        {
+          "id": "fwc_047",
+          "difficultyLevel": 7,
+          "text": "The World Cup Golden Boot always goes to a player from the winning team.",
+          "isFact": false,
+          "explanation": "Fiction: The top scorer often comes from another team."
+        },
+        {
+          "id": "fwc_048",
+          "difficultyLevel": 7,
+          "text": "France won their first men's World Cup before Brazil won their first.",
+          "isFact": false,
+          "explanation": "Fiction: Brazil first won in 1958; France first won in 1998."
+        },
+        {
+          "id": "fwc_049",
+          "difficultyLevel": 7,
+          "text": "A World Cup final has ended goalless after extra time.",
+          "isFact": true,
+          "explanation": "Fact: Brazil vs Italy in 1994 finished 0-0 after extra time."
+        },
+        {
+          "id": "fwc_050",
+          "difficultyLevel": 7,
+          "text": "Germany has played in a men's World Cup final decided by penalties.",
+          "isFact": false,
+          "explanation": "Fiction: Germany's men's World Cup finals have not been decided by penalty shoot-outs."
+        },
+        {
+          "id": "fwc_051",
+          "difficultyLevel": 8,
+          "text": "The 1930 World Cup had no qualification tournament.",
+          "isFact": true,
+          "explanation": "Fact: The first World Cup was invitation-based rather than qualification-based."
+        },
+        {
+          "id": "fwc_052",
+          "difficultyLevel": 8,
+          "text": "All 1930 World Cup matches were played in one city.",
+          "isFact": true,
+          "explanation": "Fact: All matches at the 1930 World Cup were played in Montevideo."
+        },
+        {
+          "id": "fwc_053",
+          "difficultyLevel": 8,
+          "text": "The 1954 World Cup had a match with twelve total goals.",
+          "isFact": true,
+          "explanation": "Fact: Austria beat Switzerland 7-5 in 1954."
+        },
+        {
+          "id": "fwc_054",
+          "difficultyLevel": 8,
+          "text": "Austria beat Switzerland 7-4 in the highest-scoring World Cup match.",
+          "isFact": false,
+          "explanation": "Fiction: The match finished 7-5, with twelve total goals."
+        },
+        {
+          "id": "fwc_055",
+          "difficultyLevel": 8,
+          "text": "The fastest World Cup goal came after less than twenty seconds.",
+          "isFact": true,
+          "explanation": "Fact: Hakan Sukur scored after about 11 seconds in 2002."
+        },
+        {
+          "id": "fwc_056",
+          "difficultyLevel": 8,
+          "text": "The fastest World Cup goal was scored in a final.",
+          "isFact": false,
+          "explanation": "Fiction: Hakan Sukur scored it in the 2002 third-place match."
+        },
+        {
+          "id": "fwc_057",
+          "difficultyLevel": 8,
+          "text": "A World Cup final hat-trick has happened more than once.",
+          "isFact": true,
+          "explanation": "Fact: Geoff Hurst did it in 1966 and Kylian Mbappe did it in 2022."
+        },
+        {
+          "id": "fwc_058",
+          "difficultyLevel": 8,
+          "text": "Kylian Mbappe was the first player to score a World Cup final hat-trick.",
+          "isFact": false,
+          "explanation": "Fiction: Geoff Hurst scored a World Cup final hat-trick in 1966."
+        },
+        {
+          "id": "fwc_059",
+          "difficultyLevel": 8,
+          "text": "Spain won the 2010 World Cup after losing their opening match.",
+          "isFact": true,
+          "explanation": "Fact: Spain lost to Switzerland in their opener and still won the tournament."
+        },
+        {
+          "id": "fwc_060",
+          "difficultyLevel": 8,
+          "text": "Spain conceded a goal in the 2010 World Cup knockout stage.",
+          "isFact": false,
+          "explanation": "Fiction: Spain kept clean sheets in all four knockout matches in 2010."
+        },
+        {
+          "id": "fwc_061",
+          "difficultyLevel": 9,
+          "text": "Italy once won the World Cup as host nation.",
+          "isFact": true,
+          "explanation": "Fact: Italy hosted and won the 1934 World Cup."
+        },
+        {
+          "id": "fwc_062",
+          "difficultyLevel": 9,
+          "text": "England won the World Cup before ever hosting it.",
+          "isFact": false,
+          "explanation": "Fiction: England won their only title as hosts in 1966."
+        },
+        {
+          "id": "fwc_063",
+          "difficultyLevel": 9,
+          "text": "A goalkeeper has been sent off in a World Cup match.",
+          "isFact": true,
+          "explanation": "Fact: Italy's Gianluca Pagliuca was sent off at the 1994 World Cup."
+        },
+        {
+          "id": "fwc_064",
+          "difficultyLevel": 9,
+          "text": "The first physical World Cup red card was shown to a goalkeeper.",
+          "isFact": false,
+          "explanation": "Fiction: Carlos Caszely of Chile received the first physical World Cup red card in 1974."
+        },
+        {
+          "id": "fwc_065",
+          "difficultyLevel": 9,
+          "text": "The first World Cup sending-off happened before red cards existed.",
+          "isFact": true,
+          "explanation": "Fact: Players were sent off before the physical red-card system was introduced."
+        },
+        {
+          "id": "fwc_066",
+          "difficultyLevel": 9,
+          "text": "Carlos Caszely received the first physical red card in World Cup history.",
+          "isFact": true,
+          "explanation": "Fact: Caszely was sent off for Chile against West Germany in 1974."
+        },
+        {
+          "id": "fwc_067",
+          "difficultyLevel": 9,
+          "text": "The 1994 World Cup final was played indoors.",
+          "isFact": false,
+          "explanation": "Fiction: It was played outdoors at the Rose Bowl in Pasadena."
+        },
+        {
+          "id": "fwc_068",
+          "difficultyLevel": 9,
+          "text": "India has played at the men's FIFA World Cup.",
+          "isFact": false,
+          "explanation": "Fiction: India qualified by default for 1950 but withdrew and has never played in the tournament."
+        },
+        {
+          "id": "fwc_069",
+          "difficultyLevel": 10,
+          "text": "Brazil has won a men's World Cup hosted in Europe.",
+          "isFact": true,
+          "explanation": "Fact: Brazil won the 1958 World Cup in Sweden."
+        },
+        {
+          "id": "fwc_070",
+          "difficultyLevel": 10,
+          "text": "No South American team has won a men's World Cup hosted in Europe.",
+          "isFact": false,
+          "explanation": "Fiction: Brazil won the 1958 World Cup in Sweden."
+        },
+        {
+          "id": "fwc_071",
+          "difficultyLevel": 10,
+          "text": "Brazil only needed a draw in their final 1950 match to become champions.",
+          "isFact": true,
+          "explanation": "Fact: Brazil would have won the 1950 title by avoiding defeat against Uruguay."
+        },
+        {
+          "id": "fwc_072",
+          "difficultyLevel": 10,
+          "text": "Uruguay needed only a draw against Brazil in 1950 to become champions.",
+          "isFact": false,
+          "explanation": "Fiction: Uruguay had to beat Brazil in the decisive 1950 match, which they did."
+        },
+        {
+          "id": "fwc_073",
+          "difficultyLevel": 10,
+          "text": "The World Cup has been won by a host nation more than once.",
+          "isFact": true,
+          "explanation": "Fact: Host winners include Uruguay, Italy, England, Argentina, and France."
+        },
+        {
+          "id": "fwc_074",
+          "difficultyLevel": 10,
+          "text": "Every men's World Cup host has reached at least the semi-finals.",
+          "isFact": false,
+          "explanation": "Fiction: Several hosts have failed to reach the semi-finals."
+        },
+        {
+          "id": "fwc_075",
+          "difficultyLevel": 10,
+          "text": "Mexico has hosted the men's FIFA World Cup more than once.",
+          "isFact": true,
+          "explanation": "Fact: Mexico hosted the tournament in 1970 and 1986, and is a co-host again in 2026."
+        }
+      ]
     }
   ]
 }
