@@ -3181,6 +3181,486 @@
                 "Storm"
               ],
               "difficulty": "easy"
+            },
+            {
+              "word": "Beach",
+              "forbidden": [
+                "Sand",
+                "Sea",
+                "Waves",
+                "Vacation",
+                "Swim"
+              ]
+            },
+            {
+              "word": "Birthday",
+              "forbidden": [
+                "Cake",
+                "Candles",
+                "Party",
+                "Presents",
+                "Age"
+              ]
+            },
+            {
+              "word": "Airport",
+              "forbidden": [
+                "Plane",
+                "Flight",
+                "Luggage",
+                "Passport",
+                "Security"
+              ]
+            },
+            {
+              "word": "Doctor",
+              "forbidden": [
+                "Hospital",
+                "Patient",
+                "Medicine",
+                "Sick",
+                "Nurse"
+              ]
+            },
+            {
+              "word": "Toothbrush",
+              "forbidden": [
+                "Teeth",
+                "Paste",
+                "Morning",
+                "Clean",
+                "Bathroom"
+              ]
+            },
+            {
+              "word": "Chocolate",
+              "forbidden": [
+                "Sweet",
+                "Candy",
+                "Brown",
+                "Bar",
+                "Dessert"
+              ]
+            },
+            {
+              "word": "Football",
+              "forbidden": [
+                "Goal",
+                "Kick",
+                "Team",
+                "Match",
+                "Sport"
+              ]
+            },
+            {
+              "word": "Movie",
+              "forbidden": [
+                "Cinema",
+                "Actor",
+                "Screen",
+                "Popcorn",
+                "Film"
+              ]
+            },
+            {
+              "word": "Sofa",
+              "forbidden": [
+                "Sit",
+                "Couch",
+                "Living Room",
+                "Furniture",
+                "Cushion"
+              ]
+            },
+            {
+              "word": "Ice Cream",
+              "forbidden": [
+                "Cold",
+                "Cone",
+                "Dessert",
+                "Flavor",
+                "Scoop"
+              ]
+            },
+            {
+              "word": "Metro",
+              "forbidden": [
+                "Underground",
+                "Station",
+                "Rail",
+                "Commute",
+                "City"
+              ]
+            },
+            {
+              "word": "Shoes",
+              "forbidden": [
+                "Feet",
+                "Wear",
+                "Socks",
+                "Walk",
+                "Laces"
+              ]
+            },
+            {
+              "word": "Kitchen",
+              "forbidden": [
+                "Cooking",
+                "Food",
+                "Stove",
+                "Fridge",
+                "Utensils"
+              ]
+            },
+            {
+              "word": "Garden",
+              "forbidden": [
+                "Plants",
+                "Flowers",
+                "Grass",
+                "Soil",
+                "Watering"
+              ]
+            },
+            {
+              "word": "Baby",
+              "forbidden": [
+                "Child",
+                "Cry",
+                "Diaper",
+                "Small",
+                "Newborn"
+              ]
+            },
+            {
+              "word": "Library",
+              "forbidden": [
+                "Books",
+                "Quiet",
+                "Reading",
+                "Shelves",
+                "Borrow"
+              ]
+            },
+            {
+              "word": "Candle",
+              "forbidden": [
+                "Flame",
+                "Wax",
+                "Light",
+                "Birthday",
+                "Burn"
+              ]
+            },
+            {
+              "word": "Bicycle",
+              "forbidden": [
+                "Pedals",
+                "Wheels",
+                "Ride",
+                "Handlebar",
+                "Cycle"
+              ]
+            },
+            {
+              "word": "Hospital",
+              "forbidden": [
+                "Doctor",
+                "Nurse",
+                "Patient",
+                "Sick",
+                "Medicine"
+              ]
+            },
+            {
+              "word": "Restaurant",
+              "forbidden": [
+                "Food",
+                "Menu",
+                "Waiter",
+                "Order",
+                "Bill"
+              ]
+            },
+            {
+              "word": "Sandwich",
+              "forbidden": [
+                "Bread",
+                "Filling",
+                "Lunch",
+                "Cheese",
+                "Toast"
+              ]
+            },
+            {
+              "word": "Laptop",
+              "forbidden": [
+                "Computer",
+                "Keyboard",
+                "Screen",
+                "Work",
+                "Mouse"
+              ]
+            },
+            {
+              "word": "Bus",
+              "forbidden": [
+                "Stop",
+                "Passengers",
+                "Driver",
+                "Ticket",
+                "Transport"
+              ]
+            },
+            {
+              "word": "Park",
+              "forbidden": [
+                "Grass",
+                "Trees",
+                "Playground",
+                "Walk",
+                "Bench"
+              ]
+            },
+            {
+              "word": "Sunglasses",
+              "forbidden": [
+                "Eyes",
+                "Sun",
+                "Dark",
+                "Wear",
+                "Beach"
+              ]
+            },
+            {
+              "word": "Mirror",
+              "forbidden": [
+                "Reflection",
+                "Face",
+                "Glass",
+                "Look",
+                "Bathroom"
+              ]
+            },
+            {
+              "word": "Keyboard",
+              "forbidden": [
+                "Typing",
+                "Computer",
+                "Buttons",
+                "Letters",
+                "Laptop"
+              ]
+            },
+            {
+              "word": "Popcorn",
+              "forbidden": [
+                "Movie",
+                "Cinema",
+                "Snack",
+                "Butter",
+                "Corn"
+              ]
+            },
+            {
+              "word": "Cake",
+              "forbidden": [
+                "Birthday",
+                "Sweet",
+                "Candles",
+                "Dessert",
+                "Bake"
+              ]
+            },
+            {
+              "word": "Doorbell",
+              "forbidden": [
+                "Ring",
+                "House",
+                "Visitor",
+                "Press",
+                "Entrance"
+              ]
+            },
+            {
+              "word": "Balcony",
+              "forbidden": [
+                "Outside",
+                "Apartment",
+                "View",
+                "Railing",
+                "Sit"
+              ]
+            },
+            {
+              "word": "Lunchbox",
+              "forbidden": [
+                "School",
+                "Food",
+                "Container",
+                "Meal",
+                "Tiffin"
+              ]
+            },
+            {
+              "word": "Balloon",
+              "forbidden": [
+                "Air",
+                "Party",
+                "Float",
+                "Pop",
+                "Birthday"
+              ]
+            },
+            {
+              "word": "Pencil Case",
+              "forbidden": [
+                "School",
+                "Stationery",
+                "Pen",
+                "Eraser",
+                "Zip"
+              ]
+            },
+            {
+              "word": "Towel",
+              "forbidden": [
+                "Dry",
+                "Bath",
+                "Wet",
+                "Cloth",
+                "Bathroom"
+              ]
+            },
+            {
+              "word": "Mug",
+              "forbidden": [
+                "Drink",
+                "Tea",
+                "Coffee",
+                "Handle",
+                "Ceramic"
+              ]
+            },
+            {
+              "word": "Fan",
+              "forbidden": [
+                "Air",
+                "Cool",
+                "Ceiling",
+                "Blades",
+                "Summer"
+              ]
+            },
+            {
+              "word": "Bread",
+              "forbidden": [
+                "Toast",
+                "Sandwich",
+                "Butter",
+                "Bakery",
+                "Slice"
+              ]
+            },
+            {
+              "word": "Rice",
+              "forbidden": [
+                "White",
+                "Grain",
+                "Food",
+                "Curry",
+                "Bowl"
+              ]
+            },
+            {
+              "word": "Potato",
+              "forbidden": [
+                "Vegetable",
+                "Fries",
+                "Chips",
+                "Mash",
+                "Brown"
+              ]
+            },
+            {
+              "word": "Tomato",
+              "forbidden": [
+                "Red",
+                "Vegetable",
+                "Ketchup",
+                "Salad",
+                "Sauce"
+              ]
+            },
+            {
+              "word": "Onion",
+              "forbidden": [
+                "Vegetable",
+                "Tears",
+                "Cut",
+                "Layers",
+                "Kitchen"
+              ]
+            },
+            {
+              "word": "Mango",
+              "forbidden": [
+                "Fruit",
+                "Summer",
+                "Yellow",
+                "King",
+                "Sweet"
+              ]
+            },
+            {
+              "word": "Coconut",
+              "forbidden": [
+                "Water",
+                "Shell",
+                "Tree",
+                "Tropical",
+                "Brown"
+              ]
+            },
+            {
+              "word": "Butterfly",
+              "forbidden": [
+                "Wings",
+                "Insect",
+                "Colorful",
+                "Caterpillar",
+                "Fly"
+              ]
+            },
+            {
+              "word": "Ant",
+              "forbidden": [
+                "Insect",
+                "Small",
+                "Colony",
+                "Bite",
+                "Sugar"
+              ]
+            },
+            {
+              "word": "Glue",
+              "forbidden": [
+                "Stick",
+                "Paste",
+                "Paper",
+                "Craft",
+                "Sticky"
+              ]
+            },
+            {
+              "word": "Trash Can",
+              "forbidden": [
+                "Garbage",
+                "Waste",
+                "Throw",
+                "Bin",
+                "Dirty"
+              ]
             }
           ]
         },
