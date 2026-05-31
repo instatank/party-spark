@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
-import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Atom, Lightbulb, Medal, Landmark, Brain, Goal } from 'lucide-react';
+import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Atom, Lightbulb, Medal, Landmark, Brain } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import factData from '../../data/fact_or_fiction.json';
@@ -27,13 +27,15 @@ const MAX_STRIKES = 3;
 
 // Per-topic Slim Row metadata (icon + accent + one-line tagline), keyed by the
 // category id in fact_or_fiction.json. Unknown ids fall back to a neutral pill.
-const TOPIC_META: Record<string, { tagline: string; color: string; Icon: LucideIcon }> = {
+// Each topic gets EITHER a lucide Icon component OR a plain emoji glyph
+// (Lucide doesn't ship a soccer-ball, so the football category renders ⚽).
+const TOPIC_META: Record<string, { tagline: string; color: string; Icon?: LucideIcon; emoji?: string }> = {
     animal_kingdom:    { tagline: 'Creatures, instincts, oddities.',  color: '#22C55E', Icon: PawPrint },
     science:           { tagline: 'Physics, space, the very small.',  color: '#6366F1', Icon: Atom },
     general_knowledge: { tagline: 'A bit of everything — stay sharp.', color: '#F59E0B', Icon: Lightbulb },
     sports:            { tagline: 'Records, rules, legends.',         color: '#EF4444', Icon: Medal },
     history:           { tagline: 'Empires, firsts, turning points.', color: '#A855F7', Icon: Landmark },
-    fifa_world_cup_football: { tagline: 'Goals, glory, golden boots.', color: '#1E40AF', Icon: Goal },
+    fifa_world_cup_football: { tagline: 'Goals, glory, golden boots.', color: '#1E40AF', emoji: '⚽' },
 };
 const TOPIC_DEFAULT = { color: '#EC4899', Icon: Brain };
 
@@ -255,7 +257,8 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                         {categories.map(cat => {
                             const meta = TOPIC_META[cat.id];
                             const color = meta?.color ?? TOPIC_DEFAULT.color;
-                            const Icon = meta?.Icon ?? TOPIC_DEFAULT.Icon;
+                            const Icon = meta?.Icon ?? (meta?.emoji ? undefined : TOPIC_DEFAULT.Icon);
+                            const emoji = meta?.emoji;
                             const tagline = meta?.tagline ?? `${cat.questions.length} questions`;
                             return (
                                 <button
@@ -267,7 +270,9 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                                         <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]" style={{ background: color }} />
                                         <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]" style={{ background: color }} />
                                         <div className="flex items-center gap-3">
-                                            <span className="flex-shrink-0" style={{ color }}><Icon size={16} /></span>
+                                            <span className="flex-shrink-0 text-base leading-none" style={{ color }}>
+                                                {emoji ?? (Icon && <Icon size={16} />)}
+                                            </span>
                                             <div className="flex-1 min-w-0">
                                                 <h3 className="text-base font-bold text-ink leading-tight">{cat.name}</h3>
                                                 <p className="text-xs text-muted leading-snug truncate">{tagline}</p>
