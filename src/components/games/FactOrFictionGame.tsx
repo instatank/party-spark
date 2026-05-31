@@ -117,17 +117,22 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
     // Subsequent calls fall back to reading state, which is up-to-date.
     const loadNextQuestion = (questionsPool: Question[], currentDiff: number, categoryIdOverride?: string) => {
         const categoryId = categoryIdOverride ?? selectedCategory?.id;
-        // Try to find a question matching exact difficulty
-        const exactMatches = questionsPool.filter(q => q.difficultyLevel === currentDiff);
-        
-        let poolToDrawFrom = exactMatches;
-        
-        // If we ran out of exact difficulty questions, just take any remaining closest difficulty
+        // Try to find a question matching exact difficulty.
+        let poolToDrawFrom = questionsPool.filter(q => q.difficultyLevel === currentDiff);
+
+        // True cascade: if the exact level is dry, step DOWN one level at a
+        // time until we find a level that still has questions. So a player
+        // who clears all L10 sees L9 next, then L8, etc. — not a flat-random
+        // mix across all lower levels.
         if (poolToDrawFrom.length === 0) {
-            poolToDrawFrom = questionsPool.filter(q => q.difficultyLevel <= currentDiff);
+            for (let d = currentDiff - 1; d >= 1; d--) {
+                const atLevel = questionsPool.filter(q => q.difficultyLevel === d);
+                if (atLevel.length > 0) { poolToDrawFrom = atLevel; break; }
+            }
         }
-        
-        // Failsafe: if completely empty pool or filters failed, just take ANY remaining question
+
+        // Failsafe: if every level is empty but the overall pool isn't (e.g.
+        // questions with malformed difficulty), just take ANY remaining one.
         if (poolToDrawFrom.length === 0 && questionsPool.length > 0) {
             poolToDrawFrom = questionsPool;
         }
