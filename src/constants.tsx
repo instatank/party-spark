@@ -3,21 +3,14 @@ import { GameType, type GameMeta } from './types';
 import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2 } from 'lucide-react';
 
 export const GAMES: GameMeta[] = [
+    // --- Play Now (ranked) ---
     {
-        id: GameType.ROAST,
-        title: "Roast Me",
-        description: "Upload a pic for a brutal AI roast!",
-        icon: "flame",
-        color: "bg-orange-600",
-        minPlayers: 1
-    },
-    {
-        id: GameType.LINKED,
-        title: "Linked",
-        description: "Find the word that connects all three.",
-        icon: "link",
-        color: "bg-indigo-500",
-        minPlayers: 1
+        id: GameType.MOST_LIKELY_TO,
+        title: "Most Likely To...",
+        description: "Point fingers & expose friends!",
+        icon: "users",
+        color: "bg-purple-600",
+        minPlayers: 3
     },
     {
         id: GameType.FIVE_ALIVE,
@@ -36,14 +29,6 @@ export const GAMES: GameMeta[] = [
         minPlayers: 2
     },
     {
-        id: GameType.MOST_LIKELY_TO,
-        title: "Most Likely To...",
-        description: "Point fingers & expose friends!",
-        icon: "users",
-        color: "bg-purple-600",
-        minPlayers: 3
-    },
-    {
         id: GameType.CHARADES,
         title: "Charades",
         description: "Act out words silently!",
@@ -51,6 +36,64 @@ export const GAMES: GameMeta[] = [
         color: "bg-[#EFC050]",
         minPlayers: 4
     },
+    {
+        id: GameType.TABOO,
+        title: "Taboo",
+        description: "Describe it without forbidden words.",
+        icon: "ban",
+        color: "bg-[#F0656D]",
+        minPlayers: 4
+    },
+    {
+        id: GameType.TRUTH_OR_DRINK,
+        title: "Truth or Drink",
+        description: "Confess or take a sip. No escape.",
+        icon: "wine",
+        color: "bg-red-500",
+        minPlayers: 2
+    },
+    {
+        id: GameType.LINKED,
+        title: "Linked",
+        description: "Find the word that connects all three.",
+        icon: "link",
+        color: "bg-indigo-500",
+        minPlayers: 1
+    },
+    {
+        id: GameType.ROAST,
+        title: "Roast Me",
+        description: "Upload a pic for a brutal AI roast!",
+        icon: "flame",
+        color: "bg-orange-600",
+        minPlayers: 1
+    },
+    {
+        id: GameType.NEVER_HAVE_I_EVER,
+        title: "Never Have I Ever",
+        description: "Stand up if you've done it!",
+        icon: "hand",
+        color: "bg-cyan-600",
+        minPlayers: 3
+    },
+    {
+        id: GameType.COMPATIBILITY_TEST,
+        title: "The Forecast",
+        description: "How well do you really know each other?",
+        icon: "heart",
+        color: "bg-pink-500",
+        minPlayers: 2
+    },
+    {
+        id: GameType.IMPOSTER,
+        title: "Imposter",
+        description: "Find the fake among your friends!",
+        icon: "spy",
+        color: "bg-red-500",
+        minPlayers: 3
+    },
+    // --- Coming Soon (their tab uses comingSoonGameIds.map() order, so the
+    //     position of these in GAMES doesn't affect their display order) ---
     {
         id: GameType.MINI_MAFIA,
         title: "The Traitors",
@@ -81,46 +124,6 @@ export const GAMES: GameMeta[] = [
         description: "Tell a true story or a bold lie.",
         icon: "drama",
         color: "bg-teal-500",
-        minPlayers: 3
-    },
-    {
-        id: GameType.TRUTH_OR_DRINK,
-        title: "Truth or Drink",
-        description: "Confess or take a sip. No escape.",
-        icon: "wine",
-        color: "bg-red-500",
-        minPlayers: 2
-    },
-    {
-        id: GameType.COMPATIBILITY_TEST,
-        title: "The Forecast",
-        description: "How well do you really know each other?",
-        icon: "heart",
-        color: "bg-pink-500",
-        minPlayers: 2
-    },
-    {
-        id: GameType.IMPOSTER,
-        title: "Imposter",
-        description: "Find the fake among your friends!",
-        icon: "spy",
-        color: "bg-red-500",
-        minPlayers: 3
-    },
-    {
-        id: GameType.TABOO,
-        title: "Taboo",
-        description: "Describe it without forbidden words.",
-        icon: "ban",
-        color: "bg-[#F0656D]",
-        minPlayers: 4
-    },
-    {
-        id: GameType.NEVER_HAVE_I_EVER,
-        title: "Never Have I Ever",
-        description: "Stand up if you've done it!",
-        icon: "hand",
-        color: "bg-cyan-600",
         minPlayers: 3
     },
 ];
