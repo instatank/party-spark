@@ -3195,9 +3195,9 @@
               "forbidden": [
                 "Drive",
                 "Car",
-                "Travel",
                 "Highway",
-                "Journey"
+                "Snacks",
+                "Music"
               ]
             },
             {
@@ -3215,9 +3215,9 @@
               "forbidden": [
                 "Login",
                 "Secret",
-                "Type",
-                "Computer",
-                "Enter"
+                "Account",
+                "Code",
+                "Forgot"
               ]
             },
             {
@@ -3227,27 +3227,27 @@
                 "Phone",
                 "Camera",
                 "Face",
-                "Take"
+                "Instagram"
               ]
             },
             {
               "word": "Sunburn",
               "forbidden": [
-                "Sun",
                 "Red",
                 "Skin",
                 "Beach",
-                "Hot"
+                "Peel",
+                "Lotion"
               ]
             },
             {
               "word": "Piggyback",
               "forbidden": [
                 "Carry",
-                "Back",
-                "Ride",
                 "Shoulders",
-                "Child"
+                "Child",
+                "Ride",
+                "Lift"
               ]
             },
             {
@@ -3265,7 +3265,7 @@
               "forbidden": [
                 "Grill",
                 "Meat",
-                "Cook",
+                "Smoke",
                 "Fire",
                 "Outside"
               ]
@@ -3276,8 +3276,8 @@
                 "Car",
                 "Road",
                 "Stuck",
-                "Slow",
-                "Drive"
+                "Honking",
+                "Delay"
               ]
             },
             {
@@ -3285,19 +3285,9 @@
               "forbidden": [
                 "Wake",
                 "Morning",
-                "Ring",
+                "Snooze",
                 "Time",
-                "Sleep"
-              ]
-            },
-            {
-              "word": "Popcorn",
-              "forbidden": [
-                "Corn",
-                "Movie",
-                "Snack",
-                "Butter",
-                "Pop"
+                "Ring"
               ]
             },
             {
@@ -3314,30 +3304,20 @@
               "word": "Parachute",
               "forbidden": [
                 "Fall",
-                "Sky",
-                "Jump",
                 "Plane",
-                "Open"
-              ]
-            },
-            {
-              "word": "Snowflake",
-              "forbidden": [
-                "Snow",
-                "Cold",
-                "Ice",
-                "Winter",
-                "White"
+                "Jump",
+                "Open",
+                "Landing"
               ]
             },
             {
               "word": "Fingerprint",
               "forbidden": [
-                "Finger",
                 "Unique",
                 "Touch",
                 "Identity",
-                "Police"
+                "Police",
+                "Thumb"
               ]
             },
             {
@@ -3351,33 +3331,23 @@
               ]
             },
             {
-              "word": "Homework",
-              "forbidden": [
-                "School",
-                "Study",
-                "Teacher",
-                "Assignment",
-                "Home"
-              ]
-            },
-            {
               "word": "Thunderstorm",
               "forbidden": [
                 "Rain",
                 "Lightning",
                 "Cloud",
-                "Storm",
-                "Thunder"
+                "Loud",
+                "Weather"
               ]
             },
             {
               "word": "Fortune Cookie",
               "forbidden": [
-                "Cookie",
                 "Message",
                 "Chinese",
                 "Luck",
-                "Restaurant"
+                "Restaurant",
+                "Dessert"
               ]
             },
             {
@@ -3405,49 +3375,9 @@
               "forbidden": [
                 "Jump",
                 "Bounce",
-                "Fun",
                 "Kids",
-                "Spring"
-              ]
-            },
-            {
-              "word": "Wheelchair",
-              "forbidden": [
-                "Sit",
-                "Wheel",
-                "Disability",
-                "Roll",
-                "Chair"
-              ]
-            },
-            {
-              "word": "Toothbrush",
-              "forbidden": [
-                "Teeth",
-                "Brush",
-                "Clean",
-                "Mouth",
-                "Paste"
-              ]
-            },
-            {
-              "word": "Headphones",
-              "forbidden": [
-                "Listen",
-                "Music",
-                "Ear",
-                "Sound",
-                "Wire"
-              ]
-            },
-            {
-              "word": "Remote Control",
-              "forbidden": [
-                "TV",
-                "Button",
-                "Channel",
-                "Press",
-                "Change"
+                "Spring",
+                "Backyard"
               ]
             },
             {
@@ -3461,33 +3391,23 @@
               ]
             },
             {
+              "word": "Remote Control",
+              "forbidden": [
+                "TV",
+                "Button",
+                "Channel",
+                "Press",
+                "Change"
+              ]
+            },
+            {
               "word": "Birthday Cake",
               "forbidden": [
-                "Candle",
+                "Candles",
                 "Party",
-                "Happy",
                 "Wish",
-                "Frosting"
-              ]
-            },
-            {
-              "word": "Sunglasses",
-              "forbidden": [
-                "Sun",
-                "Eye",
-                "Shade",
-                "Cool",
-                "Wear"
-              ]
-            },
-            {
-              "word": "Lemonade",
-              "forbidden": [
-                "Lemon",
-                "Drink",
-                "Sweet",
-                "Sour",
-                "Summer"
+                "Frosting",
+                "Cut"
               ]
             },
             {
@@ -3496,18 +3416,18 @@
                 "Piece",
                 "Fit",
                 "Picture",
-                "Game",
-                "Together"
+                "Together",
+                "Game"
               ]
             },
             {
               "word": "Hammock",
               "forbidden": [
                 "Hang",
-                "Sleep",
-                "Tree",
                 "Relax",
-                "Sway"
+                "Tree",
+                "Sway",
+                "Nap"
               ]
             },
             {
@@ -3543,11 +3463,11 @@
             {
               "word": "Lighthouse",
               "forbidden": [
-                "Light",
                 "Ship",
                 "Sea",
                 "Guide",
-                "Tower"
+                "Tower",
+                "Beacon"
               ]
             },
             {
@@ -3556,8 +3476,8 @@
                 "Explode",
                 "Sky",
                 "Color",
-                "July",
-                "New Year"
+                "Festival",
+                "Loud"
               ]
             },
             {
@@ -3581,33 +3501,13 @@
               ]
             },
             {
-              "word": "Beeswax",
-              "forbidden": [
-                "Bee",
-                "Honey",
-                "Candle",
-                "Wax",
-                "Hive"
-              ]
-            },
-            {
               "word": "Quicksand",
               "forbidden": [
                 "Sink",
-                "Sand",
                 "Stuck",
                 "Danger",
+                "Desert",
                 "Movie"
-              ]
-            },
-            {
-              "word": "Doorbell",
-              "forbidden": [
-                "Ring",
-                "Door",
-                "Press",
-                "Visitor",
-                "Sound"
               ]
             },
             {
@@ -3624,10 +3524,10 @@
               "word": "Crossword",
               "forbidden": [
                 "Puzzle",
-                "Word",
                 "Clue",
                 "Across",
-                "Down"
+                "Down",
+                "Newspaper"
               ]
             },
             {
@@ -3638,26 +3538,6 @@
                 "Grow",
                 "Warm",
                 "Garden"
-              ]
-            },
-            {
-              "word": "Mattress",
-              "forbidden": [
-                "Bed",
-                "Sleep",
-                "Soft",
-                "Spring",
-                "Foam"
-              ]
-            },
-            {
-              "word": "Lullaby",
-              "forbidden": [
-                "Sing",
-                "Baby",
-                "Sleep",
-                "Song",
-                "Night"
               ]
             },
             {
@@ -3683,21 +3563,21 @@
             {
               "word": "Windmill",
               "forbidden": [
-                "Wind",
                 "Spin",
                 "Farm",
                 "Energy",
-                "Blade"
+                "Blade",
+                "Dutch"
               ]
             },
             {
               "word": "Horseshoe",
               "forbidden": [
-                "Horse",
                 "Luck",
                 "Metal",
-                "Shoe",
-                "Nail"
+                "Nail",
+                "Hoof",
+                "Stable"
               ]
             },
             {
@@ -3706,8 +3586,8 @@
                 "Bird",
                 "Farm",
                 "Field",
-                "Scare",
-                "Straw"
+                "Straw",
+                "Crops"
               ]
             },
             {
@@ -3737,7 +3617,7 @@
                 "Bottle",
                 "Open",
                 "Twist",
-                "Cork"
+                "Spiral"
               ]
             },
             {
@@ -3745,9 +3625,9 @@
               "forbidden": [
                 "Fast",
                 "Water",
-                "Boat",
                 "Motor",
-                "Lake"
+                "Lake",
+                "Ride"
               ]
             },
             {
@@ -3756,8 +3636,8 @@
                 "Throw",
                 "Return",
                 "Australia",
-                "Come back",
-                "Stick"
+                "Come Back",
+                "Curved"
               ]
             },
             {
@@ -3767,7 +3647,7 @@
                 "Ocean",
                 "Tentacle",
                 "Float",
-                "Jelly"
+                "Transparent"
               ]
             },
             {
@@ -3775,29 +3655,9 @@
               "forbidden": [
                 "Eat",
                 "Asian",
-                "Stick",
-                "Food",
-                "Pair"
-              ]
-            },
-            {
-              "word": "Bookmark",
-              "forbidden": [
-                "Book",
-                "Page",
-                "Read",
-                "Mark",
-                "Save"
-              ]
-            },
-            {
-              "word": "Hopscotch",
-              "forbidden": [
-                "Jump",
-                "Game",
-                "Numbers",
-                "Play",
-                "Ground"
+                "Pair",
+                "Noodles",
+                "Wood"
               ]
             },
             {
@@ -3813,11 +3673,11 @@
             {
               "word": "Handshake",
               "forbidden": [
-                "Hand",
                 "Meet",
                 "Greet",
                 "Business",
-                "Shake"
+                "Shake",
+                "Palm"
               ]
             },
             {
@@ -3831,143 +3691,83 @@
               ]
             },
             {
-              "word": "Lollipop",
-              "forbidden": [
-                "Candy",
-                "Stick",
-                "Sweet",
-                "Lick",
-                "Sucker"
-              ]
-            },
-            {
               "word": "Mousetrap",
               "forbidden": [
-                "Mouse",
                 "Catch",
                 "Cheese",
-                "Trap",
-                "Spring"
-              ]
-            },
-            {
-              "word": "Pillowcase",
-              "forbidden": [
-                "Pillow",
-                "Bed",
-                "Cover",
-                "Sleep",
-                "Fabric"
+                "Spring",
+                "Rodent",
+                "Snap"
               ]
             },
             {
               "word": "Skateboard",
               "forbidden": [
-                "Board",
                 "Ride",
-                "Wheel",
+                "Wheels",
                 "Trick",
-                "Skate"
-              ]
-            },
-            {
-              "word": "Spiderweb",
-              "forbidden": [
-                "Spider",
-                "Web",
-                "Silk",
-                "Insect",
-                "Catch"
+                "Ramp",
+                "Deck"
               ]
             },
             {
               "word": "Waterfall",
               "forbidden": [
-                "Water",
-                "Fall",
                 "River",
                 "Cliff",
-                "Nature"
-              ]
-            },
-            {
-              "word": "Bubblegum",
-              "forbidden": [
-                "Chew",
-                "Bubble",
-                "Gum",
-                "Pop",
-                "Stick"
+                "Nature",
+                "Niagara",
+                "Cascade"
               ]
             },
             {
               "word": "Sandcastle",
               "forbidden": [
-                "Sand",
                 "Beach",
                 "Build",
-                "Castle",
-                "Water"
+                "Bucket",
+                "Holiday",
+                "Moat"
               ]
             },
             {
               "word": "Campfire",
               "forbidden": [
-                "Fire",
-                "Camp",
                 "Wood",
                 "Marshmallow",
-                "Night"
+                "Night",
+                "Tent",
+                "Smoke"
               ]
             },
             {
               "word": "Volleyball",
               "forbidden": [
-                "Ball",
                 "Net",
                 "Beach",
                 "Team",
-                "Hit"
-              ]
-            },
-            {
-              "word": "Dishwasher",
-              "forbidden": [
-                "Dish",
-                "Clean",
-                "Machine",
-                "Kitchen",
-                "Wash"
+                "Hit",
+                "Serve"
               ]
             },
             {
               "word": "Sleepwalking",
               "forbidden": [
-                "Sleep",
-                "Walk",
                 "Night",
                 "Bed",
-                "Unconscious"
+                "Unconscious",
+                "Dream",
+                "Wander"
               ]
             },
             {
               "word": "Backstroke",
               "forbidden": [
                 "Swim",
-                "Back",
                 "Pool",
                 "Water",
-                "Arm"
-              ]
-            },
-            {
-              "word": "Eggshell",
-              "forbidden": [
-                "Egg",
-                "Shell",
-                "Crack",
-                "Fragile",
-                "Chicken"
+                "Arm",
+                "Race"
               ]
             },
             {
@@ -3993,31 +3793,21 @@
             {
               "word": "Skydiving",
               "forbidden": [
-                "Jump",
                 "Plane",
                 "Fall",
                 "Parachute",
-                "Sky"
-              ]
-            },
-            {
-              "word": "Sunflower",
-              "forbidden": [
-                "Sun",
-                "Flower",
-                "Yellow",
-                "Seed",
-                "Tall"
+                "Jump",
+                "Extreme"
               ]
             },
             {
               "word": "Treehouse",
               "forbidden": [
-                "Tree",
-                "House",
                 "Kids",
                 "Build",
-                "Climb"
+                "Climb",
+                "Wood",
+                "Branches"
               ]
             },
             {
@@ -4027,27 +3817,27 @@
                 "Walk",
                 "Circus",
                 "High",
-                "Rope"
+                "Wire"
               ]
             },
             {
               "word": "Whirlpool",
               "forbidden": [
-                "Water",
                 "Spin",
                 "Circle",
-                "Pool",
-                "Drain"
+                "Drain",
+                "Current",
+                "Tub"
               ]
             },
             {
               "word": "Snowboard",
               "forbidden": [
-                "Snow",
-                "Board",
                 "Mountain",
                 "Ride",
-                "Winter"
+                "Winter",
+                "Slope",
+                "Ski"
               ]
             },
             {
@@ -4057,37 +3847,27 @@
                 "Wire",
                 "Fast",
                 "Adventure",
-                "Hang"
+                "Harness"
               ]
             },
             {
               "word": "Countdown",
               "forbidden": [
                 "Number",
-                "Down",
                 "Zero",
                 "Start",
-                "Launch"
-              ]
-            },
-            {
-              "word": "Sunscreen",
-              "forbidden": [
-                "Sun",
-                "Skin",
-                "Protect",
-                "Beach",
-                "SPF"
+                "Launch",
+                "Timer"
               ]
             },
             {
               "word": "Beanbag",
               "forbidden": [
-                "Bean",
-                "Bag",
                 "Sit",
                 "Chair",
-                "Throw"
+                "Throw",
+                "Soft",
+                "Filling"
               ]
             },
             {
@@ -4105,9 +3885,9 @@
               "forbidden": [
                 "Shoot",
                 "Rubber",
-                "Band",
                 "Stone",
-                "Pull"
+                "Pull",
+                "Weapon"
               ]
             },
             {
@@ -4115,79 +3895,969 @@
               "forbidden": [
                 "Spin",
                 "Wind",
-                "Pin",
                 "Toy",
-                "Color"
-              ]
-            },
-            {
-              "word": "Stopwatch",
-              "forbidden": [
-                "Time",
-                "Stop",
-                "Start",
-                "Second",
-                "Race"
+                "Color",
+                "Stick"
               ]
             },
             {
               "word": "Cobweb",
               "forbidden": [
                 "Spider",
-                "Web",
                 "Old",
                 "Dust",
-                "Corner"
+                "Corner",
+                "Haunted"
               ]
             },
             {
               "word": "Firefly",
               "forbidden": [
                 "Light",
-                "Fly",
                 "Night",
                 "Glow",
-                "Bug"
+                "Bug",
+                "Insect"
               ]
             },
             {
               "word": "Daydream",
               "forbidden": [
-                "Dream",
                 "Think",
                 "Awake",
                 "Imagine",
-                "Mind"
-              ]
-            },
-            {
-              "word": "Starfish",
-              "forbidden": [
-                "Star",
-                "Fish",
-                "Ocean",
-                "Five",
-                "Arm"
+                "Mind",
+                "Classroom"
               ]
             },
             {
               "word": "Wishbone",
               "forbidden": [
-                "Wish",
-                "Bone",
+                "Luck",
                 "Chicken",
                 "Break",
-                "Luck"
+                "Thanksgiving",
+                "Turkey"
               ]
             },
             {
-              "word": "Paperclip",
+              "word": "Boarding Pass",
               "forbidden": [
-                "Paper",
-                "Clip",
-                "Metal",
-                "Hold",
-                "Office"
+                "Flight",
+                "Airport",
+                "Seat",
+                "Gate",
+                "Ticket"
+              ]
+            },
+            {
+              "word": "Food Delivery",
+              "forbidden": [
+                "Order",
+                "App",
+                "Rider",
+                "Restaurant",
+                "Home"
+              ]
+            },
+            {
+              "word": "Group Chat",
+              "forbidden": [
+                "WhatsApp",
+                "Messages",
+                "Friends",
+                "Phone",
+                "Replies"
+              ]
+            },
+            {
+              "word": "Voice Note",
+              "forbidden": [
+                "Audio",
+                "WhatsApp",
+                "Message",
+                "Record",
+                "Listen"
+              ]
+            },
+            {
+              "word": "QR Code",
+              "forbidden": [
+                "Scan",
+                "Phone",
+                "Square",
+                "Payment",
+                "Camera"
+              ]
+            },
+            {
+              "word": "Power Cut",
+              "forbidden": [
+                "Electricity",
+                "Light",
+                "Inverter",
+                "Dark",
+                "Outage"
+              ]
+            },
+            {
+              "word": "Online Payment",
+              "forbidden": [
+                "UPI",
+                "Card",
+                "App",
+                "Money",
+                "Transaction"
+              ]
+            },
+            {
+              "word": "Lost Luggage",
+              "forbidden": [
+                "Suitcase",
+                "Airport",
+                "Baggage",
+                "Missing",
+                "Travel"
+              ]
+            },
+            {
+              "word": "Trial Room",
+              "forbidden": [
+                "Clothes",
+                "Try",
+                "Mirror",
+                "Store",
+                "Changing"
+              ]
+            },
+            {
+              "word": "Room Service",
+              "forbidden": [
+                "Hotel",
+                "Order",
+                "Tray",
+                "Waiter",
+                "Menu"
+              ]
+            },
+            {
+              "word": "Parking Ticket",
+              "forbidden": [
+                "Car",
+                "Fine",
+                "Meter",
+                "Police",
+                "Receipt"
+              ]
+            },
+            {
+              "word": "Family Group",
+              "forbidden": [
+                "WhatsApp",
+                "Relatives",
+                "Messages",
+                "Forwards",
+                "Photos"
+              ]
+            },
+            {
+              "word": "Dance Floor",
+              "forbidden": [
+                "Music",
+                "Party",
+                "Wedding",
+                "Moves",
+                "DJ"
+              ]
+            },
+            {
+              "word": "Shopping Cart",
+              "forbidden": [
+                "Supermarket",
+                "Groceries",
+                "Wheels",
+                "Basket",
+                "Push"
+              ]
+            },
+            {
+              "word": "Passport Photo",
+              "forbidden": [
+                "Serious",
+                "Face",
+                "Visa",
+                "Document",
+                "Picture"
+              ]
+            },
+            {
+              "word": "Speed Breaker",
+              "forbidden": [
+                "Road",
+                "Bump",
+                "Slow",
+                "Car",
+                "Drive"
+              ]
+            },
+            {
+              "word": "Window Seat",
+              "forbidden": [
+                "Plane",
+                "View",
+                "Outside",
+                "Travel",
+                "Aisle"
+              ]
+            },
+            {
+              "word": "Hotel Breakfast",
+              "forbidden": [
+                "Buffet",
+                "Morning",
+                "Stay",
+                "Travel",
+                "Food"
+              ]
+            },
+            {
+              "word": "Gym Trainer",
+              "forbidden": [
+                "Workout",
+                "Fitness",
+                "Exercise",
+                "Coach",
+                "Weights"
+              ]
+            },
+            {
+              "word": "Protein Shake",
+              "forbidden": [
+                "Gym",
+                "Drink",
+                "Powder",
+                "Muscle",
+                "Fitness"
+              ]
+            },
+            {
+              "word": "Screen Lock",
+              "forbidden": [
+                "Phone",
+                "Password",
+                "Unlock",
+                "Fingerprint",
+                "Face"
+              ]
+            },
+            {
+              "word": "Spam Call",
+              "forbidden": [
+                "Phone",
+                "Unknown",
+                "Scam",
+                "Number",
+                "Annoying"
+              ]
+            },
+            {
+              "word": "Delivery Address",
+              "forbidden": [
+                "Home",
+                "Order",
+                "Location",
+                "Package",
+                "Courier"
+              ]
+            },
+            {
+              "word": "Office Meeting",
+              "forbidden": [
+                "Work",
+                "Boss",
+                "Presentation",
+                "Team",
+                "Conference"
+              ]
+            },
+            {
+              "word": "Discount Coupon",
+              "forbidden": [
+                "Offer",
+                "Code",
+                "Sale",
+                "Price",
+                "Shopping"
+              ]
+            },
+            {
+              "word": "Wedding",
+              "forbidden": [
+                "bride",
+                "groom",
+                "marriage",
+                "ceremony",
+                "reception"
+              ]
+            },
+            {
+              "word": "Headphones",
+              "forbidden": [
+                "music",
+                "ears",
+                "listen",
+                "sound",
+                "wireless"
+              ]
+            },
+            {
+              "word": "Passport",
+              "forbidden": [
+                "travel",
+                "country",
+                "visa",
+                "airport",
+                "stamp"
+              ]
+            },
+            {
+              "word": "Gym",
+              "forbidden": [
+                "workout",
+                "exercise",
+                "weights",
+                "fitness",
+                "trainer"
+              ]
+            },
+            {
+              "word": "Netflix",
+              "forbidden": [
+                "streaming",
+                "shows",
+                "movies",
+                "series",
+                "subscription"
+              ]
+            },
+            {
+              "word": "Cricket",
+              "forbidden": [
+                "bat",
+                "ball",
+                "wicket",
+                "India",
+                "match"
+              ]
+            },
+            {
+              "word": "Yoga",
+              "forbidden": [
+                "pose",
+                "stretch",
+                "mat",
+                "breathing",
+                "meditation"
+              ]
+            },
+            {
+              "word": "Burger",
+              "forbidden": [
+                "bun",
+                "patty",
+                "cheese",
+                "fries",
+                "fast food"
+              ]
+            },
+            {
+              "word": "Shampoo",
+              "forbidden": [
+                "hair",
+                "wash",
+                "bathroom",
+                "soap",
+                "bottle"
+              ]
+            },
+            {
+              "word": "Birthday Gift",
+              "forbidden": [
+                "present",
+                "wrap",
+                "surprise",
+                "party",
+                "box"
+              ]
+            },
+            {
+              "word": "Elevator",
+              "forbidden": [
+                "lift",
+                "floor",
+                "building",
+                "buttons",
+                "up"
+              ]
+            },
+            {
+              "word": "Mosquito",
+              "forbidden": [
+                "bite",
+                "blood",
+                "insect",
+                "itch",
+                "buzzing"
+              ]
+            },
+            {
+              "word": "Backpack",
+              "forbidden": [
+                "bag",
+                "school",
+                "straps",
+                "books",
+                "travel"
+              ]
+            },
+            {
+              "word": "Train Station",
+              "forbidden": [
+                "platform",
+                "railway",
+                "ticket",
+                "passengers",
+                "arrival"
+              ]
+            },
+            {
+              "word": "Video Call",
+              "forbidden": [
+                "Zoom",
+                "screen",
+                "camera",
+                "meeting",
+                "internet"
+              ]
+            },
+            {
+              "word": "Credit Card",
+              "forbidden": [
+                "bank",
+                "swipe",
+                "payment",
+                "plastic",
+                "money"
+              ]
+            },
+            {
+              "word": "Shopping Mall",
+              "forbidden": [
+                "stores",
+                "brands",
+                "escalator",
+                "food court",
+                "clothes"
+              ]
+            },
+            {
+              "word": "Movie Trailer",
+              "forbidden": [
+                "preview",
+                "film",
+                "coming soon",
+                "cinema",
+                "release"
+              ]
+            },
+            {
+              "word": "Ice Cubes",
+              "forbidden": [
+                "cold",
+                "drink",
+                "water",
+                "freeze",
+                "glass"
+              ]
+            },
+            {
+              "word": "Haircut",
+              "forbidden": [
+                "barber",
+                "salon",
+                "scissors",
+                "hair",
+                "style"
+              ]
+            },
+            {
+              "word": "Toothpaste",
+              "forbidden": [
+                "teeth",
+                "brush",
+                "mouth",
+                "mint",
+                "tube"
+              ]
+            },
+            {
+              "word": "Hotel Room",
+              "forbidden": [
+                "bed",
+                "key",
+                "reception",
+                "stay",
+                "luggage"
+              ]
+            },
+            {
+              "word": "Street Food",
+              "forbidden": [
+                "roadside",
+                "snacks",
+                "chaat",
+                "vendor",
+                "spicy"
+              ]
+            },
+            {
+              "word": "Online Shopping",
+              "forbidden": [
+                "order",
+                "website",
+                "cart",
+                "payment",
+                "delivery"
+              ]
+            },
+            {
+              "word": "Family Dinner",
+              "forbidden": [
+                "relatives",
+                "food",
+                "table",
+                "home",
+                "conversation"
+              ]
+            },
+            {
+              "word": "Laundry",
+              "forbidden": [
+                "clothes",
+                "washing",
+                "detergent",
+                "machine",
+                "dry"
+              ]
+            },
+            {
+              "word": "Aquarium",
+              "forbidden": [
+                "fish",
+                "tank",
+                "water",
+                "glass",
+                "bubbles"
+              ]
+            },
+            {
+              "word": "Perfume",
+              "forbidden": [
+                "smell",
+                "fragrance",
+                "bottle",
+                "spray",
+                "scent"
+              ]
+            },
+            {
+              "word": "Camping",
+              "forbidden": [
+                "tent",
+                "forest",
+                "fire",
+                "outdoors",
+                "sleeping bag"
+              ]
+            },
+            {
+              "word": "Taxi Driver",
+              "forbidden": [
+                "cab",
+                "ride",
+                "fare",
+                "car",
+                "destination"
+              ]
+            },
+            {
+              "word": "Wedding Ring",
+              "forbidden": [
+                "marriage",
+                "finger",
+                "gold",
+                "bride",
+                "groom"
+              ]
+            },
+            {
+              "word": "First Date",
+              "forbidden": [
+                "romance",
+                "dinner",
+                "nervous",
+                "couple",
+                "meeting"
+              ]
+            },
+            {
+              "word": "Report Card",
+              "forbidden": [
+                "school",
+                "grades",
+                "marks",
+                "teacher",
+                "parents"
+              ]
+            },
+            {
+              "word": "Windbreaker",
+              "forbidden": [
+                "jacket",
+                "wind",
+                "light",
+                "outdoor",
+                "zip"
+              ]
+            },
+            {
+              "word": "Salad",
+              "forbidden": [
+                "vegetables",
+                "lettuce",
+                "healthy",
+                "dressing",
+                "bowl"
+              ]
+            },
+            {
+              "word": "Helicopter",
+              "forbidden": [
+                "fly",
+                "blades",
+                "air",
+                "pilot",
+                "landing"
+              ]
+            },
+            {
+              "word": "Swimming Pool",
+              "forbidden": [
+                "water",
+                "swim",
+                "chlorine",
+                "dive",
+                "float"
+              ]
+            },
+            {
+              "word": "Fast Food",
+              "forbidden": [
+                "burger",
+                "fries",
+                "chain",
+                "quick",
+                "junk"
+              ]
+            },
+            {
+              "word": "Snowman",
+              "forbidden": [
+                "snow",
+                "carrot",
+                "winter",
+                "cold",
+                "build"
+              ]
+            },
+            {
+              "word": "Magic Trick",
+              "forbidden": [
+                "magician",
+                "illusion",
+                "card",
+                "rabbit",
+                "audience"
+              ]
+            },
+            {
+              "word": "Boarding Gate",
+              "forbidden": [
+                "airport",
+                "flight",
+                "plane",
+                "passengers",
+                "number"
+              ]
+            },
+            {
+              "word": "Seat Belt",
+              "forbidden": [
+                "car",
+                "safety",
+                "buckle",
+                "airplane",
+                "strap"
+              ]
+            },
+            {
+              "word": "Password Reset",
+              "forbidden": [
+                "forgot",
+                "login",
+                "account",
+                "email",
+                "code"
+              ]
+            },
+            {
+              "word": "Screen Time",
+              "forbidden": [
+                "phone",
+                "usage",
+                "hours",
+                "app",
+                "limit"
+              ]
+            },
+            {
+              "word": "Phone Battery",
+              "forbidden": [
+                "charge",
+                "low",
+                "percentage",
+                "power",
+                "mobile"
+              ]
+            },
+            {
+              "word": "Wi-Fi",
+              "forbidden": [
+                "internet",
+                "password",
+                "router",
+                "signal",
+                "network"
+              ]
+            },
+            {
+              "word": "Bluetooth",
+              "forbidden": [
+                "wireless",
+                "connect",
+                "speaker",
+                "phone",
+                "headphones"
+              ]
+            },
+            {
+              "word": "Traffic Signal",
+              "forbidden": [
+                "red",
+                "green",
+                "light",
+                "road",
+                "stop"
+              ]
+            },
+            {
+              "word": "Shopping List",
+              "forbidden": [
+                "groceries",
+                "items",
+                "supermarket",
+                "paper",
+                "remember"
+              ]
+            },
+            {
+              "word": "Grocery Store",
+              "forbidden": [
+                "food",
+                "shopping",
+                "vegetables",
+                "aisles",
+                "cart"
+              ]
+            },
+            {
+              "word": "Price Tag",
+              "forbidden": [
+                "cost",
+                "label",
+                "item",
+                "shopping",
+                "money"
+              ]
+            },
+            {
+              "word": "Cash Counter",
+              "forbidden": [
+                "payment",
+                "queue",
+                "bill",
+                "store",
+                "cashier"
+              ]
+            },
+            {
+              "word": "Wedding Invitation",
+              "forbidden": [
+                "card",
+                "bride",
+                "groom",
+                "date",
+                "invite"
+              ]
+            },
+            {
+              "word": "Lunch Break",
+              "forbidden": [
+                "office",
+                "food",
+                "work",
+                "afternoon",
+                "time"
+              ]
+            },
+            {
+              "word": "Sick Leave",
+              "forbidden": [
+                "work",
+                "office",
+                "illness",
+                "day",
+                "boss"
+              ]
+            },
+            {
+              "word": "Report Deadline",
+              "forbidden": [
+                "work",
+                "submit",
+                "time",
+                "pressure",
+                "boss"
+              ]
+            },
+            {
+              "word": "Resume",
+              "forbidden": [
+                "job",
+                "CV",
+                "experience",
+                "skills",
+                "interview"
+              ]
+            },
+            {
+              "word": "Job Interview",
+              "forbidden": [
+                "questions",
+                "hiring",
+                "office",
+                "candidate",
+                "resume"
+              ]
+            },
+            {
+              "word": "Salary",
+              "forbidden": [
+                "money",
+                "job",
+                "monthly",
+                "pay",
+                "work"
+              ]
+            },
+            {
+              "word": "Business Card",
+              "forbidden": [
+                "name",
+                "company",
+                "phone",
+                "contact",
+                "job"
+              ]
+            },
+            {
+              "word": "Dumbbell",
+              "forbidden": [
+                "weight",
+                "gym",
+                "lift",
+                "exercise",
+                "muscle"
+              ]
+            },
+            {
+              "word": "Cricket Stadium",
+              "forbidden": [
+                "match",
+                "crowd",
+                "pitch",
+                "players",
+                "seats"
+              ]
+            },
+            {
+              "word": "Football Jersey",
+              "forbidden": [
+                "team",
+                "shirt",
+                "player",
+                "number",
+                "match"
+              ]
+            },
+            {
+              "word": "Tennis Court",
+              "forbidden": [
+                "racket",
+                "ball",
+                "net",
+                "match",
+                "serve"
+              ]
+            },
+            {
+              "word": "Swimming Goggles",
+              "forbidden": [
+                "eyes",
+                "pool",
+                "water",
+                "wear",
+                "swim"
+              ]
+            },
+            {
+              "word": "Birthday Reminder",
+              "forbidden": [
+                "date",
+                "phone",
+                "calendar",
+                "friend",
+                "notification"
+              ]
+            },
+            {
+              "word": "Contact List",
+              "forbidden": [
+                "phone",
+                "names",
+                "numbers",
+                "save",
+                "call"
               ]
             }
           ]
