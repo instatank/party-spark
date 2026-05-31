@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Timer, ChevronRight, Plus, X, Zap, Trophy, ArrowRight, Minus } from 'lucide-react';
+import { Timer, ChevronRight, Plus, X, Zap, Trophy, ArrowRight, Minus, Flame } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import fiveAliveData from '../../data/five_alive.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
+import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 
 interface Props {
     onExit: () => void;
 }
 
-type Difficulty = 'easy' | 'hard';
+type Difficulty = 'easy' | 'hard' | 'spicy';
 type Mode = 'named' | 'just_play';
 type GameState =
     | 'CATEGORY_SELECT'  // pick Easy / Hard
@@ -38,9 +40,10 @@ const CATEGORIES_PER_GAME = TOTAL_ROUNDS;
 
 // Tile metadata for the CATEGORY_SELECT slim-row screen. Colors are inline
 // hex (not Tailwind classes) so they can drive the left-accent bar + icon.
-const DIFFICULTY_TILES: { id: Difficulty; title: string; tagline: string; color: string }[] = [
-    { id: 'easy', title: 'Easy',  tagline: 'Broad categories — everyone can play.', color: '#10B981' },
-    { id: 'hard', title: 'Hard',  tagline: 'Specialist territory. Brains required.', color: '#E11D48' },
+const DIFFICULTY_TILES: { id: Difficulty; title: string; tagline: string; color: string; Icon: LucideIcon; adult?: boolean }[] = [
+    { id: 'easy',  title: 'Easy',  tagline: 'Broad categories — everyone can play.',       color: '#10B981', Icon: Timer },
+    { id: 'hard',  title: 'Hard',  tagline: 'Specialist territory. Brains required.',      color: '#E11D48', Icon: Timer },
+    { id: 'spicy', title: 'Spicy', tagline: 'After dark · dating, drinks, drama · 18+',    color: '#BE185D', Icon: Flame, adult: true },
 ];
 
 // Static color map for the live timer — green → amber → red as seconds drain.
@@ -130,6 +133,10 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     const [difficulty, setDifficulty] = useState<Difficulty>('easy');
     const [mode, setMode] = useState<Mode>('named');
     const [players, setPlayers] = useState<string[]>(['', '']);
+    // PIN gate for the adult ("Spicy") difficulty tile. Same session-scoped
+    // unlock as the rest of the app (PinGate stores it in sessionStorage).
+    const [showPinGate, setShowPinGate] = useState(false);
+    const [pendingAdultDiff, setPendingAdultDiff] = useState<Difficulty | null>(null);
 
     // Per-turn / per-round tracking
     const [playerIndex, setPlayerIndex] = useState(0);
@@ -230,9 +237,17 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     };
 
     // CATEGORY_SELECT tile tap → stash difficulty, draw this turn's categories,
-    // begin the first turn. just_play has no pass-the-phone gate, so it drops
-    // straight into PLAYING (category + timer fire together).
+    // begin the first turn. The Spicy tile is adult-gated; first tap shows the
+    // PIN modal and stashes the pick, then a successful unlock replays the
+    // handler. just_play has no pass-the-phone gate, so it drops straight into
+    // PLAYING (category + timer fire together).
     const handlePickDifficulty = (diff: Difficulty) => {
+        const tile = DIFFICULTY_TILES.find(t => t.id === diff);
+        if (tile?.adult && !isAdultUnlocked()) {
+            setPendingAdultDiff(diff);
+            setShowPinGate(true);
+            return;
+        }
         unlockAudio();
         setDifficulty(diff);
         setTurnCategories(drawTurnCategories(diff));
@@ -319,7 +334,9 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                 </div>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
-                        {DIFFICULTY_TILES.map(t => (
+                        {DIFFICULTY_TILES.map(t => {
+                            const Icon = t.Icon;
+                            return (
                             <button
                                 key={t.id}
                                 onClick={() => handlePickDifficulty(t.id)}
@@ -329,7 +346,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                                     <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]" style={{ background: t.color }} />
                                     <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]" style={{ background: t.color }} />
                                     <div className="flex items-center gap-3">
-                                        <span className="flex-shrink-0" style={{ color: t.color }}><Timer size={16} /></span>
+                                        <span className="flex-shrink-0" style={{ color: t.color }}><Icon size={16} /></span>
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-base font-bold text-ink leading-tight">{t.title}</h3>
                                             <p className="text-xs text-muted leading-snug truncate">{t.tagline}</p>
@@ -338,9 +355,23 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                                     </div>
                                 </div>
                             </button>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
+                {showPinGate && (
+                    <PinGateModal
+                        onSuccess={() => {
+                            setShowPinGate(false);
+                            if (pendingAdultDiff) {
+                                const d = pendingAdultDiff;
+                                setPendingAdultDiff(null);
+                                handlePickDifficulty(d);
+                            }
+                        }}
+                        onCancel={() => { setShowPinGate(false); setPendingAdultDiff(null); }}
+                    />
+                )}
             </div>
         );
     }
