@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
-import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Atom, Lightbulb, Medal, Landmark, Brain } from 'lucide-react';
+import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Atom, Lightbulb, Medal, Landmark, Brain, Goal } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import factData from '../../data/fact_or_fiction.json';
@@ -33,6 +33,7 @@ const TOPIC_META: Record<string, { tagline: string; color: string; Icon: LucideI
     general_knowledge: { tagline: 'A bit of everything — stay sharp.', color: '#F59E0B', Icon: Lightbulb },
     sports:            { tagline: 'Records, rules, legends.',         color: '#EF4444', Icon: Medal },
     history:           { tagline: 'Empires, firsts, turning points.', color: '#A855F7', Icon: Landmark },
+    fifa_world_cup_football: { tagline: 'Goals, glory, golden boots.', color: '#1E40AF', Icon: Goal },
 };
 const TOPIC_DEFAULT = { color: '#EC4899', Icon: Brain };
 
