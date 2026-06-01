@@ -94,6 +94,7 @@ interface RoundResult {
 export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
     // State
     const [gameState, setGameState] = useState<GameState>('MODE_SELECT');
+    const [showHowToPlay, setShowHowToPlay] = useState(false);
     const [mode, setMode] = useState<GameMode>('couples');
     const [playerA, setPlayerA] = useState('');
     const [playerB, setPlayerB] = useState('');
@@ -252,6 +253,19 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
                     <p className="text-3xl mb-1.5 leading-none">🔮</p>
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">How well do you <em>really</em> know each other?</h2>
                     <p className="text-muted text-sm">Predict their answers. Discover the truth.</p>
+                </div>
+                <div className="text-center mb-3">
+                    <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-violet-400 border border-violet-400/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block rounded shadow-lg uppercase">
+                        {showHowToPlay ? 'Hide Rules' : 'How To Play'}
+                    </button>
+                    {showHowToPlay && (
+                        <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
+                            <p><strong className="text-ink">1. SETUP:</strong> Two players, one phone. Pick your vibe — Couples, Friends, or Bunny — then add both names.</p>
+                            <p><strong className="text-violet-400">2. PREDICT:</strong> One player guesses how the other will answer each question, before they see it.</p>
+                            <p><strong className="text-pink-400">3. REVEAL:</strong> The other player answers for real. Match the prediction and you score — then swap roles.</p>
+                            <p><strong className="text-emerald-500">4. WIN:</strong> Most correct predictions wins. Find out how well you <em>really</em> know each other.</p>
+                        </div>
+                    )}
                 </div>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
