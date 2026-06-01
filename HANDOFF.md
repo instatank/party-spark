@@ -135,3 +135,33 @@ App icon assets are at `public/icons/*` (generated from `public/_source/partyspa
 - **Mafia / WYR / Icebreakers / WILTY** are still in Coming Soon. They mostly work — they were dropped to that tab for content reasons, not technical ones. Could be promoted with curation passes.
 - **Vercel preview** for the branch isn't always auto-watched — if the user wants you to watch a PR for review comments / CI, use `mcp__github__subscribe_pr_activity` and act on events as they arrive.
 - **Roast Me variants** (rock punk/classic, FIFA team) work via a `variant` / `team` field that the client picks once and forwards to both the image and the caption call. If you add a new themed variant flow, follow the same pattern so image and caption stay coherent.
+
+---
+
+## 💡 Open ideas / parked threads
+
+Things that came up but weren't built. Use as a menu, not a roadmap.
+
+1. **Promote Coming Soon games to Play Now.** WYR, Icebreakers, WILTY, and Mafia are routed and playable; they're parked there for content/quality, not because they're broken. Each needs a curation pass (WYR's dataset is the thinnest — see counts in HANDOFF; WILTY has only 10 topics; Icebreakers leans on AI generation).
+2. **Bigger Linked pool.** 78 Easy + 36 Hard is the smallest pool in Play Now. Adding ~100 more Easy puzzles + ~40 more Hard would round it out. The runtime gracefully repeats from the full pool when fresh-this-session runs low, but a thicker pool means longer freshness.
+3. **More Roast Me themes.** The themed-variant pattern (`variant` + `team`) is reusable. Easy adds: Cricket fan-cam (counterpart to FIFA), 90s yearbook, Met Gala, '60s mod, etc. Each theme = (a) new key in `RoastTheme`, (b) `getCaricaturePrompt` + `getRoastSystemPrompt` case in `api/_lib/handlers-image.ts`, (c) tile in `ImageUpload.tsx`. Identity-lock preamble is already shared — reuse it.
+4. **Spread the "Spicy" tile pattern.** 5 Alive got a third, adult-gated difficulty. NHIE already has "No Filter" (PG-13ish). Taboo could get a Spicy pool. MLT has X-Rated. There's no strict consistency across games — could be unified into one "after dark" sub-deck pattern with the same PIN-gate hook.
+5. **AI Custom Vibe for more games.** MLT and TOD have it. Could extend to NHIE (custom statements with group context), Charades (custom word packs), and FoF (custom topic + 10 generated Q/A). Server side: add a new `handlers-custom.ts` case; client side: similar setup flow to existing Custom Vibe screens.
+6. **Roast Me rate limit UX.** `VITE_ROAST_LIMIT` is a hard cap with an `alert()`. The session tracks usage via `SessionManager.getUsageCount('ROAST')`. Could surface "X of Y roasts left" inline before the upload, and add a graceful "come back later" screen instead of the alert.
+7. **Vercel Pro for image generation.** Hobby tier caps function duration at 10s. The Gemini 3 Pro image edit (`generate_roast` / `edit_image`) can take 15–30s and may time out. Mitigations: (a) upgrade to Pro (60s), (b) convert just that route to an Edge function, (c) pre-warm with a tiny call on Roast tile tap.
+8. **Daily challenge / streak.** Mentioned in the original Linked spec as a future. Could apply to Linked + 5 Alive + FoF — a single "today's challenge" surfaced on home, a streak counter in `SessionManager` extended to persistent localStorage. Simple but adds a return-visit hook.
+9. **Hint system for Linked.** Was in the spec, deferred. Could reveal one letter after the player has been stuck for ~20s. Adds friction-reduction for harder puzzles.
+10. **Bundle size.** Current `dist/assets/index-*.js` is ~700KB (200KB gzipped). Vite's chunk warning fires at 500KB. Code-splitting per-game with `React.lazy()` would cut the initial download dramatically. Not urgent — the app is fast — but the warning is real.
+11. **Screen mirroring / viewer mode** — was explicitly **parked** in an earlier session (phone B watches phone A's gameplay via a passcode; needs a realtime backend, ~1–2 weeks of work, the user decided the pass-the-phone model covers the in-room case). Don't build unless the user revisits it.
+12. **`PlayerRosterRow`** — was built and reverted at the user's explicit request. Don't reinstate. Only `TeamRosterRow` (team-name persistence) survives.
+
+---
+
+## 🗣 Working style with this user
+
+- They prefer **terse, direct replies** — no walls of text, no preamble. State the action, take it, report concisely.
+- They auto-ship most changes ("push to production"). Default to shipping after build passes, unless the change is risky or they explicitly say "hold."
+- They like to see **audit results before merging dataset changes** — counts, dupes, schema, semantic-near-duplicate checks. They'll usually ask for the audit if you don't volunteer it; you should always volunteer it.
+- For card-pool additions: dedupe **case-insensitively**, match the file's existing indent, report `added/skipped` counts in the commit message.
+- Commit messages explain the **WHY**. No co-author footers.
+- They occasionally paste data from a different project by mistake. If something doesn't fit the PartySpark domain (e.g. "Projects page", "Today page"), confirm before acting.
