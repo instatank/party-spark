@@ -69,61 +69,78 @@ function getAudioCtx(): AudioContext | null {
             if (!Ctor) return null;
             audioCtx = new Ctor();
         }
-        if (audioCtx.state === 'suspended') void audioCtx.resume();
         return audioCtx;
     } catch {
         return null;
     }
 }
 // Call on a user gesture to prime the context before the first round.
-function unlockAudio() { getAudioCtx(); }
+function unlockAudio() {
+    const ctx = getAudioCtx();
+    if (ctx && ctx.state === 'suspended') void ctx.resume();
+}
+
+// Schedule a sound reliably. Browsers auto-suspend an AudioContext after a
+// short idle (e.g. while the PASS/TALLY screens sit between rounds). resume()
+// is async, so scheduling against a still-stale ctx.currentTime drops the
+// note in the past and the browser silently skips it — that was the cause of
+// the intermittent buzzer. So: resume FIRST, then schedule against a fresh
+// currentTime with a small lead offset to stay safely in the future.
+function withAudio(play: (ctx: AudioContext, t0: number) => void) {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    const run = () => { try { play(ctx, ctx.currentTime + 0.02); } catch { /* noop */ } };
+    if (ctx.state === 'suspended') {
+        ctx.resume().then(run).catch(() => { /* noop */ });
+    } else {
+        run();
+    }
+}
 
 // End-of-round signal — a bright bell "ding-ding" rather than a harsh buzzer.
 // Each strike is a stack of sine partials (roughly modeled on a struck bell:
 // fundamental + a few inharmonic overtones) with a fast attack and a long
 // exponential ring-out.
 function playBell() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const strike = (t0: number, base: number) => {
-        const partials: { ratio: number; gain: number; decay: number }[] = [
-            { ratio: 1.0,  gain: 0.26, decay: 1.5 },
-            { ratio: 2.0,  gain: 0.16, decay: 1.0 },
-            { ratio: 2.97, gain: 0.10, decay: 0.7 },
-            { ratio: 4.1,  gain: 0.06, decay: 0.45 },
-        ];
-        partials.forEach(({ ratio, gain, decay }) => {
-            const osc = ctx.createOscillator();
-            const g = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.value = base * ratio;
-            g.gain.setValueAtTime(0.0001, t0);
-            g.gain.exponentialRampToValueAtTime(gain, t0 + 0.006);
-            g.gain.exponentialRampToValueAtTime(0.0001, t0 + decay);
-            osc.connect(g).connect(ctx.destination);
-            osc.start(t0);
-            osc.stop(t0 + decay + 0.05);
-        });
-    };
-    const now = ctx.currentTime;
-    strike(now, 880);          // first ding (~A5)
-    strike(now + 0.17, 1175);  // second, brighter (~D6) — "ding-ding, time!"
+    withAudio((ctx, now) => {
+        const strike = (t0: number, base: number) => {
+            const partials: { ratio: number; gain: number; decay: number }[] = [
+                { ratio: 1.0,  gain: 0.26, decay: 1.5 },
+                { ratio: 2.0,  gain: 0.16, decay: 1.0 },
+                { ratio: 2.97, gain: 0.10, decay: 0.7 },
+                { ratio: 4.1,  gain: 0.06, decay: 0.45 },
+            ];
+            partials.forEach(({ ratio, gain, decay }) => {
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = base * ratio;
+                g.gain.setValueAtTime(0.0001, t0);
+                g.gain.exponentialRampToValueAtTime(gain, t0 + 0.006);
+                g.gain.exponentialRampToValueAtTime(0.0001, t0 + decay);
+                osc.connect(g).connect(ctx.destination);
+                osc.start(t0);
+                osc.stop(t0 + decay + 0.05);
+            });
+        };
+        strike(now, 880);          // first ding (~A5)
+        strike(now + 0.17, 1175);  // second, brighter (~D6) — "ding-ding, time!"
+    });
 }
 
 function playTick() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'square';
-    osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.16, now + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.1);
+    withAudio((ctx, now) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.16, now + 0.005);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.1);
+    });
 }
 
 interface PlayerScore { name: string; total: number; breakdown: number[] }
