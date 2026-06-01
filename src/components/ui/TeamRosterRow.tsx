@@ -161,7 +161,7 @@ const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange }) =
             onClick={startEdit}
             className="flex items-center justify-center gap-1.5 w-full max-w-[340px] mx-auto mb-3 py-2 rounded-full border border-gold/40 bg-gold/5 text-xs font-bold text-gold shadow-[0_0_12px_rgba(239,192,80,0.2)] hover:bg-gold/10 hover:border-gold/60 hover:shadow-[0_0_18px_rgba(239,192,80,0.4)] transition-all"
         >
-            <Plus size={14} /> Add team names
+            <Plus size={14} /> Add Player/Team Names
             <span className="text-gold/60 font-normal">(optional)</span>
         </button>
     );
