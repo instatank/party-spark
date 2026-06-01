@@ -305,6 +305,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
         unlockAudio();
         setDifficulty(diff);
         if (mode === 'just_play') {
+            setRoundGot(0);
             startQueue(diff);
             setGameState('PLAY');
         } else {
@@ -343,9 +344,12 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
         flashThenAdvance('skip');
     };
 
-    // Just-play actions during PLAY
+    // Just-play actions during PLAY. Reveal the answer, then the group self-
+    // reports whether they got it — "Correct" scores +1, "Incorrect" doesn't.
+    // Both advance to the next puzzle (no separate Next step).
     const handleReveal = () => { setRevealed(true); };
-    const handleNextJustPlay = () => { advance(); };
+    const handleJustPlayCorrect = () => { playDing(); setRoundGot(g => g + 1); advance(); };
+    const handleJustPlayIncorrect = () => { advance(); };
 
     // ROUND_OVER → next player (or END)
     const handleAfterRound = () => {
@@ -399,7 +403,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                             <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
                                 <p><strong className="text-ink">1. GOAL:</strong> Find the one word that links all three clues — e.g. <strong className="text-indigo-400">water</strong> · <strong className="text-indigo-400">down</strong> · <strong className="text-indigo-400">rain</strong> → <strong className="text-indigo-400 uppercase">fall</strong>.</p>
                                 <p><strong className="text-amber-500">2. PASS &amp; PLAY:</strong> Each player gets 60 seconds — solve as many as you can, tapping <strong className="text-emerald-500">Got it!</strong> or <strong className="text-muted">Skip</strong>.</p>
-                                <p><strong className="text-emerald-500">3. JUST PLAY:</strong> No timer — shout it out as a group, then reveal the answer and move on.</p>
+                                <p><strong className="text-emerald-500">3. JUST PLAY:</strong> No timer — shout it out as a group, reveal the answer, then tap <strong className="text-emerald-500">Correct</strong> or <strong className="text-rose-500">Incorrect</strong> to score and move on.</p>
                                 <p><strong className="text-indigo-400">4. SCORING:</strong> In timed mode, most solved wins. Add player names to keep score.</p>
                             </div>
                         )}
@@ -572,7 +576,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                                 </div>
 
                                 <div className="text-[11px] text-muted flex items-center justify-between relative z-10">
-                                    <span>{difficulty === 'easy' ? 'Easy' : 'Hard'}{isPass ? ` · ${roundGot} found` : ''}</span>
+                                    <span>{difficulty === 'easy' ? 'Easy' : 'Hard'}{isPass ? ` · ${roundGot} found` : ` · ${roundGot} solved`}</span>
                                     <span className="font-serif italic text-[12px] text-indigo-500">PartySpark</span>
                                 </div>
                             </div>
@@ -607,9 +611,20 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                             )
                         ) : (
                             revealed ? (
-                                <Button onClick={handleNextJustPlay} fullWidth className="h-14 text-lg">
-                                    Next <ArrowRight className="inline ml-2" size={20} />
-                                </Button>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={handleJustPlayCorrect}
+                                        className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors active:scale-95 flex items-center justify-center gap-2"
+                                    >
+                                        <Check size={18} /> Correct
+                                    </button>
+                                    <button
+                                        onClick={handleJustPlayIncorrect}
+                                        className="flex-1 py-4 rounded-xl font-bold text-base text-rose-600 bg-transparent border-2 border-rose-500/60 hover:bg-rose-500/10 hover:border-rose-500 transition-colors active:scale-95 flex items-center justify-center gap-2"
+                                    >
+                                        <X size={18} /> Incorrect
+                                    </button>
+                                </div>
                             ) : (
                                 <Button onClick={handleReveal} fullWidth className="h-14 text-lg">
                                     <Eye size={20} className="inline mr-2" /> Reveal
