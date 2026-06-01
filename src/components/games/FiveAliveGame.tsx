@@ -133,7 +133,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<GameState>('SETUP');
     const [difficulty, setDifficulty] = useState<Difficulty>('easy');
     const [mode, setMode] = useState<Mode>('named');
-    const [players, setPlayers] = useState<string[]>([]);
+    const [players, setPlayers] = useState<string[]>(() => sessionService.getTeams());
     // PIN gate for the adult ("Spicy") difficulty tile. Same session-scoped
     // unlock as the rest of the app (PinGate stores it in sessionStorage).
     const [showPinGate, setShowPinGate] = useState(false);
@@ -399,7 +399,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
 
                     <div className="flex-1 flex flex-col justify-center">
                         <p className="text-[11px] font-bold uppercase tracking-widest text-muted mb-2 text-center">Add players to keep score — or just play</p>
-                        <TeamRosterRow teams={players} onTeamsChange={setPlayers} noun="Player" max={MAX_PLAYERS} persist={false} />
+                        <TeamRosterRow teams={players} onTeamsChange={setPlayers} noun="Player" max={MAX_PLAYERS} />
                     </div>
 
                     <Button
