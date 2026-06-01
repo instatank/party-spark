@@ -46,6 +46,7 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
     const [strikes, setStrikes] = useState(0);
     const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
     const [gameState, setGameState] = useState<'category_select' | 'playing' | 'answer_reveal' | 'team_transition' | 'round_over'>('category_select');
+    const [showHowToPlay, setShowHowToPlay] = useState(false);
 
     // Team mode: opt-in via TeamRosterRow on the category-select screen. Each
     // team plays solo until they hit 3 strikes, then passes the phone. Strikes
@@ -255,6 +256,19 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                     <p className="text-3xl mb-1.5 leading-none">🤔</p>
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">Can you tell what's <em>actually</em> true?</h2>
                     <p className="text-muted text-sm">Race the clock. 3 strikes — you're out.</p>
+                </div>
+                <div className="text-center mb-3">
+                    <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-sky-500 border border-sky-500/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block rounded shadow-lg uppercase">
+                        {showHowToPlay ? 'Hide Rules' : 'How To Play'}
+                    </button>
+                    {showHowToPlay && (
+                        <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
+                            <p><strong className="text-ink">1. GOAL:</strong> Each statement is either a real fact or made up. Tap <strong className="text-sky-500">Fact</strong> or <strong className="text-violet-500">Fiction</strong>.</p>
+                            <p><strong className="text-amber-500">2. THE CLOCK:</strong> Every question is timed — answer before it runs out or it counts against you.</p>
+                            <p><strong className="text-red-500">3. THREE STRIKES:</strong> Three wrong (or too slow) and the round is over. The questions get tougher as you climb.</p>
+                            <p><strong className="text-emerald-500">4. TEAMS:</strong> Add team names to take turns and compete head-to-head, or just play solo.</p>
+                        </div>
+                    )}
                 </div>
                 <div className="px-2 pb-6 flex-1 flex flex-col">
                     <TeamRosterRow teams={teams} onTeamsChange={setTeams} />

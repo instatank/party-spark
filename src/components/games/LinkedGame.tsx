@@ -172,6 +172,7 @@ const ClueLine: React.FC<{ clue: string; answer: string; position: Position; rev
 
 export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<GameState>('SETUP');
+    const [showHowToPlay, setShowHowToPlay] = useState(false);
     const [mode, setMode] = useState<Mode>('pass');
     const [difficulty, setDifficulty] = useState<Difficulty>('easy');
     const [players, setPlayers] = useState<string[]>(['', '']);
@@ -388,6 +389,20 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                         <p className="text-muted text-xs mt-0.5">
                             e.g. <span className="text-ink font-semibold">water</span> · <span className="text-ink font-semibold">down</span> · <span className="text-ink font-semibold">rain</span> → <span className="text-indigo-400 font-bold uppercase">fall</span>
                         </p>
+                    </div>
+
+                    <div className="text-center mb-3">
+                        <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-indigo-400 border border-indigo-400/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block rounded shadow-lg uppercase">
+                            {showHowToPlay ? 'Hide Rules' : 'How To Play'}
+                        </button>
+                        {showHowToPlay && (
+                            <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
+                                <p><strong className="text-ink">1. GOAL:</strong> Find the one word that links all three clues — e.g. <strong className="text-indigo-400">water</strong> · <strong className="text-indigo-400">down</strong> · <strong className="text-indigo-400">rain</strong> → <strong className="text-indigo-400 uppercase">fall</strong>.</p>
+                                <p><strong className="text-amber-500">2. PASS &amp; PLAY:</strong> Each player gets 60 seconds — solve as many as you can, tapping <strong className="text-emerald-500">Got it!</strong> or <strong className="text-muted">Skip</strong>.</p>
+                                <p><strong className="text-emerald-500">3. JUST PLAY:</strong> No timer — shout it out as a group, then reveal the answer and move on.</p>
+                                <p><strong className="text-indigo-400">4. SCORING:</strong> In timed mode, most solved wins. Add player names to keep score.</p>
+                            </div>
+                        )}
                     </div>
 
                     <p className="text-[11px] font-bold uppercase tracking-widest text-muted mb-2">Add players for a timed game</p>
