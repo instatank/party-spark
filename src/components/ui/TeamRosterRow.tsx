@@ -5,9 +5,13 @@ import { sessionService } from '../../services/SessionManager';
 interface TeamRosterRowProps {
     teams: string[];
     onTeamsChange: (next: string[]) => void;
+    // Optional overrides so the same compact roster can capture players (5
+    // Alive) as well as teams (Charades / Taboo / Fact or Fiction).
+    noun?: string;        // singular label, e.g. 'Team' (default) or 'Player'
+    max?: number;         // max rows (default 4)
+    persist?: boolean;    // write to the shared session team store (default true)
 }
 
-const MAX_TEAMS = 4;
 const MIN_TEAMS = 2;
 
 // Optional team-name capture shared across Charades / Taboo / Fact or Fiction.
@@ -19,9 +23,11 @@ const MIN_TEAMS = 2;
 // Persistence is handled via SessionService.setTeams; the parent component
 // just passes the current array down + an onTeamsChange callback. We keep a
 // local draft array while editing so the user can cancel without commit.
-const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange }) => {
+const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange, noun = 'Team', max = 4, persist = true }) => {
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState<string[]>(['', '']);
+    const MAX_TEAMS = max;
+    const sep = noun === 'Team' ? 'vs' : '·';
 
     const startEdit = () => {
         // Seed the draft with what's saved, padded out to 2 fields if empty
@@ -37,13 +43,13 @@ const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange }) =
 
     const saveEdit = () => {
         const cleaned = draft.map(n => n.trim()).filter(Boolean);
-        sessionService.setTeams(cleaned);
+        if (persist) sessionService.setTeams(cleaned);
         onTeamsChange(cleaned);
         setEditing(false);
     };
 
     const clearTeams = () => {
-        sessionService.clearTeams();
+        if (persist) sessionService.clearTeams();
         onTeamsChange([]);
         setEditing(false);
     };
@@ -71,7 +77,7 @@ const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange }) =
                 <div className="flex items-center gap-1.5 mb-2.5">
                     <Users size={14} className="text-muted" />
                     <span className="text-xs font-bold uppercase tracking-wider text-muted">
-                        Team names <span className="text-muted/70 font-normal normal-case tracking-normal">(optional)</span>
+                        {noun} names <span className="text-muted/70 font-normal normal-case tracking-normal">(optional)</span>
                     </span>
                 </div>
                 <div className="space-y-2">
@@ -81,7 +87,7 @@ const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange }) =
                                 type="text"
                                 value={name}
                                 onChange={(e) => updateName(i, e.target.value)}
-                                placeholder={`Team ${i + 1}`}
+                                placeholder={`${noun} ${i + 1}`}
                                 maxLength={20}
                                 className="flex-1 bg-app-tint border border-divider rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:border-accent placeholder:text-muted"
                             />
@@ -102,7 +108,7 @@ const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange }) =
                         onClick={addRow}
                         className="mt-2 flex items-center gap-1 text-xs text-muted hover:text-ink font-semibold transition-colors"
                     >
-                        <Plus size={13} /> Add another team
+                        <Plus size={13} /> Add another {noun.toLowerCase()}
                     </button>
                 )}
                 <div className="flex gap-2 mt-3">
@@ -133,7 +139,7 @@ const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange }) =
                     {teams.map((t, i) => (
                         <React.Fragment key={i}>
                             <span className="text-xs font-bold text-ink truncate max-w-[80px]">{t}</span>
-                            {i < teams.length - 1 && <span className="text-xs text-muted">vs</span>}
+                            {i < teams.length - 1 && <span className="text-xs text-muted">{sep}</span>}
                         </React.Fragment>
                     ))}
                 </div>

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Flame, ArrowRight, ChevronRight, Plus, X, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2 } from 'lucide-react';
+import { Sparkles, Flame, ChevronRight, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2 } from 'lucide-react';
 import questionData from '../../data/truth_or_drink.json';
 import { generateCustomTruthOrDrink } from '../../services/geminiService';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -11,7 +11,6 @@ import { GameType } from '../../types';
 type Category = 'classic' | 'spicy' | 'deep' | 'exes' | 'chaos' | 'custom';
 type GameState =
     | 'CATEGORY_SELECT'
-    | 'SETUP'
     | 'CUSTOM_SETUP'
     | 'LOADING'
     | 'PROMPT'
@@ -171,8 +170,6 @@ const CATEGORIES: CategoryMeta[] = [
 ];
 
 const TOTAL_ROUNDS = 10;
-const MAX_PLAYERS = 10;
-const MIN_PLAYERS = 2;
 
 export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
     const { theme } = useTheme();
@@ -225,7 +222,6 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     const wordCount = customContext.trim().split(/\s+/).filter(Boolean).length;
 
     const trimmedPlayers = players.map(p => p.trim()).filter(Boolean);
-    const canStart = trimmedPlayers.length >= MIN_PLAYERS;
     const currentPlayer = trimmedPlayers[turnIndex % trimmedPlayers.length] || '';
     const currentQuestion = deck[roundIndex] || '';
     const isLastRound = roundIndex >= deck.length - 1;
@@ -235,42 +231,15 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     // ========================
     const handleCategorySelect = (c: Category) => {
         setCategory(c);
-        // Always reset to named mode at category select — Just Play is opt-in
-        // from the SETUP screen, not the default.
-        setPlayMode('named');
-        setGameState('SETUP');
-    };
-
-    const handleAddPlayer = () => {
-        if (players.length >= MAX_PLAYERS) return;
-        setPlayers([...players, '']);
-    };
-
-    const handleRemovePlayer = (i: number) => {
-        if (players.length <= MIN_PLAYERS) return;
-        setPlayers(players.filter((_, idx) => idx !== i));
-    };
-
-    const handlePlayerNameChange = (i: number, value: string) => {
-        const next = [...players];
-        next[i] = value;
-        setPlayers(next);
-    };
-
-    const handleStartGame = () => {
-        if (!canStart) return;
         setTurnIndex(0);
         setRoundIndex(0);
         setLastChoice(null);
         setScores({});
-
-        // Custom deck: collect context before generating.
-        if (category === 'custom' && !customDeck) {
-            setGameState('CUSTOM_SETUP');
-            return;
-        }
-
-        setGameState('PROMPT');
+        // No player-roster screen — like MLT / NHIE, a deck tap drops straight
+        // into pass-the-phone play. The custom deck still needs its context
+        // screen before AI generation.
+        setPlayMode('just_play');
+        setGameState(c === 'custom' ? 'CUSTOM_SETUP' : 'PROMPT');
     };
 
     const handleGenerateCustom = async () => {
@@ -308,16 +277,6 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
             setCustomError('Something went wrong. Please try again.');
             setGameState('CUSTOM_SETUP');
         }
-    };
-
-    // Just-Play kickoff — bypass player setup. Lands directly on PROMPT.
-    const handleJustPlay = () => {
-        setPlayMode('just_play');
-        setTurnIndex(0);
-        setRoundIndex(0);
-        setLastChoice(null);
-        setScores({});
-        setGameState('PROMPT');
     };
 
     // Tally truth/drink per player in named mode, then either wrap up
@@ -440,85 +399,6 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         );
     }
 
-    // SETUP — Player list
-    if (gameState === 'SETUP') {
-        return (
-            <div className="flex flex-col h-full animate-fade-in relative z-10">
-                <ScreenHeader title="Who's Playing?" onBack={() => setGameState('CATEGORY_SELECT')} onHome={onExit} />
-                <div className="px-2 pb-4 flex-1 flex flex-col">
-                    <div className="flex items-center gap-2 mb-4">
-                        <span className={`text-xs font-bold ${categoryMeta.accentText} uppercase tracking-widest`}>
-                            {categoryMeta.title} Deck
-                        </span>
-                        <span className="text-muted">•</span>
-                        <span className="text-xs font-medium text-muted">
-                            {TOTAL_ROUNDS} rounds
-                        </span>
-                    </div>
-
-                    <div className="space-y-3 flex-1">
-                        {players.map((name, i) => (
-                            <div key={i} className="flex items-center gap-2">
-                                <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${categoryMeta.gradient} flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-lg ${categoryMeta.shadow}`}>
-                                    {i + 1}
-                                </div>
-                                <input
-                                    type="text"
-                                    value={name}
-                                    onChange={e => handlePlayerNameChange(i, e.target.value)}
-                                    placeholder={`Player ${i + 1}`}
-                                    maxLength={15}
-                                    className={`flex-1 bg-surface-alt border border-divider ${categoryMeta.accentBorderFocus} rounded-xl p-3 text-ink font-medium placeholder:text-muted outline-none transition-colors`}
-                                />
-                                {players.length > MIN_PLAYERS && (
-                                    <button
-                                        onClick={() => handleRemovePlayer(i)}
-                                        className="p-2 rounded-lg bg-surface-alt hover:bg-red-500/20 text-muted hover:text-red-500 transition-colors"
-                                        aria-label={`Remove player ${i + 1}`}
-                                    >
-                                        <X size={18} />
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-
-                        {players.length < MAX_PLAYERS && (
-                            <button
-                                onClick={handleAddPlayer}
-                                className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-divider hover:border-ink-soft text-muted hover:text-ink transition-colors"
-                            >
-                                <Plus size={18} /> Add Player
-                            </button>
-                        )}
-                    </div>
-
-                    <Button
-                        onClick={handleStartGame}
-                        className={`w-full py-4 text-lg mt-6 ${!canStart ? 'opacity-40' : ''}`}
-                        disabled={!canStart}
-                    >
-                        Start Drinking <ArrowRight className="inline ml-2" size={20} />
-                    </Button>
-
-                    {/* Just-Play escape hatch — bumped up to a green outlined
-                        CTA so it doesn't feel like a tertiary footer link.
-                        Hidden for the custom deck since AI generation needs
-                        names + context. Outline-only by default; tint
-                        appears on hover for feedback. */}
-                    {category !== 'custom' && (
-                        <button
-                            onClick={handleJustPlay}
-                            className="w-full mt-3 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors flex items-center justify-center gap-2"
-                        >
-                            <Zap size={18} />
-                            Just Play — Skip the Setup
-                        </button>
-                    )}
-                </div>
-            </div>
-        );
-    }
-
     // CUSTOM_SETUP — Describe your group for AI generation. Mirrors MLT's
     // Create-Your-Vibe input page (chip sizing, label scale, section
     // spacing, pro-tips treatment) so the two custom flows feel identical.
@@ -526,7 +406,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         const canGenerate = customContext.trim().length >= 10 && wordCount <= WORD_LIMIT;
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="Create Your Vibe" onBack={() => setGameState('SETUP')} onHome={onExit} />
+                <ScreenHeader title="Create Your Vibe" onBack={() => setGameState('CATEGORY_SELECT')} onHome={onExit} />
                 <div className="flex-1 overflow-y-auto pb-8 px-1">
                     {/* Intro */}
                     <div className="text-center mb-3">
