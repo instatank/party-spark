@@ -132,29 +132,31 @@ const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange, nou
     }
 
     // ---------- Saved + collapsed ----------
+    // Styled to match the "Add" prompt below — a gold pill with a soft glow —
+    // so the saved roster reads as the same catchy, noticeable element.
     if (teams.length > 0) {
         return (
-            <div className="flex items-center justify-center gap-2 mb-3 max-w-[340px] mx-auto w-full px-2">
-                <Users size={13} className="text-muted flex-shrink-0" />
-                <div className="flex flex-wrap items-center gap-1 flex-1 min-w-0">
+            <div className="flex items-center justify-center gap-2 mb-3 max-w-[340px] mx-auto w-full py-2 px-4 rounded-full border border-gold/40 bg-gold/5 shadow-[0_0_12px_rgba(239,192,80,0.2)]">
+                <Users size={13} className="text-gold flex-shrink-0" />
+                <div className="flex flex-wrap items-center justify-center gap-1.5 flex-1 min-w-0">
                     {teams.map((t, i) => (
                         <React.Fragment key={i}>
-                            <span className="text-xs font-bold text-ink truncate max-w-[80px]">{t}</span>
-                            {i < teams.length - 1 && <span className="text-xs text-muted">{sep}</span>}
+                            <span className="text-xs font-bold text-gold truncate max-w-[90px]">{t}</span>
+                            {i < teams.length - 1 && <span className="text-[10px] text-gold/50">{sep}</span>}
                         </React.Fragment>
                     ))}
                 </div>
                 <button
                     onClick={startEdit}
                     aria-label="Edit team names"
-                    className="w-6 h-6 rounded-full text-muted hover:text-ink transition-colors flex items-center justify-center flex-shrink-0"
+                    className="w-6 h-6 rounded-full text-gold/60 hover:text-gold transition-colors flex items-center justify-center flex-shrink-0"
                 >
                     <Pencil size={12} />
                 </button>
                 <button
                     onClick={clearTeams}
                     aria-label="Clear team names"
-                    className="w-6 h-6 rounded-full text-muted hover:text-ink transition-colors flex items-center justify-center flex-shrink-0"
+                    className="w-6 h-6 rounded-full text-gold/60 hover:text-gold transition-colors flex items-center justify-center flex-shrink-0"
                 >
                     <X size={12} />
                 </button>
