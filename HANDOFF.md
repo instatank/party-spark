@@ -1,168 +1,137 @@
-# PartySpark — Session Handoff
+# PartySpark — Session Handoff (v2)
 
-> **Created:** end of a long working session, ~80% context used. This file
-> exists so a fresh session/agent can pick up cleanly. Read `CLAUDE.md` first
-> (the canonical project doc) — this file only covers **what changed recently,
-> what's in flight, and conventions worth knowing.**
-
----
-
-## ⏭️ Immediate next task
-
-**Finalize the "5 Alive" game and ship it to production.** Everything else this
-session is already merged to `main`.
-
-- The game is fully built on branch **`claude/five-alive-game`** (commit `f9a6e16`),
-  **NOT merged to main**. It's listed under `comingSoonGameIds` so it appears in
-  the home screen's "Coming Soon" tab.
-- The user is testing it on the Vercel preview build for that branch.
-- When the user gives feedback: apply fixes **on `claude/five-alive-game`**, push,
-  let them re-test. When they approve → merge to `main` with `--no-ff` (this
-  triggers the production Vercel deploy). It stays in Coming Soon either way until
-  the user explicitly says to promote it.
-- **Untested by the building agent (worth a real-device check before promotion):**
-  buzzer latency on a mid-range phone, the iOS audio-unlock path, light/dark
-  rendering of the full-screen timer screen.
-
-### What "5 Alive" is (so you don't have to reverse-engineer it)
-Pass-and-play speed-recall. 5 descending rounds: name 5 in 5 sec → 4 in 4 → 3 in 3
-→ 2 in 2 → 1 in 1, with a buzzer at each cutoff. A judge taps how many the player
-got; a perfect round = +1 bonus (max game = 20). Files:
-- `src/types.ts` — `GameType.FIVE_ALIVE`
-- `src/App.tsx` — routing + first entry in `comingSoonGameIds`
-- `src/constants.tsx` — GAMES entry, GAME_RICH_META, GAME_SUBCATEGORIES, `getIcon('timer')` → lucide `Timer`
-- `src/data/five_alive.json` — 100 Easy + 100 Hard categories (flat pools; rounds differ only by count+time)
-- `src/components/games/FiveAliveGame.tsx` — the whole game. State machine:
-  `CATEGORY_SELECT` (Easy/Hard slim-row tiles + hero block) → `SETUP` (2-10 named
-  players OR "Just Play") → `PASS` (pass-the-phone gate, names the judge) →
-  `REVEAL` (portrait card with the category) → `PLAYING` (RAF-driven full-screen
-  countdown, draining SVG ring, green→amber→red) → `TALLY` (judge stepper 0..N,
-  perfect-round bonus) → loop 5 rounds → next player → `END` (leaderboard with
-  tappable per-round breakdown). "Just Play" skips names/judge/scoring.
-- **Audio is synthesized via Web Audio API** (two detuned square oscillators for
-  the buzz; an 880Hz click for the tick at 3/2/1s remaining). No bundled assets.
-  Context unlocks on the first user gesture (tile tap / Start). If the user wants
-  a sampled MP3 instead, that's an easy swap.
-- **Deliberately out of the minimal PR** (per the handoff spec's "future" list):
-  rounds-per-player ×2/×3 (single 5-round game per player only), AI custom
-  category pools, achievements, sound themes, i18n.
+> **Updated:** end of a long working session, ~85% context. This file exists so
+> a fresh session/agent can pick up cleanly. Read `CLAUDE.md` first (the
+> canonical project doc) — this file covers **what changed recently, the
+> current state, and the conventions worth knowing**.
 
 ---
 
-## 🌿 Branch state
+## 🔖 Quick state
 
-| Branch | Status |
+| Thing | Value |
 |---|---|
-| `main` | Production. All session work below is merged here EXCEPT 5 Alive. Latest: `bd009b9` (game-home hero pattern merge). |
-| `claude/five-alive-game` | **Not merged.** The 5 Alive game. Awaiting user testing → fixes → merge. |
-| Other `claude/*` branches | Stale — already merged into `main`. Ignore them. |
+| Production branch | `main` (auto-deploys to Vercel) |
+| Working branch this session | `claude/resume-partyspark-w3qJq` |
+| Latest production commit | last shipped via PR #32 ("Roast Me #1") — `main` at `f5f6ed7` (or later, check `git log origin/main`) |
+| Open PRs | none — everything is merged |
+| Uncommitted local changes | only ever in the working branch; commit and push when done |
 
-Vercel auto-deploys: every push to a branch → a preview build; every merge to
-`main` → production. There's a stop-hook that nags about uncommitted changes —
-commit and push your work when done.
-
----
-
-## 📦 What got built this session (all merged to `main` unless noted)
-
-**Card library expansions** (all merged):
-- **Taboo**: Medium 100→250, Hard 75→250 (parity with Easy's 250). New cards in `src/data/games_data.json` under `games.taboo.categories`.
-- **NHIE** (`src/data/never_have_i_ever.json`): dropped 3 dead family-gathering decks (`rehaan`, `rehaan_asks`, `agra`). Added 2 new decks: **Family Friendly** (sky, Smile icon) and **No Filter** (red, Flame icon). Then populated/expanded — current: family_friendly 40, classic 60, bbf 20, guilty_pleasures 50, no_filter 50. Also moved NHIE from coming-soon → active (positioned right after Taboo in the `GAMES` array). NHIE's deck metadata lives in `constants.tsx` `NEVER_HAVE_I_EVER_CATEGORIES` + `GAME_SUBCATEGORIES` + `NeverHaveIEverGame.tsx`'s `CATEGORY_DARK`/`CATEGORY_LIGHT` palettes.
-- **Truth or Drink** (`src/data/truth_or_drink.json`): doubled every deck, then targeted +50% on spicy & chaos. Current: classic 50, spicy 75, deep 30, exes 30, chaos 50.
-- **MLT** (`src/data/most_likely_to.json`): doubled the 6 surfaced decks, then targeted +50% on scandalous & chaos. Current: family_friendly 100, fun 50, scandalous 75, adult 50, chaos 75, bbf 50. (`rehaan`/`agra` keys still present but orphaned — not surfaced in any UI; candidates for cleanup.)
-
-**Session / dedupe system** (merged — `src/services/SessionManager.ts`):
-- The 2-hour session timer is now a **sliding window** (anchored to `lastActivity`, bumped on every `markAsUsed`) so a long party night = one session. Backwards-compatible with old localStorage shape.
-- Exported a shared **`shuffle()` Fisher-Yates** helper — replaced all the biased `[...arr].sort(() => 0.5 - Math.random())` calls across game files + `LocalGameService.ts`.
-- **Per-card session dedupe** is now wired into ALL card-pool games (Charades, Taboo, MLT, WYR, Imposter, NHIE, TOD, Forecast, Fact or Fiction, Would I Lie To You). Pattern: `sessionService.filterContent(...)` on round start → fall back to full pool if exhausted → `markAsUsed(...)` when a card is shown. Icebreakers is excluded (pure AI generation, no static deck). Mini Mafia's shuffle is for role assignment only.
-
-**Team-name roster** (merged — `src/components/ui/TeamRosterRow.tsx`):
-- Optional team names shared across **Charades, Taboo, Fact or Fiction** via `sessionService.getTeams()/setTeams()/clearTeams()`. A slim "+ Add team names (optional)" row on each game's setup screen; 2-4 teams. When set, those 3 games run alternating rounds per team with a ranked summary + trophy. When skipped, behavior is identical to before.
-
-**⚠️ Player-name roster — BUILT THEN REVERTED. Do NOT reinstate.**
-A `PlayerRosterRow.tsx` (cross-game individual-player persistence for Forecast/TOD/MLT/NHIE, and earlier also Imposter/Mafia) was built and merged, then **fully reverted** at the user's request (revert commit `f50841b`). The user didn't like it. `PlayerRosterRow.tsx` no longer exists. Forecast is back to explicit Player 1/Player 2 inputs; TOD is back to its numbered-avatar player list; Imposter/Mafia kept their self-contained setups; MLT/NHIE have no player UI. Only `TeamRosterRow` (team names, not player names) survives. **If the user asks for cross-game player persistence again, treat it as a fresh design conversation — don't resurrect the reverted code.**
-
-**Game-home "hero" pattern** (merged for 5 games; 3 still pending):
-Each game's entry screen now leads with a compact block: an emoji on its own
-line (`text-3xl`, `leading-none`), a Playfair italic-emphasis tagline (`text-lg`),
-a short imperative sub-text (`text-sm`), and `-mt-3` on the wrapper to close the
-gap under `ScreenHeader`. Applied to:
-- **Forecast** 🔮 "How well do you *really* know each other?" / "Predict their answers. Discover the truth."
-- **Truth or Drink** 🍷 "How honest are you *really*?" / "Answer honestly — or take a sip."
-- **Most Likely To** 👉 "Who's *really* the wildest?" / "Read the card. Everyone points on 3."
-- **Fact or Fiction** 🤔 "Can you tell what's *actually* true?" / "Race the clock. 3 strikes — you're out."
-- **Imposter** 🕵️ "Who's the *imposter*?" / "Everyone learns the word — except one. Find them." (screen title also renamed "Setup Game" → "Imposter")
-- **5 Alive** ⏱️ "Can you beat the *buzzer*?" / "5 in 5 seconds. Then 4 in 4. Then 3 in 3…" (on the five-alive branch)
-
-**Still pending** (drafted, user-approved copy, NOT implemented): Charades, Taboo, NHIE.
-- Charades: 🎭 "Can you say it *without* saying it?" / "60-second round. Act them out — no words allowed."
-- Taboo: 🚫 "Describe it — without saying *it*." / "60 seconds. Avoid the forbidden five."
-- NHIE: 🫣 "What *haven't* you done?" / "Stand up if you've done it. Last one sitting wins." — *user was still mulling NHIE; confirm before implementing.*
-
-**Roast Me redesign** (merged earlier — Direction D V2): the whole Roast Me flow
-(IDLE upload screen, LOADING memo/stamp screen, COMPLETE polaroid result) was
-redesigned to a "sticker-meets-sleek" system. Files: `src/components/games/roast/*`
-(ImageUpload, RoastLoading, RoastResult — no more LoadingOverlay or GameHeader).
-Tokens `--c-roast-red`, `--c-roast-ember`, `--c-polaroid`, `--font-display`
-(Bebas Neue), and `roastStampPulse`/`roastDotPulse` keyframes in `index.css`.
-Polaroid image is `object-contain` on a dark frame; tap it for a lightbox.
-
-**Forecast deck refresh** (merged): all three Forecast modes (friends, couples,
-bunny) replaced with new question sets — 30 questions each (10 per round × 3
-rounds). `src/data/compatibility_test.json`. The runtime picker draws 5 random
-per round.
+Everything below is **already live in production** unless explicitly noted.
 
 ---
 
-## 🛠️ Things discussed but NOT built (parked)
+## 🎮 Current game roster — Play Now (in display order)
 
-- **Screen mirroring / viewer mode** ("phone B watches phone A's gameplay via a passcode"). I explained the realistic path is state-sync over a realtime backend (Firebase/Supabase/Ably), ~1-2 weeks of work, and recommended *not* building it yet — the in-room "pass the phone" model mostly covers it, and lighter fixes (bigger card text, a landscape "TV mode") solve most of the actual pain. **Parked. Don't build unless the user explicitly revisits.**
-- **Home-screen search extraction**: the user asked for the search-bar code to hand to *another project's* agent — I gave it to them as a code snippet in chat. **No change to this repo.**
+Home order (from `GAMES` array in `src/constants.tsx`):
 
----
+1. **Roast Me** — AI image roast. 6 themes: Animate / Tabloid / Movie / Rock Star / Mughal / FIFA 2026. Rock and FIFA have sub-variants (rock = punk vs classic, FIFA = team picker). Client picks `variant`/`team` and sends to BOTH the image and the caption call so they stay coherent. All prompts include the IDENTITY-LOCK preamble.
+2. **Most Likely To** — 6 decks + Create-Your-Vibe AI. ~400 cards.
+3. **5 Alive** — speed recall. 3 levels: Easy (300) / Hard (300) / Spicy (151, PIN-gated 18+). 5 rounds: name 5/4/3/2/1 in 6/5/4/3/2 seconds. Synthesised bell at the end of each round. Per-turn scoring + recap screen.
+4. **Fact or Fiction** — 6 categories: Animal Kingdom (50) / Science (50) / General Knowledge (50) / Sports (50) / History (50) / FIFA World Cup Football (81). Difficulty cascades down one level at a time when the current level runs out.
+5. **Charades** — 7 categories: Hollywood (200) / Bollywood (200) / Mix (441) / Family Mix (61) / Everyday Actions (20) / Around the House (20) / The Zoo (21).
+6. **Taboo** — Easy (298) / Medium (167) / Hard (75).
+7. **Truth or Drink** — 5 decks (215 cards) + Create-Your-Vibe. Adult-gated.
+8. **Linked** — word puzzle. Easy (78) / Hard (36). Pass-and-Play (60s, Skip and Got-It both flash the answer) + Just Play.
+9. **Never Have I Ever** — 5 decks (220).
+10. **The Forecast** (Compatibility Test) — 3 modes (friends / couples / bunny), 30 Qs each. Adult-gated.
+11. **Imposter** — pass-and-play deduction.
 
-## 🧭 Workflow conventions (what this session followed)
-
-1. **One feature = one branch off `main`.** Name `claude/<short-slug>`.
-2. **Build-verify before every commit:** `npm run build` (runs `tsc -b && vite build`). It must pass clean. Strict TS catches `api/` errors too (via `tsconfig.api.json`).
-3. **Commit with a real message** — first line = summary of the *why*, body explains the *what*. Don't add Claude/Anthropic co-author footers unless the user asks.
-4. **Push to the branch, let the user review on the Vercel preview.** Only merge to `main` when they say "ship" / "push to production" / "merge to main".
-5. **Merge to `main` with `--no-ff`** and a merge-commit message summarizing the branch. That push triggers the prod deploy.
-6. **Data edits**: I used small Python scripts to merge new cards into the JSON files (dedupe case-insensitively, preserve order). Note the JSON files have different indent conventions — `never_have_i_ever.json` is 4-space, the others 2-space; `python json.dump(..., indent=N)` rewrites the whole file so match the existing N to keep diffs small. The Taboo expansion commit has a large diff because the indent got normalized — not a problem, just FYI.
-7. **Card-generation tone**: when expanding a deck, read the existing cards first and match the voice per deck. Show the user old-vs-new samples for review before committing. For multi-word card formats (e.g. Taboo: `{word, forbidden:[5], difficulty}`), keep the shape exact.
-
----
-
-## 📁 Key files (supplement to CLAUDE.md's list)
-
-```
-src/
-├── App.tsx                          # Router switch + HomeMenu (search + filter pills + comingSoonGameIds live here)
-├── types.ts                         # GameType enum
-├── constants.tsx                    # GAMES, GAME_RICH_META, HOME_FILTERS, GAME_SUBCATEGORIES, getIcon, per-game CATEGORIES arrays
-├── index.css                        # Tailwind v4 @theme — CSS vars + keyframes ONLY (no utility classes inside @theme)
-├── services/
-│   ├── SessionManager.ts            # sliding-window session + dedupe + shuffle() + team roster API
-│   └── LocalGameService.ts          # static-data readers (uses shuffle())
-├── components/
-│   ├── ui/
-│   │   ├── Layout.tsx               # Card, Button, ScreenHeader (title is a plain string — emoji flows inline)
-│   │   ├── PinGate.tsx              # 0438 gate — DO NOT REFACTOR
-│   │   ├── ThemeToggle.tsx
-│   │   └── TeamRosterRow.tsx        # optional team names for Charades/Taboo/FoF
-│   └── games/                       # one file per game; roast/ subdir for Roast Me's 3 screens
-└── data/                            # static JSON: games_data.json (charades+taboo), never_have_i_ever, most_likely_to,
-                                     # truth_or_drink, would_i_lie_to_you, would_you_rather, fact_or_fiction,
-                                     # compatibility_test, five_alive (new, on the five-alive branch)
-```
+### Coming Soon tab (in `comingSoonGameIds` in `App.tsx`)
+WILTY, Icebreakers, Mini Mafia (The Traitors), Would You Rather. Order in that tab is driven by `comingSoonGameIds.map()`, not by their position in `GAMES`.
 
 ---
 
-## ✅ Quick orientation checklist for the new agent
+## 🚦 Mid-game exit confirmation (across every game)
+
+There is a shared modal (`src/components/ui/ConfirmDialog.tsx`) + hook (`useExitConfirm` in `src/components/ui/useExitConfirm.tsx`). `ScreenHeader` gained an opt-in prop `confirmOnExit`. Mid-play screens across **every game** have this turned on, so tapping back/home prompts "Leave the game? Your progress will be lost." Setup / category-select / loading / end screens navigate freely.
+
+- Games that use `ScreenHeader confirmOnExit` directly: Charades, Taboo (READY), NHIE, TOD, Forecast (all 7 in-play screens), Fact or Fiction (4 screens), Imposter (4 screens), 5 Alive (3 screens), Linked (3 screens), WYR.
+- Games with custom headers that use the `useExitConfirm` hook directly: **Taboo PLAYING**, **MLT PLAYING**, **WILTY (whole game)**.
+- Mafia keeps its own internal confirm flow (separate state).
+- Icebreakers + Roast Me are single-shot — no progress to lose, untouched.
+
+If you add a new game, follow the same pattern (prop on the mid-play screens, or hook for custom headers).
+
+---
+
+## 📦 Recent dataset state (this session)
+
+| Game / category | Now |
+|---|---|
+| **5 Alive** | Easy 300, Hard 300, **Spicy 151** (new, adult-gated). All ≤ 5 words. |
+| **Linked** | Easy 78, Hard 36 (puzzle data unchanged this session). |
+| **Fact or Fiction** | 5 base categories of 50 each + new **FIFA World Cup Football (81)**. ⚽ emoji tile (lucide has no soccer-ball glyph, so `TOPIC_META` supports `emoji` as an alternative to `Icon`). Difficulty cascade walks down one level at a time when the current is dry. |
+| **Charades** | Hollywood **200** (replaced), Bollywood **200** (replaced), Mix **441** (existing 50 kept + 400 appended, 9 dupes). |
+| **Taboo** | Easy **298** (+48 from a 99-batch, 51 dupes skipped), Medium **167** (full replace), Hard 75. |
+| **Roast Me** | Added FIFA 2026 theme + Rock Star (replaced Disco). MUGHAL label (was AGRA ROYAL). Identity-lock prompt + scene variants on FIFA + Rock. Rock's punk/classic variants are routed via a `variant` field so image and caption agree. |
+
+---
+
+## 🛠 Conventions (do follow / don't break)
+
+### Workflow
+1. **One feature = one `claude/<slug>` branch off `main`.** Direct push to `main` is 403'd — `main` is branch-protected. Ship via GitHub PR (`mcp__github__create_pull_request` then `mcp__github__merge_pull_request`).
+2. **`npm run build` must pass clean before every commit.** Strict TS catches `api/` errors too via `tsconfig.api.json`.
+3. **Real commit messages.** First line summarises the *why*, body explains the *what*. No co-author footers unless asked.
+4. **Merge to `main` with `--no-ff` semantics** (the GitHub merge button does this) — that's what triggers prod deploy.
+5. **Data edits via Python.** Match the existing indent per file (`never_have_i_ever.json` and `linked.json` use 2-space; `five_alive.json` uses 4-space; `games_data.json` uses 2-space; `fact_or_fiction.json` uses 2-space). Dedupe case-insensitively.
+6. **Audit before merge** for any incoming card batch: schema-strict, ≤ N words where applicable, no within-bucket dupes, no cross-bucket overlap unless explicit.
+
+### Hard rules (don't touch)
+- **PIN gate `0438`** in `src/components/ui/PinGate.tsx`. Don't refactor. Don't change the PIN. Keep the 5-attempt lockout. `sessionStorage` flag stays.
+- **No `react-router-dom` / Next.js.** State-based `switch` in `App.tsx` is intentional.
+- **No utility classes inside `@theme`** in `src/index.css`. Tailwind v4 build error.
+- **No template-literal Tailwind class names.** Use static class maps. Tailwind v4 JIT only detects complete static strings. (e.g. `text-${color}-400` won't compile.)
+- **API keys are server-only.** Read from `process.env` inside `api/_lib/clients.ts`. NO `VITE_` prefix on AI keys. The audit I ran confirmed zero exposure. Only `VITE_ROAST_LIMIT` (a number) is intentionally client-side.
+- **`api/` is server-only.** Never import from `api/` inside `src/`.
+- **Don't reinstate `PlayerRosterRow`** (it was built then reverted at the user's request — only `TeamRosterRow` survives).
+
+### AI service flow
+All AI calls go through **`/api/ai`** (a Vercel serverless function). Client → `callAI<T>('type', params)` from `src/services/aiClient.ts` → POST `/api/ai` → server dispatcher (`api/ai.ts`) → handlers. Adding a new AI feature:
+1. Add handler in `api/_lib/handlers-gemini.ts` (or `handlers-custom.ts` for Claude-first flows)
+2. Register the type in `api/ai.ts`'s `DISPATCH` table
+3. Thin wrapper in `src/services/geminiService.ts` calls `callAI('your_type', {...})`
+4. Component calls the wrapper
+
+### `api/` landmines (still active — don't undo)
+1. Relative imports in `api/` MUST end in `.js` (even though source is `.ts`). Vercel ESM resolver won't auto-resolve extensionless paths.
+2. Never `import` `@google/genai` statically at top of any `api/` file — it crashes cold start on Node 24. Use the lazy getter in `clients.ts`.
+3. `api/` is in the strict typecheck via `tsconfig.api.json`. Don't remove the reference.
+
+---
+
+## 🚀 Deployment
+
+Vercel auto-deploys from GitHub. Every push to any branch creates a preview build; every merge to `main` triggers the production deploy.
+
+**Required Vercel env vars** (Production + Preview + Development scopes):
+- `GEMINI_API_KEY` (server-only, no `VITE_` prefix)
+- `ANTHROPIC_API_KEY` (server-only, no `VITE_` prefix)
+- `VITE_ROAST_LIMIT` — optional, numeric (per-session roast cap). Safe to be client-visible.
+
+`/api/health` returns `{ ok, claude, gemini, node }` for a cheap deploy sanity check.
+
+App icon assets are at `public/icons/*` (generated from `public/_source/partyspark-icon-master.png`). Manifest references the PNG set. To regenerate from a new source image, write the source PNG/JPG to disk and run the Pillow script previously used (Bash heredoc with the `corner_lum` / `LANCZOS` resize pattern).
+
+---
+
+## 🧭 Quick orientation checklist for the next agent
 
 1. Read `CLAUDE.md` (canonical) then this file.
-2. `git checkout main && git log --oneline -10` — confirm latest is `bd009b9`-ish.
-3. If the user's first ask is about 5 Alive: `git checkout claude/five-alive-game` and work there.
-4. Anything else: branch off `main`, build-verify, commit, push, wait for the user to say "merge."
-5. Never reinstate `PlayerRosterRow` / cross-game player persistence (reverted on purpose).
-6. Never touch the PIN gate, never add react-router, never put utility classes in `@theme`, never use template-literal Tailwind classnames.
+2. `git checkout main && git pull && git log --oneline -5` to confirm latest.
+3. Create a new branch `claude/<slug>` for any feature work. **Do not push to `main` directly** — token is scoped to `claude/*` branches; main is branch-protected.
+4. Run `npm install` once (Pillow already installed in this image — `pip install Pillow --break-system-packages` if needed).
+5. `npm run build` must pass before every commit.
+6. Ship via PR (`mcp__github__create_pull_request` → `mcp__github__merge_pull_request`).
+
+### Tools you'll lean on
+- GitHub MCP: `mcp__github__*` for PR + repo ops (no `gh` CLI).
+- Bash for `git`, `npm`, `python3` scripts.
+- Vercel MCP available for deployment introspection.
+
+### Things I'd suggest for the next session (optional)
+- **Bigger Linked dataset.** 78E + 36H is the smallest play-now pool. Adding 50–100 more easy puzzles would round it out.
+- **Mafia / WYR / Icebreakers / WILTY** are still in Coming Soon. They mostly work — they were dropped to that tab for content reasons, not technical ones. Could be promoted with curation passes.
+- **Vercel preview** for the branch isn't always auto-watched — if the user wants you to watch a PR for review comments / CI, use `mcp__github__subscribe_pr_activity` and act on events as they arrive.
+- **Roast Me variants** (rock punk/classic, FIFA team) work via a `variant` / `team` field that the client picks once and forwards to both the image and the caption call. If you add a new themed variant flow, follow the same pattern so image and caption stay coherent.
