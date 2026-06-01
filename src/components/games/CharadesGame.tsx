@@ -395,15 +395,21 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         <div className="h-full flex flex-col">
             <ScreenHeader title="Charades" onBack={() => setGameState('SETUP')} onHome={onExit} confirmOnExit />
 
-            <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-2 bg-app-tint px-4 py-2 rounded-full">
-                    <Timer size={18} className={timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-ink-soft'} />
-                    <span className={`font-mono font-bold ${timeLeft < 10 ? 'text-red-500' : 'text-ink'}`}>{timeLeft}s</span>
+            <div className="grid grid-cols-3 items-center mb-6">
+                <div />
+                <div className="flex justify-center">
+                    <div className="flex items-center gap-2 bg-surface border border-divider px-4 py-2 rounded-full shadow-lg">
+                        <Timer size={18} className={timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-party-accent'} />
+                        <span className={`font-mono font-bold text-xl ${timeLeft < 10 ? 'text-red-500' : 'text-ink'}`}>{timeLeft}</span>
+                    </div>
                 </div>
-                <div className="font-bold text-xl text-ink">
+                <div className="font-bold text-ink flex justify-end text-right">
                     {teams.length >= 2
-                        ? <><span className="text-muted text-sm font-semibold mr-1.5">{teams[currentTeamIndex] || `Team ${currentTeamIndex + 1}`}:</span>{score}</>
-                        : <>Score: {score}</>
+                        ? <div className="flex flex-col items-end leading-tight">
+                            <span className="text-[10px] uppercase tracking-wider text-muted truncate max-w-[80px]">{teams[currentTeamIndex] || `Team ${currentTeamIndex + 1}`}</span>
+                            <span className="text-xl">{score}</span>
+                          </div>
+                        : <span className="text-xl">{score}</span>
                     }
                 </div>
             </div>

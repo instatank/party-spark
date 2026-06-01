@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, ScreenHeader, useExitConfirm } from '../ui/Layout';
+import { Button, Card, ScreenHeader } from '../ui/Layout';
 // generateTabooCards removed — full local deck is loaded each round
 import { useContent } from '../../contexts/ContentContext';
 import type { TabooCard } from '../../types';
@@ -39,8 +39,6 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
     const [teamScores, setTeamScores] = useState<number[]>([]);
 
-    // Mid-game exit guard for the custom PLAYING-screen Quit button.
-    const { guard: guardPlay, dialog: playExitDialog } = useExitConfirm(gameState === 'PLAYING');
 
     // Initial category tap from CATEGORY screen. Resets team-match state
     // (team index, accumulated team scores) before entering the load flow.
@@ -344,15 +342,17 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
 
     return (
         <div className="h-full flex flex-col">
-            <div className="flex items-center justify-between mb-2 pt-2">
-                <Button variant="ghost" onClick={guardPlay(() => setGameState('CATEGORY'))} className="!p-2">
-                    <span className="text-muted">Quit</span>
-                </Button>
-                <div className="flex items-center gap-2 bg-surface border border-divider px-4 py-2 rounded-full shadow-lg">
-                    <Timer size={18} className={timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-party-accent'} />
-                    <span className={`font-mono font-bold text-xl ${timeLeft < 10 ? 'text-red-500' : 'text-ink'}`}>{timeLeft}</span>
+            <ScreenHeader title="Taboo" onBack={() => setGameState('CATEGORY')} onHome={onExit} confirmOnExit />
+
+            <div className="grid grid-cols-3 items-center mb-2">
+                <div />
+                <div className="flex justify-center">
+                    <div className="flex items-center gap-2 bg-surface border border-divider px-4 py-2 rounded-full shadow-lg">
+                        <Timer size={18} className={timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-party-accent'} />
+                        <span className={`font-mono font-bold text-xl ${timeLeft < 10 ? 'text-red-500' : 'text-ink'}`}>{timeLeft}</span>
+                    </div>
                 </div>
-                <div className="font-bold text-party-primary text-right min-w-[60px]">
+                <div className="font-bold text-party-primary flex justify-end text-right">
                     {teams.length >= 2 ? (
                         <div className="flex flex-col items-end leading-tight">
                             <span className="text-[10px] uppercase tracking-wider text-muted truncate max-w-[80px]">
@@ -424,7 +424,6 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                     <span className="text-sm uppercase font-bold tracking-wider text-slate-900">Correct</span>
                 </Button>
             </div>
-            {playExitDialog}
         </div>
     );
 };
