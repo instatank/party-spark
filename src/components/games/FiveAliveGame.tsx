@@ -137,6 +137,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     // unlock as the rest of the app (PinGate stores it in sessionStorage).
     const [showPinGate, setShowPinGate] = useState(false);
     const [pendingAdultDiff, setPendingAdultDiff] = useState<Difficulty | null>(null);
+    const [showHowToPlay, setShowHowToPlay] = useState(false);
 
     // Per-turn / per-round tracking
     const [playerIndex, setPlayerIndex] = useState(0);
@@ -386,6 +387,20 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                         <p className="text-2xl mb-1 leading-none">⏱️</p>
                         <h2 className="text-base font-serif font-bold text-ink">Can you beat the <em>buzzer</em>?</h2>
                         <p className="text-muted text-xs mt-0.5">5 in 5 seconds. Then 4 in 4. Then 3 in 3…</p>
+                    </div>
+
+                    <div className="text-center mb-3">
+                        <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-emerald-500 border border-emerald-500/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block rounded shadow-lg uppercase">
+                            {showHowToPlay ? 'Hide Rules' : 'How To Play'}
+                        </button>
+                        {showHowToPlay && (
+                            <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner">
+                                <p><strong className="text-ink">1. GOAL:</strong> Rattle off real answers to a category before the buzzer goes off. Beat the clock.</p>
+                                <p><strong className="text-emerald-500">2. ROUNDS:</strong> Five rounds, getting tighter each time — name 5, then 4, then 3, 2, and finally 1.</p>
+                                <p><strong className="text-amber-500">3. THE CLOCK:</strong> Each round gives you one extra second to read the clue (6 / 5 / 4 / 3 / 2 secs). The bell ends the round.</p>
+                                <p><strong className="text-red-500">4. SCORING:</strong> The judge tallies your correct answers — one point each, plus a bonus point for a perfect round. Highest total after 5 rounds wins. Or hit <strong className="text-emerald-500">Just Play</strong> to skip scoring entirely.</p>
+                            </div>
+                        )}
                     </div>
 
                     <p className="text-[11px] font-bold uppercase tracking-widest text-muted mb-2">Add players to keep score</p>
