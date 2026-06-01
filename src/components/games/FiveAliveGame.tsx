@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Timer, ChevronRight, Plus, X, Zap, Trophy, ArrowRight, Minus, Flame } from 'lucide-react';
+import { Timer, ChevronRight, Plus, Zap, Trophy, ArrowRight, Minus, Flame } from 'lucide-react';
+import TeamRosterRow from '../ui/TeamRosterRow';
 import type { LucideIcon } from 'lucide-react';
 import fiveAliveData from '../../data/five_alive.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
@@ -132,7 +133,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<GameState>('SETUP');
     const [difficulty, setDifficulty] = useState<Difficulty>('easy');
     const [mode, setMode] = useState<Mode>('named');
-    const [players, setPlayers] = useState<string[]>(['', '']);
+    const [players, setPlayers] = useState<string[]>([]);
     // PIN gate for the adult ("Spicy") difficulty tile. Same session-scoped
     // unlock as the rest of the app (PinGate stores it in sessionStorage).
     const [showPinGate, setShowPinGate] = useState(false);
@@ -314,13 +315,6 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         setGameState(mode === 'just_play' ? 'PLAYING' : 'PASS');
     };
 
-    // -----------------------------------------------------------------------
-    // Player-setup field handlers (named mode)
-    // -----------------------------------------------------------------------
-    const addPlayer = () => { if (players.length < MAX_PLAYERS) setPlayers([...players, '']); };
-    const removePlayer = (i: number) => { if (players.length > MIN_PLAYERS) setPlayers(players.filter((_, idx) => idx !== i)); };
-    const setPlayerName = (i: number, v: string) => { const n = [...players]; n[i] = v; setPlayers(n); };
-
     // =======================================================================
     // RENDER
     // =======================================================================
@@ -403,40 +397,9 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                         )}
                     </div>
 
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted mb-2">Add players to keep score</p>
-                    <div className="space-y-3 flex-1">
-                        {players.map((name, i) => (
-                            <div key={i} className="flex items-center gap-2">
-                                <div className="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-sm shrink-0">
-                                    {i + 1}
-                                </div>
-                                <input
-                                    type="text"
-                                    value={name}
-                                    onChange={e => setPlayerName(i, e.target.value)}
-                                    placeholder={`Player ${i + 1}`}
-                                    maxLength={15}
-                                    className="flex-1 bg-surface-alt border border-divider focus:border-emerald-500 rounded-xl p-3 text-ink font-medium placeholder:text-muted outline-none transition-colors"
-                                />
-                                {players.length > MIN_PLAYERS && (
-                                    <button
-                                        onClick={() => removePlayer(i)}
-                                        aria-label={`Remove player ${i + 1}`}
-                                        className="p-2 rounded-lg bg-surface-alt hover:bg-red-500/15 text-muted hover:text-red-500 transition-colors"
-                                    >
-                                        <X size={18} />
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                        {players.length < MAX_PLAYERS && (
-                            <button
-                                onClick={addPlayer}
-                                className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-divider hover:border-ink-soft text-muted hover:text-ink transition-colors"
-                            >
-                                <Plus size={18} /> Add player
-                            </button>
-                        )}
+                    <div className="flex-1 flex flex-col justify-center">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-muted mb-2 text-center">Add players to keep score — or just play</p>
+                        <TeamRosterRow teams={players} onTeamsChange={setPlayers} noun="Player" max={MAX_PLAYERS} persist={false} />
                     </div>
 
                     <Button
