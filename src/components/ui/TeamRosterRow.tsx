@@ -6,10 +6,11 @@ interface TeamRosterRowProps {
     teams: string[];
     onTeamsChange: (next: string[]) => void;
     // Optional overrides so the same compact roster can capture players (5
-    // Alive) as well as teams (Charades / Taboo / Fact or Fiction).
+    // Alive / Truth or Drink) as well as teams (Charades / Taboo / Fact or
+    // Fiction). The saved roster persists across all of them via the shared
+    // session team store.
     noun?: string;        // singular label, e.g. 'Team' (default) or 'Player'
     max?: number;         // max rows (default 4)
-    persist?: boolean;    // write to the shared session team store (default true)
 }
 
 const MIN_TEAMS = 2;
@@ -23,7 +24,7 @@ const MIN_TEAMS = 2;
 // Persistence is handled via SessionService.setTeams; the parent component
 // just passes the current array down + an onTeamsChange callback. We keep a
 // local draft array while editing so the user can cancel without commit.
-const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange, noun = 'Team', max = 4, persist = true }) => {
+const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange, noun = 'Team', max = 4 }) => {
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState<string[]>(['', '']);
     const MAX_TEAMS = max;
@@ -43,13 +44,13 @@ const TeamRosterRow: React.FC<TeamRosterRowProps> = ({ teams, onTeamsChange, nou
 
     const saveEdit = () => {
         const cleaned = draft.map(n => n.trim()).filter(Boolean);
-        if (persist) sessionService.setTeams(cleaned);
+        sessionService.setTeams(cleaned);
         onTeamsChange(cleaned);
         setEditing(false);
     };
 
     const clearTeams = () => {
-        if (persist) sessionService.clearTeams();
+        sessionService.clearTeams();
         onTeamsChange([]);
         setEditing(false);
     };

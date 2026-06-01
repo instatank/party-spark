@@ -6,6 +6,7 @@ import questionData from '../../data/truth_or_drink.json';
 import { generateCustomTruthOrDrink } from '../../services/geminiService';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService, shuffle } from '../../services/SessionManager';
+import TeamRosterRow from '../ui/TeamRosterRow';
 import { GameType } from '../../types';
 
 type Category = 'classic' | 'spicy' | 'deep' | 'exes' | 'chaos' | 'custom';
@@ -180,7 +181,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     };
     const [gameState, setGameState] = useState<GameState>('CATEGORY_SELECT');
     const [category, setCategory] = useState<Category>('classic');
-    const [players, setPlayers] = useState<string[]>(['', '']);
+    const [players, setPlayers] = useState<string[]>(() => sessionService.getTeams());
     const [turnIndex, setTurnIndex] = useState(0);
     const [roundIndex, setRoundIndex] = useState(0);
     const [lastChoice, setLastChoice] = useState<Choice | null>(null);
@@ -235,10 +236,12 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setRoundIndex(0);
         setLastChoice(null);
         setScores({});
-        // No player-roster screen — like MLT / NHIE, a deck tap drops straight
-        // into pass-the-phone play. The custom deck still needs its context
-        // screen before AI generation.
-        setPlayMode('just_play');
+        // No dedicated roster screen — a deck tap drops straight into play.
+        // If the optional roster on the category screen has 2+ names we run
+        // named mode (per-player turns + leaderboard); otherwise it's a
+        // pass-the-phone just-play session, same as MLT / NHIE. Custom deck
+        // still routes to its context screen first for AI generation.
+        setPlayMode(trimmedPlayers.length >= 2 ? 'named' : 'just_play');
         setGameState(c === 'custom' ? 'CUSTOM_SETUP' : 'PROMPT');
     };
 
@@ -314,7 +317,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
 
     const handlePlayAgain = () => {
         setGameState('CATEGORY_SELECT');
-        setPlayers(['', '']);
+        // Keep the saved roster so "Play Again" doesn't wipe the names.
+        setPlayers(sessionService.getTeams());
         setTurnIndex(0);
         setRoundIndex(0);
         setLastChoice(null);
@@ -322,7 +326,6 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setCustomContext('');
         setCustomTone(null);
         setCustomError('');
-        setPlayMode('named');
         setScores({});
     };
 
@@ -345,6 +348,10 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">How honest are you <em>really</em>?</h2>
                     <p className="text-muted text-sm">Answer honestly — or take a sip.</p>
                 </div>
+                {/* Optional roster — add 2+ names to keep score (per-player
+                    truths/drinks leaderboard); leave empty for a no-score
+                    pass-the-phone session. Persists across games. */}
+                <TeamRosterRow teams={players} onTeamsChange={setPlayers} noun="Player" max={10} />
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {CATEGORIES.map(cat => {
