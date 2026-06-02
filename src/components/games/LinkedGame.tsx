@@ -576,7 +576,11 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                                 </div>
 
                                 <div className="text-[11px] text-muted flex items-center justify-between relative z-10">
-                                    <span>{difficulty === 'easy' ? 'Easy' : 'Hard'}{isPass ? ` · ${roundGot} found` : ` · ${roundGot} solved`}</span>
+                                    <span className="flex items-baseline gap-1.5">
+                                        <span>{difficulty === 'easy' ? 'Easy' : 'Hard'} ·</span>
+                                        <span className="font-serif font-black text-xl tabular-nums text-indigo-500 leading-none">{roundGot}</span>
+                                        <span>{isPass ? 'found' : 'solved'}</span>
+                                    </span>
                                     <span className="font-serif italic text-[12px] text-indigo-500">PartySpark</span>
                                 </div>
                             </div>
