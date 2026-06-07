@@ -21,7 +21,8 @@ export enum GameType {
     TRUTH_OR_DRINK = 'TRUTH_OR_DRINK',
     COMPATIBILITY_TEST = 'COMPATIBILITY_TEST',
     FIVE_ALIVE = 'FIVE_ALIVE',
-    LINKED = 'LINKED'
+    LINKED = 'LINKED',
+    JUMBLE = 'JUMBLE'
 }
 
 export type MafiaRole = 'MAFIA' | 'DOCTOR' | 'DETECTIVE' | 'VILLAGER';

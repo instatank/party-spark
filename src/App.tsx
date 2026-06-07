@@ -20,6 +20,7 @@ import { CompatibilityTestGame } from './components/games/CompatibilityTestGame'
 import { TruthOrDrinkGame } from './components/games/TruthOrDrinkGame';
 import { FiveAliveGame } from './components/games/FiveAliveGame';
 import { LinkedGame } from './components/games/LinkedGame';
+import { JumbleGame } from './components/games/JumbleGame';
 
 const SplashScreen = () => (
   <div className="fixed inset-0 z-[100] bg-app flex items-center justify-center overflow-hidden font-sans">
@@ -100,6 +101,8 @@ const App = () => {
         return <FiveAliveGame onExit={() => setActiveGame(GameType.HOME)} />;
       case GameType.LINKED:
         return <LinkedGame onExit={() => setActiveGame(GameType.HOME)} />;
+      case GameType.JUMBLE:
+        return <JumbleGame onExit={() => setActiveGame(GameType.HOME)} />;
       default:
         return <HomeMenu onSelectGame={setActiveGame} />;
     }
