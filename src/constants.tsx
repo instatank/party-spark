@@ -1,6 +1,6 @@
 import { GameType, type GameMeta } from './types';
 
-import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2 } from 'lucide-react';
+import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2, Shuffle } from 'lucide-react';
 
 export const GAMES: GameMeta[] = [
     // --- Play Now (ranked) ---
@@ -66,6 +66,14 @@ export const GAMES: GameMeta[] = [
         description: "Find the word that connects all three.",
         icon: "link",
         color: "bg-indigo-500",
+        minPlayers: 1
+    },
+    {
+        id: GameType.JUMBLE,
+        title: "Jumble",
+        description: "Make as many words as you can before time runs out.",
+        icon: "shuffle",
+        color: "bg-teal-500",
         minPlayers: 1
     },
     {
@@ -144,7 +152,7 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.ROAST]:               { vibe: 'Wild',     duration: '2 min',  players: 'Solo', tags: ['ai', 'quick', 'solo', 'couples', 'spicy'] },
     [GameType.IMPOSTER]:            { vibe: 'Strategy', duration: '10 min', players: '3–8',  tags: ['social', 'deduction', 'crowd'] },
     [GameType.TABOO]:               { vibe: 'Classic',  duration: '5 min',  players: '4+',   tags: ['teams', 'fast', 'crowd'] },
-    [GameType.FACT_OR_FICTION]:     { vibe: 'Trivia',   duration: '5 min',  players: '2+',   tags: ['quick', 'learn', 'couples'] },
+    [GameType.FACT_OR_FICTION]:     { vibe: 'Trivia',   duration: '5 min',  players: '2+',   tags: ['quick', 'learn', 'couples', 'solo'] },
     [GameType.MOST_LIKELY_TO]:      { vibe: 'Gossip',   duration: '15 min', players: '3+',   tags: ['point', 'expose', 'crowd', 'spicy'] },
     [GameType.CHARADES]:            { vibe: 'Classic',  duration: '10 min', players: '4+',   tags: ['teams', 'active', 'crowd'] },
     [GameType.MINI_MAFIA]:          { vibe: 'Strategy', duration: '20 min', players: '5+',   tags: ['betrayal', 'long', 'crowd'] },
@@ -154,13 +162,15 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.WOULD_I_LIE_TO_YOU]:  { vibe: 'Bluff',    duration: '10 min', players: '3+',   tags: ['story', 'read', 'crowd'] },
     [GameType.TRUTH_OR_DRINK]:      { vibe: 'Deep',     duration: '15 min', players: '2+',   tags: ['adult', 'honest', 'spicy', 'couples'] },
     [GameType.COMPATIBILITY_TEST]:  { vibe: 'Connect',  duration: '15 min', players: '2',    tags: ['couple', 'know', 'couples', 'spicy'] },
-    [GameType.FIVE_ALIVE]:          { vibe: 'Speed',    duration: '2 min',  players: '2+',   tags: ['quick', 'speed', 'recall', 'party', 'classic', 'couples'] },
-    [GameType.LINKED]:              { vibe: 'Puzzle',   duration: '5 min',  players: '1+',   tags: ['quick', 'words', 'puzzle', 'classic', 'couples'] },
+    [GameType.FIVE_ALIVE]:          { vibe: 'Speed',    duration: '2 min',  players: '2+',   tags: ['quick', 'speed', 'recall', 'party', 'classic', 'couples', 'solo'] },
+    [GameType.LINKED]:              { vibe: 'Puzzle',   duration: '5 min',  players: '1+',   tags: ['quick', 'words', 'puzzle', 'classic', 'couples', 'solo'] },
+    [GameType.JUMBLE]:              { vibe: 'Words',    duration: '2 min',  players: '1+',   tags: ['solo', 'quick', 'words', 'puzzle'] },
 };
 
 export const HOME_FILTERS = [
     { id: 'all',     label: 'All' },
     { id: 'quick',   label: 'Quick' },
+    { id: 'solo',    label: 'Solo' },
     { id: 'couples', label: 'Couples' },
     { id: 'crowd',   label: 'Crowd' },
     { id: 'spicy',   label: 'Spicy' },
@@ -286,6 +296,7 @@ export const getIcon = (name: string, size: number = 24) => {
         case 'heart': return <Heart size={size} />;
         case 'timer': return <Timer size={size} />;
         case 'link': return <Link2 size={size} />;
+        case 'shuffle': return <Shuffle size={size} />;
         default: return <Sparkles size={size} />;
     }
 };
