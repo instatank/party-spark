@@ -21,7 +21,7 @@ import type Anthropic from '@anthropic-ai/sdk';
 import { getGemini, getClaude, isClaudeConfigured } from './clients.js';
 
 const CLAUDE_MODEL = 'claude-haiku-4-5';
-const GEMINI_MODEL = 'gemini-2.0-flash-001';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 // Lenient JSON-array extractor for Claude responses.
 // Claude usually returns clean JSON, sometimes wraps in ```json fences,
