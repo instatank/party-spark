@@ -27,3 +27,6 @@ dist-ssr
 *.sw?
 .vercel
 .env*.local
+
+# Jumble dev build cache (dictionary, not shipped)
+scripts/.cache/
