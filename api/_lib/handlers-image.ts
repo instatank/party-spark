@@ -10,7 +10,7 @@
 
 import { getGemini } from './clients.js';
 
-const TEXT_MODEL = 'gemini-2.0-flash-001';
+const TEXT_MODEL = 'gemini-2.5-flash';
 const IMAGE_MODEL = 'gemini-3-pro-image-preview';
 
 // Team metadata for the WORLDCUP theme — keeps the jersey + flag specifics in
