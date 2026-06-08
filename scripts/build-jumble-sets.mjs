@@ -30,7 +30,7 @@ const OUT_PATH = join(__dirname, '..', 'src', 'data', 'jumble_sets.json');
 
 // --- tunables ---------------------------------------------------------------
 const TILE_COUNT = 7;
-const MIN_WORD_LEN = 3;
+const MIN_WORD_LEN = 4;        // 3-letter words excluded — 4+ only
 const MIN_WORDS = 20;          // quality gate: a set must yield >= this many words
 const EASY_TARGET = 150;       // how many easy sets to emit
 const HARD_TARGET = 150;       // how many hard sets to emit

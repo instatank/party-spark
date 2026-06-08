@@ -34,7 +34,7 @@ const DIFFICULTY_TILES: { id: JumbleDifficulty; title: string; tagline: string; 
 
 // Friendly one-liners for each rejection so the feedback isn't cryptic.
 const REJECT_MSG: Record<Exclude<ValidationStatus, 'valid'>, string> = {
-    too_short:      'Too short — 3+ letters',
+    too_short:      'Too short — 4+ letters',
     not_formable:   "Can't make that from these tiles",
     missing_center: 'Must use the center letter',
     already_found:  'Already found',
@@ -445,7 +445,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         {difficulty === 'hard'
                             ? <>Every word must use the <span className="font-bold" style={{ color: CENTER }}>center letter</span>. </>
                             : null}
-                        Words are 3+ letters. Longer words score more — a 7-letter <span className="font-bold text-ink">pangram</span> is the jackpot.
+                        Words are 4+ letters. Longer words score more — a 7-letter <span className="font-bold text-ink">pangram</span> is the jackpot.
                     </p>
                     <p className="text-xs text-muted">{duration}s · {difficulty === 'easy' ? 'Easy' : 'Hard'}</p>
                     <Button onClick={startSolo} fullWidth className="h-14 text-lg max-w-[300px]">Start</Button>
