@@ -10,9 +10,14 @@ import {
 
 interface Props { onExit: () => void; }
 
-type GameState = 'MODE_SELECT' | 'DIFFICULTY_SELECT' | 'TIMER_SELECT' | 'READY' | 'TIMER_ACTIVE' | 'END';
+type GameMode = 'solo' | 'multi';
+type GameState = 'MODE_SELECT' | 'DIFFICULTY_SELECT' | 'TIMER_SELECT' | 'SETUP' | 'READY' | 'PASS_TO_NEXT' | 'TIMER_ACTIVE' | 'END';
 
 interface FoundWord { word: string; points: number; pangram: boolean }
+interface PlayerResult { name: string; words: string[] }
+
+const MIN_PLAYERS = 2;
+const MAX_PLAYERS = 8;
 
 const ACCENT = '#14B8A6';        // teal — Jumble's brand color
 const CENTER = '#F59E0B';        // amber — the hard-mode center tile
@@ -70,6 +75,7 @@ const tick = () => beep(700, 0.05, 'square', 0.1);
 
 export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<GameState>('MODE_SELECT');
+    const [mode, setMode] = useState<GameMode>('solo');
     const [difficulty, setDifficulty] = useState<JumbleDifficulty>('easy');
     const [duration, setDuration] = useState<number>(() => {
         const saved = Number(localStorage.getItem(TIMER_KEY));
@@ -88,6 +94,11 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [pangramFlash, setPangramFlash] = useState(false);
     const [remainingMs, setRemainingMs] = useState(duration * 1000);
     const [best, setBest] = useState(0);
+
+    // Pass-and-Play state
+    const [players, setPlayers] = useState<string[]>(['', '']);
+    const [playerIndex, setPlayerIndex] = useState(0);
+    const [results, setResults] = useState<PlayerResult[]>([]);
 
     const answerIndex = useRef<Set<string>>(new Set());
     const foundSet = useRef<Set<string>>(new Set());
@@ -125,27 +136,82 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         raf = requestAnimationFrame(frame);
         return () => cancelAnimationFrame(raf);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState]);
+    }, [gameState, playerIndex]);
 
     // ---- flow ----
-    const startRound = async () => {
-        unlockAudio();
+    const trimmedPlayers = players.map(p => p.trim()).filter(Boolean);
+
+    // Pick one fresh letter set, build its answer index, lay out the tiles.
+    const prepareSet = async (): Promise<void> => {
         const pack = await loadJumblePack();
         const chosen = pickSet(pack, difficulty, seenSets.current);
         seenSets.current.add(setKey(chosen));
         answerIndex.current = buildAnswerIndex(chosen);
-        foundSet.current = new Set();
         setSet(chosen);
         setTiles(shuffle([...chosen.letters]));
+    };
+
+    // Wipe per-turn state (kept separate so a new player reuses the SAME set).
+    const resetTurnState = () => {
+        foundSet.current = new Set();
         setInput('');
         setFound([]);
         setScore(0);
         setFeedback(null);
+    };
+
+    // Solo: a brand-new set every round.
+    const startSolo = async () => {
+        unlockAudio();
+        await prepareSet();
+        resetTurnState();
         setBest(Number(localStorage.getItem(bestKey(difficulty))) || 0);
         setGameState('TIMER_ACTIVE');
     };
 
+    // Multiplayer: one shared set + timer for everyone. Pick the set once, then
+    // loop players through PASS_TO_NEXT → TIMER_ACTIVE.
+    const beginMultiGame = async () => {
+        unlockAudio();
+        await prepareSet();
+        setResults([]);
+        setPlayerIndex(0);
+        setGameState('PASS_TO_NEXT');
+    };
+
+    const handleSetupStart = () => {
+        const clean = players.map(p => p.trim()).filter(Boolean);
+        if (clean.length < MIN_PLAYERS) return;
+        setPlayers(clean);
+        beginMultiGame();
+    };
+
+    // PASS_TO_NEXT → the current player's timed round.
+    const startPlayerTurn = () => {
+        unlockAudio();
+        resetTurnState();
+        setGameState('TIMER_ACTIVE');
+    };
+
+    const playAgain = () => { if (mode === 'multi') beginMultiGame(); else startSolo(); };
+
     const endRound = () => {
+        if (mode === 'multi') {
+            const entry: PlayerResult = {
+                name: (players[playerIndex] || '').trim() || `Player ${playerIndex + 1}`,
+                words: [...foundSet.current],
+            };
+            setResults(prev => [...prev, entry]);
+            if (playerIndex < players.length - 1) {
+                setPlayerIndex(i => i + 1);
+                setGameState('PASS_TO_NEXT');
+            } else {
+                setGameState('END');
+            }
+            return;
+        }
+        // solo — read the live score via the functional updater (avoids the
+        // stale closure the RAF callback would otherwise capture).
         setGameState('END');
         setScore(s => {
             const prevBest = Number(localStorage.getItem(bestKey(difficulty))) || 0;
@@ -154,6 +220,11 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             return s;
         });
     };
+
+    // Player-setup field handlers (multiplayer SETUP screen).
+    const addPlayer = () => { if (players.length < MAX_PLAYERS) setPlayers([...players, '']); };
+    const removePlayer = (i: number) => { if (players.length > MIN_PLAYERS) setPlayers(players.filter((_, idx) => idx !== i)); };
+    const setPlayerName = (i: number, v: string) => { const n = [...players]; n[i] = v; setPlayers(n); };
 
     const flashFeedback = (kind: 'ok' | 'bad' | 'dup', text: string) => {
         setFeedback({ kind, text });
@@ -218,9 +289,9 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         <ModeTile Icon={User} title="Solo" tagline="One round, beat your own best." color={ACCENT}
-                            onClick={() => setGameState('DIFFICULTY_SELECT')} disabled={loading} />
-                        <ModeTile Icon={Users} title="Pass and Play" tagline="Coming soon — same letters, unique words win." color="#64748B"
-                            onClick={() => {}} disabled badge="Soon" />
+                            onClick={() => { setMode('solo'); setGameState('DIFFICULTY_SELECT'); }} disabled={loading} />
+                        <ModeTile Icon={Users} title="Pass and Play" tagline="Same letters — most unique words wins." color="#8B5CF6"
+                            onClick={() => { setMode('multi'); setGameState('DIFFICULTY_SELECT'); }} disabled={loading} />
                     </div>
                     {loading && <p className="text-center text-xs text-muted mt-4">Loading puzzles…</p>}
                 </div>
@@ -294,8 +365,68 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     </div>
                     <p className="text-center text-xs text-muted mt-3">Selected: <span className="font-bold text-ink">{duration}s</span></p>
                     <div className="flex-1" />
-                    <Button onClick={() => setGameState('READY')} fullWidth className="h-14 text-lg max-w-[340px] mx-auto w-full">
+                    <Button onClick={() => setGameState(mode === 'multi' ? 'SETUP' : 'READY')} fullWidth className="h-14 text-lg max-w-[340px] mx-auto w-full">
                         Continue <ArrowRight className="inline ml-2" size={20} />
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
+    // ---- SETUP (multiplayer player names) ----
+    if (gameState === 'SETUP') {
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Who's Playing?" onBack={() => setGameState('TIMER_SELECT')} onHome={onExit} />
+                <div className="px-2 pb-4 flex-1 flex flex-col">
+                    <p className="text-center text-muted text-sm mb-4 -mt-1">Everyone gets the same letters. Most <span className="font-bold text-ink">unique</span> words wins.</p>
+                    <div className="space-y-3 flex-1 max-w-[340px] mx-auto w-full">
+                        {players.map((name, i) => (
+                            <div key={i} className="flex items-center gap-2">
+                                <div className="w-9 h-9 rounded-full bg-teal-500/20 text-teal-500 flex items-center justify-center font-bold text-sm shrink-0">{i + 1}</div>
+                                <input
+                                    type="text" value={name} maxLength={15}
+                                    onChange={e => setPlayerName(i, e.target.value)}
+                                    placeholder={`Player ${i + 1}`}
+                                    className="flex-1 bg-surface-alt border border-divider focus:border-teal-500 rounded-xl p-3 text-ink font-medium placeholder:text-muted outline-none transition-colors"
+                                />
+                                {players.length > MIN_PLAYERS && (
+                                    <button onClick={() => removePlayer(i)} aria-label={`Remove player ${i + 1}`}
+                                        className="p-2 rounded-lg bg-surface-alt hover:bg-red-500/15 text-muted hover:text-red-500 transition-colors">
+                                        <X size={18} />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        {players.length < MAX_PLAYERS && (
+                            <button onClick={addPlayer}
+                                className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-divider hover:border-ink-soft text-muted hover:text-ink transition-colors">
+                                <Plus size={18} /> Add player
+                            </button>
+                        )}
+                    </div>
+                    <Button onClick={handleSetupStart} disabled={trimmedPlayers.length < MIN_PLAYERS}
+                        className={`w-full py-4 text-lg mt-6 max-w-[340px] mx-auto ${trimmedPlayers.length < MIN_PLAYERS ? 'opacity-40' : ''}`}>
+                        Start <ArrowRight className="inline ml-2" size={20} />
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
+    // ---- PASS_TO_NEXT (multiplayer hand-off) ----
+    if (gameState === 'PASS_TO_NEXT') {
+        const name = (players[playerIndex] || '').trim() || `Player ${playerIndex + 1}`;
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Pass the Phone" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <div className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-5 animate-slide-up">
+                    <p className="text-xs uppercase tracking-[0.18em] text-muted">Hand the device to</p>
+                    <h2 className="text-5xl font-black text-ink">{name}</h2>
+                    <p className="text-muted text-sm">Player {playerIndex + 1} of {players.length} · {duration}s · {difficulty === 'easy' ? 'Easy' : 'Hard'}</p>
+                    <p className="text-muted text-xs max-w-[280px]">Same 7 letters for everyone. Don't peek until you tap Go.</p>
+                    <Button onClick={startPlayerTurn} fullWidth className="h-14 text-lg max-w-[300px]">
+                        I'm {name} — Go
                     </Button>
                 </div>
             </div>
@@ -317,13 +448,74 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         Words are 3+ letters. Longer words score more — a 7-letter <span className="font-bold text-ink">pangram</span> is the jackpot.
                     </p>
                     <p className="text-xs text-muted">{duration}s · {difficulty === 'easy' ? 'Easy' : 'Hard'}</p>
-                    <Button onClick={startRound} fullWidth className="h-14 text-lg max-w-[300px]">Start</Button>
+                    <Button onClick={startSolo} fullWidth className="h-14 text-lg max-w-[300px]">Start</Button>
                 </div>
             </div>
         );
     }
 
-    // ---- END ----
+    // ---- END (multiplayer leaderboard — unique-word scoring) ----
+    if (gameState === 'END' && mode === 'multi') {
+        // A word scores for a player only if no one else found it (Boggle rule).
+        const counts = new Map<string, number>();
+        results.forEach(r => r.words.forEach(w => counts.set(w, (counts.get(w) || 0) + 1)));
+        const ranked = results
+            .map(r => {
+                const unique = r.words.filter(w => counts.get(w) === 1);
+                return {
+                    name: r.name,
+                    score: unique.reduce((s, w) => s + scoreForWord(w), 0),
+                    uniqueCount: unique.length,
+                    totalWords: r.words.length,
+                };
+            })
+            .sort((a, b) => b.score - a.score || b.uniqueCount - a.uniqueCount);
+        const topScore = ranked[0]?.score ?? 0;
+        const cancelled = [...counts.values()].filter(n => n >= 2).length;
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Results" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <div className="flex-1 overflow-y-auto px-3 pb-6">
+                    <div className="text-center mt-1 mb-4">
+                        <p className="text-5xl mb-1">🏆</p>
+                        <h2 className="text-2xl font-serif font-bold text-ink">{ranked[0]?.name} wins!</h2>
+                        <p className="text-xs text-muted mt-1">Only words no one else found count. {cancelled} shared word{cancelled === 1 ? '' : 's'} cancelled.</p>
+                    </div>
+                    <div className="max-w-[360px] mx-auto w-full space-y-2">
+                        {ranked.map((r, i) => {
+                            const win = r.score === topScore && topScore > 0;
+                            return (
+                                <div key={r.name + i}
+                                    className={`flex items-center justify-between px-4 py-3 rounded-xl border ${win ? 'bg-teal-500/10 border-teal-500/50' : 'bg-surface border-divider'}`}>
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <span className={`w-6 text-center font-black ${win ? 'text-teal-500' : 'text-muted'}`}>{i + 1}</span>
+                                        <div className="min-w-0">
+                                            <p className="font-bold text-ink truncate">{r.name}</p>
+                                            <p className="text-[11px] text-muted">{r.uniqueCount} unique · {r.totalWords} found</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-2xl font-black tabular-nums" style={{ color: ACCENT }}>{r.score}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {set && (
+                        <p className="text-center text-xs text-muted mt-4">The letters were <span className="font-bold text-ink tracking-widest">{[...set.letters].sort().join('')}</span>{set.pangrams[0] && <> · pangram: <span className="font-bold" style={{ color: CENTER }}>{set.pangrams[0]}</span></>}</p>
+                    )}
+                    <div className="max-w-[340px] mx-auto w-full mt-6 flex flex-col gap-3">
+                        <Button onClick={playAgain} fullWidth className="h-13 text-lg">
+                            <Shuffle className="inline mr-2" size={18} /> Play Again
+                        </Button>
+                        <button onClick={() => setGameState('MODE_SELECT')} className="w-full py-3 rounded-xl font-bold text-sm text-muted hover:text-ink border border-divider transition-colors">
+                            Change level / players
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ---- END (solo) ----
     if (gameState === 'END') {
         const summary = set ? summarizeMisses(set, foundSet.current) : null;
         const isNewBest = score > 0 && score >= best;
@@ -371,7 +563,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     )}
 
                     <div className="max-w-[340px] mx-auto w-full mt-6 flex flex-col gap-3">
-                        <Button onClick={startRound} fullWidth className="h-13 text-lg">
+                        <Button onClick={playAgain} fullWidth className="h-13 text-lg">
                             <Shuffle className="inline mr-2" size={18} /> Play Again
                         </Button>
                         <button onClick={() => setGameState('MODE_SELECT')} className="w-full py-3 rounded-xl font-bold text-sm text-muted hover:text-ink border border-divider transition-colors">
@@ -401,6 +593,12 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     <span className="text-2xl font-black tabular-nums" style={{ color: ACCENT }}>{score}</span>
                 </div>
             </div>
+
+            {mode === 'multi' && (
+                <p className="text-center text-xs font-bold text-teal-500 -mt-1 mb-2 truncate px-4">
+                    {(players[playerIndex] || '').trim() || `Player ${playerIndex + 1}`} · {playerIndex + 1}/{players.length}
+                </p>
+            )}
 
             {/* tiles */}
             <div className={`flex justify-center gap-2 px-2 mb-3 ${pangramFlash ? 'animate-pulse' : ''}`}>
