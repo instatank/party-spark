@@ -27,13 +27,13 @@ interface JumblePack {
     hard: JumbleSet[];
 }
 
-export const MIN_WORD_LEN = 3;
+export const MIN_WORD_LEN = 4;     // 3-letter words are not allowed — 4+ only
 export const TILE_COUNT = 7;
 
 // Length-weighted scoring. Longer words are worth disproportionately more so
-// players hunt for length instead of spamming 3-letter words. A 7-letter word
-// is necessarily a pangram (uses all 7 tiles) → top score + celebration in UI.
-const SCORE_BY_LEN: Record<number, number> = { 3: 1, 4: 2, 5: 4, 6: 6, 7: 10 };
+// players hunt for length instead of spamming short words. A 7-letter word is
+// necessarily a pangram (uses all 7 tiles) → top score + celebration in UI.
+const SCORE_BY_LEN: Record<number, number> = { 4: 2, 5: 4, 6: 6, 7: 10 };
 
 export const scoreForWord = (word: string): number => SCORE_BY_LEN[word.length] ?? 0;
 
