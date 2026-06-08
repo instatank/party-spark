@@ -15,8 +15,9 @@ export type JumbleDifficulty = 'easy' | 'hard';
 export interface JumbleSet {
     letters: string;        // 7 uppercase tiles (a multiset; may repeat)
     center?: string;        // hard mode only — the required letter
-    words: string[];        // full answer key (uppercase, sorted long→short)
-    pangrams: string[];     // 7-letter answers that use every tile
+    words: string[];        // full answer key (uppercase, sorted long→short) — accepts any real word
+    commonWords?: string[]; // Easy only — the common subset shown/targeted (end screen + max-score)
+    pangrams: string[];     // 7-letter answers that use every tile (Easy: common ones)
 }
 
 interface JumblePack {
@@ -134,14 +135,19 @@ export interface MissedSummary {
 }
 
 export const summarizeMisses = (set: JumbleSet, found: Set<string>): MissedSummary => {
-    const missed = set.words.filter(w => !found.has(w));
-    const foundPangram = set.pangrams.some(p => found.has(p));
-    const maxPossibleScore = set.words.reduce((sum, w) => sum + scoreForWord(w), 0);
+    // On Easy we measure against the COMMON subset — the realistic target — so
+    // the "missed words" list and the % of max aren't dominated by obscure
+    // Scrabble words the player was never expected to find. Hard uses the
+    // full list. A true pangram is any 7-letter word the player found.
+    const universe = set.commonWords ?? set.words;
+    const missed = universe.filter(w => !found.has(w));
+    const foundPangram = [...found].some(w => w.length === TILE_COUNT);
+    const maxPossibleScore = universe.reduce((sum, w) => sum + scoreForWord(w), 0);
     return {
         missed,
         topMisses: missed.filter(w => w.length >= 5),
         foundPangram,
-        totalPossible: set.words.length,
+        totalPossible: universe.length,
         maxPossibleScore,
     };
 };
