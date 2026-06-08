@@ -528,7 +528,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         <p className="text-6xl font-black tabular-nums" style={{ color: ACCENT }}>{score}</p>
                         <p className="text-xs text-muted mt-1">
                             {found.length} word{found.length === 1 ? '' : 's'} · best {Math.max(best, score)}
-                            {summary && <> · {Math.round((score / Math.max(1, summary.maxPossibleScore)) * 100)}% of max</>}
+                            {summary && <> · {Math.min(100, Math.round((score / Math.max(1, summary.maxPossibleScore)) * 100))}% of max</>}
                         </p>
                         {isNewBest && <p className="text-xs font-bold mt-1" style={{ color: CENTER }}>🏆 New personal best!</p>}
                         {summary?.foundPangram && <p className="text-xs font-bold mt-1 text-teal-500">✨ You found a pangram!</p>}
