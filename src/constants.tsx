@@ -37,12 +37,12 @@ export const GAMES: GameMeta[] = [
         minPlayers: 2
     },
     {
-        id: GameType.CHARADES,
-        title: "Charades",
-        description: "Act out words silently!",
-        icon: "drama",
-        color: "bg-[#EFC050]",
-        minPlayers: 4
+        id: GameType.JUMBLE,
+        title: "Jumble",
+        description: "Make as many words as you can before time runs out.",
+        icon: "shuffle",
+        color: "bg-teal-500",
+        minPlayers: 1
     },
     {
         id: GameType.TABOO,
@@ -50,6 +50,14 @@ export const GAMES: GameMeta[] = [
         description: "Describe it without forbidden words.",
         icon: "ban",
         color: "bg-[#F0656D]",
+        minPlayers: 4
+    },
+    {
+        id: GameType.CHARADES,
+        title: "Charades",
+        description: "Act out words silently!",
+        icon: "drama",
+        color: "bg-[#EFC050]",
         minPlayers: 4
     },
     {
@@ -66,14 +74,6 @@ export const GAMES: GameMeta[] = [
         description: "Find the word that connects all three.",
         icon: "link",
         color: "bg-indigo-500",
-        minPlayers: 1
-    },
-    {
-        id: GameType.JUMBLE,
-        title: "Jumble",
-        description: "Make as many words as you can before time runs out.",
-        icon: "shuffle",
-        color: "bg-teal-500",
         minPlayers: 1
     },
     {
