@@ -268,7 +268,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     if (gameState === 'MODE_SELECT') {
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="Jumble" onBack={onExit} onHome={onExit} />
+                <ScreenHeader title="Scramble" onBack={onExit} onHome={onExit} />
                 <div className="text-center mb-4 -mt-3">
                     <p className="text-3xl mb-1.5 leading-none">🔠</p>
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">How many words can you <em>find</em>?</h2>
@@ -531,7 +531,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     // ---- TIMER_ACTIVE ----
     return (
         <div className="h-full flex flex-col">
-            <ScreenHeader title="Jumble" onBack={onExit} onHome={onExit} confirmOnExit />
+            <ScreenHeader title="Scramble" onBack={onExit} onHome={onExit} confirmOnExit />
 
             {/* timer + score row (centered timer, score right — matches Charades/Taboo) */}
             <div className="grid grid-cols-3 items-center mb-3 px-1">
