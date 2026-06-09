@@ -9,6 +9,7 @@ import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { useTheme } from '../../contexts/ThemeContext';
 import TeamRosterRow from '../ui/TeamRosterRow';
+import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
 
 interface Props {
     onExit: () => void;
@@ -36,7 +37,8 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     const [loading, setLoading] = useState(false);
     const [gameState, setGameState] = useState<'SETUP' | 'TEAM_INTRO' | 'PLAYING' | 'SUMMARY'>('SETUP');
     const [score, setScore] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(60);
+    const [duration, setDuration] = useState(() => loadTimerPref('charades_timer'));
+    const [timeLeft, setTimeLeft] = useState(duration);
     const [category, setCategory] = useState("mix_movies");
     const { prefetchGameContent } = useContent();
 
@@ -146,7 +148,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         setGameState('PLAYING');
         setScore(0);
         setCurrentIndex(0);
-        setTimeLeft(60);
+        setTimeLeft(duration);
     };
 
     // End the current team's round. In team mode, push the score onto the
@@ -242,7 +244,10 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                 <div className="text-center mb-4 -mt-3">
                     <p className="text-3xl mb-1.5 leading-none">🎭</p>
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">All mime, <em>no</em> words.</h2>
-                    <p className="text-muted text-sm">60 seconds to act it out.</p>
+                    <p className="text-muted text-sm">{duration} seconds to act it out.</p>
+                </div>
+                <div className="flex justify-center mb-3">
+                    <TimerSetting duration={duration} onPick={s => { setDuration(s); setTimeLeft(s); saveTimerPref('charades_timer', s); }} accent="#EFC050" />
                 </div>
                 <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
                 <div className="flex-1 overflow-y-auto pb-8">
