@@ -84,8 +84,8 @@ This bit us several times. If you add a new accent color, verify it in the compi
 
 | Game | GameType | Mechanic | AI | Notes |
 |---|---|---|---|---|
-| Charades | `CHARADES` | Describe without forbidden words | Gemini (refills) | Timer-based |
-| Taboo | `TABOO` | Word guessing with banned terms | Local + Gemini fallback | |
+| Charades | `CHARADES` | Describe without forbidden words | Gemini (refills) | Round timer editable via the shared `TimerSetting` chip on SETUP (default 60s, persisted) |
+| Taboo | `TABOO` | Word guessing with banned terms | Local + Gemini fallback | Round timer editable via the shared `TimerSetting` chip on the CATEGORY screen (default 60s, persisted) |
 | Roast Me | `ROAST` | AI roast from uploaded image | Gemini (image + text) | Uses image gen, can't swap to Claude |
 | Imposter | `IMPOSTER` | Find the fake among friends | Gemini | |
 | Would You Rather | `WOULD_YOU_RATHER` | Paired dilemmas | Local static data | |
