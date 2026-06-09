@@ -55,6 +55,12 @@ const SplashScreen = () => (
   </div>
 );
 
+// Front-end toggle for the "Play Now / Coming Soon" tab bar. Set to `true`
+// to bring the tabs back (useful while building/testing the Coming Soon
+// roster). When `false`, the tabs are hidden and only the Play Now games
+// show — but all the Coming Soon games + tab logic stay intact in code.
+const SHOW_TABS = false;
+
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [activeGame, setActiveGame] = useState<GameType>(GameType.HOME);
@@ -194,7 +200,10 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
   // Filter chain: tab → chip → search query.
   // Search matches title, description, vibe, and tags.
   const displayGames = useMemo(() => {
-    const inTab = activeTab === 'active'
+    // When the tabs are hidden, always show the Play Now set (Coming Soon
+    // games stay in code but never surface on the front end).
+    const effectiveTab = SHOW_TABS ? activeTab : 'active';
+    const inTab = effectiveTab === 'active'
       ? GAMES.filter(g => !comingSoonGameIds.includes(g.id))
       : comingSoonGameIds
           .map(id => GAMES.find(g => g.id === id))
@@ -227,7 +236,9 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
           <span className="text-gold font-bold">A</span>lways <span className="text-gold font-bold">I</span>nvited
         </p>
 
-        {/* Tab Navigation */}
+        {/* Tab Navigation — hidden on the front end via SHOW_TABS; flip the
+            flag to bring Play Now / Coming Soon back for testing. */}
+        {SHOW_TABS && (
         <div className="grid grid-cols-3 border-b border-divider pb-0">
           <button
             onClick={() => setActiveTab('active')}
@@ -256,6 +267,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
             )}
           </button>
         </div>
+        )}
       </header>
 
       {/* Adult content PIN gate */}
