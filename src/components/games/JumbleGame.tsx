@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Shuffle, Delete, Plus, ArrowRight, User, Users, Check, X } from 'lucide-react';
+import { Shuffle, Delete, Plus, ArrowRight, User, Users, Check, X, Timer, Pencil } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
     loadJumblePack, pickSet, buildAnswerIndex, validateWord, summarizeMisses,
@@ -11,7 +11,7 @@ import {
 interface Props { onExit: () => void; }
 
 type GameMode = 'solo' | 'multi';
-type GameState = 'MODE_SELECT' | 'DIFFICULTY_SELECT' | 'TIMER_SELECT' | 'SETUP' | 'READY' | 'PASS_TO_NEXT' | 'TIMER_ACTIVE' | 'END';
+type GameState = 'MODE_SELECT' | 'DIFFICULTY_SELECT' | 'SETUP' | 'READY' | 'PASS_TO_NEXT' | 'TIMER_ACTIVE' | 'END';
 
 interface FoundWord { word: string; points: number; pangram: boolean }
 interface PlayerResult { name: string; words: string[] }
@@ -81,7 +81,6 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         const saved = Number(localStorage.getItem(TIMER_KEY));
         return TIMER_PRESETS.includes(saved) || (saved >= 15 && saved <= 300) ? saved : DEFAULT_DURATION;
     });
-    const [customTimer, setCustomTimer] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [loadError, setLoadError] = useState(false);
@@ -260,11 +259,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const onShuffle = () => setTiles(t => shuffle([...t]));
     const onClear = () => setInput('');
 
-    const pickTimer = (secs: number) => { setDuration(secs); setCustomTimer(''); localStorage.setItem(TIMER_KEY, String(secs)); };
-    const applyCustom = () => {
-        const n = Math.round(Number(customTimer));
-        if (n >= 15 && n <= 300) { setDuration(n); localStorage.setItem(TIMER_KEY, String(n)); }
-    };
+    const onPickTimer = (secs: number) => { setDuration(secs); localStorage.setItem(TIMER_KEY, String(secs)); };
 
     const sec = Math.max(0, Math.ceil(remainingMs / 1000));
     const low = sec <= 10;
@@ -304,12 +299,15 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Pick a Level" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <div className="flex justify-center mb-4">
+                    <TimerSetting duration={duration} onPick={onPickTimer} />
+                </div>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {DIFFICULTY_TILES.map(t => {
                             const Icon = t.Icon;
                             return (
-                                <button key={t.id} onClick={() => { setDifficulty(t.id); setGameState('TIMER_SELECT'); }}
+                                <button key={t.id} onClick={() => { setDifficulty(t.id); setGameState(mode === 'multi' ? 'SETUP' : 'READY'); }}
                                     className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer">
                                     <div className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden">
                                         <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]" style={{ background: t.color }} />
@@ -332,52 +330,11 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
-    // ---- TIMER_SELECT ----
-    if (gameState === 'TIMER_SELECT') {
-        return (
-            <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="Round Length" onBack={() => setGameState('DIFFICULTY_SELECT')} onHome={onExit} />
-                <div className="px-2 pb-4 flex-1 flex flex-col">
-                    <p className="text-center text-muted text-sm mb-5 -mt-1">How long is each round?</p>
-                    <div className="grid grid-cols-2 gap-3 max-w-[340px] mx-auto w-full">
-                        {TIMER_PRESETS.map(s => {
-                            const active = duration === s && !customTimer;
-                            return (
-                                <button key={s} onClick={() => pickTimer(s)}
-                                    className="rounded-xl py-5 font-black text-2xl tabular-nums border-2 transition-colors"
-                                    style={active
-                                        ? { background: ACCENT, color: '#fff', borderColor: ACCENT }
-                                        : { borderColor: 'var(--color-divider)', color: 'var(--color-ink)' }}>
-                                    {s}<span className="text-sm font-bold">s</span>
-                                </button>
-                            );
-                        })}
-                    </div>
-                    <div className="max-w-[340px] mx-auto w-full mt-4 flex items-center gap-2">
-                        <input
-                            type="number" inputMode="numeric" min={15} max={300} placeholder="Custom (15–300s)"
-                            value={customTimer}
-                            onChange={e => setCustomTimer(e.target.value)}
-                            onBlur={applyCustom}
-                            className="flex-1 bg-surface-alt border border-divider focus:border-teal-500 rounded-xl p-3 text-ink placeholder:text-muted outline-none transition-colors text-sm"
-                        />
-                        <button onClick={applyCustom} className="px-4 py-3 rounded-xl bg-surface-alt border border-divider text-ink-soft hover:text-ink text-sm font-bold">Set</button>
-                    </div>
-                    <p className="text-center text-xs text-muted mt-3">Selected: <span className="font-bold text-ink">{duration}s</span></p>
-                    <div className="flex-1" />
-                    <Button onClick={() => setGameState(mode === 'multi' ? 'SETUP' : 'READY')} fullWidth className="h-14 text-lg max-w-[340px] mx-auto w-full">
-                        Continue <ArrowRight className="inline ml-2" size={20} />
-                    </Button>
-                </div>
-            </div>
-        );
-    }
-
     // ---- SETUP (multiplayer player names) ----
     if (gameState === 'SETUP') {
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="Who's Playing?" onBack={() => setGameState('TIMER_SELECT')} onHome={onExit} />
+                <ScreenHeader title="Who's Playing?" onBack={() => setGameState('DIFFICULTY_SELECT')} onHome={onExit} />
                 <div className="px-2 pb-4 flex-1 flex flex-col">
                     <p className="text-center text-muted text-sm mb-4 -mt-1">Everyone gets the same letters. Most <span className="font-bold text-ink">unique</span> words wins.</p>
                     <div className="space-y-3 flex-1 max-w-[340px] mx-auto w-full">
@@ -437,7 +394,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     if (gameState === 'READY') {
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="Ready?" onBack={() => setGameState('TIMER_SELECT')} onHome={onExit} />
+                <ScreenHeader title="Ready?" onBack={() => setGameState('DIFFICULTY_SELECT')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center px-6 text-center gap-5 animate-slide-up">
                     <p className="text-5xl">🔠</p>
                     <h2 className="text-2xl font-serif font-bold text-ink">Find as many words as you can</h2>
@@ -697,6 +654,56 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title
         {children}
     </div>
 );
+
+// Editable round-timer chip — shows the current length with a pencil; tapping
+// opens a small bottom-sheet of presets + a custom field. No dedicated step.
+// Self-contained (owns its open/custom state) so it can be lifted into other
+// games (Charades / Taboo) later. Persistence is the parent's job via onPick.
+const TimerSetting: React.FC<{ duration: number; onPick: (secs: number) => void }> = ({ duration, onPick }) => {
+    const [open, setOpen] = useState(false);
+    const [custom, setCustom] = useState('');
+    const choose = (s: number) => { onPick(s); setCustom(''); setOpen(false); };
+    const applyCustom = () => { const n = Math.round(Number(custom)); if (n >= 15 && n <= 300) choose(n); };
+    return (
+        <>
+            <button onClick={() => setOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-alt border border-divider hover:border-ink-soft/40 text-ink text-sm font-bold transition-colors">
+                <Timer size={14} className="text-teal-500" />
+                {duration}s round
+                <Pencil size={12} className="text-muted" />
+            </button>
+            {open && (
+                <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 animate-fade-in" onClick={() => setOpen(false)}>
+                    <div className="w-full max-w-md bg-surface border-t border-divider rounded-t-2xl p-5 pb-7 animate-slide-up" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between mb-4">
+                            <p className="text-sm font-bold text-ink">Round length</p>
+                            <button onClick={() => setOpen(false)} aria-label="Close" className="text-muted hover:text-ink"><X size={18} /></button>
+                        </div>
+                        <div className="grid grid-cols-4 gap-2">
+                            {TIMER_PRESETS.map(s => {
+                                const active = duration === s;
+                                return (
+                                    <button key={s} onClick={() => choose(s)}
+                                        className="rounded-xl py-3 font-black text-lg tabular-nums border-2 transition-colors"
+                                        style={active ? { background: ACCENT, color: '#fff', borderColor: ACCENT } : { borderColor: 'var(--color-divider)', color: 'var(--color-ink)' }}>
+                                        {s}<span className="text-xs font-bold">s</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="flex items-center gap-2 mt-3">
+                            <input type="number" inputMode="numeric" min={15} max={300} placeholder="Custom (15–300s)"
+                                value={custom} onChange={e => setCustom(e.target.value)}
+                                onKeyDown={e => { if (e.key === 'Enter') applyCustom(); }}
+                                className="flex-1 bg-surface-alt border border-divider focus:border-teal-500 rounded-xl p-3 text-ink placeholder:text-muted outline-none transition-colors text-sm" />
+                            <button onClick={applyCustom} className="px-4 py-3 rounded-xl bg-surface-alt border border-divider text-ink-soft hover:text-ink text-sm font-bold">Set</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+};
 
 // Fisher–Yates shuffle (used for both tiles and… nothing else here).
 function shuffle<T>(arr: T[]): T[] {
