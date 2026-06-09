@@ -310,7 +310,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         </div>
 
         <div
-          className={`search-overlay absolute inset-0 flex items-center gap-2 bg-surface-alt border border-divider rounded-xl px-3 transition-opacity ${
+          className={`search-overlay absolute inset-0 flex items-center gap-2 bg-surface border border-divider rounded-xl px-3 transition-opacity ${
             searchOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
         >
