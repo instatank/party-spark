@@ -38,7 +38,7 @@ export const GAMES: GameMeta[] = [
     },
     {
         id: GameType.JUMBLE,
-        title: "Jumble",
+        title: "Scramble",
         description: "Make as many words as you can before time runs out.",
         icon: "shuffle",
         color: "bg-teal-500",
