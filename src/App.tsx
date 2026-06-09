@@ -227,12 +227,12 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
 
   return (
     <div className="flex flex-col gap-2.5 animate-slide-up min-h-[80vh]">
-      <header className="pt-1 pb-1 text-center relative">
+      <header className="pt-1 pb-0 text-center relative">
         <ThemeToggle className="absolute top-1 right-0" />
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gold mb-1 font-serif flex items-center justify-center gap-2">
           PartySpark <span className="text-2xl sm:text-3xl">✨</span>
         </h1>
-        <p className="text-muted text-sm sm:text-base mb-2.5">
+        <p className="text-muted text-sm sm:text-base mb-1">
           <span className="text-gold font-bold">A</span>lways <span className="text-gold font-bold">I</span>nvited
         </p>
 
