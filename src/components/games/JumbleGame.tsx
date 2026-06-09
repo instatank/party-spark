@@ -75,6 +75,7 @@ const tick = () => beep(700, 0.05, 'square', 0.1);
 export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<GameState>('MODE_SELECT');
     const [mode, setMode] = useState<GameMode>('solo');
+    const [showHowToPlay, setShowHowToPlay] = useState(false);
     const [difficulty, setDifficulty] = useState<JumbleDifficulty>('easy');
     const [duration, setDuration] = useState<number>(() => loadTimerPref(TIMER_KEY));
 
@@ -273,6 +274,19 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     <p className="text-3xl mb-1.5 leading-none">🔠</p>
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">How many words can you <em>find</em>?</h2>
                     <p className="text-muted text-sm">7 letters. Beat the clock.</p>
+                </div>
+                <div className="text-center mb-3">
+                    <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-teal-500 border border-teal-500/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block rounded shadow-lg uppercase">
+                        {showHowToPlay ? 'Hide Rules' : 'How To Play'}
+                    </button>
+                    {showHowToPlay && (
+                        <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
+                            <p><strong className="text-ink">1. GOAL:</strong> Make as many words as you can from the 7 scrambled letters before the timer runs out. Tap the tiles or type, then hit +.</p>
+                            <p><strong className="text-teal-500">2. WORDS:</strong> 4+ letters only. Longer words score more — a 7-letter word (a <strong className="text-ink">pangram</strong>) is the jackpot.</p>
+                            <p><strong className="text-amber-500">3. HARD MODE:</strong> every word must include the highlighted <strong style={{ color: CENTER }}>center letter</strong>. Easy uses any of the 7.</p>
+                            <p><strong className="text-violet-500">4. PLAY:</strong> Go <strong className="text-ink">Solo</strong> to beat your best, or <strong className="text-ink">Pass and Play</strong> — everyone gets the same letters and the most <em>unique</em> words wins (shared words cancel).</p>
+                        </div>
+                    )}
                 </div>
                 {loadError && (
                     <p className="text-center text-xs text-red-500 mb-2">Couldn't load puzzles. Check your connection and reopen.</p>
