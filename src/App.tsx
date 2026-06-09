@@ -217,13 +217,13 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
   }, [activeTab, query, filter]);
 
   return (
-    <div className="flex flex-col gap-4 animate-slide-up min-h-[80vh]">
+    <div className="flex flex-col gap-2.5 animate-slide-up min-h-[80vh]">
       <header className="pt-1 pb-1 text-center relative">
         <ThemeToggle className="absolute top-1 right-0" />
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gold mb-1 font-serif flex items-center justify-center gap-2">
           PartySpark <span className="text-2xl sm:text-3xl">✨</span>
         </h1>
-        <p className="text-muted text-sm sm:text-base mb-4">
+        <p className="text-muted text-sm sm:text-base mb-2.5">
           <span className="text-gold font-bold">A</span>lways <span className="text-gold font-bold">I</span>nvited
         </p>
 
@@ -231,7 +231,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         <div className="grid grid-cols-3 border-b border-divider pb-0">
           <button
             onClick={() => setActiveTab('active')}
-            className={`col-span-2 text-center pb-3 px-2 text-lg font-medium transition-colors relative ${
+            className={`col-span-2 text-center pb-2.5 px-2 text-lg font-medium transition-colors relative ${
               activeTab === 'active'
                 ? 'text-ink'
                 : 'text-muted hover:text-ink-soft'
@@ -244,7 +244,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
           </button>
           <button
             onClick={() => setActiveTab('comingSoon')}
-            className={`col-span-1 text-center pb-3 px-2 text-sm sm:text-base font-medium transition-colors relative flex items-center justify-center ${
+            className={`col-span-1 text-center pb-2.5 px-2 text-sm sm:text-base font-medium transition-colors relative flex items-center justify-center ${
               activeTab === 'comingSoon'
                 ? 'text-ink'
                 : 'text-muted hover:text-ink-soft'
