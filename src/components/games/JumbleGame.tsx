@@ -569,6 +569,12 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                 })}
             </div>
 
+            {set?.center && (
+                <p className="text-center text-[11px] font-bold mb-1" style={{ color: CENTER }}>
+                    Every word must use the highlighted letter
+                </p>
+            )}
+
             {/* feedback line */}
             <div className="h-5 text-center mb-1">
                 {feedback && (
