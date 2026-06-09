@@ -36,10 +36,10 @@ const TILE_COUNT = 7;
 const MIN_WORD_LEN = 4;          // 3-letter words excluded — 4+ only
 const PANGRAM_RANK = 15000;      // Easy pangram seed must be within the N most-common words
 const COMMON_RANK = 28000;       // a word counts as "common" (Easy display pool) within this rank
-const MIN_COMMON_EASY = 12;      // Easy gate: at least this many common findable words
+const MIN_COMMON_EASY = 15;      // Easy gate: at least this many common findable words
 const MIN_WORDS_HARD = 20;       // Hard gate: at least this many words (containing the center)
-const EASY_TARGET = 150;
-const HARD_TARGET = 150;
+const EASY_TARGET = 300;
+const HARD_TARGET = 250;
 const MAX_ATTEMPTS = 400000;
 
 const VOWELS = 'AAAEEEEEIIIOOOUU';
