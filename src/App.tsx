@@ -350,7 +350,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
             <Card
               key={game.id}
               onClick={() => handleSelectGame(game.id)}
-              className="game-card !p-4 group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95"
+              className="game-card !px-4 !py-3 group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95"
             >
               {/* Background Gradient Blob */}
               <div className={`absolute top-0 right-0 w-32 h-32 opacity-20 rounded-full blur-3xl -mr-10 -mt-10 ${game.color}`} />
