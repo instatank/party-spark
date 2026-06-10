@@ -72,6 +72,10 @@ const dingPangram = () => { beep(880, 0.18); setTimeout(() => beep(1320, 0.25), 
 const buzzEnd = () => { beep(180, 0.5, 'sawtooth', 0.2); };
 const tick = () => beep(700, 0.05, 'square', 0.1);
 
+// Keep the play screen pinned to the top — the input's focus + the keyboard
+// show/hide otherwise nudge the page down, cutting off the tiles.
+const scrollTopSoon = () => requestAnimationFrame(() => window.scrollTo(0, 0));
+
 export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<GameState>('MODE_SELECT');
     const [mode, setMode] = useState<GameMode>('solo');
@@ -252,8 +256,9 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         }
         setInput('');
         // Keep the keyboard up + cursor active so the next word can be typed
-        // without re-tapping the box.
-        inputRef.current?.focus();
+        // without re-tapping the box — and don't let focus scroll the page.
+        inputRef.current?.focus({ preventScroll: true });
+        scrollTopSoon();
     };
 
     const tapTile = (i: number) => setInput(v => v + tiles[i]);
@@ -676,6 +681,8 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         value={input}
                         onChange={e => setInput(e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase())}
                         onKeyDown={e => { if (e.key === 'Enter') submit(); }}
+                        onFocus={scrollTopSoon}
+                        onBlur={scrollTopSoon}
                         placeholder="Type or tap tiles"
                         autoCapitalize="characters" autoCorrect="off" autoComplete="off"
                         className="flex-1 bg-surface-alt border-2 border-divider focus:border-teal-500 rounded-xl px-4 py-3 text-ink font-bold text-lg tracking-[0.15em] uppercase placeholder:text-muted placeholder:tracking-normal placeholder:font-medium placeholder:text-sm outline-none transition-colors"
