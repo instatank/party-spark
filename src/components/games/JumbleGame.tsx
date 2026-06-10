@@ -101,6 +101,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const seenSets = useRef<Set<string>>(new Set());      // session dedupe
     const fbTimer = useRef<number | null>(null);
     const lastTickSec = useRef(99);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const totalSeconds = duration;
 
@@ -250,6 +251,9 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             flashFeedback('bad', REJECT_MSG[res.status]);
         }
         setInput('');
+        // Keep the keyboard up + cursor active so the next word can be typed
+        // without re-tapping the box.
+        inputRef.current?.focus();
     };
 
     const tapTile = (i: number) => setInput(v => v + tiles[i]);
@@ -603,6 +607,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             <div className="px-3">
                 <div className="flex items-center gap-2 max-w-[420px] mx-auto">
                     <input
+                        ref={inputRef}
                         value={input}
                         onChange={e => setInput(e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase())}
                         onKeyDown={e => { if (e.key === 'Enter') submit(); }}
@@ -610,7 +615,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         autoCapitalize="characters" autoCorrect="off" autoComplete="off"
                         className="flex-1 bg-surface-alt border-2 border-divider focus:border-teal-500 rounded-xl px-4 py-3 text-ink font-bold text-lg tracking-[0.15em] uppercase placeholder:text-muted placeholder:tracking-normal placeholder:font-medium placeholder:text-sm outline-none transition-colors"
                     />
-                    <button onClick={submit} aria-label="Add word"
+                    <button onClick={submit} onMouseDown={e => e.preventDefault()} aria-label="Add word"
                         className="h-[52px] w-[52px] rounded-xl flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform"
                         style={{ background: ACCENT }}>
                         <Plus size={26} />
