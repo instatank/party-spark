@@ -613,26 +613,20 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         style={{ background: ACCENT + '22' }}
                     />
 
-                    {/* pill (left) + score (right) */}
+                    {/* pill (left) + timer (right) — timer takes the old score slot */}
                     <div className="flex items-center justify-between relative z-10">
                         <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md"
                             style={{ background: ACCENT + '22', color: ACCENT }}>
                             Scramble · {difficulty === 'easy' ? 'Easy' : 'Hard'}
                         </span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-black tabular-nums leading-none" style={{ color: ACCENT }}>{score}</span>
-                            <span className="text-[10px] uppercase tracking-wider text-muted">pts</span>
+                            <span className={`text-3xl font-black tabular-nums leading-none ${low ? 'text-red-500 animate-pulse' : 'text-ink'}`}>{sec}</span>
+                            <span className="text-[10px] uppercase tracking-wider text-muted">sec</span>
                         </div>
                     </div>
 
-                    {/* timer — centered, prominent */}
-                    <div className="flex items-baseline justify-center gap-1.5 relative z-10 mt-3">
-                        <span className={`font-black tabular-nums leading-none ${low ? 'text-red-500 animate-pulse' : 'text-ink'}`} style={{ fontSize: '40px' }}>{sec}</span>
-                        <span className="text-xs uppercase tracking-widest text-muted">sec</span>
-                    </div>
-
                     {/* tiles */}
-                    <div className={`flex justify-center gap-2 relative z-10 mt-4 ${pangramFlash ? 'animate-pulse' : ''}`}>
+                    <div className={`flex justify-center gap-2 relative z-10 mt-5 ${pangramFlash ? 'animate-pulse' : ''}`}>
                         {tiles.map((t, i) => {
                             const isCenter = set?.center === t;
                             return (
@@ -653,10 +647,13 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         </p>
                     )}
 
-                    {/* footer — player turn (multi) + italic PartySpark */}
+                    {/* footer — score (left, small) + italic PartySpark (right) */}
                     <div className="text-[11px] text-muted flex items-center justify-between relative z-10 mt-4">
                         <span className="truncate pr-2">
-                            {mode === 'multi' ? `${(players[playerIndex] || '').trim() || `Player ${playerIndex + 1}`} · ${playerIndex + 1}/${players.length}` : ''}
+                            {mode === 'multi' && (
+                                <span className="text-ink-soft font-semibold">{(players[playerIndex] || '').trim() || `Player ${playerIndex + 1}`} · {playerIndex + 1}/{players.length} · </span>
+                            )}
+                            Score <span className="font-black tabular-nums" style={{ color: ACCENT }}>{score}</span>
                         </span>
                         <span className="font-serif italic text-[12px]" style={{ color: ACCENT }}>PartySpark</span>
                     </div>
