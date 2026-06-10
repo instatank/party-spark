@@ -605,7 +605,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     TOD / NHIE: surface card, decorative blob, accent header pill,
                     italic PartySpark footer. Holds the pill, timer, score + tiles. */}
                 <div
-                    className="w-full bg-surface border border-divider rounded-[22px] p-5 flex flex-col relative overflow-hidden"
+                    className="w-full bg-surface border border-divider rounded-[22px] px-4 py-3.5 flex flex-col relative overflow-hidden"
                     style={{ boxShadow: 'var(--shadow-card)' }}
                 >
                     <div
@@ -626,7 +626,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     </div>
 
                     {/* tiles */}
-                    <div className={`flex justify-center gap-2 relative z-10 mt-5 ${pangramFlash ? 'animate-pulse' : ''}`}>
+                    <div className={`flex justify-center gap-2 relative z-10 mt-4 ${pangramFlash ? 'animate-pulse' : ''}`}>
                         {tiles.map((t, i) => {
                             const isCenter = set?.center === t;
                             return (
@@ -642,13 +642,13 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     </div>
 
                     {set?.center && (
-                        <p className="text-center text-[11px] font-bold mt-3 relative z-10" style={{ color: CENTER }}>
+                        <p className="text-center text-[11px] font-bold mt-2 relative z-10" style={{ color: CENTER }}>
                             Every word must use the highlighted letter
                         </p>
                     )}
 
                     {/* footer — score (left, small) + italic PartySpark (right) */}
-                    <div className="text-[11px] text-muted flex items-center justify-between relative z-10 mt-4">
+                    <div className="text-[11px] text-muted flex items-center justify-between relative z-10 mt-3">
                         <span className="truncate pr-2">
                             {mode === 'multi' && (
                                 <span className="text-ink-soft font-semibold">{(players[playerIndex] || '').trim() || `Player ${playerIndex + 1}`} · {playerIndex + 1}/{players.length} · </span>
@@ -660,7 +660,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                 </div>
 
                 {/* feedback line */}
-                <div className="h-5 text-center mt-2">
+                <div className="h-5 text-center mt-1.5">
                     {feedback && (
                         <span className={`text-sm font-bold ${feedback.kind === 'ok' ? 'text-emerald-500' : feedback.kind === 'dup' ? 'text-amber-500' : 'text-red-500'}`}>
                             {feedback.kind === 'ok' ? <Check size={14} className="inline mr-1" /> : <X size={14} className="inline mr-1" />}
@@ -686,7 +686,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         <Plus size={26} />
                     </button>
                 </div>
-                <div className="flex items-center justify-center gap-3 mt-3 max-w-[420px] mx-auto w-full">
+                <div className="flex items-center justify-center gap-3 mt-2 max-w-[420px] mx-auto w-full">
                     <button onClick={onShuffle} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-surface-alt border border-divider text-ink-soft hover:text-ink text-sm font-bold transition-colors">
                         <Shuffle size={16} /> Shuffle
                     </button>
@@ -696,7 +696,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                 </div>
 
                 {/* found words (newest on top) — no "X of Y" counter shown */}
-                <div className="flex-1 overflow-y-auto mt-4 min-h-0">
+                <div className="flex-1 overflow-y-auto mt-2 min-h-0">
                     <div className="flex flex-wrap gap-1.5 justify-center max-w-[460px] mx-auto pb-4">
                         {found.map(f => (
                             <span key={f.word} className={`text-xs font-bold px-2 py-1 rounded-md ${f.pangram ? 'text-white' : 'text-ink bg-surface-alt border border-divider'}`}
