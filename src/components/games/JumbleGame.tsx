@@ -430,49 +430,98 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         // A word scores for a player only if no one else found it (Boggle rule).
         const counts = new Map<string, number>();
         results.forEach(r => r.words.forEach(w => counts.set(w, (counts.get(w) || 0) + 1)));
-        const ranked = results
+        const byLen = (a: string, b: string) => b.length - a.length || (a < b ? -1 : a > b ? 1 : 0);
+        const detail = results
             .map(r => {
-                const unique = r.words.filter(w => counts.get(w) === 1);
-                return {
-                    name: r.name,
-                    score: unique.reduce((s, w) => s + scoreForWord(w), 0),
-                    uniqueCount: unique.length,
-                    totalWords: r.words.length,
-                };
+                const unique = r.words.filter(w => counts.get(w) === 1).sort(byLen);
+                return { name: r.name, unique, total: r.words.length, score: unique.reduce((s, w) => s + scoreForWord(w), 0) };
             })
-            .sort((a, b) => b.score - a.score || b.uniqueCount - a.uniqueCount);
-        const topScore = ranked[0]?.score ?? 0;
-        const cancelled = [...counts.values()].filter(n => n >= 2).length;
+            .sort((a, b) => b.score - a.score || b.unique.length - a.unique.length);
+        const topScore = detail[0]?.score ?? 0;
+        // Words found by 2+ players (cancelled for everyone), listed once.
+        const sharedAll = [...counts.entries()].filter(([, n]) => n >= 2).map(([w]) => w).sort(byLen);
+        // The group's best misses — the answer key nobody got (Easy = common subset).
+        const unionFound = new Set<string>(results.flatMap(r => r.words));
+        const universe = set ? (set.commonWords ?? set.words) : [];
+        const groupMisses = universe.filter(w => !unionFound.has(w) && w.length >= 5).sort(byLen).slice(0, 30);
+        const pangramFound = [...unionFound].some(w => w.length === TILE_COUNT);
+        const chip = (w: string, kind: 'score' | 'shared' | 'miss') =>
+            kind === 'score'
+                ? <span key={w} className="text-[11px] font-bold px-1.5 py-0.5 rounded text-white" style={{ background: ACCENT }}>{w} <span className="opacity-70">+{scoreForWord(w)}</span></span>
+                : kind === 'shared'
+                ? <span key={w} className="text-[11px] font-medium px-1.5 py-0.5 rounded text-muted bg-surface-alt border border-divider line-through">{w}</span>
+                : <span key={w} className="text-[11px] font-semibold px-1.5 py-0.5 rounded text-ink-soft bg-surface-alt border border-divider">{w} <span className="opacity-50">+{scoreForWord(w)}</span></span>;
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Results" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
                 <div className="flex-1 overflow-y-auto px-3 pb-6">
-                    <div className="text-center mt-1 mb-4">
-                        <p className="text-5xl mb-1">🏆</p>
-                        <h2 className="text-2xl font-serif font-bold text-ink">{ranked[0]?.name} wins!</h2>
-                        <p className="text-xs text-muted mt-1">Only words no one else found count. {cancelled} shared word{cancelled === 1 ? '' : 's'} cancelled.</p>
+                    <div className="text-center mt-1 mb-3">
+                        <p className="text-4xl mb-0.5">🏆</p>
+                        <h2 className="text-2xl font-serif font-bold text-ink">{detail[0]?.name} wins!</h2>
+                        <p className="text-[11px] text-muted mt-1">Only words no one else found score · {sharedAll.length} shared cancelled{pangramFound ? ' · ✨ pangram found' : ''}</p>
                     </div>
-                    <div className="max-w-[360px] mx-auto w-full space-y-2">
-                        {ranked.map((r, i) => {
+
+                    {/* leaderboard */}
+                    <div className="max-w-[400px] mx-auto w-full space-y-1.5">
+                        {detail.map((r, i) => {
                             const win = r.score === topScore && topScore > 0;
                             return (
                                 <div key={r.name + i}
-                                    className={`flex items-center justify-between px-4 py-3 rounded-xl border ${win ? 'bg-teal-500/10 border-teal-500/50' : 'bg-surface border-divider'}`}>
+                                    className={`flex items-center justify-between px-4 py-2.5 rounded-xl border ${win ? 'bg-teal-500/10 border-teal-500/50' : 'bg-surface border-divider'}`}>
                                     <div className="flex items-center gap-3 min-w-0">
-                                        <span className={`w-6 text-center font-black ${win ? 'text-teal-500' : 'text-muted'}`}>{i + 1}</span>
+                                        <span className={`w-5 text-center font-black ${win ? 'text-teal-500' : 'text-muted'}`}>{i + 1}</span>
                                         <div className="min-w-0">
-                                            <p className="font-bold text-ink truncate">{r.name}</p>
-                                            <p className="text-[11px] text-muted">{r.uniqueCount} unique · {r.totalWords} found</p>
+                                            <p className="font-bold text-ink truncate leading-tight">{r.name}</p>
+                                            <p className="text-[10px] text-muted">{r.unique.length} scored · {r.total} found</p>
                                         </div>
                                     </div>
-                                    <span className="text-2xl font-black tabular-nums" style={{ color: ACCENT }}>{r.score}</span>
+                                    <span className="text-xl font-black tabular-nums" style={{ color: ACCENT }}>{r.score}</span>
                                 </div>
                             );
                         })}
                     </div>
-                    {set && (
-                        <p className="text-center text-xs text-muted mt-4">The letters were <span className="font-bold text-ink tracking-widest">{[...set.letters].sort().join('')}</span>{set.pangrams[0] && <> · pangram: <span className="font-bold" style={{ color: CENTER }}>{set.pangrams[0]}</span></>}</p>
+
+                    {/* per-player scoring words */}
+                    <div className="max-w-[460px] mx-auto w-full mt-5 space-y-3">
+                        {detail.map((r, i) => (
+                            <div key={r.name + i}>
+                                <p className="text-[11px] font-bold uppercase tracking-widest text-muted mb-1.5 truncate">{r.name} — scored {r.score}</p>
+                                {r.unique.length > 0 ? (
+                                    <div className="flex flex-wrap gap-1">
+                                        {r.unique.slice(0, 24).map(w => chip(w, 'score'))}
+                                        {r.unique.length > 24 && <span className="text-[11px] text-muted self-center">+{r.unique.length - 24}</span>}
+                                    </div>
+                                ) : (
+                                    <p className="text-[11px] text-muted italic">No words only they found.</p>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* shared (cancelled) words — listed once */}
+                    {sharedAll.length > 0 && (
+                        <Section title={`Cancelled — found by 2+ (${sharedAll.length})`}>
+                            <div className="flex flex-wrap gap-1">
+                                {sharedAll.slice(0, 30).map(w => chip(w, 'shared'))}
+                                {sharedAll.length > 30 && <span className="text-[11px] text-muted self-center">+{sharedAll.length - 30}</span>}
+                            </div>
+                        </Section>
                     )}
+
+                    {/* group misses — the answer key nobody got */}
+                    {groupMisses.length > 0 && (
+                        <div className="max-w-[460px] mx-auto w-full mt-4">
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-muted mb-1.5">Nobody found ({groupMisses.length} big ones)</p>
+                            <div className="flex flex-wrap gap-1">
+                                {groupMisses.map(w => chip(w, 'miss'))}
+                            </div>
+                        </div>
+                    )}
+
+                    {set && (
+                        <p className="text-center text-xs text-muted mt-4">Letters: <span className="font-bold text-ink tracking-widest">{[...set.letters].sort().join('')}</span>{set.pangrams[0] && <> · pangram <span className="font-bold" style={{ color: CENTER }}>{set.pangrams[0]}</span> {pangramFound ? '✓' : '— missed by all'}</>}</p>
+                    )}
+
                     <div className="max-w-[340px] mx-auto w-full mt-6 flex flex-col gap-3">
                         <Button onClick={playAgain} fullWidth className="h-13 text-lg">
                             <Shuffle className="inline mr-2" size={18} /> Play Again
@@ -551,61 +600,80 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         <div className="h-full flex flex-col">
             <ScreenHeader title="Scramble" onBack={onExit} onHome={onExit} confirmOnExit />
 
-            {/* timer + score row (centered timer, score right — matches Charades/Taboo) */}
-            <div className="grid grid-cols-3 items-center mb-3 px-1">
-                <div />
-                <div className="flex justify-center">
-                    <div className="flex items-center gap-1.5 bg-surface border border-divider px-4 py-1.5 rounded-full shadow-lg">
-                        <span className={`font-mono font-bold text-xl tabular-nums ${low ? 'text-red-500 animate-pulse' : 'text-ink'}`}>{sec}</span>
-                        <span className="text-[10px] uppercase tracking-wider text-muted">sec</span>
+            <div className="px-2 flex-1 flex flex-col min-h-0">
+                {/* Themed stage card — same PartySpark play-card family as Taboo /
+                    TOD / NHIE: surface card, decorative blob, accent header pill,
+                    italic PartySpark footer. Holds the pill, timer, score + tiles. */}
+                <div
+                    className="w-full bg-surface border border-divider rounded-[22px] p-5 flex flex-col relative overflow-hidden"
+                    style={{ boxShadow: 'var(--shadow-card)' }}
+                >
+                    <div
+                        className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none"
+                        style={{ background: ACCENT + '22' }}
+                    />
+
+                    {/* pill (left) + score (right) */}
+                    <div className="flex items-center justify-between relative z-10">
+                        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md"
+                            style={{ background: ACCENT + '22', color: ACCENT }}>
+                            Scramble · {difficulty === 'easy' ? 'Easy' : 'Hard'}
+                        </span>
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-black tabular-nums leading-none" style={{ color: ACCENT }}>{score}</span>
+                            <span className="text-[10px] uppercase tracking-wider text-muted">pts</span>
+                        </div>
+                    </div>
+
+                    {/* timer — centered, prominent */}
+                    <div className="flex items-baseline justify-center gap-1.5 relative z-10 mt-3">
+                        <span className={`font-black tabular-nums leading-none ${low ? 'text-red-500 animate-pulse' : 'text-ink'}`} style={{ fontSize: '40px' }}>{sec}</span>
+                        <span className="text-xs uppercase tracking-widest text-muted">sec</span>
+                    </div>
+
+                    {/* tiles */}
+                    <div className={`flex justify-center gap-2 relative z-10 mt-4 ${pangramFlash ? 'animate-pulse' : ''}`}>
+                        {tiles.map((t, i) => {
+                            const isCenter = set?.center === t;
+                            return (
+                                <button key={`${t}-${i}`} onClick={() => tapTile(i)}
+                                    className="w-10 h-12 sm:w-11 sm:h-13 rounded-lg font-black text-xl flex items-center justify-center border-2 transition-transform active:scale-90 shadow-sm"
+                                    style={isCenter
+                                        ? { background: CENTER, color: '#1a1a1a', borderColor: CENTER }
+                                        : { background: 'var(--color-app-tint)', color: 'var(--color-ink)', borderColor: 'var(--color-divider)' }}>
+                                    {t}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {set?.center && (
+                        <p className="text-center text-[11px] font-bold mt-3 relative z-10" style={{ color: CENTER }}>
+                            Every word must use the highlighted letter
+                        </p>
+                    )}
+
+                    {/* footer — player turn (multi) + italic PartySpark */}
+                    <div className="text-[11px] text-muted flex items-center justify-between relative z-10 mt-4">
+                        <span className="truncate pr-2">
+                            {mode === 'multi' ? `${(players[playerIndex] || '').trim() || `Player ${playerIndex + 1}`} · ${playerIndex + 1}/${players.length}` : ''}
+                        </span>
+                        <span className="font-serif italic text-[12px]" style={{ color: ACCENT }}>PartySpark</span>
                     </div>
                 </div>
-                <div className="flex justify-end items-baseline gap-1 pr-1">
-                    <span className="text-2xl font-black tabular-nums" style={{ color: ACCENT }}>{score}</span>
+
+                {/* feedback line */}
+                <div className="h-5 text-center mt-2">
+                    {feedback && (
+                        <span className={`text-sm font-bold ${feedback.kind === 'ok' ? 'text-emerald-500' : feedback.kind === 'dup' ? 'text-amber-500' : 'text-red-500'}`}>
+                            {feedback.kind === 'ok' ? <Check size={14} className="inline mr-1" /> : <X size={14} className="inline mr-1" />}
+                            {feedback.text}
+                        </span>
+                    )}
                 </div>
-            </div>
 
-            {mode === 'multi' && (
-                <p className="text-center text-xs font-bold text-teal-500 -mt-1 mb-2 truncate px-4">
-                    {(players[playerIndex] || '').trim() || `Player ${playerIndex + 1}`} · {playerIndex + 1}/{players.length}
-                </p>
-            )}
-
-            {/* tiles */}
-            <div className={`flex justify-center gap-2 px-2 mb-3 ${pangramFlash ? 'animate-pulse' : ''}`}>
-                {tiles.map((t, i) => {
-                    const isCenter = set?.center === t;
-                    return (
-                        <button key={`${t}-${i}`} onClick={() => tapTile(i)}
-                            className="w-10 h-12 sm:w-11 sm:h-13 rounded-lg font-black text-xl flex items-center justify-center border-2 transition-transform active:scale-90 shadow-sm"
-                            style={isCenter
-                                ? { background: CENTER, color: '#1a1a1a', borderColor: CENTER }
-                                : { background: 'var(--color-surface-alt)', color: 'var(--color-ink)', borderColor: 'var(--color-divider)' }}>
-                            {t}
-                        </button>
-                    );
-                })}
-            </div>
-
-            {set?.center && (
-                <p className="text-center text-[11px] font-bold mb-1" style={{ color: CENTER }}>
-                    Every word must use the highlighted letter
-                </p>
-            )}
-
-            {/* feedback line */}
-            <div className="h-5 text-center mb-1">
-                {feedback && (
-                    <span className={`text-sm font-bold ${feedback.kind === 'ok' ? 'text-emerald-500' : feedback.kind === 'dup' ? 'text-amber-500' : 'text-red-500'}`}>
-                        {feedback.kind === 'ok' ? <Check size={14} className="inline mr-1" /> : <X size={14} className="inline mr-1" />}
-                        {feedback.text}
-                    </span>
-                )}
-            </div>
-
-            {/* input + controls */}
-            <div className="px-3">
-                <div className="flex items-center gap-2 max-w-[420px] mx-auto">
+                {/* input + controls */}
+                <div className="flex items-center gap-2 max-w-[420px] mx-auto w-full mt-1">
                     <input
                         ref={inputRef}
                         value={input}
@@ -621,7 +689,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         <Plus size={26} />
                     </button>
                 </div>
-                <div className="flex items-center justify-center gap-3 mt-3 max-w-[420px] mx-auto">
+                <div className="flex items-center justify-center gap-3 mt-3 max-w-[420px] mx-auto w-full">
                     <button onClick={onShuffle} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-surface-alt border border-divider text-ink-soft hover:text-ink text-sm font-bold transition-colors">
                         <Shuffle size={16} /> Shuffle
                     </button>
@@ -629,17 +697,17 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         <Delete size={16} /> Clear
                     </button>
                 </div>
-            </div>
 
-            {/* found words (newest on top) — no "X of Y" counter shown */}
-            <div className="flex-1 overflow-y-auto px-3 mt-4">
-                <div className="flex flex-wrap gap-1.5 justify-center max-w-[460px] mx-auto pb-4">
-                    {found.map(f => (
-                        <span key={f.word} className={`text-xs font-bold px-2 py-1 rounded-md ${f.pangram ? 'text-white' : 'text-ink bg-surface-alt border border-divider'}`}
-                            style={f.pangram ? { background: CENTER } : undefined}>
-                            {f.word} <span className="opacity-60">+{f.points}</span>
-                        </span>
-                    ))}
+                {/* found words (newest on top) — no "X of Y" counter shown */}
+                <div className="flex-1 overflow-y-auto mt-4 min-h-0">
+                    <div className="flex flex-wrap gap-1.5 justify-center max-w-[460px] mx-auto pb-4">
+                        {found.map(f => (
+                            <span key={f.word} className={`text-xs font-bold px-2 py-1 rounded-md ${f.pangram ? 'text-white' : 'text-ink bg-surface-alt border border-divider'}`}
+                                style={f.pangram ? { background: CENTER } : undefined}>
+                                {f.word} <span className="opacity-60">+{f.points}</span>
+                            </span>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
