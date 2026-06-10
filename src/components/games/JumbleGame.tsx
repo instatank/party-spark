@@ -265,6 +265,15 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const onShuffle = () => setTiles(t => shuffle([...t]));
     const onClear = () => setInput('');
 
+    // On a manual tap into the box the browser scrolls the field into view as
+    // the keyboard opens — which pushes the tiles off the top. Re-pin to the
+    // top across the keyboard's open animation (it fires after our first rAF).
+    const handleInputFocus = () => {
+        scrollTopSoon();
+        setTimeout(() => window.scrollTo(0, 0), 150);
+        setTimeout(() => window.scrollTo(0, 0), 350);
+    };
+
     const onPickTimer = (secs: number) => { setDuration(secs); saveTimerPref(TIMER_KEY, secs); };
 
     const sec = Math.max(0, Math.ceil(remainingMs / 1000));
@@ -681,7 +690,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         value={input}
                         onChange={e => setInput(e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase())}
                         onKeyDown={e => { if (e.key === 'Enter') submit(); }}
-                        onFocus={scrollTopSoon}
+                        onFocus={handleInputFocus}
                         onBlur={scrollTopSoon}
                         placeholder="Type or tap tiles"
                         autoCapitalize="characters" autoCorrect="off" autoComplete="off"
