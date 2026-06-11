@@ -72,10 +72,6 @@ const dingPangram = () => { beep(880, 0.18); setTimeout(() => beep(1320, 0.25), 
 const buzzEnd = () => { beep(180, 0.5, 'sawtooth', 0.2); };
 const tick = () => beep(700, 0.05, 'square', 0.1);
 
-// Keep the play screen pinned to the top — the input's focus + the keyboard
-// show/hide otherwise nudge the page down, cutting off the tiles.
-const scrollTopSoon = () => requestAnimationFrame(() => window.scrollTo(0, 0));
-
 export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<GameState>('MODE_SELECT');
     const [mode, setMode] = useState<GameMode>('solo');
@@ -86,7 +82,8 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [loading, setLoading] = useState(false);
     const [loadError, setLoadError] = useState(false);
     const [set, setSet] = useState<JumbleSet | null>(null);
-    const [tiles, setTiles] = useState<string[]>([]);     // display order (shuffled)
+    const [tiles, setTiles] = useState<string[]>([]);     // the 6 OUTER honeycomb letters (shuffleable)
+    const [centerLetter, setCenterLetter] = useState(''); // the middle hex (amber + required on Hard)
     const [input, setInput] = useState('');
     const [found, setFound] = useState<FoundWord[]>([]);
     const [score, setScore] = useState(0);
@@ -107,7 +104,6 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const fbTimer = useRef<number | null>(null);
     const lastTickSec = useRef(99);
     const tapTimer = useRef<number | null>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
 
     const totalSeconds = duration;
 
@@ -144,14 +140,19 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     // ---- flow ----
     const trimmedPlayers = players.map(p => p.trim()).filter(Boolean);
 
-    // Pick one fresh letter set, build its answer index, lay out the tiles.
+    // Pick one fresh letter set, build its answer index, lay out the honeycomb.
+    // Center hex = the required letter on Hard, else an arbitrary one (no rule).
     const prepareSet = async (): Promise<void> => {
         const pack = await loadJumblePack();
         const chosen = pickSet(pack, difficulty, seenSets.current);
         seenSets.current.add(setKey(chosen));
         answerIndex.current = buildAnswerIndex(chosen);
+        const letters = [...chosen.letters];
+        const center = chosen.center ?? letters[0];
+        letters.splice(letters.indexOf(center), 1);   // remove one instance for the center
         setSet(chosen);
-        setTiles(shuffle([...chosen.letters]));
+        setCenterLetter(center);
+        setTiles(shuffle(letters));                   // 6 outer
     };
 
     // Wipe per-turn state (kept separate so a new player reuses the SAME set).
@@ -257,29 +258,18 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             flashFeedback('bad', REJECT_MSG[res.status]);
         }
         setInput('');
-        // Keep the keyboard up + cursor active so the next word can be typed
-        // without re-tapping the box — and don't let focus scroll the page.
-        inputRef.current?.focus({ preventScroll: true });
-        scrollTopSoon();
     };
 
-    const tapTile = (i: number) => {
-        setInput(v => v + tiles[i]);
-        setTappedIdx(i);                                  // flash the tapped tile
+    // Tap a hex to append its letter. key: -1 = center, 0..5 = outer (for flash).
+    const appendLetter = (letter: string, key: number) => {
+        setInput(v => v + letter);
+        setTappedIdx(key);
         if (tapTimer.current) clearTimeout(tapTimer.current);
         tapTimer.current = window.setTimeout(() => setTappedIdx(null), 200);
     };
+    const backspace = () => setInput(v => v.slice(0, -1));
     const onShuffle = () => setTiles(t => shuffle([...t]));
-    const onClear = () => setInput('');
 
-    // On a manual tap into the box the browser scrolls the field into view as
-    // the keyboard opens — which pushes the tiles off the top. Re-pin to the
-    // top across the keyboard's open animation (it fires after our first rAF).
-    const handleInputFocus = () => {
-        scrollTopSoon();
-        setTimeout(() => window.scrollTo(0, 0), 150);
-        setTimeout(() => window.scrollTo(0, 0), 350);
-    };
 
     const onPickTimer = (secs: number) => { setDuration(secs); saveTimerPref(TIMER_KEY, secs); };
 
@@ -306,7 +296,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     </button>
                     {showHowToPlay && (
                         <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
-                            <p><strong className="text-ink">1. GOAL:</strong> Make as many words as you can from the 7 scrambled letters before the timer runs out. Tap the tiles or type, then hit +.</p>
+                            <p><strong className="text-ink">1. GOAL:</strong> Make as many words as you can from the 7 letters before the timer runs out. Tap the tiles to spell a word, then hit Enter.</p>
                             <p><strong className="text-teal-500">2. WORDS:</strong> 4+ letters only. Longer words score more — a 7-letter word (a <strong className="text-ink">pangram</strong>) is the jackpot.</p>
                             <p><strong className="text-amber-500">3. HARD MODE:</strong> every word must include the highlighted <strong style={{ color: CENTER }}>center letter</strong>. Easy uses any of the 7.</p>
                             <p><strong className="text-violet-500">4. PLAY:</strong> Go <strong className="text-ink">Solo</strong> to beat your best, or <strong className="text-ink">Pass and Play</strong> — everyone gets the same letters and the most <em>unique</em> words wins (shared words cancel).</p>
@@ -617,55 +607,48 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     }
 
     // ---- TIMER_ACTIVE ----
+    // Tap-only honeycomb — no text input / no keyboard. Center hex is the
+    // required letter on Hard (amber); on Easy it's just the middle position.
+    const HEX_CLIP = 'polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%)';
+    const SP_W = 80, SP_H = 70, HEX_W = 76, HEX_H = 66;   // spacing grid vs. visual hex (gap)
+    const outerPos = [
+        { x: 0, y: -SP_H }, { x: 0.75 * SP_W, y: -0.5 * SP_H }, { x: 0.75 * SP_W, y: 0.5 * SP_H },
+        { x: 0, y: SP_H }, { x: -0.75 * SP_W, y: 0.5 * SP_H }, { x: -0.75 * SP_W, y: -0.5 * SP_H },
+    ];
+    const renderHex = (letter: string, key: number, isCenterHex: boolean, x: number, y: number) => {
+        const requiredCenter = isCenterHex && !!set?.center;
+        const pressed = tappedIdx === key;
+        const fill = requiredCenter ? CENTER : (pressed ? ACCENT : 'var(--color-app-tint)');
+        const color = requiredCenter ? '#1a1a1a' : (pressed ? '#ffffff' : 'var(--color-ink)');
+        return (
+            <button key={key} onClick={() => appendLetter(letter, key)}
+                className="absolute flex items-center justify-center font-black text-2xl transition-transform duration-100 active:scale-90 select-none"
+                style={{
+                    width: HEX_W, height: HEX_H,
+                    left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)`,
+                    transform: `translate(-50%, -50%) scale(${pressed ? 0.9 : 1})`,
+                    clipPath: HEX_CLIP, background: fill, color,
+                    filter: 'drop-shadow(0 1px 1.5px rgba(0,0,0,0.25))',
+                }}>
+                {letter}
+            </button>
+        );
+    };
+
     return (
         <div className="h-full flex flex-col">
             <ScreenHeader title="Scramble" onBack={onExit} onHome={onExit} confirmOnExit />
 
             <div className="px-2 flex-1 flex flex-col min-h-0">
-                {/* input + add — kept ABOVE the card so it's easy to see what
-                    you're building while tapping the tiles below. */}
-                <div className="flex items-center gap-2 max-w-[420px] mx-auto w-full mt-1">
-                    <input
-                        ref={inputRef}
-                        value={input}
-                        onChange={e => setInput(e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase())}
-                        onKeyDown={e => { if (e.key === 'Enter') submit(); }}
-                        onFocus={handleInputFocus}
-                        onBlur={scrollTopSoon}
-                        placeholder="Type or tap tiles"
-                        autoCapitalize="characters" autoCorrect="off" autoComplete="off"
-                        className="flex-1 bg-surface-alt border-2 border-divider focus:border-teal-500 rounded-xl px-4 py-3 text-ink font-bold text-lg tracking-[0.15em] uppercase placeholder:text-muted placeholder:tracking-normal placeholder:font-medium placeholder:text-sm outline-none transition-colors"
-                    />
-                    <button onClick={submit} onMouseDown={e => e.preventDefault()} aria-label="Add word"
-                        className="h-[52px] w-[52px] rounded-xl flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform"
-                        style={{ background: ACCENT }}>
-                        <Plus size={26} />
-                    </button>
-                </div>
-
-                {/* feedback line */}
-                <div className="h-5 text-center mt-1.5">
-                    {feedback && (
-                        <span className={`text-sm font-bold ${feedback.kind === 'ok' ? 'text-emerald-500' : feedback.kind === 'dup' ? 'text-amber-500' : 'text-red-500'}`}>
-                            {feedback.kind === 'ok' ? <Check size={14} className="inline mr-1" /> : <X size={14} className="inline mr-1" />}
-                            {feedback.text}
-                        </span>
-                    )}
-                </div>
-
-                {/* Themed stage card — same PartySpark play-card family as Taboo /
-                    TOD / NHIE: surface card, decorative blob, accent header pill,
-                    italic PartySpark footer. Holds the pill, timer, score + tiles. */}
+                {/* Themed stage card — PartySpark play-card family (Taboo / TOD /
+                    NHIE): surface card, accent blob, header pill, italic footer. */}
                 <div
                     className="w-full bg-surface border border-divider rounded-[22px] px-4 py-3.5 flex flex-col relative overflow-hidden mt-1"
                     style={{ boxShadow: 'var(--shadow-card)' }}
                 >
-                    <div
-                        className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none"
-                        style={{ background: ACCENT + '22' }}
-                    />
+                    <div className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none" style={{ background: ACCENT + '22' }} />
 
-                    {/* pill (left) + timer (right) — timer takes the old score slot */}
+                    {/* pill (left) + timer (right) */}
                     <div className="flex items-center justify-between relative z-10">
                         <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md"
                             style={{ background: ACCENT + '22', color: ACCENT }}>
@@ -677,32 +660,22 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         </div>
                     </div>
 
-                    {/* tiles */}
-                    <div className={`flex justify-center gap-2 relative z-10 mt-4 ${pangramFlash ? 'animate-pulse' : ''}`}>
-                        {tiles.map((t, i) => {
-                            const isCenter = set?.center === t;
-                            const pressed = tappedIdx === i;
-                            const base = isCenter
-                                ? { background: CENTER, color: '#1a1a1a', borderColor: CENTER }
-                                : { background: 'var(--color-app-tint)', color: 'var(--color-ink)', borderColor: 'var(--color-divider)' };
-                            // On tap, briefly indent + flash an accent ring so the
-                            // pick is obvious even after the finger lifts.
-                            const style = pressed
-                                ? { ...base, ...(isCenter ? {} : { background: ACCENT + '33', borderColor: ACCENT }), transform: 'scale(0.88)', boxShadow: `inset 0 2px 6px rgba(0,0,0,0.28), 0 0 0 2px ${ACCENT}` }
-                                : base;
-                            return (
-                                <button key={`${t}-${i}`} onClick={() => tapTile(i)}
-                                    className="w-10 h-12 sm:w-11 sm:h-13 rounded-lg font-black text-xl flex items-center justify-center border-2 transition-all duration-100 active:scale-90 shadow-sm"
-                                    style={style}>
-                                    {t}
-                                </button>
-                            );
-                        })}
+                    {/* current word being built (tap the tiles) */}
+                    <div className="relative z-10 mt-3 h-9 flex items-center justify-center">
+                        {input
+                            ? <span className="font-black text-2xl tracking-[0.18em] uppercase text-ink">{input}</span>
+                            : <span className="text-xs text-muted">Tap the letters to build a word</span>}
+                    </div>
+
+                    {/* honeycomb */}
+                    <div className={`relative mx-auto mt-2 ${pangramFlash ? 'animate-pulse' : ''}`} style={{ width: 2.5 * SP_W, height: 3 * SP_H, zIndex: 10 }}>
+                        {outerPos.map((p, i) => renderHex(tiles[i] || '', i, false, p.x, p.y))}
+                        {renderHex(centerLetter, -1, true, 0, 0)}
                     </div>
 
                     {set?.center && (
-                        <p className="text-center text-[11px] font-bold mt-2 relative z-10" style={{ color: CENTER }}>
-                            Every word must use the highlighted letter
+                        <p className="text-center text-[11px] font-bold mt-3 relative z-10" style={{ color: CENTER }}>
+                            Every word must use the amber letter
                         </p>
                     )}
 
@@ -718,18 +691,32 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     </div>
                 </div>
 
-                {/* shuffle / clear */}
-                <div className="flex items-center justify-center gap-3 mt-2 max-w-[420px] mx-auto w-full">
-                    <button onClick={onShuffle} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-surface-alt border border-divider text-ink-soft hover:text-ink text-sm font-bold transition-colors">
+                {/* feedback line */}
+                <div className="h-5 text-center mt-2">
+                    {feedback && (
+                        <span className={`text-sm font-bold ${feedback.kind === 'ok' ? 'text-emerald-500' : feedback.kind === 'dup' ? 'text-amber-500' : 'text-red-500'}`}>
+                            {feedback.kind === 'ok' ? <Check size={14} className="inline mr-1" /> : <X size={14} className="inline mr-1" />}
+                            {feedback.text}
+                        </span>
+                    )}
+                </div>
+
+                {/* Delete · Shuffle · Enter */}
+                <div className="flex items-center justify-center gap-2.5 mt-1 max-w-[440px] mx-auto w-full">
+                    <button onClick={backspace} className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-surface-alt border border-divider text-ink-soft hover:text-ink text-sm font-bold transition-colors active:scale-95">
+                        <Delete size={16} /> Delete
+                    </button>
+                    <button onClick={onShuffle} className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-surface-alt border border-divider text-ink-soft hover:text-ink text-sm font-bold transition-colors active:scale-95">
                         <Shuffle size={16} /> Shuffle
                     </button>
-                    <button onClick={onClear} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-surface-alt border border-divider text-ink-soft hover:text-ink text-sm font-bold transition-colors">
-                        <Delete size={16} /> Clear
+                    <button onClick={submit} className="flex-[1.3] flex items-center justify-center gap-1.5 py-3 rounded-xl text-white font-bold text-base shadow-lg active:scale-95 transition-transform"
+                        style={{ background: ACCENT }}>
+                        <Check size={18} /> Enter
                     </button>
                 </div>
 
                 {/* found words (newest on top) — no "X of Y" counter shown */}
-                <div className="flex-1 overflow-y-auto mt-2 min-h-0">
+                <div className="flex-1 overflow-y-auto mt-3 min-h-0">
                     <div className="flex flex-wrap gap-1.5 justify-center max-w-[460px] mx-auto pb-4">
                         {found.map(f => (
                             <span key={f.word} className={`text-xs font-bold px-2 py-1 rounded-md ${f.pangram ? 'text-white' : 'text-ink bg-surface-alt border border-divider'}`}
