@@ -615,11 +615,42 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             <ScreenHeader title="Scramble" onBack={onExit} onHome={onExit} confirmOnExit />
 
             <div className="px-2 flex-1 flex flex-col min-h-0">
+                {/* input + add — kept ABOVE the card so it's easy to see what
+                    you're building while tapping the tiles below. */}
+                <div className="flex items-center gap-2 max-w-[420px] mx-auto w-full mt-1">
+                    <input
+                        ref={inputRef}
+                        value={input}
+                        onChange={e => setInput(e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase())}
+                        onKeyDown={e => { if (e.key === 'Enter') submit(); }}
+                        onFocus={handleInputFocus}
+                        onBlur={scrollTopSoon}
+                        placeholder="Type or tap tiles"
+                        autoCapitalize="characters" autoCorrect="off" autoComplete="off"
+                        className="flex-1 bg-surface-alt border-2 border-divider focus:border-teal-500 rounded-xl px-4 py-3 text-ink font-bold text-lg tracking-[0.15em] uppercase placeholder:text-muted placeholder:tracking-normal placeholder:font-medium placeholder:text-sm outline-none transition-colors"
+                    />
+                    <button onClick={submit} onMouseDown={e => e.preventDefault()} aria-label="Add word"
+                        className="h-[52px] w-[52px] rounded-xl flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform"
+                        style={{ background: ACCENT }}>
+                        <Plus size={26} />
+                    </button>
+                </div>
+
+                {/* feedback line */}
+                <div className="h-5 text-center mt-1.5">
+                    {feedback && (
+                        <span className={`text-sm font-bold ${feedback.kind === 'ok' ? 'text-emerald-500' : feedback.kind === 'dup' ? 'text-amber-500' : 'text-red-500'}`}>
+                            {feedback.kind === 'ok' ? <Check size={14} className="inline mr-1" /> : <X size={14} className="inline mr-1" />}
+                            {feedback.text}
+                        </span>
+                    )}
+                </div>
+
                 {/* Themed stage card — same PartySpark play-card family as Taboo /
                     TOD / NHIE: surface card, decorative blob, accent header pill,
                     italic PartySpark footer. Holds the pill, timer, score + tiles. */}
                 <div
-                    className="w-full bg-surface border border-divider rounded-[22px] px-4 py-3.5 flex flex-col relative overflow-hidden"
+                    className="w-full bg-surface border border-divider rounded-[22px] px-4 py-3.5 flex flex-col relative overflow-hidden mt-1"
                     style={{ boxShadow: 'var(--shadow-card)' }}
                 >
                     <div
@@ -673,35 +704,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     </div>
                 </div>
 
-                {/* feedback line */}
-                <div className="h-5 text-center mt-1.5">
-                    {feedback && (
-                        <span className={`text-sm font-bold ${feedback.kind === 'ok' ? 'text-emerald-500' : feedback.kind === 'dup' ? 'text-amber-500' : 'text-red-500'}`}>
-                            {feedback.kind === 'ok' ? <Check size={14} className="inline mr-1" /> : <X size={14} className="inline mr-1" />}
-                            {feedback.text}
-                        </span>
-                    )}
-                </div>
-
-                {/* input + controls */}
-                <div className="flex items-center gap-2 max-w-[420px] mx-auto w-full mt-1">
-                    <input
-                        ref={inputRef}
-                        value={input}
-                        onChange={e => setInput(e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase())}
-                        onKeyDown={e => { if (e.key === 'Enter') submit(); }}
-                        onFocus={handleInputFocus}
-                        onBlur={scrollTopSoon}
-                        placeholder="Type or tap tiles"
-                        autoCapitalize="characters" autoCorrect="off" autoComplete="off"
-                        className="flex-1 bg-surface-alt border-2 border-divider focus:border-teal-500 rounded-xl px-4 py-3 text-ink font-bold text-lg tracking-[0.15em] uppercase placeholder:text-muted placeholder:tracking-normal placeholder:font-medium placeholder:text-sm outline-none transition-colors"
-                    />
-                    <button onClick={submit} onMouseDown={e => e.preventDefault()} aria-label="Add word"
-                        className="h-[52px] w-[52px] rounded-xl flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform"
-                        style={{ background: ACCENT }}>
-                        <Plus size={26} />
-                    </button>
-                </div>
+                {/* shuffle / clear */}
                 <div className="flex items-center justify-center gap-3 mt-2 max-w-[420px] mx-auto w-full">
                     <button onClick={onShuffle} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-surface-alt border border-divider text-ink-soft hover:text-ink text-sm font-bold transition-colors">
                         <Shuffle size={16} /> Shuffle
