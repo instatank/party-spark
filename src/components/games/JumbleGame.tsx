@@ -92,6 +92,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [score, setScore] = useState(0);
     const [feedback, setFeedback] = useState<{ kind: 'ok' | 'bad' | 'dup'; text: string } | null>(null);
     const [pangramFlash, setPangramFlash] = useState(false);
+    const [tappedIdx, setTappedIdx] = useState<number | null>(null);  // brief tile press feedback
     const [remainingMs, setRemainingMs] = useState(duration * 1000);
     const [best, setBest] = useState(0);
 
@@ -105,6 +106,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const seenSets = useRef<Set<string>>(new Set());      // session dedupe
     const fbTimer = useRef<number | null>(null);
     const lastTickSec = useRef(99);
+    const tapTimer = useRef<number | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const totalSeconds = duration;
@@ -261,7 +263,12 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         scrollTopSoon();
     };
 
-    const tapTile = (i: number) => setInput(v => v + tiles[i]);
+    const tapTile = (i: number) => {
+        setInput(v => v + tiles[i]);
+        setTappedIdx(i);                                  // flash the tapped tile
+        if (tapTimer.current) clearTimeout(tapTimer.current);
+        tapTimer.current = window.setTimeout(() => setTappedIdx(null), 200);
+    };
     const onShuffle = () => setTiles(t => shuffle([...t]));
     const onClear = () => setInput('');
 
@@ -674,12 +681,19 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     <div className={`flex justify-center gap-2 relative z-10 mt-4 ${pangramFlash ? 'animate-pulse' : ''}`}>
                         {tiles.map((t, i) => {
                             const isCenter = set?.center === t;
+                            const pressed = tappedIdx === i;
+                            const base = isCenter
+                                ? { background: CENTER, color: '#1a1a1a', borderColor: CENTER }
+                                : { background: 'var(--color-app-tint)', color: 'var(--color-ink)', borderColor: 'var(--color-divider)' };
+                            // On tap, briefly indent + flash an accent ring so the
+                            // pick is obvious even after the finger lifts.
+                            const style = pressed
+                                ? { ...base, ...(isCenter ? {} : { background: ACCENT + '33', borderColor: ACCENT }), transform: 'scale(0.88)', boxShadow: `inset 0 2px 6px rgba(0,0,0,0.28), 0 0 0 2px ${ACCENT}` }
+                                : base;
                             return (
                                 <button key={`${t}-${i}`} onClick={() => tapTile(i)}
-                                    className="w-10 h-12 sm:w-11 sm:h-13 rounded-lg font-black text-xl flex items-center justify-center border-2 transition-transform active:scale-90 shadow-sm"
-                                    style={isCenter
-                                        ? { background: CENTER, color: '#1a1a1a', borderColor: CENTER }
-                                        : { background: 'var(--color-app-tint)', color: 'var(--color-ink)', borderColor: 'var(--color-divider)' }}>
+                                    className="w-10 h-12 sm:w-11 sm:h-13 rounded-lg font-black text-xl flex items-center justify-center border-2 transition-all duration-100 active:scale-90 shadow-sm"
+                                    style={style}>
                                     {t}
                                 </button>
                             );
