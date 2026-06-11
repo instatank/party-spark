@@ -13,14 +13,6 @@ export const GAMES: GameMeta[] = [
         minPlayers: 1
     },
     {
-        id: GameType.MOST_LIKELY_TO,
-        title: "Most Likely To...",
-        description: "Point fingers & expose friends!",
-        icon: "users",
-        color: "bg-purple-600",
-        minPlayers: 3
-    },
-    {
         id: GameType.FIVE_ALIVE,
         title: "5 Alive",
         description: "Name 5 in 5 seconds — beat the buzzer.",
@@ -59,6 +51,14 @@ export const GAMES: GameMeta[] = [
         icon: "drama",
         color: "bg-[#EFC050]",
         minPlayers: 4
+    },
+    {
+        id: GameType.MOST_LIKELY_TO,
+        title: "Most Likely To...",
+        description: "Point fingers & expose friends!",
+        icon: "users",
+        color: "bg-purple-600",
+        minPlayers: 3
     },
     {
         id: GameType.TRUTH_OR_DRINK,
