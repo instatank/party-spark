@@ -617,16 +617,16 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                             revealed ? (
                                 <div className="flex gap-3">
                                     <button
-                                        onClick={handleJustPlayCorrect}
-                                        className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors active:scale-95 flex items-center justify-center gap-2"
-                                    >
-                                        <Check size={18} /> Correct
-                                    </button>
-                                    <button
                                         onClick={handleJustPlayIncorrect}
                                         className="flex-1 py-4 rounded-xl font-bold text-base text-rose-600 bg-transparent border-2 border-rose-500/60 hover:bg-rose-500/10 hover:border-rose-500 transition-colors active:scale-95 flex items-center justify-center gap-2"
                                     >
                                         <X size={18} /> Incorrect
+                                    </button>
+                                    <button
+                                        onClick={handleJustPlayCorrect}
+                                        className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors active:scale-95 flex items-center justify-center gap-2"
+                                    >
+                                        <Check size={18} /> Correct
                                     </button>
                                 </div>
                             ) : (
