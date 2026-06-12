@@ -513,16 +513,16 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                 {/* Controls — push to bottom with extra top padding */}
                 <div className="grid grid-cols-2 gap-4 mt-auto pt-10">
                     <button
-                        onClick={() => handleAnswer(true)}
-                        className="bg-green-600 hover:bg-green-500 active:bg-green-700 text-white font-black text-2xl py-8 rounded-2xl shadow-[0_4px_0_rgb(22,163,74)] active:shadow-[0_0px_0_rgb(22,163,74)] active:translate-y-1 transition-all"
-                    >
-                        FACT
-                    </button>
-                    <button
                         onClick={() => handleAnswer(false)}
                         className="bg-rose-800 hover:bg-rose-700 active:bg-rose-900 text-white font-black text-2xl py-8 rounded-2xl shadow-[0_4px_0_rgb(136,19,55)] active:shadow-[0_0px_0_rgb(136,19,55)] active:translate-y-1 transition-all"
                     >
                         FICTION
+                    </button>
+                    <button
+                        onClick={() => handleAnswer(true)}
+                        className="bg-green-600 hover:bg-green-500 active:bg-green-700 text-white font-black text-2xl py-8 rounded-2xl shadow-[0_4px_0_rgb(22,163,74)] active:shadow-[0_0px_0_rgb(22,163,74)] active:translate-y-1 transition-all"
+                    >
+                        FACT
                     </button>
                 </div>
                 
