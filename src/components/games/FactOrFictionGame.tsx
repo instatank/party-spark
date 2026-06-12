@@ -514,13 +514,13 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                 <div className="grid grid-cols-2 gap-4 mt-auto pt-10">
                     <button
                         onClick={() => handleAnswer(false)}
-                        className="bg-rose-800 hover:bg-rose-700 active:bg-rose-900 text-white font-black text-2xl py-8 rounded-2xl shadow-[0_4px_0_rgb(136,19,55)] active:shadow-[0_0px_0_rgb(136,19,55)] active:translate-y-1 transition-all"
+                        className="bg-transparent border-2 border-rose-500/60 text-rose-600 hover:bg-rose-500/10 hover:border-rose-500 font-black text-2xl py-8 rounded-2xl active:scale-95 transition-colors"
                     >
                         FICTION
                     </button>
                     <button
                         onClick={() => handleAnswer(true)}
-                        className="bg-green-600 hover:bg-green-500 active:bg-green-700 text-white font-black text-2xl py-8 rounded-2xl shadow-[0_4px_0_rgb(22,163,74)] active:shadow-[0_0px_0_rgb(22,163,74)] active:translate-y-1 transition-all"
+                        className="bg-transparent border-2 border-emerald-500/60 text-emerald-600 hover:bg-emerald-500/10 hover:border-emerald-500 font-black text-2xl py-8 rounded-2xl active:scale-95 transition-colors"
                     >
                         FACT
                     </button>
