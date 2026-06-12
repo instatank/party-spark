@@ -614,18 +614,18 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         drinks, matching the wrap-screen leaderboard. */}
                     <div className="flex gap-3">
                         <button
-                            onClick={() => handleChoice('truth')}
-                            className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors flex items-center justify-center gap-2"
-                        >
-                            <MessageCircleHeart size={18} />
-                            Tell the Truth
-                        </button>
-                        <button
                             onClick={() => handleChoice('drink')}
                             className="flex-1 py-4 rounded-xl font-bold text-base text-amber-600 bg-transparent border-2 border-amber-500/60 hover:bg-amber-500/10 hover:border-amber-500 transition-colors flex items-center justify-center gap-2"
                         >
                             <GlassWater size={18} />
                             Take a Drink
+                        </button>
+                        <button
+                            onClick={() => handleChoice('truth')}
+                            className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors flex items-center justify-center gap-2"
+                        >
+                            <MessageCircleHeart size={18} />
+                            Tell the Truth
                         </button>
                     </div>
 
