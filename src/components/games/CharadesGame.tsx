@@ -450,14 +450,14 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
             </div>
 
             <div className="grid grid-cols-2 gap-4 mt-8">
-                <Button onClick={handleSkip} variant="secondary" className="h-24 flex flex-col items-center justify-center gap-2">
-                    <ThumbsDown size={32} className="text-muted" />
+                <button onClick={handleSkip} className="h-24 rounded-xl font-bold text-rose-600 bg-transparent border-2 border-rose-500/60 hover:bg-rose-500/10 hover:border-rose-500 transition-colors active:scale-95 flex flex-col items-center justify-center gap-2">
+                    <ThumbsDown size={32} />
                     <span>Skip</span>
-                </Button>
-                <Button onClick={handleCorrect} className="h-24 bg-green-500 hover:bg-green-600 flex flex-col items-center justify-center gap-2 text-white">
+                </button>
+                <button onClick={handleCorrect} className="h-24 rounded-xl font-bold text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors active:scale-95 flex flex-col items-center justify-center gap-2">
                     <ThumbsUp size={32} />
                     <span>Correct</span>
-                </Button>
+                </button>
             </div>
         </div>
     );

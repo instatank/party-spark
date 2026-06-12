@@ -420,14 +420,14 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
             </div>
 
             <div className="grid grid-cols-2 gap-4 mt-3">
-                <Button onClick={handleSkip} variant="secondary" className="h-20 flex flex-col items-center justify-center gap-1">
-                    <X size={28} className="text-muted" />
-                    <span className="text-sm uppercase font-bold tracking-wider text-muted">Skip</span>
-                </Button>
-                <Button onClick={handleCorrect} className="h-20 bg-gold text-slate-900 hover:brightness-110 flex flex-col items-center justify-center gap-1 border-0">
-                    <ThumbsUp size={28} className="text-slate-900" />
-                    <span className="text-sm uppercase font-bold tracking-wider text-slate-900">Correct</span>
-                </Button>
+                <button onClick={handleSkip} className="h-20 rounded-xl bg-transparent border-2 border-rose-500/60 text-rose-600 hover:bg-rose-500/10 hover:border-rose-500 transition-colors active:scale-95 flex flex-col items-center justify-center gap-1">
+                    <X size={28} />
+                    <span className="text-sm uppercase font-bold tracking-wider">Skip</span>
+                </button>
+                <button onClick={handleCorrect} className="h-20 rounded-xl bg-transparent border-2 border-emerald-500/60 text-emerald-600 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors active:scale-95 flex flex-col items-center justify-center gap-1">
+                    <ThumbsUp size={28} />
+                    <span className="text-sm uppercase font-bold tracking-wider">Correct</span>
+                </button>
             </div>
         </div>
     );
