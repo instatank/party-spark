@@ -1,12 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Flame, ChevronRight, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2 } from 'lucide-react';
+import { Sparkles, Flame, ChevronRight, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2, Dices, Lock } from 'lucide-react';
 import questionData from '../../data/truth_or_drink.json';
 import { generateCustomTruthOrDrink } from '../../services/geminiService';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import TeamRosterRow from '../ui/TeamRosterRow';
+import { PinGateModal, isUnlocked } from '../ui/PinGate';
+import { IntimateDiceGame } from './IntimateDiceGame';
 import { GameType } from '../../types';
 
 type Category = 'classic' | 'spicy' | 'deep' | 'exes' | 'chaos' | 'custom';
@@ -15,7 +17,11 @@ type GameState =
     | 'CUSTOM_SETUP'
     | 'LOADING'
     | 'PROMPT'
+    | 'INTIMATE'
     | 'END';
+
+const INTIMATE_KEY = 'partyspark_intimate_unlocked';
+const INTIMATE_PIN = '2525';
 
 const GROUP_TYPES = [
     { id: 'friends', label: '🍻 Friends', description: 'Your crew' },
@@ -180,6 +186,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         return { solid: e.solid, tint: hexToRgba(e.solid, e.tintAlpha) };
     };
     const [gameState, setGameState] = useState<GameState>('CATEGORY_SELECT');
+    const [showIntimateGate, setShowIntimateGate] = useState(false);
     const [category, setCategory] = useState<Category>('classic');
     const [players, setPlayers] = useState<string[]>(() => sessionService.getTeams());
     const [turnIndex, setTurnIndex] = useState(0);
@@ -400,10 +407,48 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                                 </button>
                             );
                         })}
+
+                        {/* Intimate Drinking — adult dice sub-game, gated by its
+                            own PIN (2525), separate from the app's adult gate. */}
+                        <button
+                            onClick={() => { if (isUnlocked(INTIMATE_KEY)) setGameState('INTIMATE'); else setShowIntimateGate(true); }}
+                            className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
+                        >
+                            <div className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden">
+                                <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]" style={{ background: '#F43F5E' }} />
+                                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]" style={{ background: '#F43F5E' }} />
+                                <div className="flex items-center gap-3">
+                                    <span className="flex-shrink-0" style={{ color: '#F43F5E' }}><Dices size={16} /></span>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-base font-bold text-ink leading-tight flex items-center gap-1.5">
+                                            <span className="truncate">Intimate Drinking</span>
+                                            <Lock size={12} className="text-muted flex-shrink-0" />
+                                        </h3>
+                                        <p className="text-xs text-muted leading-snug truncate">Adults only · dice dares for two. PIN required.</p>
+                                    </div>
+                                    <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
+                                </div>
+                            </div>
+                        </button>
                     </div>
                 </div>
+
+                {showIntimateGate && (
+                    <PinGateModal
+                        pin={INTIMATE_PIN}
+                        storageKey={INTIMATE_KEY}
+                        title="Intimate Drinking"
+                        subtitle="Enter the 4-digit PIN for this content"
+                        onSuccess={() => { setShowIntimateGate(false); setGameState('INTIMATE'); }}
+                        onCancel={() => setShowIntimateGate(false)}
+                    />
+                )}
             </div>
         );
+    }
+
+    if (gameState === 'INTIMATE') {
+        return <IntimateDiceGame onExit={() => setGameState('CATEGORY_SELECT')} />;
     }
 
     // CUSTOM_SETUP — Describe your group for AI generation. Mirrors MLT's
