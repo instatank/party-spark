@@ -159,25 +159,25 @@ export const IntimateDiceGame: React.FC<Props> = ({ onExit }) => {
                         </div>
                     </div>
 
-                    {/* result */}
-                    <div className="relative z-10 mt-5 min-h-[92px] flex items-center justify-center text-center px-1">
+                    {/* result — big, bold, fun */}
+                    <div className="relative z-10 mt-6 min-h-[170px] flex items-center justify-center text-center px-1">
                         {!rolled && !rolling && (
                             <p className="text-sm text-muted">Tap <span className="font-bold" style={{ color: ROSE }}>Roll</span> to begin.</p>
                         )}
                         {rolling && <p className="text-sm text-muted">Rolling…</p>}
                         {rolled && !rolling && (
                             isAction ? (
-                                <div>
-                                    <p className="font-serif font-bold text-2xl text-ink leading-tight">{ACTION_DIE[d1 - 1].t}</p>
-                                    <p className="text-xs text-muted mt-0.5">{ACTION_DIE[d1 - 1].d}</p>
-                                    <p className="text-[11px] uppercase tracking-widest text-muted mt-3">on the</p>
-                                    <p className="font-serif font-bold text-xl mt-0.5" style={{ color: ROSE }}>{ZONE_DIE[d2 - 1]}</p>
+                                <div className="animate-fade-in">
+                                    <p className="font-serif font-black text-5xl text-ink leading-[1.05] tracking-tight">{ACTION_DIE[d1 - 1].t}</p>
+                                    <p className="text-sm text-muted italic mt-1">{ACTION_DIE[d1 - 1].d}</p>
+                                    <p className="text-[11px] uppercase tracking-[0.2em] text-muted mt-4">on the</p>
+                                    <p className="font-serif font-black text-4xl mt-1 leading-tight" style={{ color: ROSE }}>{ZONE_DIE[d2 - 1]}</p>
                                 </div>
                             ) : (
-                                <div>
-                                    <p className="font-serif font-bold text-xl text-ink leading-snug">{SENSATION_DIE[d1 - 1]}</p>
-                                    <p className="text-[11px] uppercase tracking-widest text-muted mt-3">for exactly</p>
-                                    <p className="font-serif font-black text-3xl mt-0.5" style={{ color: ROSE }}>{d2 * 10} seconds</p>
+                                <div className="animate-fade-in">
+                                    <p className="font-serif font-black text-3xl text-ink leading-[1.15]">{SENSATION_DIE[d1 - 1]}</p>
+                                    <p className="text-[11px] uppercase tracking-[0.2em] text-muted mt-4">for exactly</p>
+                                    <p className="font-serif font-black text-6xl mt-1 leading-none" style={{ color: ROSE }}>{d2 * 10}<span className="text-2xl font-bold"> sec</span></p>
                                 </div>
                             )
                         )}
