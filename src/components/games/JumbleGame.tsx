@@ -610,7 +610,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     // Tap-only honeycomb — no text input / no keyboard. Center hex is the
     // required letter on Hard (amber); on Easy it's just the middle position.
     const HEX_CLIP = 'polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%)';
-    const SP_W = 80, SP_H = 70, HEX_W = 76, HEX_H = 66;   // spacing grid vs. visual hex (gap)
+    const SP_W = 80, SP_H = 70, HEX_W = 79, HEX_H = 69;   // near-touching → minimal dead gap between hexes
     const outerPos = [
         { x: 0, y: -SP_H }, { x: 0.75 * SP_W, y: -0.5 * SP_H }, { x: 0.75 * SP_W, y: 0.5 * SP_H },
         { x: 0, y: SP_H }, { x: -0.75 * SP_W, y: 0.5 * SP_H }, { x: -0.75 * SP_W, y: -0.5 * SP_H },
@@ -620,9 +620,13 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         const pressed = tappedIdx === key;
         const fill = requiredCenter ? CENTER : (pressed ? ACCENT : 'var(--color-app-tint)');
         const color = requiredCenter ? '#1a1a1a' : (pressed ? '#ffffff' : 'var(--color-ink)');
+        // Fire on pointer-DOWN (not click) for instant response on fast taps,
+        // and touch-manipulation to kill the tap delay + double-tap zoom that
+        // otherwise swallow rapid successive taps in a timed game.
         return (
-            <button key={key} onClick={() => appendLetter(letter, key)}
-                className="absolute flex items-center justify-center font-black text-2xl transition-transform duration-100 active:scale-90 select-none"
+            <button key={key}
+                onPointerDown={e => { e.preventDefault(); appendLetter(letter, key); }}
+                className="absolute flex items-center justify-center font-black text-2xl transition-transform duration-100 select-none touch-manipulation"
                 style={{
                     width: HEX_W, height: HEX_H,
                     left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)`,
