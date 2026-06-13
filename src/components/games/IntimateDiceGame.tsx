@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Dices, Flame, Hourglass, ChevronRight, ArrowRight } from 'lucide-react';
+import { Dices, Flame, Hourglass, Repeat, ChevronRight, ArrowRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 // "Intimate Drinking" — a pair of adult two-dice games surfaced inside Truth or
@@ -10,7 +10,7 @@ import type { LucideIcon } from 'lucide-react';
 
 interface Props { onExit: () => void; }
 
-type DiceOption = 'action' | 'countdown';
+type DiceOption = 'action' | 'countdown' | 'positions';
 
 const ROSE = '#F43F5E';
 
@@ -37,10 +37,25 @@ const SENSATION_DIE: string[] = [
     "Take off one item of your partner's clothes",
 ];
 
+// --- Option 5: Positions (the main event) ---------------------------------
+const POSITION_DIE: string[] = [
+    'You on top', 'Them on top', 'From behind', 'Face to face, wrapped up', 'Seated', "Roller's pick",
+];
+const MODIFIER_DIE: string[] = [
+    'for 60 seconds', 'until you switch', 'eyes locked — no looking away', 'no hands', 'in slow motion', 'partner sets the pace',
+];
+
 const OPTIONS: { id: DiceOption; title: string; tagline: string; Icon: LucideIcon }[] = [
     { id: 'action', title: 'The Action', tagline: 'An action + where to do it.', Icon: Flame },
     { id: 'countdown', title: 'The High-Stakes Countdown', tagline: 'A sensation + how long to hold it.', Icon: Hourglass },
+    { id: 'positions', title: 'Positions', tagline: 'A position + a twist.', Icon: Repeat },
 ];
+
+const META: Record<DiceOption, { title: string; d1: string; d2: string }> = {
+    action: { title: 'The Action', d1: 'Action', d2: 'Target Zone' },
+    countdown: { title: 'The High-Stakes Countdown', d1: 'Sensation', d2: 'Duration' },
+    positions: { title: 'Positions', d1: 'Position', d2: 'Twist' },
+};
 
 // classic die-face pip layout over a 3×3 grid (indices 0–8)
 const PIPS: Record<number, number[]> = {
@@ -129,10 +144,10 @@ export const IntimateDiceGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
-    const isAction = option === 'action';
-    const die1Label = isAction ? 'Action' : 'Sensation';
-    const die2Label = isAction ? 'Target Zone' : 'Duration';
-    const optTitle = isAction ? 'The Action' : 'The High-Stakes Countdown';
+    const meta = META[option];
+    const die1Label = meta.d1;
+    const die2Label = meta.d2;
+    const optTitle = meta.title;
 
     // ---- PLAY (dice roller) ----
     return (
@@ -165,21 +180,27 @@ export const IntimateDiceGame: React.FC<Props> = ({ onExit }) => {
                             <p className="text-sm text-muted">Tap <span className="font-bold" style={{ color: ROSE }}>Roll</span> to begin.</p>
                         )}
                         {rolling && <p className="text-sm text-muted">Rolling…</p>}
-                        {rolled && !rolling && (
-                            isAction ? (
-                                <div className="animate-fade-in">
-                                    <p className="font-serif font-black text-5xl text-ink leading-[1.05] tracking-tight">{ACTION_DIE[d1 - 1].t}</p>
-                                    <p className="text-sm text-muted italic mt-1">{ACTION_DIE[d1 - 1].d}</p>
-                                    <p className="text-[11px] uppercase tracking-[0.2em] text-muted mt-4">on the</p>
-                                    <p className="font-serif font-black text-4xl mt-1 leading-tight" style={{ color: ROSE }}>{ZONE_DIE[d2 - 1]}</p>
-                                </div>
-                            ) : (
-                                <div className="animate-fade-in">
-                                    <p className="font-serif font-black text-3xl text-ink leading-[1.15]">{SENSATION_DIE[d1 - 1]}</p>
-                                    <p className="text-[11px] uppercase tracking-[0.2em] text-muted mt-4">for exactly</p>
-                                    <p className="font-serif font-black text-6xl mt-1 leading-none" style={{ color: ROSE }}>{d2 * 10}<span className="text-2xl font-bold"> sec</span></p>
-                                </div>
-                            )
+                        {rolled && !rolling && option === 'action' && (
+                            <div className="animate-fade-in">
+                                <p className="font-serif font-black text-5xl text-ink leading-[1.05] tracking-tight">{ACTION_DIE[d1 - 1].t}</p>
+                                <p className="text-sm text-muted italic mt-1">{ACTION_DIE[d1 - 1].d}</p>
+                                <p className="text-[11px] uppercase tracking-[0.2em] text-muted mt-4">on the</p>
+                                <p className="font-serif font-black text-4xl mt-1 leading-tight" style={{ color: ROSE }}>{ZONE_DIE[d2 - 1]}</p>
+                            </div>
+                        )}
+                        {rolled && !rolling && option === 'countdown' && (
+                            <div className="animate-fade-in">
+                                <p className="font-serif font-black text-3xl text-ink leading-[1.15]">{SENSATION_DIE[d1 - 1]}</p>
+                                <p className="text-[11px] uppercase tracking-[0.2em] text-muted mt-4">for exactly</p>
+                                <p className="font-serif font-black text-6xl mt-1 leading-none" style={{ color: ROSE }}>{d2 * 10}<span className="text-2xl font-bold"> sec</span></p>
+                            </div>
+                        )}
+                        {rolled && !rolling && option === 'positions' && (
+                            <div className="animate-fade-in">
+                                <p className="font-serif font-black text-5xl text-ink leading-[1.05] tracking-tight">{POSITION_DIE[d1 - 1]}</p>
+                                <p className="text-[11px] uppercase tracking-[0.2em] text-muted mt-4">with the twist</p>
+                                <p className="font-serif font-black text-3xl mt-1 leading-tight" style={{ color: ROSE }}>{MODIFIER_DIE[d2 - 1]}</p>
+                            </div>
                         )}
                     </div>
 
