@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-04-21. If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+> **Last reconciled with code:** 2026-06-13. If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 
 ## 🤖 Role & Core Directives
 
@@ -56,6 +56,21 @@ className={`${ACCENT[id].text} ${ACCENT[id].borderL}`}
 ```
 
 This bit us several times. If you add a new accent color, verify it in the compiled CSS: `grep "text-{color}-400" dist/assets/index-*.css`.
+
+### Action-button convention (in-play choices)
+
+- **Green/positive on the RIGHT, red/negative on the LEFT** — Tinder-style, consistent across games (NHIE, Truth or Drink, Fact or Fiction, Linked Just Play, Charades, Taboo, Scramble).
+- **Outline style** is the standard for binary in-play choices: `bg-transparent border-2 border-{emerald|rose}-500/60 text-{emerald|rose}-600 hover:bg-{…}-500/10 hover:border-{…}-500` (the "Never Have I Ever" look). Emerald = correct/positive, rose = negative/skip. Charades/Taboo/FoF were migrated to this from filled buttons (sizes kept).
+
+### Shared round-timer chip
+
+`src/components/ui/TimerSetting.tsx` — a compact "⏱ 60s round ✎" chip that opens a bottom-sheet of presets (30/60/90/120 + custom 15–300s). Used by **Scramble, Charades, Taboo** (each passes its own `accent` hex + persists its own localStorage key via `loadTimerPref`/`saveTimerPref`). Default 60s. There is no dedicated "pick a timer" step — the chip lives on each game's setup/difficulty/category screen.
+
+### Home screen (`App.tsx`)
+
+- **Tabs hidden:** the old "Play Now / Coming Soon" tab bar is gated behind a `SHOW_TABS` flag (currently `false`) — the front end shows only the Play Now games. All Coming Soon games + tab logic stay in code; flip `SHOW_TABS = true` to bring them back for testing.
+- **Filter pills** (`HOME_FILTERS` in `constants.tsx`): All / Quick / Solo / Couples / Crowd / Spicy. `quick` matches by short duration; the rest match by tag in `GAME_RICH_META[id].tags`.
+- **Game cards** use tightened vertical padding (`!px-4 !py-2.5`) and the header spacing is compact.
 
 ## 🚫 Explicit Constraints & "Do Not Touch" Rules
 
@@ -141,7 +156,7 @@ Browser ─── fetch('/api/ai', {type, ...}) ───► Vercel Serverless F
 
 - **Claude Haiku 4.5** (`claude-haiku-4-5`) — custom generation paths. Cheap, fast, structured output via `output_config.format`.
 - **Gemini 2.5 Flash** (`gemini-2.5-flash`) — all other text generation + Roast Me text captions. (Was `gemini-2.0-flash-001`, which Google shut down 2026-06-01; the 2.0 retirement is what broke all text generation until this bump.)
-- **Gemini 3 Pro Image Preview** (`gemini-3-pro-image-preview`) — image editing for Roast Me caricatures.
+- **Gemini 3 Pro Image Preview** (`gemini-3-pro-image-preview`) — image editing for Roast Me caricatures. ⚠️ This is a *preview* model slated to retire ~2026-07-17; bump to the stable `gemini-3-pro-image` before then or Roast Me image gen will 404 (same failure class as the 2.0-flash text shutdown). Image gen also depends on the Gemini billing account being funded — an empty balance 404s/erros it.
 
 ### Claude-first, Gemini-fallback (custom flows)
 
@@ -228,7 +243,7 @@ Flagged during the 2026-04-21 audit. None blocking, but worth cleaning up when y
 
 1. **The Forecast has 7 dynamic Tailwind classes** in `CompatibilityTestGame.tsx` at lines 273, 284, 339, 360, 375, 378, 403 — template literals like `text-${accentColor}-400` that Tailwind v4's JIT won't reliably compile. The MODE_SELECT screen is clean; the PREDICT / ANSWER / PASS_TO_* states may be rendering without accent colors on mobile. Replace with static class maps following the Slim Row pattern.
 
-2. **`comingSoonGameIds` in `App.tsx`** (~line 113) is stale — lists WILTY / Icebreakers / WYR / NHIE as "coming soon" but all four are routed and playable. Audit and correct.
+2. **Coming Soon tab is hidden on the front end** via the `SHOW_TABS = false` flag in `App.tsx` (the strong games all live in Play Now now). `comingSoonGameIds` (WILTY / Icebreakers / Mini Mafia / WYR) + the tab logic still exist in code so the tabs can be re-enabled for testing by flipping the flag. All of those games are routed and playable.
 
 ### Medium
 
@@ -248,23 +263,28 @@ Flagged during the 2026-04-21 audit. None blocking, but worth cleaning up when y
 
 ```
 src/
-├── App.tsx                          # Game router (state-based switch)
+├── App.tsx                          # Game router (state-based switch) + Home (SHOW_TABS flag)
 ├── types.ts                         # GameType enum, shared types
-├── constants.tsx                    # GAMES list, category configs
+├── constants.tsx                    # GAMES list, GAME_RICH_META, HOME_FILTERS, getIcon
 ├── components/
 │   ├── ui/
 │   │   ├── Layout.tsx               # Card, Button, ScreenHeader (reuse)
-│   │   └── PinGate.tsx              # Adult content gate (0438) — DO NOT REFACTOR
-│   └── games/                       # One file per game
+│   │   ├── PinGate.tsx              # PIN gate — 0438 default (DO NOT change); parameterised for extra gates (e.g. 2525)
+│   │   ├── TeamRosterRow.tsx        # Shared optional player/team-names row (gold pill, persists)
+│   │   └── TimerSetting.tsx         # Shared editable round-timer chip (Scramble/Charades/Taboo)
+│   └── games/                       # One file per game (incl. JumbleGame = "Scramble", IntimateDiceGame)
 ├── contexts/
 │   └── ContentContext.tsx           # AI content prefetch cache
-├── data/                            # Static JSON question banks
+├── data/                            # Static JSON question banks (+ jumble_sets.json, baked answer keys)
 ├── services/
-│   ├── geminiService.ts             # Gemini client + Claude-first orchestrators
-│   ├── claudeService.ts             # Anthropic client (Haiku 4.5 + structured output)
+│   ├── geminiService.ts             # Thin fetch wrappers around /api/ai (not a direct Google client)
+│   ├── claudeService.ts             # Thin fetch wrappers (back-compat)
+│   ├── jumbleEngine.ts              # Scramble runtime: set picker, validation, scoring, missed-words
 │   ├── LocalGameService.ts          # Static data readers
-│   └── SessionManager.ts            # sessionStorage wrapper (used content tracking)
+│   └── SessionManager.ts            # sessionStorage wrapper (used-content tracking, shared team roster)
 └── index.css                        # Tailwind v4 @theme (custom props + keyframes only)
+
+(repo root) scripts/build-jumble-sets.mjs   # DEV-only generator → src/data/jumble_sets.json (needs cached dicts under scripts/.cache/)
 ```
 
 ## 🎓 End of Session Learning Recap
