@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
-import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Atom, Lightbulb, Medal, Landmark, Brain } from 'lucide-react';
+import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Atom, Lightbulb, Medal, Landmark, Brain, Clapperboard, Plane, Lock } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import factData from '../../data/fact_or_fiction.json';
@@ -20,6 +20,7 @@ interface Category {
     id: string;
     name: string;
     questions: Question[];
+    disabled?: boolean;
 }
 
 const TIMER_SECONDS = 15;
@@ -34,6 +35,8 @@ const TOPIC_META: Record<string, { tagline: string; color: string; Icon?: Lucide
     science:           { tagline: 'Physics, space, the very small.',  color: '#6366F1', Icon: Atom },
     general_knowledge: { tagline: 'A bit of everything — stay sharp.', color: '#F59E0B', Icon: Lightbulb },
     sports:            { tagline: 'Records, rules, legends.',         color: '#EF4444', Icon: Medal },
+    pop_culture:       { tagline: 'Movies, music, the famous.',       color: '#EC4899', Icon: Clapperboard },
+    passport_plate:    { tagline: 'Travel, food, the world over.',    color: '#14B8A6', Icon: Plane },
     history:           { tagline: 'Empires, firsts, turning points.', color: '#A855F7', Icon: Landmark },
     fifa_world_cup_football: { tagline: 'Goals, glory, golden boots.', color: '#1E40AF', emoji: '⚽' },
 };
@@ -279,6 +282,34 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                             const Icon = meta?.Icon ?? (meta?.emoji ? undefined : TOPIC_DEFAULT.Icon);
                             const emoji = meta?.emoji;
                             const tagline = meta?.tagline ?? `${cat.questions.length} questions`;
+
+                            if (cat.disabled) {
+                                // Kept in the data but not yet live — grayed out and
+                                // non-interactive. The dataset stays so it can be
+                                // re-enabled later by dropping the `disabled` flag.
+                                return (
+                                    <div
+                                        key={cat.id}
+                                        aria-disabled
+                                        className="relative w-full text-left opacity-50 cursor-not-allowed select-none"
+                                    >
+                                        <div className="relative bg-surface-alt border border-divider rounded-xl py-3 px-4 overflow-hidden">
+                                            <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px] bg-muted" />
+                                            <div className="flex items-center gap-3">
+                                                <span className="flex-shrink-0 text-base leading-none text-muted">
+                                                    {emoji ?? (Icon && <Icon size={16} />)}
+                                                </span>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-base font-bold text-ink-soft leading-tight">{cat.name}</h3>
+                                                    <p className="text-xs text-muted leading-snug truncate">Coming soon</p>
+                                                </div>
+                                                <Lock size={14} className="text-muted flex-shrink-0" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            }
+
                             return (
                                 <button
                                     key={cat.id}
