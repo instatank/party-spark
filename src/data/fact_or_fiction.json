@@ -1,8 +1,2237 @@
 {
   "categories": [
     {
+      "id": "sports",
+      "name": "Sports",
+      "questions": [
+        {
+          "id": "sp1",
+          "difficultyLevel": 1,
+          "text": "A standard soccer match lasts for 90 minutes.",
+          "isFact": true,
+          "explanation": "Two halves of 45 minutes."
+        },
+        {
+          "id": "sp2",
+          "difficultyLevel": 2,
+          "text": "In tennis, the term 'love' means a score of zero.",
+          "isFact": true,
+          "explanation": "It's believed to come from the French word 'l'oeuf' meaning egg (shaped like a zero)."
+        },
+        {
+          "id": "sp3",
+          "difficultyLevel": 3,
+          "text": "Michael Jordan played professional baseball.",
+          "isFact": true,
+          "explanation": "He played Minor League Baseball for the Chicago White Sox organization."
+        },
+        {
+          "id": "sp4",
+          "difficultyLevel": 4,
+          "text": "The Olympics are held every three years.",
+          "isFact": false,
+          "explanation": "Summer and Winter Olympics are each held every four years."
+        },
+        {
+          "id": "sp5",
+          "difficultyLevel": 5,
+          "text": "Tug of war is still contested at the modern Summer Olympics today.",
+          "isFact": false,
+          "explanation": "It was an Olympic sport from 1900 to 1920 but was dropped and is no longer contested."
+        },
+        {
+          "id": "sp6",
+          "difficultyLevel": 6,
+          "text": "The earliest golf balls were solid carved wood with no covering.",
+          "isFact": false,
+          "explanation": "Early balls were 'featheries' — leather pouches stuffed with feathers, not solid wood."
+        },
+        {
+          "id": "sp7",
+          "difficultyLevel": 7,
+          "text": "A bowling pin must fully topple flat to count as knocked down.",
+          "isFact": false,
+          "explanation": "A pin only needs to fall, not lie flat; pins tip with little more than a 7.5 degree lean."
+        },
+        {
+          "id": "sp8",
+          "difficultyLevel": 8,
+          "text": "Babe Ruth holds the record for the most home runs in MLB history.",
+          "isFact": false,
+          "explanation": "Barry Bonds holds the record, followed by Hank Aaron."
+        },
+        {
+          "id": "sp9",
+          "difficultyLevel": 9,
+          "text": "No boxer in history has ever retired with an undefeated record.",
+          "isFact": false,
+          "explanation": "Rocky Marciano and Floyd Mayweather Jr. both retired undefeated."
+        },
+        {
+          "id": "sp10",
+          "difficultyLevel": 10,
+          "text": "The longest recorded tennis match lasted over 11 hours.",
+          "isFact": true,
+          "explanation": "John Isner and Nicolas Mahut played for 11 hours and 5 minutes at Wimbledon in 2010."
+        },
+        {
+          "id": "sp_n1",
+          "difficultyLevel": 1,
+          "text": "Basketball was originally played with wooden buckets.",
+          "isFact": false,
+          "explanation": "James Naismith used peach baskets, not wooden buckets."
+        },
+        {
+          "id": "sp_n3",
+          "difficultyLevel": 3,
+          "text": "The Tour de France was created to sell newspapers.",
+          "isFact": true,
+          "explanation": "It was launched as a publicity stunt by the sports newspaper L Auto in 1903."
+        },
+        {
+          "id": "sp_n4",
+          "difficultyLevel": 4,
+          "text": "The Olympic torch has never accidentally gone out.",
+          "isFact": false,
+          "explanation": "It has been extinguished several times during relay events and discreetly relit."
+        },
+        {
+          "id": "sp_n5",
+          "difficultyLevel": 5,
+          "text": "Table tennis began as an outdoor lawn sport before moving indoors.",
+          "isFact": false,
+          "explanation": "It started as an indoor after-dinner parlour game in Victorian England."
+        },
+        {
+          "id": "sp_n6",
+          "difficultyLevel": 6,
+          "text": "Muhammad Ali was born with the name Michael Williams.",
+          "isFact": false,
+          "explanation": "He was born Cassius Marcellus Clay Jr. and changed his name in 1964."
+        },
+        {
+          "id": "sp_n7",
+          "difficultyLevel": 7,
+          "text": "Wimbledon requires all players to wear all-white clothing.",
+          "isFact": true,
+          "explanation": "The All England Club strictly enforces this tradition to this day."
+        },
+        {
+          "id": "sp_n8",
+          "difficultyLevel": 8,
+          "text": "Hockey pucks are frozen before NHL games.",
+          "isFact": true,
+          "explanation": "Frozen pucks slide faster and bounce less unpredictably on the ice."
+        },
+        {
+          "id": "sp_n9",
+          "difficultyLevel": 9,
+          "text": "The longest professional boxing match on record went exactly 15 rounds.",
+          "isFact": false,
+          "explanation": "An 1893 bout lasted 110 rounds and over seven hours before being called."
+        },
+        {
+          "id": "sp_n10",
+          "difficultyLevel": 10,
+          "text": "An NFL game contains only about 11 minutes of actual playing time.",
+          "isFact": true,
+          "explanation": "The rest is replays, huddles, clock stoppages, and commercials."
+        },
+        {
+          "id": "sp_n11",
+          "difficultyLevel": 2,
+          "text": "Michael Phelps won fewer gold medals than most Olympic countries.",
+          "isFact": false,
+          "explanation": "His 23 gold medals exceed the all-time totals of the majority of participating nations."
+        },
+        {
+          "id": "sp_n12",
+          "difficultyLevel": 4,
+          "text": "Golf was once made compulsory for all men in medieval Scotland.",
+          "isFact": false,
+          "explanation": "It was banned in 1457 because men were skipping archery practice to play."
+        },
+        {
+          "id": "sp_n13",
+          "difficultyLevel": 6,
+          "text": "Volleyball was invented as a tougher, faster alternative to basketball.",
+          "isFact": false,
+          "explanation": "It was created in 1895 as a gentler game for older businessmen."
+        },
+        {
+          "id": "sp_n14",
+          "difficultyLevel": 7,
+          "text": "Players have used the Stanley Cup as a dog bowl.",
+          "isFact": true,
+          "explanation": "Players get personal days with the cup and many have let pets eat from it."
+        },
+        {
+          "id": "sp_n15",
+          "difficultyLevel": 5,
+          "text": "Baseball umpires are required to wear bright red undershirts by rule.",
+          "isFact": false,
+          "explanation": "The tradition is dark underwear, so nothing bright shows if their pants split."
+        },
+        {
+          "id": "sp_n16",
+          "difficultyLevel": 9,
+          "text": "Sumo wrestlers must weigh over 150 kg to compete professionally.",
+          "isFact": false,
+          "explanation": "There is no minimum weight rule in sumo; technique is what matters."
+        },
+        {
+          "id": "sp_n17",
+          "difficultyLevel": 7,
+          "text": "Early tennis was first played using wooden paddles, never the bare hand.",
+          "isFact": false,
+          "explanation": "Early 'jeu de paume' was literally played with the open palm of the hand."
+        },
+        {
+          "id": "sp_n18",
+          "difficultyLevel": 6,
+          "text": "Olympic gold medals are made of solid gold.",
+          "isFact": false,
+          "explanation": "Modern gold medals are mostly silver with only a gold plating."
+        },
+        {
+          "id": "sp_n19",
+          "difficultyLevel": 3,
+          "text": "Usain Bolt top recorded speed was over 35 mph.",
+          "isFact": false,
+          "explanation": "His top recorded speed was 27.78 mph, still extraordinarily fast."
+        },
+        {
+          "id": "sp_n20",
+          "difficultyLevel": 1,
+          "text": "Competitive eating is an official Olympic sport.",
+          "isFact": false,
+          "explanation": "It has never been part of the Olympic program."
+        },
+        {
+          "id": "sp_x1",
+          "difficultyLevel": 2,
+          "text": "The first modern Olympic Games were held in Rome in 1900.",
+          "isFact": false,
+          "explanation": "The first modern Olympics were held in Athens in 1896."
+        },
+        {
+          "id": "sp_x2",
+          "difficultyLevel": 4,
+          "text": "In the original Olympic Games, athletes competed in the nude.",
+          "isFact": true,
+          "explanation": "Greek athletes competed naked as a celebration of the human form."
+        },
+        {
+          "id": "sp_x3",
+          "difficultyLevel": 5,
+          "text": "A cricket ball is heavier than a tennis ball.",
+          "isFact": true,
+          "explanation": "Cricket balls weigh 155-163g; tennis balls are only 56-59g."
+        },
+        {
+          "id": "sp_x4",
+          "difficultyLevel": 6,
+          "text": "Cristiano Ronaldo has scored more career goals than any other footballer in history.",
+          "isFact": true,
+          "explanation": "He holds the record for most career goals in recognized competitive football."
+        },
+        {
+          "id": "sp_x5",
+          "difficultyLevel": 7,
+          "text": "The longest recorded tennis rally lasted fewer than 100 shots.",
+          "isFact": false,
+          "explanation": "A recorded practice rally reached 643 shots."
+        },
+        {
+          "id": "sp_x6",
+          "difficultyLevel": 7,
+          "text": "Chess has a world governing body recognized by the International Olympic Committee.",
+          "isFact": true,
+          "explanation": "FIDE, chess's governing body, is recognized by the IOC, though chess isn't an Olympic event."
+        },
+        {
+          "id": "sp_x7",
+          "difficultyLevel": 6,
+          "text": "Serena Williams won a Grand Slam title while pregnant.",
+          "isFact": true,
+          "explanation": "She won the 2017 Australian Open in the early weeks of her pregnancy."
+        },
+        {
+          "id": "sp_x8",
+          "difficultyLevel": 5,
+          "text": "The New York Yankees have the most World Series titles.",
+          "isFact": true,
+          "explanation": "They have won 27 World Series championships."
+        },
+        {
+          "id": "sp_x9",
+          "difficultyLevel": 1,
+          "text": "In soccer, a hat trick means scoring three goals in one match.",
+          "isFact": true,
+          "explanation": "Three goals by one player in a single game is a hat trick."
+        },
+        {
+          "id": "sp_x10",
+          "difficultyLevel": 8,
+          "text": "The fastest recorded tennis serve exceeded 250 km per hour.",
+          "isFact": true,
+          "explanation": "Sam Groth holds the record at 263.4 km per hour."
+        },
+        {
+          "id": "sp_x11",
+          "difficultyLevel": 3,
+          "text": "NBA hoops are exactly 12 feet off the ground.",
+          "isFact": false,
+          "explanation": "They are exactly 10 feet (3.05 meters) — unchanged since 1891."
+        },
+        {
+          "id": "sp_x12",
+          "difficultyLevel": 8,
+          "text": "Polo was played in ancient Persia more than a thousand years ago.",
+          "isFact": true,
+          "explanation": "Polo has roots in ancient Persia, where it was played by cavalry centuries ago."
+        },
+        {
+          "id": "sp_x13",
+          "difficultyLevel": 6,
+          "text": "Tiger Woods won his first major championship before turning professional.",
+          "isFact": false,
+          "explanation": "He turned pro in 1996 and won his first major, the Masters, in 1997 as a pro."
+        },
+        {
+          "id": "sp_x14",
+          "difficultyLevel": 8,
+          "text": "The Super Bowl is the most-watched annual television broadcast in the United States.",
+          "isFact": true,
+          "explanation": "It routinely draws the largest US TV audience of the year."
+        },
+        {
+          "id": "sp_x15",
+          "difficultyLevel": 6,
+          "text": "An ice hockey puck travels faster than 160 km per hour during play.",
+          "isFact": true,
+          "explanation": "The hardest slap shots have been recorded above 190 km per hour."
+        },
+        {
+          "id": "sp_x16",
+          "difficultyLevel": 3,
+          "text": "Brazil has won the FIFA World Cup more times than any other nation.",
+          "isFact": true,
+          "explanation": "Brazil holds the record with five World Cup titles."
+        },
+        {
+          "id": "sp_x17",
+          "difficultyLevel": 1,
+          "text": "In baseball, three strikes means you are out.",
+          "isFact": true,
+          "explanation": "A fundamental rule of the sport since its codification in 1845."
+        },
+        {
+          "id": "sp_x18",
+          "difficultyLevel": 7,
+          "text": "Jockeys in horse racing must weigh under 60 kg.",
+          "isFact": false,
+          "explanation": "Weight limits vary by race, but many races allow up to around 63 kg including equipment."
+        },
+        {
+          "id": "sp_x19",
+          "difficultyLevel": 4,
+          "text": "The Olympic rings represent the five continents of the world.",
+          "isFact": true,
+          "explanation": "Africa, Americas, Asia, Europe, and Oceania, united by the interlinked rings."
+        },
+        {
+          "id": "sp_x20",
+          "difficultyLevel": 9,
+          "text": "Badminton shuttlecocks can travel faster than 300 km per hour.",
+          "isFact": true,
+          "explanation": "The world record smash speed is 493 km per hour, making it the fastest projectile in sport."
+        },
+        {
+          "id": "sp_n023",
+          "difficultyLevel": 2,
+          "text": "Golf is the only sport that has been played on the Moon.",
+          "isFact": true,
+          "explanation": "Alan Shepard hit two golf balls during Apollo 14 in 1971."
+        },
+        {
+          "id": "sp_n024",
+          "difficultyLevel": 2,
+          "text": "A boxing ring is shaped like a perfect circle.",
+          "isFact": false,
+          "explanation": "It's square - the name 'ring' survived from older roped-circle fights."
+        },
+        {
+          "id": "sp_n025",
+          "difficultyLevel": 3,
+          "text": "Table tennis was once banned in the Soviet Union for harming eyesight.",
+          "isFact": true,
+          "explanation": "The USSR banned it in the 1930s-40s believing it damaged players' eyes."
+        },
+        {
+          "id": "sp_n026",
+          "difficultyLevel": 3,
+          "text": "The Olympic marathon distance is exactly 42 kilometers.",
+          "isFact": false,
+          "explanation": "It's 42.195 km, set at the 1908 London Games to reach the royal box."
+        },
+        {
+          "id": "sp_n027",
+          "difficultyLevel": 3,
+          "text": "Cricket Test matches can last up to five days and still end in a draw.",
+          "isFact": true,
+          "explanation": "Five days of play can finish with no winner if no result is reached."
+        },
+        {
+          "id": "sp_n028",
+          "difficultyLevel": 4,
+          "text": "The first ball used in basketball was a soccer ball.",
+          "isFact": true,
+          "explanation": "Naismith used a soccer ball in 1891 before purpose-made balls existed."
+        },
+        {
+          "id": "sp_n029",
+          "difficultyLevel": 4,
+          "text": "Formula 1 tyres are filled with regular compressed air.",
+          "isFact": false,
+          "explanation": "They use nitrogen, which keeps pressure stable as temperatures swing."
+        },
+        {
+          "id": "sp_n030",
+          "difficultyLevel": 4,
+          "text": "An NFL football game has 60 minutes of actual game-clock time.",
+          "isFact": true,
+          "explanation": "Four 15-minute quarters, though real time runs over three hours."
+        },
+        {
+          "id": "sp_n031",
+          "difficultyLevel": 5,
+          "text": "Wimbledon tennis balls are stored at room temperature before matches.",
+          "isFact": false,
+          "explanation": "They're kept at 20C in special containers for consistent bounce."
+        },
+        {
+          "id": "sp_n032",
+          "difficultyLevel": 5,
+          "text": "A regulation baseball has exactly 108 double stitches.",
+          "isFact": true,
+          "explanation": "Every MLB ball is hand-stitched with 108 red double stitches."
+        },
+        {
+          "id": "sp_n033",
+          "difficultyLevel": 6,
+          "text": "The Stanley Cup has had names misspelled and engraved with errors.",
+          "isFact": true,
+          "explanation": "Multiple typos, like 'Bostq Bruins', remain etched on the trophy."
+        },
+        {
+          "id": "sp_n037",
+          "difficultyLevel": 8,
+          "text": "Chess boxing alternates rounds of chess and boxing in a single match.",
+          "isFact": true,
+          "explanation": "A real hybrid sport where you can win by checkmate or knockout."
+        },
+        {
+          "id": "sp_n038",
+          "difficultyLevel": 8,
+          "text": "The Tour de France has always been raced entirely within France.",
+          "isFact": false,
+          "explanation": "It regularly crosses into neighbours and has even started abroad."
+        },
+        {
+          "id": "sp_n039",
+          "difficultyLevel": 8,
+          "text": "Pelota's ball can travel faster than 300 kilometers per hour in jai alai.",
+          "isFact": true,
+          "explanation": "Jai alai is among the fastest ball sports, clocking past 300 km/h."
+        },
+        {
+          "id": "sp_n040",
+          "difficultyLevel": 9,
+          "text": "An NBA player once scored 100 points in a single game.",
+          "isFact": true,
+          "explanation": "Wilt Chamberlain dropped 100 for the Warriors in 1962."
+        },
+        {
+          "id": "sp_n041",
+          "difficultyLevel": 9,
+          "text": "The original Olympic torch relay tradition dates back to ancient Greece.",
+          "isFact": false,
+          "explanation": "The modern relay was invented for the 1936 Berlin Games."
+        },
+        {
+          "id": "sp_n042",
+          "difficultyLevel": 10,
+          "text": "Croquet appeared as an Olympic sport with paying spectators in attendance.",
+          "isFact": true,
+          "explanation": "The 1900 Paris croquet event reportedly drew just one paying spectator."
+        },
+        {
+          "id": "sp_n043",
+          "difficultyLevel": 8,
+          "text": "Cricket's longest Test match lasted ten days and still ended without a winner.",
+          "isFact": true,
+          "explanation": "The 1939 'Timeless Test' in Durban was abandoned so England could catch their ship home."
+        },
+        {
+          "id": "sp_n044",
+          "difficultyLevel": 8,
+          "text": "A perfect 10 has been the maximum score in Olympic gymnastics since 2006.",
+          "isFact": false,
+          "explanation": "The 10.0 cap was scrapped in 2006 for an open-ended difficulty scoring system."
+        },
+        {
+          "id": "sp_n045",
+          "difficultyLevel": 9,
+          "text": "A football goalkeeper has scored a goal directly from inside his own half.",
+          "isFact": true,
+          "explanation": "Keepers like Tom King have scored from clearances over 90 metres."
+        },
+        {
+          "id": "sp_n046",
+          "difficultyLevel": 9,
+          "text": "The Indianapolis 500 is named for the number of laps drivers complete.",
+          "isFact": false,
+          "explanation": "It's named for the 500-mile distance: 200 laps of the 2.5-mile oval."
+        },
+        {
+          "id": "sp_n047",
+          "difficultyLevel": 9,
+          "text": "Synchronized swimming allowed male competitors at the Olympics before 2024.",
+          "isFact": false,
+          "explanation": "Men were first permitted in the Olympic event only at Paris 2024."
+        },
+        {
+          "id": "sp_n048",
+          "difficultyLevel": 10,
+          "text": "The world record for farthest accurate archery shot was set by an archer with no arms.",
+          "isFact": true,
+          "explanation": "Matt Stutzman hit a target at 283.47m in 2015, shooting with his feet."
+        },
+        {
+          "id": "sp_n049",
+          "difficultyLevel": 9,
+          "text": "Wilt Chamberlain's single-game rebound record has since been broken.",
+          "isFact": false,
+          "explanation": "His 55-rebound game from 1960 still stands as the NBA record."
+        },
+        {
+          "id": "sp_n050",
+          "difficultyLevel": 10,
+          "text": "The first modern Olympic marathon in 1896 was won by a Greek water carrier.",
+          "isFact": true,
+          "explanation": "Spyridon Louis, a water carrier, won to national jubilation in Athens."
+        },
+        {
+          "id": "sp_n051",
+          "difficultyLevel": 10,
+          "text": "Polo at the Olympics was once contested using motorcycles instead of horses.",
+          "isFact": false,
+          "explanation": "Olympic polo was always on horseback; motoball was never an Olympic event."
+        }
+      ]
+    },
+    {
+      "id": "general_knowledge",
+      "name": "General Knowledge",
+      "questions": [
+        {
+          "id": "g1",
+          "difficultyLevel": 1,
+          "text": "Mount Everest is the tallest mountain above sea level.",
+          "isFact": true,
+          "explanation": "It stands at 8,848 meters."
+        },
+        {
+          "id": "g2",
+          "difficultyLevel": 2,
+          "text": "The Great Wall of China is visible from space with the naked eye.",
+          "isFact": false,
+          "explanation": "It is a myth; you cannot see it without aid from low Earth orbit."
+        },
+        {
+          "id": "g3",
+          "difficultyLevel": 3,
+          "text": "There are 50 states in the United States.",
+          "isFact": true,
+          "explanation": "There are exactly 50 states."
+        },
+        {
+          "id": "g4",
+          "difficultyLevel": 4,
+          "text": "Napoleon Bonaparte was extremely short.",
+          "isFact": false,
+          "explanation": "He was around 5'6\", which was average height for a Frenchman at the time."
+        },
+        {
+          "id": "g5",
+          "difficultyLevel": 5,
+          "text": "Oxford University is older than the Aztec Empire.",
+          "isFact": true,
+          "explanation": "Oxford was founded around 1096, while the city of Tenochtitlán was founded in 1325."
+        },
+        {
+          "id": "g6",
+          "difficultyLevel": 6,
+          "text": "Vikings wore horned helmets in battle.",
+          "isFact": false,
+          "explanation": "There is no historical evidence that Vikings ever wore horned helmets."
+        },
+        {
+          "id": "g7",
+          "difficultyLevel": 7,
+          "text": "Toasters were invented before pre-sliced bread.",
+          "isFact": true,
+          "explanation": "The electric toaster was invented in 1893, while sliced bread came out in 1928."
+        },
+        {
+          "id": "g8",
+          "difficultyLevel": 8,
+          "text": "Humans use only 10% of their brains.",
+          "isFact": false,
+          "explanation": "We use virtually every part of the brain, and most parts are active almost all the time."
+        },
+        {
+          "id": "g9",
+          "difficultyLevel": 9,
+          "text": "Florida is the closest US state to the continent of Africa.",
+          "isFact": false,
+          "explanation": "Maine's eastern tip is actually closer to Africa than any part of Florida."
+        },
+        {
+          "id": "g10",
+          "difficultyLevel": 10,
+          "text": "Cleopatra lived closer to the iPhone's invention than to the building of the Great Pyramid.",
+          "isFact": true,
+          "explanation": "She lived around 30 BC, whereas the Great Pyramid was built around 2560 BC."
+        },
+        {
+          "id": "gk_n2",
+          "difficultyLevel": 2,
+          "text": "Fortune cookies were invented in China.",
+          "isFact": false,
+          "explanation": "They were invented in California in the early 1900s."
+        },
+        {
+          "id": "gk_n3",
+          "difficultyLevel": 3,
+          "text": "Brazil has more lakes than any other country.",
+          "isFact": false,
+          "explanation": "Canada has approximately 2 million lakes — more than the rest of the world combined."
+        },
+        {
+          "id": "gk_n4",
+          "difficultyLevel": 4,
+          "text": "There is no McDonald's restaurant anywhere in Antarctica.",
+          "isFact": true,
+          "explanation": "Antarctica has no permanent commercial fast-food outlets."
+        },
+        {
+          "id": "gk_n5",
+          "difficultyLevel": 5,
+          "text": "Australia is wider than the Moon.",
+          "isFact": true,
+          "explanation": "Australia spans almost 4000 km across; the Moon is only 3474 km in diameter."
+        },
+        {
+          "id": "gk_n6",
+          "difficultyLevel": 6,
+          "text": "English is the official national language of the United States.",
+          "isFact": false,
+          "explanation": "The US has no federally designated official language."
+        },
+        {
+          "id": "gk_n8",
+          "difficultyLevel": 8,
+          "text": "French fries were invented in France.",
+          "isFact": false,
+          "explanation": "They are believed to have originated in Belgium."
+        },
+        {
+          "id": "gk_n9",
+          "difficultyLevel": 9,
+          "text": "The letter Q does not appear in any US state name.",
+          "isFact": true,
+          "explanation": "Check all 50 state names and you will find not a single Q."
+        },
+        {
+          "id": "gk_n10",
+          "difficultyLevel": 10,
+          "text": "Hawaii is both the westernmost and easternmost US state.",
+          "isFact": false,
+          "explanation": "Alaska holds that distinction; its Aleutians cross the 180-degree meridian."
+        },
+        {
+          "id": "gk_n11",
+          "difficultyLevel": 3,
+          "text": "Pineapples grow on trees and ripen within a few weeks.",
+          "isFact": false,
+          "explanation": "Pineapples grow on ground-level plants and take about two years to mature."
+        },
+        {
+          "id": "gk_n13",
+          "difficultyLevel": 7,
+          "text": "The national animal of Scotland is the golden eagle.",
+          "isFact": false,
+          "explanation": "Scotland's national animal is the mythical unicorn."
+        },
+        {
+          "id": "gk_n14",
+          "difficultyLevel": 5,
+          "text": "Humans can fully digest cellulose from plants.",
+          "isFact": false,
+          "explanation": "We lack the cellulase enzyme, so dietary fiber passes through us undigested."
+        },
+        {
+          "id": "gk_n16",
+          "difficultyLevel": 8,
+          "text": "Tsar Nicholas II and King George V of England were unrelated lookalikes.",
+          "isFact": false,
+          "explanation": "They were first cousins, which is why they looked nearly identical."
+        },
+        {
+          "id": "gk_n18",
+          "difficultyLevel": 5,
+          "text": "Strawberries have their seeds on the inside.",
+          "isFact": false,
+          "explanation": "Strawberries are the only fruit with seeds on the outside — each dot is a tiny achene."
+        },
+        {
+          "id": "gk_n19",
+          "difficultyLevel": 10,
+          "text": "Mount Chimborazo is closer to outer space than Mount Everest.",
+          "isFact": true,
+          "explanation": "The equatorial bulge means Chimborazo peak is the farthest point from Earth center."
+        },
+        {
+          "id": "gk_n20",
+          "difficultyLevel": 4,
+          "text": "Honey never expires.",
+          "isFact": true,
+          "explanation": "Honey found in Egyptian tombs over 3000 years old was still perfectly edible."
+        },
+        {
+          "id": "gk_x1",
+          "difficultyLevel": 5,
+          "text": "The hashtag symbol is formally known as an 'asterisk-grid'.",
+          "isFact": false,
+          "explanation": "Its formal name is 'octothorpe', coined at Bell Labs in the 1960s."
+        },
+        {
+          "id": "gk_x2",
+          "difficultyLevel": 4,
+          "text": "A baker's dozen is 12 because bakers wanted to save money.",
+          "isFact": false,
+          "explanation": "A baker's dozen is actually 13 — medieval bakers added an extra to avoid fines."
+        },
+        {
+          "id": "gk_x3",
+          "difficultyLevel": 7,
+          "text": "Nintendo was founded in 1889.",
+          "isFact": true,
+          "explanation": "It started as a playing card company, long before video games existed."
+        },
+        {
+          "id": "gk_x4",
+          "difficultyLevel": 6,
+          "text": "The inventor of the World Wide Web sold the patent for a fortune.",
+          "isFact": false,
+          "explanation": "Tim Berners-Lee gave the web away for free; he was later knighted."
+        },
+        {
+          "id": "gk_x5",
+          "difficultyLevel": 2,
+          "text": "Oxford and Cambridge universities have their own railway stations.",
+          "isFact": true,
+          "explanation": "Both cities have their own mainline rail connections."
+        },
+        {
+          "id": "gk_x7",
+          "difficultyLevel": 7,
+          "text": "Iceland has no army.",
+          "isFact": false,
+          "explanation": "Iceland has a Coast Guard and a Crisis Response Unit but no traditional standing army."
+        },
+        {
+          "id": "gk_x8",
+          "difficultyLevel": 3,
+          "text": "The Sahara Desert is the largest hot desert in the world.",
+          "isFact": true,
+          "explanation": "It covers about 9.2 million square kilometres across North Africa."
+        },
+        {
+          "id": "gk_x9",
+          "difficultyLevel": 6,
+          "text": "IKEA is named after the Swedish word for 'home furnishing'.",
+          "isFact": false,
+          "explanation": "It's an acronym from founder Ingvar Kamprad's name, farm, and village."
+        },
+        {
+          "id": "gk_x10",
+          "difficultyLevel": 5,
+          "text": "No piece of paper can be folded in half more than eight times.",
+          "isFact": false,
+          "explanation": "Britney Gallivan folded a piece of toilet paper 12 times in 2002, disproving this myth."
+        },
+        {
+          "id": "gk_x11",
+          "difficultyLevel": 7,
+          "text": "The phrase 'Elementary, my dear Watson' never appears in Conan Doyle's original Sherlock Holmes stories.",
+          "isFact": true,
+          "explanation": "The exact phrase was popularized by later films, not the books."
+        },
+        {
+          "id": "gk_x12",
+          "difficultyLevel": 7,
+          "text": "Cashews grow inside a fruit.",
+          "isFact": true,
+          "explanation": "The cashew apple is a swollen stem; the nut hangs below it in a shell."
+        },
+        {
+          "id": "gk_x13",
+          "difficultyLevel": 5,
+          "text": "The pound sterling sign comes from a stylized letter P for 'pound'.",
+          "isFact": false,
+          "explanation": "It comes from 'libra', the Latin word for scales, hence the L shape."
+        },
+        {
+          "id": "gk_x15",
+          "difficultyLevel": 5,
+          "text": "The average person walks the equivalent of once around Earth in a lifetime.",
+          "isFact": false,
+          "explanation": "We actually walk about five times around the Earth over a lifetime."
+        },
+        {
+          "id": "gk_x16",
+          "difficultyLevel": 8,
+          "text": "Bubble wrap was first invented as packaging for electronics.",
+          "isFact": false,
+          "explanation": "Its inventors first tried to market it as textured wallpaper in 1957."
+        },
+        {
+          "id": "gk_x17",
+          "difficultyLevel": 8,
+          "text": "The shortest commercial flight in the world lasts 90 seconds.",
+          "isFact": true,
+          "explanation": "The Westray to Papa Westray flight in Scotland can take under two minutes."
+        },
+        {
+          "id": "gk_x18",
+          "difficultyLevel": 4,
+          "text": "Japan is the most visited country in the world.",
+          "isFact": false,
+          "explanation": "France consistently tops global tourism rankings with about 90 million visitors annually."
+        },
+        {
+          "id": "gk_x19",
+          "difficultyLevel": 6,
+          "text": "A group of pandas is called an embarrassment.",
+          "isFact": true,
+          "explanation": "One of the more entertaining official collective nouns."
+        },
+        {
+          "id": "gk_x20",
+          "difficultyLevel": 9,
+          "text": "The Pacific Ocean is saltier than the Atlantic Ocean.",
+          "isFact": false,
+          "explanation": "The Atlantic is saltier, due to more evaporation and less rainfall."
+        },
+        {
+          "id": "gk_n021",
+          "difficultyLevel": 1,
+          "text": "A week has seven days.",
+          "isFact": true,
+          "explanation": "The seven-day week traces back to ancient Babylonian astronomy and is now near-universal."
+        },
+        {
+          "id": "gk_n023",
+          "difficultyLevel": 2,
+          "text": "Goldfish have a memory span of only three seconds.",
+          "isFact": false,
+          "explanation": "They can remember things for months; the three-second myth has been repeatedly debunked."
+        },
+        {
+          "id": "gk_n024",
+          "difficultyLevel": 3,
+          "text": "Bananas grow on trees.",
+          "isFact": false,
+          "explanation": "The banana plant is a giant herb; its 'trunk' is made of tightly packed leaf bases."
+        },
+        {
+          "id": "gk_n025",
+          "difficultyLevel": 3,
+          "text": "The Eiffel Tower can grow more than 15 centimeters taller in summer heat.",
+          "isFact": true,
+          "explanation": "Iron expands when heated, so the tower physically grows on hot days."
+        },
+        {
+          "id": "gk_n026",
+          "difficultyLevel": 4,
+          "text": "There are countries with no rivers at all.",
+          "isFact": true,
+          "explanation": "Saudi Arabia, Qatar, and several others have no permanent natural rivers."
+        },
+        {
+          "id": "gk_n027",
+          "difficultyLevel": 4,
+          "text": "The shortest war in recorded history lasted under an hour.",
+          "isFact": true,
+          "explanation": "The 1896 Anglo-Zanzibar War ended in roughly 38 minutes."
+        },
+        {
+          "id": "gk_n028",
+          "difficultyLevel": 5,
+          "text": "Vatican City is the smallest country in the world by area.",
+          "isFact": true,
+          "explanation": "At about 0.49 square kilometers, it's smaller than many city parks."
+        },
+        {
+          "id": "gk_n029",
+          "difficultyLevel": 5,
+          "text": "The plural of octopus is officially octopi.",
+          "isFact": false,
+          "explanation": "The word is Greek, not Latin, so 'octopuses' or 'octopodes' is more correct."
+        },
+        {
+          "id": "gk_n031",
+          "difficultyLevel": 6,
+          "text": "Russia spans eleven time zones.",
+          "isFact": true,
+          "explanation": "It's the widest country on Earth, stretching across eleven official time zones."
+        },
+        {
+          "id": "gk_n033",
+          "difficultyLevel": 7,
+          "text": "The dot over a lowercase i or j has its own name.",
+          "isFact": true,
+          "explanation": "It's called a 'tittle', from the same Latin root as 'title'."
+        },
+        {
+          "id": "gk_n034",
+          "difficultyLevel": 7,
+          "text": "The Canary Islands were named after canary birds.",
+          "isFact": false,
+          "explanation": "They were named for dogs ('canis' in Latin); the bird was named after the islands."
+        },
+        {
+          "id": "gk_n035",
+          "difficultyLevel": 7,
+          "text": "Finland has more reindeer than people.",
+          "isFact": false,
+          "explanation": "Finland is famous for having more saunas than cars, not reindeer than people."
+        },
+        {
+          "id": "gk_n036",
+          "difficultyLevel": 8,
+          "text": "The longest place name in the world has over 80 letters.",
+          "isFact": true,
+          "explanation": "A New Zealand hill named Taumata...whenuakitanatahu runs to 85 letters."
+        },
+        {
+          "id": "gk_n037",
+          "difficultyLevel": 8,
+          "text": "Antarctica is the only continent with no native species of spider.",
+          "isFact": false,
+          "explanation": "It's the only continent with no native ant species; spiders aren't the fact."
+        },
+        {
+          "id": "gk_n038",
+          "difficultyLevel": 9,
+          "text": "The word 'set' has historically had the longest entry of any word in the Oxford English Dictionary.",
+          "isFact": true,
+          "explanation": "Older OED editions gave 'set' more distinct senses than any other word."
+        },
+        {
+          "id": "gk_n039",
+          "difficultyLevel": 10,
+          "text": "The Pacific Ocean is wider than the Moon.",
+          "isFact": true,
+          "explanation": "At about 19,000 km across, the Pacific dwarfs the Moon's 3,475 km diameter."
+        },
+        {
+          "id": "gk_n041",
+          "difficultyLevel": 8,
+          "text": "The spiciness of chili peppers is measured in officially named Scoville Heat Units.",
+          "isFact": true,
+          "explanation": "Pharmacist Wilbur Scoville devised the scale in 1912 to rate pepper heat."
+        },
+        {
+          "id": "gk_n042",
+          "difficultyLevel": 9,
+          "text": "The metric system was first officially adopted by the United States in the 1970s.",
+          "isFact": false,
+          "explanation": "The US still uses customary units; it has never fully adopted the metric system."
+        },
+        {
+          "id": "gk_n043",
+          "difficultyLevel": 9,
+          "text": "Saudi Arabia exports construction sand to the rest of the world.",
+          "isFact": false,
+          "explanation": "It imports sand, because its smooth desert sand is poor for construction."
+        },
+        {
+          "id": "gk_n044",
+          "difficultyLevel": 9,
+          "text": "The 'black box' flight recorder on aircraft is painted bright orange.",
+          "isFact": true,
+          "explanation": "It's orange for visibility in wreckage; 'black box' is just a nickname."
+        },
+        {
+          "id": "gk_n045",
+          "difficultyLevel": 10,
+          "text": "There is enough water in Lake Baikal to supply the entire world for decades.",
+          "isFact": true,
+          "explanation": "Baikal holds about a fifth of all unfrozen freshwater on Earth's surface."
+        },
+        {
+          "id": "gk_n047",
+          "difficultyLevel": 10,
+          "text": "Bhutan was among the last countries in the world to introduce television, doing so in 1999.",
+          "isFact": true,
+          "explanation": "Bhutan lifted its TV ban only in 1999, one of the very last nations to allow it."
+        }
+      ]
+    },
+    {
+      "id": "science",
+      "name": "Science & Space",
+      "questions": [
+        {
+          "id": "s1",
+          "difficultyLevel": 1,
+          "text": "The sun rises in the East and sets in the West.",
+          "isFact": true,
+          "explanation": "Due to Earth's rotation, this is true."
+        },
+        {
+          "id": "s2",
+          "difficultyLevel": 2,
+          "text": "Water makes up about 71% of the Earth's surface.",
+          "isFact": true,
+          "explanation": "Oceans hold about 96.5% of all Earth's water."
+        },
+        {
+          "id": "s3",
+          "difficultyLevel": 3,
+          "text": "Lightning never strikes the same place twice.",
+          "isFact": false,
+          "explanation": "Lightning constantly strikes tall structures like the Empire State Building."
+        },
+        {
+          "id": "s4",
+          "difficultyLevel": 4,
+          "text": "Venus is the hottest planet in our solar system.",
+          "isFact": true,
+          "explanation": "Even though Mercury is closer, Venus has a thick atmosphere that traps heat."
+        },
+        {
+          "id": "s5",
+          "difficultyLevel": 5,
+          "text": "Sound travels faster through water than through air.",
+          "isFact": true,
+          "explanation": "Water's tightly packed molecules carry sound vibrations faster than air does."
+        },
+        {
+          "id": "s6",
+          "difficultyLevel": 6,
+          "text": "Bananas are strictly considered berries, but strawberries are not.",
+          "isFact": true,
+          "explanation": "Botanically, bananas are berries, while strawberries are 'aggregate fruits'."
+        },
+        {
+          "id": "s7",
+          "difficultyLevel": 7,
+          "text": "Around one thousand Earths could fit inside the Sun.",
+          "isFact": false,
+          "explanation": "About 1.3 million Earths could fit inside the Sun, not a thousand."
+        },
+        {
+          "id": "s8",
+          "difficultyLevel": 8,
+          "text": "A year on Venus is longer than a day on Venus.",
+          "isFact": false,
+          "explanation": "It's the reverse: a Venus day is longer than its year because it rotates so slowly."
+        },
+        {
+          "id": "s9",
+          "difficultyLevel": 9,
+          "text": "Glass is a slow-moving liquid, which is why old windows are thicker at the bottom.",
+          "isFact": false,
+          "explanation": "Glass is an amorphous solid; old panes are uneven due to early manufacturing methods."
+        },
+        {
+          "id": "s10",
+          "difficultyLevel": 10,
+          "text": "There are more trees on Earth than stars in the Milky Way.",
+          "isFact": true,
+          "explanation": "There are ~3 trillion trees on Earth, compared to ~100-400 billion stars in the Milky Way."
+        },
+        {
+          "id": "sc_n2",
+          "difficultyLevel": 2,
+          "text": "Carrots dramatically improve your night vision.",
+          "isFact": false,
+          "explanation": "You would need a severe deficiency to see any real benefit from extra carrots."
+        },
+        {
+          "id": "sc_n5",
+          "difficultyLevel": 5,
+          "text": "Warm water generally comes to a boil faster than cold water.",
+          "isFact": true,
+          "explanation": "Warmer water starts closer to boiling, so it needs less energy to get there."
+        },
+        {
+          "id": "sc_n6",
+          "difficultyLevel": 6,
+          "text": "Diamonds are made from compressed coal.",
+          "isFact": false,
+          "explanation": "They form from pure carbon under extreme pressure, before coal-producing plants even existed."
+        },
+        {
+          "id": "sc_n7",
+          "difficultyLevel": 7,
+          "text": "Helium is the only element that cannot solidify at normal atmospheric pressure.",
+          "isFact": true,
+          "explanation": "Quantum effects prevent it from solidifying without added pressure."
+        },
+        {
+          "id": "sc_n8",
+          "difficultyLevel": 8,
+          "text": "The universe is approximately 13.8 billion years old.",
+          "isFact": true,
+          "explanation": "Based on measurements of cosmic background radiation."
+        },
+        {
+          "id": "sc_n10",
+          "difficultyLevel": 2,
+          "text": "Peanuts are not true nuts but are legumes.",
+          "isFact": true,
+          "explanation": "They grow in pods underground, related to beans and lentils."
+        },
+        {
+          "id": "sc_n11",
+          "difficultyLevel": 3,
+          "text": "An atom is mostly made of densely packed solid matter.",
+          "isFact": false,
+          "explanation": "An atom is almost entirely empty space; the nucleus is tiny relative to the whole."
+        },
+        {
+          "id": "sc_n12",
+          "difficultyLevel": 5,
+          "text": "Silver is a better electrical conductor than gold.",
+          "isFact": true,
+          "explanation": "Silver is the best conductor; gold is used mainly for corrosion resistance."
+        },
+        {
+          "id": "sc_n13",
+          "difficultyLevel": 4,
+          "text": "Tomatoes are botanically classified as fruit.",
+          "isFact": true,
+          "explanation": "Any structure enclosing seeds that develops from a flower is botanically a fruit."
+        },
+        {
+          "id": "sc_n15",
+          "difficultyLevel": 7,
+          "text": "All neon signs use neon gas.",
+          "isFact": false,
+          "explanation": "Only reddish-orange signs use pure neon; other colors use argon, krypton, or other gases."
+        },
+        {
+          "id": "sc_n16",
+          "difficultyLevel": 8,
+          "text": "The Sun appears yellow from Earth but is truly a white star.",
+          "isFact": true,
+          "explanation": "Earth's atmosphere scatters blue light, giving the Sun a yellowish tint from the ground."
+        },
+        {
+          "id": "sc_n18",
+          "difficultyLevel": 1,
+          "text": "Rubber is an effective electrical insulator.",
+          "isFact": true,
+          "explanation": "Its resistance to current is why wires are coated in it."
+        },
+        {
+          "id": "sc_n19",
+          "difficultyLevel": 7,
+          "text": "The human eye can distinguish only a few thousand distinct colors.",
+          "isFact": false,
+          "explanation": "The eye can distinguish roughly ten million colors."
+        },
+        {
+          "id": "sc_x1",
+          "difficultyLevel": 5,
+          "text": "Wi-Fi stands for Wireless Fidelity.",
+          "isFact": false,
+          "explanation": "Wi-Fi is a trademarked name with no official meaning; it was coined as a play on Hi-Fi."
+        },
+        {
+          "id": "sc_x2",
+          "difficultyLevel": 5,
+          "text": "The human stomach lining is the same one you are born with for life.",
+          "isFact": false,
+          "explanation": "The stomach lining is replaced every few days because acid is so corrosive."
+        },
+        {
+          "id": "sc_x3",
+          "difficultyLevel": 9,
+          "text": "Humans and T-Rex are closer in time than T-Rex and Stegosaurus.",
+          "isFact": true,
+          "explanation": "Stegosaurus lived 80 million years before T-Rex; we are only 65 million years from T-Rex."
+        },
+        {
+          "id": "sc_x4",
+          "difficultyLevel": 8,
+          "text": "There are more possible chess games than atoms in the observable universe.",
+          "isFact": true,
+          "explanation": "The Shannon number estimates 10 to the power of 120 possible chess games."
+        },
+        {
+          "id": "sc_x5",
+          "difficultyLevel": 7,
+          "text": "Silicon is the most abundant element in the Earth's crust.",
+          "isFact": false,
+          "explanation": "Oxygen is most abundant, making up about 46 percent of the crust by mass."
+        },
+        {
+          "id": "sc_x6",
+          "difficultyLevel": 7,
+          "text": "Lightning is hotter than the surface of the sun.",
+          "isFact": true,
+          "explanation": "A lightning bolt reaches 30,000 Kelvin; the sun surface is about 5,778 Kelvin."
+        },
+        {
+          "id": "sc_x7",
+          "difficultyLevel": 6,
+          "text": "Humans can smell rain because of a chemical called petrichor.",
+          "isFact": true,
+          "explanation": "Petrichor is produced when rain hits dry earth, releasing oils and geosmin."
+        },
+        {
+          "id": "sc_x8",
+          "difficultyLevel": 6,
+          "text": "Fingernails and toenails grow at exactly the same rate.",
+          "isFact": false,
+          "explanation": "Fingernails grow faster than toenails, and faster on the dominant hand."
+        },
+        {
+          "id": "sc_x9",
+          "difficultyLevel": 7,
+          "text": "The appendix has no function in the human body.",
+          "isFact": false,
+          "explanation": "It is believed to serve as a reservoir for gut bacteria and may play an immune role."
+        },
+        {
+          "id": "sc_x11",
+          "difficultyLevel": 4,
+          "text": "Adults have more bones than babies.",
+          "isFact": false,
+          "explanation": "Babies have about 300 bones; many fuse as we grow, leaving adults with just 206."
+        },
+        {
+          "id": "sc_x12",
+          "difficultyLevel": 9,
+          "text": "Dark matter makes up the majority of the universe.",
+          "isFact": true,
+          "explanation": "About 27 percent dark matter, 68 percent dark energy, and only 5 percent normal matter."
+        },
+        {
+          "id": "sc_x13",
+          "difficultyLevel": 8,
+          "text": "Freshly cut grass smell is simply the scent of chlorophyll.",
+          "isFact": false,
+          "explanation": "That smell is a chemical distress signal released by the damaged grass."
+        },
+        {
+          "id": "sc_x14",
+          "difficultyLevel": 7,
+          "text": "Stainless steel door handles naturally kill germs on contact.",
+          "isFact": false,
+          "explanation": "Copper, not steel, has antimicrobial properties that kill microbes over hours."
+        },
+        {
+          "id": "sc_x15",
+          "difficultyLevel": 3,
+          "text": "You can physically see the Milky Way galaxy from Earth.",
+          "isFact": true,
+          "explanation": "We are inside it, so we see it as a band of stars across the night sky."
+        },
+        {
+          "id": "sc_x16",
+          "difficultyLevel": 6,
+          "text": "There are more grains of sand on Earth than stars in the universe.",
+          "isFact": false,
+          "explanation": "Estimates suggest the reverse: more stars in the universe than sand grains on Earth."
+        },
+        {
+          "id": "sc_x17",
+          "difficultyLevel": 5,
+          "text": "Clouds are weightless.",
+          "isFact": false,
+          "explanation": "An average cumulus cloud weighs about 500 tonnes."
+        },
+        {
+          "id": "sc_x18",
+          "difficultyLevel": 4,
+          "text": "The human brain is about three-quarters water.",
+          "isFact": true,
+          "explanation": "Roughly 75 percent of the brain's mass is water."
+        },
+        {
+          "id": "sc_x19",
+          "difficultyLevel": 10,
+          "text": "Two clean pieces of metal will never bond just by touching in space.",
+          "isFact": false,
+          "explanation": "They can cold-weld in vacuum because there's no oxide layer to stop bonding."
+        },
+        {
+          "id": "sc_x20",
+          "difficultyLevel": 10,
+          "text": "Gravity travels at the speed of light.",
+          "isFact": true,
+          "explanation": "Gravitational waves were confirmed to travel at exactly the speed of light."
+        },
+        {
+          "id": "sc_n021",
+          "difficultyLevel": 1,
+          "text": "Humans have five senses and no more.",
+          "isFact": false,
+          "explanation": "We have additional senses like balance and proprioception, the sense of body position."
+        },
+        {
+          "id": "sc_n022",
+          "difficultyLevel": 1,
+          "text": "Light travels faster than sound.",
+          "isFact": true,
+          "explanation": "Light outpaces sound by roughly a million times, which is why you see lightning before thunder."
+        },
+        {
+          "id": "sc_n023",
+          "difficultyLevel": 2,
+          "text": "Saturn is light enough that it would float in a large enough body of water.",
+          "isFact": true,
+          "explanation": "Its average density is about 0.69 g/cm3, less than water's, thanks to its gassy makeup."
+        },
+        {
+          "id": "sc_n024",
+          "difficultyLevel": 3,
+          "text": "The human tongue has specific zones that detect each taste.",
+          "isFact": false,
+          "explanation": "The 'tongue map' is a myth; all taste types are detected across the whole tongue."
+        },
+        {
+          "id": "sc_n025",
+          "difficultyLevel": 3,
+          "text": "Hot water can freeze faster than cold water under the right conditions.",
+          "isFact": true,
+          "explanation": "Known as the Mpemba effect, it's been observed though its causes are still debated."
+        },
+        {
+          "id": "sc_n027",
+          "difficultyLevel": 4,
+          "text": "Your body contains roughly as many bacterial cells as human cells.",
+          "isFact": true,
+          "explanation": "The old 10-to-1 claim was debunked; the real ratio is closer to 1.3 to 1."
+        },
+        {
+          "id": "sc_n028",
+          "difficultyLevel": 4,
+          "text": "Sharks existed before trees did.",
+          "isFact": true,
+          "explanation": "Sharks date back over 400 million years, predating the first trees by tens of millions."
+        },
+        {
+          "id": "sc_n029",
+          "difficultyLevel": 5,
+          "text": "Stomach acid is strong enough to dissolve some metals.",
+          "isFact": true,
+          "explanation": "At a pH near 1.5, stomach acid can corrode materials like zinc."
+        },
+        {
+          "id": "sc_n030",
+          "difficultyLevel": 5,
+          "text": "A bolt of lightning contains enough energy to toast thousands of slices of bread.",
+          "isFact": true,
+          "explanation": "A single strike packs roughly a billion joules of energy."
+        },
+        {
+          "id": "sc_n031",
+          "difficultyLevel": 5,
+          "text": "The Sahara is the largest desert on Earth.",
+          "isFact": false,
+          "explanation": "Antarctica is the largest desert; a desert is defined by low precipitation, not heat."
+        },
+        {
+          "id": "sc_n032",
+          "difficultyLevel": 6,
+          "text": "Hair and fingernails keep growing for a while after a person dies.",
+          "isFact": false,
+          "explanation": "They don't grow; skin dehydrates and retracts, making them only appear longer."
+        },
+        {
+          "id": "sc_n033",
+          "difficultyLevel": 6,
+          "text": "There is no gravity in outer space.",
+          "isFact": false,
+          "explanation": "Astronauts float because they're in continuous free fall, not because gravity is absent."
+        },
+        {
+          "id": "sc_n034",
+          "difficultyLevel": 6,
+          "text": "Octopuses have three hearts and blue blood.",
+          "isFact": true,
+          "explanation": "Two hearts pump to the gills, one to the body; copper-based hemocyanin makes blood blue."
+        },
+        {
+          "id": "sc_n035",
+          "difficultyLevel": 7,
+          "text": "A teaspoon of neutron star material would weigh about the same as a car.",
+          "isFact": false,
+          "explanation": "It would weigh billions of tonnes; neutron star matter is extraordinarily dense."
+        },
+        {
+          "id": "sc_n036",
+          "difficultyLevel": 7,
+          "text": "The Great Pyramid contains enough stone to be seen glowing from heat at night.",
+          "isFact": false,
+          "explanation": "Stone doesn't glow from stored heat; this is fabricated pseudo-science."
+        },
+        {
+          "id": "sc_n037",
+          "difficultyLevel": 7,
+          "text": "Helium can make your voice higher and a heavier gas can make it deeper.",
+          "isFact": true,
+          "explanation": "Sound moves faster in helium and slower in dense gases like sulfur hexafluoride."
+        },
+        {
+          "id": "sc_n038",
+          "difficultyLevel": 8,
+          "text": "Light from the Sun takes about eight minutes to reach Earth.",
+          "isFact": true,
+          "explanation": "At 150 million km away, sunlight takes roughly 8 minutes and 20 seconds to arrive."
+        },
+        {
+          "id": "sc_n039",
+          "difficultyLevel": 8,
+          "text": "Water can exist as solid, liquid, and gas at the same time under specific conditions.",
+          "isFact": true,
+          "explanation": "At water's 'triple point' of temperature and pressure, all three states coexist."
+        },
+        {
+          "id": "sc_n040",
+          "difficultyLevel": 8,
+          "text": "DNA from two unrelated humans is on average about 90 percent identical.",
+          "isFact": false,
+          "explanation": "Any two humans share about 99.9 percent of their DNA, not 90 percent."
+        },
+        {
+          "id": "sc_n041",
+          "difficultyLevel": 9,
+          "text": "It rains diamonds on Neptune and Uranus.",
+          "isFact": true,
+          "explanation": "Extreme pressure squeezes carbon in their atmospheres into diamond, which sinks as rain."
+        },
+        {
+          "id": "sc_n042",
+          "difficultyLevel": 9,
+          "text": "Time passes very slightly faster for your head than for your feet when standing.",
+          "isFact": true,
+          "explanation": "General relativity says gravity slows time, so time runs faster farther from Earth's center."
+        },
+        {
+          "id": "sc_n043",
+          "difficultyLevel": 10,
+          "text": "More than 99 percent of the atoms in your body were forged inside stars.",
+          "isFact": true,
+          "explanation": "Elements heavier than hydrogen and helium were made in stars, then scattered by supernovae."
+        },
+        {
+          "id": "sc_n044",
+          "difficultyLevel": 8,
+          "text": "Voyager 1 is the first human-made object to reach interstellar space.",
+          "isFact": true,
+          "explanation": "Launched in 1977, it crossed beyond the Sun's bubble into interstellar space in 2012."
+        },
+        {
+          "id": "sc_n045",
+          "difficultyLevel": 8,
+          "text": "Bees are unable to tell individual human faces apart.",
+          "isFact": false,
+          "explanation": "Studies show honeybees can learn to recognize individual human faces."
+        },
+        {
+          "id": "sc_n046",
+          "difficultyLevel": 8,
+          "text": "Absolute zero, the coldest possible temperature, has been reached in a lab.",
+          "isFact": false,
+          "explanation": "Scientists get extremely close but absolute zero is physically unreachable."
+        },
+        {
+          "id": "sc_n047",
+          "difficultyLevel": 9,
+          "text": "A photon of light can take tens of thousands of years to travel from the Sun's core to its surface.",
+          "isFact": true,
+          "explanation": "Energy zigzags through dense plasma for millennia before escaping as sunlight."
+        },
+        {
+          "id": "sc_n048",
+          "difficultyLevel": 9,
+          "text": "Bananas are completely free of any natural radioactivity.",
+          "isFact": false,
+          "explanation": "Bananas contain potassium-40, making them slightly and harmlessly radioactive."
+        },
+        {
+          "id": "sc_n049",
+          "difficultyLevel": 9,
+          "text": "Sound can travel through the vacuum of space if the source is loud enough.",
+          "isFact": false,
+          "explanation": "Sound needs a medium; a vacuum has no particles to carry the vibrations."
+        },
+        {
+          "id": "sc_n050",
+          "difficultyLevel": 9,
+          "text": "Tardigrades can survive the vacuum and radiation of open space.",
+          "isFact": true,
+          "explanation": "These tiny 'water bears' survived direct exposure to space in a 2007 experiment."
+        },
+        {
+          "id": "sc_n051",
+          "difficultyLevel": 10,
+          "text": "There are more atoms in a single grain of sand than ways to shuffle a card deck.",
+          "isFact": false,
+          "explanation": "A 52-card deck has more possible orderings than that — about 8 followed by 67 zeros."
+        },
+        {
+          "id": "sc_n052",
+          "difficultyLevel": 10,
+          "text": "If the Sun suddenly vanished, Earth would fly out of orbit instantly.",
+          "isFact": false,
+          "explanation": "Gravity's effect travels at light speed, so Earth would orbit normally for about 8 more minutes."
+        },
+        {
+          "id": "sc_n053",
+          "difficultyLevel": 10,
+          "text": "Hydrogen and helium make up over 98 percent of all ordinary matter in the universe.",
+          "isFact": true,
+          "explanation": "These two lightest elements dominate; everything else is a tiny fraction of normal matter."
+        }
+      ]
+    },
+    {
+      "id": "pop_culture",
+      "name": "Pop Culture",
+      "questions": [
+        {
+          "id": "POP_001",
+          "difficultyLevel": 1,
+          "text": "James Cameron directed both Titanic and Avatar.",
+          "isFact": true,
+          "explanation": "He directed both, and each became the highest-grossing film of its era."
+        },
+        {
+          "id": "POP_002",
+          "difficultyLevel": 2,
+          "text": "Eminem's real first name is Marshall.",
+          "isFact": true,
+          "explanation": "His legal name is Marshall Bruce Mathers III."
+        },
+        {
+          "id": "POP_003",
+          "difficultyLevel": 3,
+          "text": "The Hollywood sign originally spelled out a longer word than 'Hollywood'.",
+          "isFact": true,
+          "explanation": "It read 'Hollywoodland', a real estate ad, until it was shortened."
+        },
+        {
+          "id": "POP_004",
+          "difficultyLevel": 4,
+          "text": "Netflix started out mailing DVDs to customers before it streamed anything.",
+          "isFact": true,
+          "explanation": "It ran a DVD-by-mail rental service years before launching streaming."
+        },
+        {
+          "id": "POP_005",
+          "difficultyLevel": 5,
+          "text": "The Simpsons has aired more episodes than any other US primetime scripted series.",
+          "isFact": true,
+          "explanation": "It surpassed every other primetime scripted show in episode count."
+        },
+        {
+          "id": "POP_006",
+          "difficultyLevel": 6,
+          "text": "India produces more feature films per year than the United States.",
+          "isFact": true,
+          "explanation": "India is consistently among the world's largest producers by film count."
+        },
+        {
+          "id": "POP_007",
+          "difficultyLevel": 7,
+          "text": "The clapperboard on a film set helps editors sync sound with picture.",
+          "isFact": true,
+          "explanation": "The sharp clap gives a matching audio spike and visual frame to align."
+        },
+        {
+          "id": "POP_008",
+          "difficultyLevel": 1,
+          "text": "The Beatles formed in London.",
+          "isFact": false,
+          "explanation": "They formed in Liverpool, not London."
+        },
+        {
+          "id": "POP_009",
+          "difficultyLevel": 2,
+          "text": "Pixar's first feature film was Finding Nemo.",
+          "isFact": false,
+          "explanation": "Toy Story (1995) was Pixar's first feature film."
+        },
+        {
+          "id": "POP_010",
+          "difficultyLevel": 2,
+          "text": "Leonardo DiCaprio won his first acting Oscar for Titanic.",
+          "isFact": false,
+          "explanation": "His first acting Oscar came for The Revenant in 2016."
+        },
+        {
+          "id": "POP_011",
+          "difficultyLevel": 4,
+          "text": "Audrey Hepburn sang all her own vocals in My Fair Lady.",
+          "isFact": false,
+          "explanation": "Her singing was dubbed by Marni Nixon."
+        },
+        {
+          "id": "POP_012",
+          "difficultyLevel": 5,
+          "text": "Tom Hanks has won more acting Oscars than any other performer.",
+          "isFact": false,
+          "explanation": "He won two; Katharine Hepburn won four, the record for acting."
+        },
+        {
+          "id": "POP_013",
+          "difficultyLevel": 6,
+          "text": "Spotify was founded in the United States.",
+          "isFact": false,
+          "explanation": "Spotify was founded in Stockholm, Sweden."
+        },
+        {
+          "id": "POP_014",
+          "difficultyLevel": 8,
+          "text": "Most commercial movie 'blood' in classic black-and-white films was bright red paint.",
+          "isFact": false,
+          "explanation": "In Psycho, Hitchcock used chocolate syrup, which read better on black-and-white film."
+        },
+        {
+          "id": "POP_015",
+          "difficultyLevel": 3,
+          "text": "A single recorded scream has been reused as a sound effect in hundreds of films.",
+          "isFact": true,
+          "explanation": "The 'Wilhelm Scream' is a stock effect dropped into films for decades."
+        },
+        {
+          "id": "POP_016",
+          "difficultyLevel": 3,
+          "text": "The same actor voiced Darth Vader and Mufasa in The Lion King.",
+          "isFact": true,
+          "explanation": "James Earl Jones voiced both characters."
+        },
+        {
+          "id": "POP_017",
+          "difficultyLevel": 4,
+          "text": "Sean Connery turned down the lead wizard role in The Lord of the Rings.",
+          "isFact": true,
+          "explanation": "He was offered Gandalf but declined, saying he didn't understand the script."
+        },
+        {
+          "id": "POP_018",
+          "difficultyLevel": 5,
+          "text": "In the original Wizard of Oz book, Dorothy's magic slippers were silver.",
+          "isFact": true,
+          "explanation": "They were changed to ruby red for the film to take advantage of Technicolor."
+        },
+        {
+          "id": "POP_019",
+          "difficultyLevel": 6,
+          "text": "Around 90 percent of Pixar's Toy Story 2 was once accidentally deleted during production.",
+          "isFact": true,
+          "explanation": "A stray delete command wiped the files; a home backup saved the film."
+        },
+        {
+          "id": "POP_020",
+          "difficultyLevel": 6,
+          "text": "The voices of Mickey Mouse and Minnie Mouse were once married in real life.",
+          "isFact": true,
+          "explanation": "Wayne Allwine and Russi Taylor, their voice actors, were married."
+        },
+        {
+          "id": "POP_021",
+          "difficultyLevel": 7,
+          "text": "Anthony Hopkins won a Best Actor Oscar with only about 16 minutes of screen time.",
+          "isFact": true,
+          "explanation": "His Silence of the Lambs role is among the shortest Oscar-winning leads."
+        },
+        {
+          "id": "POP_022",
+          "difficultyLevel": 7,
+          "text": "Charlie Chaplin reportedly once lost a Chaplin lookalike contest.",
+          "isFact": true,
+          "explanation": "He is widely said to have entered and failed to place first."
+        },
+        {
+          "id": "POP_023",
+          "difficultyLevel": 8,
+          "text": "The 'Happy Birthday' song earned royalties under copyright for decades.",
+          "isFact": true,
+          "explanation": "It generated licensing fees until a court ruled it public domain in 2016."
+        },
+        {
+          "id": "POP_024",
+          "difficultyLevel": 9,
+          "text": "A near-silent black-and-white film won Best Picture as recently as the 2010s.",
+          "isFact": true,
+          "explanation": "The Artist won the 2012 Best Picture Oscar."
+        },
+        {
+          "id": "POP_025",
+          "difficultyLevel": 9,
+          "text": "'Hakuna Matata' from The Lion King is a real phrase in an African language.",
+          "isFact": true,
+          "explanation": "It's genuine Swahili, meaning roughly 'no worries'."
+        },
+        {
+          "id": "POP_026",
+          "difficultyLevel": 10,
+          "text": "A Mumbai cinema has screened the same Bollywood film daily since 1995.",
+          "isFact": true,
+          "explanation": "Dilwale Dulhania Le Jayenge has run at Maratha Mandir for decades."
+        },
+        {
+          "id": "POP_027",
+          "difficultyLevel": 2,
+          "text": "Walt Disney personally holds the record for most Oscars won by anyone.",
+          "isFact": true,
+          "explanation": "He won 22 competitive Academy Awards, more than any other individual."
+        },
+        {
+          "id": "POP_028",
+          "difficultyLevel": 3,
+          "text": "Walt Disney won more Oscars than any other person in a single year only.",
+          "isFact": false,
+          "explanation": "Disney holds the all-time record of 22 competitive Oscars, not just a single-year mark."
+        },
+        {
+          "id": "POP_029",
+          "difficultyLevel": 4,
+          "text": "Mickey Mouse was originally created and named by Walt Disney's brother Roy.",
+          "isFact": false,
+          "explanation": "Walt Disney and Ub Iwerks created Mickey; the early name considered was Mortimer."
+        },
+        {
+          "id": "POP_030",
+          "difficultyLevel": 5,
+          "text": "Justin Bieber's 'Baby' was the first video to reach a billion views online.",
+          "isFact": false,
+          "explanation": "Psy's Gangnam Style was the first to hit a billion YouTube views, in 2012."
+        },
+        {
+          "id": "POP_031",
+          "difficultyLevel": 5,
+          "text": "Prince could not play instruments and relied on session musicians for his records.",
+          "isFact": false,
+          "explanation": "Prince famously played dozens of instruments himself."
+        },
+        {
+          "id": "POP_032",
+          "difficultyLevel": 6,
+          "text": "The croissant was invented in France.",
+          "isFact": false,
+          "explanation": "Its crescent-shaped ancestor, the kipferl, originated in Austria."
+        },
+        {
+          "id": "POP_033",
+          "difficultyLevel": 7,
+          "text": "The actor who played Mr. Bean has no university education in any technical field.",
+          "isFact": false,
+          "explanation": "Rowan Atkinson holds a degree in electrical engineering."
+        },
+        {
+          "id": "POP_034",
+          "difficultyLevel": 7,
+          "text": "Stan Lee never appeared on screen in any of the Marvel movies.",
+          "isFact": false,
+          "explanation": "He made brief cameo appearances across dozens of Marvel films."
+        },
+        {
+          "id": "POP_035",
+          "difficultyLevel": 8,
+          "text": "The Wizard of Oz was the first feature film ever shot in color.",
+          "isFact": false,
+          "explanation": "Color features existed well before it; it's famous for Technicolor, not for being first."
+        },
+        {
+          "id": "POP_036",
+          "difficultyLevel": 8,
+          "text": "Lagaan won the Academy Award for Best Foreign Language Film.",
+          "isFact": false,
+          "explanation": "It was nominated but did not win the Oscar."
+        },
+        {
+          "id": "POP_037",
+          "difficultyLevel": 9,
+          "text": "Alfred Hitchcock won the Best Director Oscar multiple times in his career.",
+          "isFact": false,
+          "explanation": "Despite five nominations, he never won a competitive Best Director Oscar."
+        },
+        {
+          "id": "POP_038",
+          "difficultyLevel": 10,
+          "text": "Dadasaheb Phalke directed India's first sound film.",
+          "isFact": false,
+          "explanation": "His 1913 Raja Harishchandra, India's first feature, was silent."
+        },
+        {
+          "id": "POP_039",
+          "difficultyLevel": 3,
+          "text": "A.R. Rahman was the first Indian to be nominated for an Academy Award.",
+          "isFact": false,
+          "explanation": "Indians were nominated decades earlier; Rahman won two Oscars in 2009."
+        },
+        {
+          "id": "POP_040",
+          "difficultyLevel": 4,
+          "text": "Kaun Banega Crorepati was first hosted by Shah Rukh Khan.",
+          "isFact": false,
+          "explanation": "Amitabh Bachchan hosted the debut season."
+        },
+        {
+          "id": "POP_041",
+          "difficultyLevel": 5,
+          "text": "The first feature film with synchronized dialogue was The Jazz Singer.",
+          "isFact": true,
+          "explanation": "The 1927 film is credited as the first major 'talkie'."
+        },
+        {
+          "id": "POP_042",
+          "difficultyLevel": 6,
+          "text": "Satyajit Ray never received any recognition from the Academy Awards.",
+          "isFact": false,
+          "explanation": "He received an Academy Honorary Award in 1992."
+        },
+        {
+          "id": "POP_043",
+          "difficultyLevel": 6,
+          "text": "Rajinikanth worked as a bus conductor before becoming a film star.",
+          "isFact": true,
+          "explanation": "He worked as a bus conductor in Bangalore before entering cinema."
+        },
+        {
+          "id": "POP_044",
+          "difficultyLevel": 8,
+          "text": "The 1960 epic Mughal-e-Azam was filmed entirely in color.",
+          "isFact": false,
+          "explanation": "Only parts were in color; much of it was black and white."
+        },
+        {
+          "id": "POP_045",
+          "difficultyLevel": 9,
+          "text": "India's national anthem was written by a Nobel Prize winner.",
+          "isFact": true,
+          "explanation": "Rabindranath Tagore, a Nobel laureate, wrote 'Jana Gana Mana'."
+        },
+        {
+          "id": "POP_046",
+          "difficultyLevel": 10,
+          "text": "India's national anthem was written by Mahatma Gandhi.",
+          "isFact": false,
+          "explanation": "It was written by Rabindranath Tagore, a Nobel laureate."
+        },
+        {
+          "id": "POP_047",
+          "difficultyLevel": 2,
+          "text": "Disney's 'Frozen' was based on an entirely original story with no source material.",
+          "isFact": false,
+          "explanation": "It was loosely based on Hans Christian Andersen's 'The Snow Queen'."
+        },
+        {
+          "id": "POP_048",
+          "difficultyLevel": 4,
+          "text": "The movie 'Frozen' was based on a fairy tale by Hans Christian Andersen.",
+          "isFact": true,
+          "explanation": "It drew loosely from his story 'The Snow Queen'."
+        },
+        {
+          "id": "POP_049",
+          "difficultyLevel": 5,
+          "text": "Raj Kapoor's films were banned outright across the Soviet Union.",
+          "isFact": false,
+          "explanation": "They were hugely popular there; Awara became a Soviet cultural phenomenon."
+        },
+        {
+          "id": "POP_050",
+          "difficultyLevel": 3,
+          "text": "The Friends theme song was performed by a band called Maroon 5.",
+          "isFact": false,
+          "explanation": "'I'll Be There for You' was recorded by The Rembrandts."
+        }
+      ]
+    },
+    {
+      "id": "passport_plate",
+      "name": "Passport & Plate",
+      "questions": [
+        {
+          "id": "PP_001",
+          "difficultyLevel": 1,
+          "text": "Peanuts grow underground rather than on a tree.",
+          "isFact": true,
+          "explanation": "They form in pods beneath the soil, which is why they count as legumes."
+        },
+        {
+          "id": "PP_002",
+          "difficultyLevel": 2,
+          "text": "Honey can stay edible for thousands of years if sealed properly.",
+          "isFact": true,
+          "explanation": "Its low moisture and acidity block microbes, so it keeps almost indefinitely."
+        },
+        {
+          "id": "PP_003",
+          "difficultyLevel": 3,
+          "text": "Bananas grow curving upward toward the sky as they ripen.",
+          "isFact": true,
+          "explanation": "They bend up toward sunlight while growing on the plant."
+        },
+        {
+          "id": "PP_004",
+          "difficultyLevel": 4,
+          "text": "The Netherlands has more bicycles than it has people.",
+          "isFact": true,
+          "explanation": "Registered bikes outnumber the Dutch population."
+        },
+        {
+          "id": "PP_005",
+          "difficultyLevel": 5,
+          "text": "Tomato ketchup was sold in 1830s America as a medicine.",
+          "isFact": true,
+          "explanation": "It was marketed in pill form to treat stomach complaints."
+        },
+        {
+          "id": "PP_006",
+          "difficultyLevel": 6,
+          "text": "Sweden has more islands than any other country in the world.",
+          "isFact": true,
+          "explanation": "It has over 260,000 islands, the most of any nation, nearly all uninhabited."
+        },
+        {
+          "id": "PP_007",
+          "difficultyLevel": 1,
+          "text": "French fries were first created in France.",
+          "isFact": false,
+          "explanation": "The frying method is generally credited to Belgium, despite the name."
+        },
+        {
+          "id": "PP_008",
+          "difficultyLevel": 2,
+          "text": "The Caesar salad was named after Julius Caesar.",
+          "isFact": false,
+          "explanation": "It was named after Caesar Cardini, who created it in Tijuana, Mexico in 1924."
+        },
+        {
+          "id": "PP_009",
+          "difficultyLevel": 3,
+          "text": "Champagne can come from any wine region in France.",
+          "isFact": false,
+          "explanation": "Only sparkling wine from the Champagne region may legally be called champagne."
+        },
+        {
+          "id": "PP_010",
+          "difficultyLevel": 4,
+          "text": "The capital city of Australia is Sydney.",
+          "isFact": false,
+          "explanation": "The capital is Canberra, chosen as a compromise between Sydney and Melbourne."
+        },
+        {
+          "id": "PP_011",
+          "difficultyLevel": 5,
+          "text": "Carrots were orange long before any other color was grown.",
+          "isFact": false,
+          "explanation": "Early carrots were mostly purple and yellow; orange came later."
+        },
+        {
+          "id": "PP_012",
+          "difficultyLevel": 6,
+          "text": "The croissant was invented in France.",
+          "isFact": false,
+          "explanation": "Its crescent-shaped ancestor, the kipferl, came from Austria."
+        },
+        {
+          "id": "PP_013",
+          "difficultyLevel": 8,
+          "text": "Most vanilla flavoring is made from real vanilla beans.",
+          "isFact": false,
+          "explanation": "The large majority is synthetic vanillin; real beans supply only a small share."
+        },
+        {
+          "id": "PP_014",
+          "difficultyLevel": 2,
+          "text": "Cashews grow hanging beneath a soft, edible fruit.",
+          "isFact": true,
+          "explanation": "Each nut dangles under a cashew apple, a fleshy fruit eaten in many regions."
+        },
+        {
+          "id": "PP_015",
+          "difficultyLevel": 4,
+          "text": "Most wasabi served with sushi outside Japan is dyed horseradish.",
+          "isFact": true,
+          "explanation": "Real wasabi is costly and perishable, so substitutes are standard abroad."
+        },
+        {
+          "id": "PP_016",
+          "difficultyLevel": 4,
+          "text": "Bell peppers and hot chili peppers are the same plant species.",
+          "isFact": true,
+          "explanation": "Both are Capsicum cultivars; bell peppers just lack the heat compound."
+        },
+        {
+          "id": "PP_017",
+          "difficultyLevel": 7,
+          "text": "Chicken tikka masala is widely thought to have been invented in Britain.",
+          "isFact": true,
+          "explanation": "Its commonly cited origin is a British curry house, not South Asia."
+        },
+        {
+          "id": "PP_018",
+          "difficultyLevel": 7,
+          "text": "Almonds come from a fruit closely related to the peach.",
+          "isFact": true,
+          "explanation": "An almond is the seed of a stone fruit in the same family as peaches."
+        },
+        {
+          "id": "PP_019",
+          "difficultyLevel": 8,
+          "text": "Eating a lot of nutmeg can cause toxic, hallucinogenic effects.",
+          "isFact": true,
+          "explanation": "It contains myristicin, which is toxic and unpleasant in high doses."
+        },
+        {
+          "id": "PP_020",
+          "difficultyLevel": 3,
+          "text": "Pineapples grow on tall palm-like trees.",
+          "isFact": false,
+          "explanation": "They grow low to the ground on a leafy plant, one fruit per plant."
+        },
+        {
+          "id": "PP_021",
+          "difficultyLevel": 5,
+          "text": "A strawberry is botanically a true berry.",
+          "isFact": false,
+          "explanation": "It isn't; its seeds sit on the outside, which true berries don't do."
+        },
+        {
+          "id": "PP_022",
+          "difficultyLevel": 5,
+          "text": "Saffron is worth more than its weight in gold.",
+          "isFact": false,
+          "explanation": "It's the most expensive spice but still far cheaper than gold by weight."
+        },
+        {
+          "id": "PP_023",
+          "difficultyLevel": 6,
+          "text": "Tea was first cultivated in India before spreading worldwide.",
+          "isFact": false,
+          "explanation": "Tea cultivation began in China; India's industry came much later."
+        },
+        {
+          "id": "PP_024",
+          "difficultyLevel": 7,
+          "text": "A pineapple plant grows a new fruit every few weeks once mature.",
+          "isFact": false,
+          "explanation": "It takes roughly two years to produce a single pineapple."
+        },
+        {
+          "id": "PP_025",
+          "difficultyLevel": 9,
+          "text": "Mount Everest is the tallest mountain on Earth from base to summit.",
+          "isFact": false,
+          "explanation": "Hawaii's Mauna Kea is taller base-to-peak; Everest is highest above sea level."
+        },
+        {
+          "id": "PP_026",
+          "difficultyLevel": 1,
+          "text": "Water makes up the majority of a fresh cucumber's weight.",
+          "isFact": true,
+          "explanation": "A cucumber is roughly 95 percent water."
+        },
+        {
+          "id": "PP_027",
+          "difficultyLevel": 2,
+          "text": "Antarctica is classed as a desert.",
+          "isFact": true,
+          "explanation": "It gets very little precipitation, which is the definition of a desert."
+        },
+        {
+          "id": "PP_028",
+          "difficultyLevel": 3,
+          "text": "Bubble wrap was originally invented to be used as wallpaper.",
+          "isFact": true,
+          "explanation": "Its inventors first marketed it as textured wallpaper before packaging."
+        },
+        {
+          "id": "PP_029",
+          "difficultyLevel": 4,
+          "text": "Ketchup originated as a fermented fish sauce in Asia.",
+          "isFact": true,
+          "explanation": "Early 'ke-tsiap' was a fish-based sauce long before the tomato version."
+        },
+        {
+          "id": "PP_030",
+          "difficultyLevel": 5,
+          "text": "The Eiffel Tower was built as a temporary structure.",
+          "isFact": true,
+          "explanation": "It had a 20-year permit and was nearly torn down before radio use saved it."
+        },
+        {
+          "id": "PP_031",
+          "difficultyLevel": 6,
+          "text": "Lobster was once considered a low-class food fed to prisoners.",
+          "isFact": true,
+          "explanation": "In colonial America it was cheap, abundant, and seen as poor people's food."
+        },
+        {
+          "id": "PP_032",
+          "difficultyLevel": 1,
+          "text": "Goulash originated in Germany.",
+          "isFact": false,
+          "explanation": "Goulash is a Hungarian dish, dating back to medieval Magyar herdsmen."
+        },
+        {
+          "id": "PP_033",
+          "difficultyLevel": 2,
+          "text": "The fortune cookie is a traditional Chinese invention.",
+          "isFact": false,
+          "explanation": "It was popularized in the United States and is rare in China itself."
+        },
+        {
+          "id": "PP_034",
+          "difficultyLevel": 3,
+          "text": "Vodka was originally invented in France.",
+          "isFact": false,
+          "explanation": "Vodka's origins lie in Eastern Europe, in Russia and Poland."
+        },
+        {
+          "id": "PP_035",
+          "difficultyLevel": 4,
+          "text": "The Great Wall of China is a single continuous wall.",
+          "isFact": false,
+          "explanation": "It's a network of many walls and sections built over different dynasties."
+        },
+        {
+          "id": "PP_036",
+          "difficultyLevel": 5,
+          "text": "Dutch farmers bred orange carrots to honor their royal House of Orange.",
+          "isFact": false,
+          "explanation": "That's a popular myth; orange carrots predate and weren't bred to honor them."
+        },
+        {
+          "id": "PP_037",
+          "difficultyLevel": 7,
+          "text": "The dish chicken tikka masala is an ancient traditional Indian recipe.",
+          "isFact": false,
+          "explanation": "It's widely believed to have been created in Britain, not ancient India."
+        },
+        {
+          "id": "PP_038",
+          "difficultyLevel": 2,
+          "text": "Cucumbers and watermelons belong to the same plant family.",
+          "isFact": true,
+          "explanation": "Both are part of the gourd family, Cucurbitaceae."
+        },
+        {
+          "id": "PP_039",
+          "difficultyLevel": 3,
+          "text": "Some cheeses are aged inside caves to develop their flavor.",
+          "isFact": true,
+          "explanation": "Cave aging gives cheeses like Roquefort their distinctive character."
+        },
+        {
+          "id": "PP_040",
+          "difficultyLevel": 4,
+          "text": "There is a country that has two separate capital cities for different functions.",
+          "isFact": true,
+          "explanation": "Several do; South Africa famously has three capitals for different branches."
+        },
+        {
+          "id": "PP_041",
+          "difficultyLevel": 5,
+          "text": "Pineapple contains an enzyme that can break down protein, including in your mouth.",
+          "isFact": true,
+          "explanation": "Bromelain digests protein, which is why pineapple can sting the tongue."
+        },
+        {
+          "id": "PP_042",
+          "difficultyLevel": 6,
+          "text": "Vanilla is the second most expensive spice in the world after saffron.",
+          "isFact": true,
+          "explanation": "Its labor-intensive hand pollination makes it extremely costly."
+        },
+        {
+          "id": "PP_043",
+          "difficultyLevel": 7,
+          "text": "There is a country where it's possible to be in two continents within one city.",
+          "isFact": true,
+          "explanation": "Istanbul straddles Europe and Asia across the Bosphorus."
+        },
+        {
+          "id": "PP_044",
+          "difficultyLevel": 8,
+          "text": "Apples belong to the same plant family as roses.",
+          "isFact": true,
+          "explanation": "Apples are in the Rosaceae family along with roses, pears, and cherries."
+        },
+        {
+          "id": "PP_045",
+          "difficultyLevel": 3,
+          "text": "Brussels sprouts get their name from a city in Germany.",
+          "isFact": false,
+          "explanation": "They're named after Brussels, the capital of Belgium, not a German city."
+        },
+        {
+          "id": "PP_046",
+          "difficultyLevel": 5,
+          "text": "Most table salt eaten worldwide is mined from ancient underground deposits only.",
+          "isFact": false,
+          "explanation": "A large share comes from evaporated seawater, not only mined rock salt."
+        },
+        {
+          "id": "PP_047",
+          "difficultyLevel": 6,
+          "text": "The chili pepper's heat is concentrated mainly in its seeds.",
+          "isFact": false,
+          "explanation": "The heat comes mostly from the white pith, not the seeds themselves."
+        },
+        {
+          "id": "PP_048",
+          "difficultyLevel": 7,
+          "text": "Wild bananas naturally contain no seeds at all.",
+          "isFact": false,
+          "explanation": "Wild bananas are full of large hard seeds; seedless ones are cultivated."
+        },
+        {
+          "id": "PP_049",
+          "difficultyLevel": 8,
+          "text": "Drinking alcohol warms up your body's core temperature.",
+          "isFact": false,
+          "explanation": "It makes you feel warm but actually lowers core body temperature."
+        },
+        {
+          "id": "PP_050",
+          "difficultyLevel": 9,
+          "text": "The world's hottest chili peppers can be hot enough to be medically dangerous.",
+          "isFact": true,
+          "explanation": "Extreme superhot peppers have sent people to hospital with severe reactions."
+        }
+      ]
+    },
+    {
       "id": "animal_kingdom",
       "name": "Animal Kingdom",
+      "disabled": true,
       "questions": [
         {
           "id": "a1",
@@ -357,1713 +2586,9 @@
       ]
     },
     {
-      "id": "science",
-      "name": "Science & Space",
-      "questions": [
-        {
-          "id": "s1",
-          "difficultyLevel": 1,
-          "text": "The sun rises in the East and sets in the West.",
-          "isFact": true,
-          "explanation": "Due to Earth's rotation, this is true."
-        },
-        {
-          "id": "s2",
-          "difficultyLevel": 2,
-          "text": "Water makes up about 71% of the Earth's surface.",
-          "isFact": true,
-          "explanation": "Oceans hold about 96.5% of all Earth's water."
-        },
-        {
-          "id": "s3",
-          "difficultyLevel": 3,
-          "text": "Lightning never strikes the same place twice.",
-          "isFact": false,
-          "explanation": "Lightning constantly strikes tall structures like the Empire State Building."
-        },
-        {
-          "id": "s4",
-          "difficultyLevel": 4,
-          "text": "Venus is the hottest planet in our solar system.",
-          "isFact": true,
-          "explanation": "Even though Mercury is closer, Venus has a thick atmosphere that traps heat."
-        },
-        {
-          "id": "s5",
-          "difficultyLevel": 5,
-          "text": "Sound travels faster in air than in water.",
-          "isFact": false,
-          "explanation": "Sound actually travels much faster in water because particles are closer together."
-        },
-        {
-          "id": "s6",
-          "difficultyLevel": 6,
-          "text": "Bananas are strictly considered berries, but strawberries are not.",
-          "isFact": true,
-          "explanation": "Botanically, bananas are berries, while strawberries are 'aggregate fruits'."
-        },
-        {
-          "id": "s7",
-          "difficultyLevel": 7,
-          "text": "One million Earths could fit inside the Sun.",
-          "isFact": true,
-          "explanation": "The Sun accounts for 99.86% of the mass in our solar system."
-        },
-        {
-          "id": "s8",
-          "difficultyLevel": 8,
-          "text": "A day on Venus is longer than a year on Venus.",
-          "isFact": true,
-          "explanation": "Venus rotates very slowly, taking 243 Earth days to rotate once on its axis."
-        },
-        {
-          "id": "s9",
-          "difficultyLevel": 9,
-          "text": "Glass is actually a slow-moving liquid, which is why old windows are thicker at the bottom.",
-          "isFact": false,
-          "explanation": "Glass is an amorphous solid. Old glass is thicker at the bottom due to early manufacturing techniques."
-        },
-        {
-          "id": "s10",
-          "difficultyLevel": 10,
-          "text": "There are more trees on Earth than stars in the Milky Way.",
-          "isFact": true,
-          "explanation": "There are ~3 trillion trees on Earth, compared to ~100-400 billion stars in the Milky Way."
-        },
-        {
-          "id": "sc_n1",
-          "text": "Water cannot exist as liquid, solid, and gas simultaneously.",
-          "isFact": false,
-          "explanation": "At the 'triple point', water exists in all three states at once.",
-          "difficultyLevel": 1
-        },
-        {
-          "id": "sc_n2",
-          "text": "Carrots dramatically improve your night vision.",
-          "isFact": false,
-          "explanation": "You would need a severe deficiency to see any real benefit from extra carrots.",
-          "difficultyLevel": 2
-        },
-        {
-          "id": "sc_n3",
-          "text": "Old glass windows are thicker at the bottom because glass flows slowly.",
-          "isFact": false,
-          "explanation": "Glass is an amorphous solid. Old windows are thicker due to manufacturing techniques.",
-          "difficultyLevel": 3
-        },
-        {
-          "id": "sc_n4",
-          "text": "Humans share less than 10% of their DNA with any plant.",
-          "isFact": false,
-          "explanation": "Humans share about 50% of their DNA with bananas due to shared cellular machinery.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "sc_n5",
-          "text": "Cold water boils faster than room temperature water.",
-          "isFact": false,
-          "explanation": "Warmer water needs less energy to reach boiling point and heats faster.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "sc_n6",
-          "text": "Diamonds are made from compressed coal.",
-          "isFact": false,
-          "explanation": "They form from pure carbon under extreme pressure, before coal-producing plants even existed.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sc_n7",
-          "text": "Helium is the only element that cannot solidify at normal atmospheric pressure.",
-          "isFact": true,
-          "explanation": "Quantum effects prevent it from solidifying without added pressure.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sc_n8",
-          "text": "The universe is approximately 13.8 billion years old.",
-          "isFact": true,
-          "explanation": "Based on measurements of cosmic background radiation.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "sc_n9",
-          "text": "Hot water can freeze faster than cold water.",
-          "isFact": true,
-          "explanation": "Known as the Mpemba effect, it is still debated by scientists.",
-          "difficultyLevel": 9
-        },
-        {
-          "id": "sc_n10",
-          "text": "Peanuts are classified as nuts.",
-          "isFact": false,
-          "explanation": "Peanuts are legumes, biologically related to beans and lentils.",
-          "difficultyLevel": 2
-        },
-        {
-          "id": "sc_n11",
-          "text": "An atom is mostly empty space.",
-          "isFact": true,
-          "explanation": "If an atom were a stadium, the nucleus would be the size of a marble.",
-          "difficultyLevel": 3
-        },
-        {
-          "id": "sc_n12",
-          "text": "Gold is the best electrical conductor.",
-          "isFact": false,
-          "explanation": "Silver is the best conductor; gold is used for its corrosion resistance.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "sc_n13",
-          "text": "Tomatoes are botanically classified as fruit.",
-          "isFact": true,
-          "explanation": "Any structure enclosing seeds that develops from a flower is botanically a fruit.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "sc_n14",
-          "text": "The human body has far more human cells than bacterial cells.",
-          "isFact": false,
-          "explanation": "There are actually more bacterial cells (~38 trillion) than human cells (~30 trillion).",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sc_n15",
-          "text": "All neon signs use neon gas.",
-          "isFact": false,
-          "explanation": "Only reddish-orange signs use pure neon; other colors use argon, krypton, or other gases.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sc_n16",
-          "text": "The Sun appears yellow but is actually a white star.",
-          "isFact": true,
-          "explanation": "Earth atmosphere scatters blue light, making the Sun look yellow.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "sc_n17",
-          "text": "Sound travels faster through water than through air.",
-          "isFact": true,
-          "explanation": "Molecules in water are closer together, transmitting vibrations more quickly.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sc_n18",
-          "text": "Rubber is a good electrical conductor.",
-          "isFact": false,
-          "explanation": "Rubber is an excellent insulator, which is why wires are coated with it.",
-          "difficultyLevel": 1
-        },
-        {
-          "id": "sc_n19",
-          "text": "The human eye can distinguish roughly 10 million colors.",
-          "isFact": true,
-          "explanation": "Possible due to three types of cone cells with overlapping sensitivity ranges.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sc_n20",
-          "text": "There are more trees on Earth than stars in the Milky Way.",
-          "isFact": true,
-          "explanation": "About 3 trillion trees on Earth vs an estimated 100 to 400 billion stars.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "sc_x1",
-          "text": "Wi-Fi stands for Wireless Fidelity.",
-          "isFact": false,
-          "explanation": "Wi-Fi is a trademarked name with no official meaning; it was coined as a play on Hi-Fi.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "sc_x2",
-          "text": "The human stomach gets a new lining every four days.",
-          "isFact": true,
-          "explanation": "Stomach acid is so corrosive that the lining must be continuously replaced.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "sc_x3",
-          "text": "Humans and T-Rex are closer in time than T-Rex and Stegosaurus.",
-          "isFact": true,
-          "explanation": "Stegosaurus lived 80 million years before T-Rex; we are only 65 million years from T-Rex.",
-          "difficultyLevel": 9
-        },
-        {
-          "id": "sc_x4",
-          "text": "There are more possible chess games than atoms in the observable universe.",
-          "isFact": true,
-          "explanation": "The Shannon number estimates 10 to the power of 120 possible chess games.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "sc_x5",
-          "text": "Oxygen is the most abundant element in Earth crust.",
-          "isFact": true,
-          "explanation": "It makes up about 46 percent of the crust by mass, mostly locked in silicate minerals.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sc_x6",
-          "text": "Lightning is hotter than the surface of the sun.",
-          "isFact": true,
-          "explanation": "A lightning bolt reaches 30,000 Kelvin; the sun surface is about 5,778 Kelvin.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sc_x7",
-          "text": "Humans can smell rain because of a chemical called petrichor.",
-          "isFact": true,
-          "explanation": "Petrichor is produced when rain hits dry earth, releasing oils and geosmin.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sc_x8",
-          "text": "Fingernails grow faster on your dominant hand.",
-          "isFact": true,
-          "explanation": "Increased blood flow from use stimulates faster nail growth.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sc_x9",
-          "text": "The appendix has no function in the human body.",
-          "isFact": false,
-          "explanation": "It is believed to serve as a reservoir for gut bacteria and may play an immune role.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sc_x10",
-          "text": "Saturn would sink in a giant ocean of water.",
-          "isFact": false,
-          "explanation": "Saturn's average density is less than water, so it would actually float.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "sc_x11",
-          "text": "Adults have more bones than babies.",
-          "isFact": false,
-          "explanation": "Babies have about 300 bones; many fuse as we grow, leaving adults with just 206.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "sc_x12",
-          "text": "Dark matter makes up the majority of the universe.",
-          "isFact": true,
-          "explanation": "About 27 percent dark matter, 68 percent dark energy, and only 5 percent normal matter.",
-          "difficultyLevel": 9
-        },
-        {
-          "id": "sc_x13",
-          "text": "The smell of cut grass is a distress signal from plants.",
-          "isFact": true,
-          "explanation": "Damaged grass releases green leaf volatiles to warn neighboring plants.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "sc_x14",
-          "text": "Copper door handles self-disinfect.",
-          "isFact": true,
-          "explanation": "Copper has oligodynamic properties that kill microbes within hours.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sc_x15",
-          "text": "You can physically see the Milky Way galaxy from Earth.",
-          "isFact": true,
-          "explanation": "We are inside it, so we see it as a band of stars across the night sky.",
-          "difficultyLevel": 3
-        },
-        {
-          "id": "sc_x16",
-          "text": "There are more stars in the universe than grains of sand on Earth beaches.",
-          "isFact": true,
-          "explanation": "Estimates put observable universe stars at around 10 to the power of 24.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sc_x17",
-          "text": "Clouds are weightless.",
-          "isFact": false,
-          "explanation": "An average cumulus cloud weighs about 500 tonnes.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "sc_x18",
-          "text": "The human brain is about 95% protein.",
-          "isFact": false,
-          "explanation": "The brain is actually about 75% water.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "sc_x19",
-          "text": "Two pieces of metal will permanently fuse if touched in outer space.",
-          "isFact": true,
-          "explanation": "Called cold welding, it happens because there is no oxide layer to prevent bonding.",
-          "difficultyLevel": 10
-        },
-        {
-          "id": "sc_x20",
-          "text": "Gravity travels at the speed of light.",
-          "isFact": true,
-          "explanation": "Gravitational waves were confirmed to travel at exactly the speed of light.",
-          "difficultyLevel": 10
-        },
-        {
-          "id": "sc_n021",
-          "difficultyLevel": 1,
-          "text": "Humans have five senses and no more.",
-          "isFact": false,
-          "explanation": "We have additional senses like balance and proprioception, the sense of body position."
-        },
-        {
-          "id": "sc_n022",
-          "difficultyLevel": 1,
-          "text": "Light travels faster than sound.",
-          "isFact": true,
-          "explanation": "Light outpaces sound by roughly a million times, which is why you see lightning before thunder."
-        },
-        {
-          "id": "sc_n023",
-          "difficultyLevel": 2,
-          "text": "Saturn is light enough that it would float in a large enough body of water.",
-          "isFact": true,
-          "explanation": "Its average density is about 0.69 g/cm3, less than water's, thanks to its gassy makeup."
-        },
-        {
-          "id": "sc_n024",
-          "difficultyLevel": 3,
-          "text": "The human tongue has specific zones that detect each taste.",
-          "isFact": false,
-          "explanation": "The 'tongue map' is a myth; all taste types are detected across the whole tongue."
-        },
-        {
-          "id": "sc_n025",
-          "difficultyLevel": 3,
-          "text": "Hot water can freeze faster than cold water under the right conditions.",
-          "isFact": true,
-          "explanation": "Known as the Mpemba effect, it's been observed though its causes are still debated."
-        },
-        {
-          "id": "sc_n026",
-          "difficultyLevel": 4,
-          "text": "Mercury is the hottest planet in the solar system because it's closest to the Sun.",
-          "isFact": false,
-          "explanation": "Venus is hottest; its thick CO2 atmosphere traps heat far better than Mercury can."
-        },
-        {
-          "id": "sc_n027",
-          "difficultyLevel": 4,
-          "text": "Your body contains roughly as many bacterial cells as human cells.",
-          "isFact": true,
-          "explanation": "The old 10-to-1 claim was debunked; the real ratio is closer to 1.3 to 1."
-        },
-        {
-          "id": "sc_n028",
-          "difficultyLevel": 4,
-          "text": "Sharks existed before trees did.",
-          "isFact": true,
-          "explanation": "Sharks date back over 400 million years, predating the first trees by tens of millions."
-        },
-        {
-          "id": "sc_n029",
-          "difficultyLevel": 5,
-          "text": "Stomach acid is strong enough to dissolve some metals.",
-          "isFact": true,
-          "explanation": "At a pH near 1.5, stomach acid can corrode materials like zinc."
-        },
-        {
-          "id": "sc_n030",
-          "difficultyLevel": 5,
-          "text": "A bolt of lightning contains enough energy to toast thousands of slices of bread.",
-          "isFact": true,
-          "explanation": "A single strike packs roughly a billion joules of energy."
-        },
-        {
-          "id": "sc_n031",
-          "difficultyLevel": 5,
-          "text": "The Sahara is the largest desert on Earth.",
-          "isFact": false,
-          "explanation": "Antarctica is the largest desert; a desert is defined by low precipitation, not heat."
-        },
-        {
-          "id": "sc_n032",
-          "difficultyLevel": 6,
-          "text": "Hair and fingernails keep growing for a while after a person dies.",
-          "isFact": false,
-          "explanation": "They don't grow; skin dehydrates and retracts, making them only appear longer."
-        },
-        {
-          "id": "sc_n033",
-          "difficultyLevel": 6,
-          "text": "There is no gravity in outer space.",
-          "isFact": false,
-          "explanation": "Astronauts float because they're in continuous free fall, not because gravity is absent."
-        },
-        {
-          "id": "sc_n034",
-          "difficultyLevel": 6,
-          "text": "Octopuses have three hearts and blue blood.",
-          "isFact": true,
-          "explanation": "Two hearts pump to the gills, one to the body; copper-based hemocyanin makes blood blue."
-        },
-        {
-          "id": "sc_n035",
-          "difficultyLevel": 7,
-          "text": "A teaspoon of neutron star material would weigh billions of tonnes on Earth.",
-          "isFact": true,
-          "explanation": "Neutron stars are so dense that a sugar-cube-sized piece outweighs a mountain."
-        },
-        {
-          "id": "sc_n036",
-          "difficultyLevel": 7,
-          "text": "The Great Pyramid contains enough stone to be seen glowing from heat at night.",
-          "isFact": false,
-          "explanation": "Stone doesn't glow from stored heat; this is fabricated pseudo-science."
-        },
-        {
-          "id": "sc_n037",
-          "difficultyLevel": 7,
-          "text": "Helium can make your voice higher and a heavier gas can make it deeper.",
-          "isFact": true,
-          "explanation": "Sound moves faster in helium and slower in dense gases like sulfur hexafluoride."
-        },
-        {
-          "id": "sc_n038",
-          "difficultyLevel": 8,
-          "text": "Light from the Sun takes about eight minutes to reach Earth.",
-          "isFact": true,
-          "explanation": "At 150 million km away, sunlight takes roughly 8 minutes and 20 seconds to arrive."
-        },
-        {
-          "id": "sc_n039",
-          "difficultyLevel": 8,
-          "text": "Water can exist as solid, liquid, and gas at the same time under specific conditions.",
-          "isFact": true,
-          "explanation": "At water's 'triple point' of temperature and pressure, all three states coexist."
-        },
-        {
-          "id": "sc_n040",
-          "difficultyLevel": 8,
-          "text": "DNA from two unrelated humans is on average about 90 percent identical.",
-          "isFact": false,
-          "explanation": "Any two humans share about 99.9 percent of their DNA, not 90 percent."
-        },
-        {
-          "id": "sc_n041",
-          "difficultyLevel": 9,
-          "text": "It rains diamonds on Neptune and Uranus.",
-          "isFact": true,
-          "explanation": "Extreme pressure squeezes carbon in their atmospheres into diamond, which sinks as rain."
-        },
-        {
-          "id": "sc_n042",
-          "difficultyLevel": 9,
-          "text": "Time passes very slightly faster for your head than for your feet when standing.",
-          "isFact": true,
-          "explanation": "General relativity says gravity slows time, so time runs faster farther from Earth's center."
-        },
-        {
-          "id": "sc_n043",
-          "difficultyLevel": 10,
-          "text": "More than 99 percent of the atoms in your body were forged inside stars.",
-          "isFact": true,
-          "explanation": "Elements heavier than hydrogen and helium were made in stars, then scattered by supernovae."
-        },
-        {
-          "id": "sc_n044",
-          "difficultyLevel": 8,
-          "text": "Voyager 1 is the first human-made object to reach interstellar space.",
-          "isFact": true,
-          "explanation": "Launched in 1977, it crossed beyond the Sun's bubble into interstellar space in 2012."
-        },
-        {
-          "id": "sc_n045",
-          "difficultyLevel": 8,
-          "text": "Bees can recognize and remember individual human faces.",
-          "isFact": true,
-          "explanation": "Studies show honeybees learn to distinguish human faces using pattern recognition."
-        },
-        {
-          "id": "sc_n046",
-          "difficultyLevel": 8,
-          "text": "Absolute zero, the coldest possible temperature, has been reached in a lab.",
-          "isFact": false,
-          "explanation": "Scientists get extremely close but absolute zero is physically unreachable."
-        },
-        {
-          "id": "sc_n047",
-          "difficultyLevel": 9,
-          "text": "A photon of light can take tens of thousands of years to travel from the Sun's core to its surface.",
-          "isFact": true,
-          "explanation": "Energy zigzags through dense plasma for millennia before escaping as sunlight."
-        },
-        {
-          "id": "sc_n048",
-          "difficultyLevel": 9,
-          "text": "Bananas are slightly radioactive.",
-          "isFact": true,
-          "explanation": "They contain potassium-40, a naturally radioactive isotope, in harmless amounts."
-        },
-        {
-          "id": "sc_n049",
-          "difficultyLevel": 9,
-          "text": "Sound can travel through the vacuum of space if the source is loud enough.",
-          "isFact": false,
-          "explanation": "Sound needs a medium; a vacuum has no particles to carry the vibrations."
-        },
-        {
-          "id": "sc_n050",
-          "difficultyLevel": 9,
-          "text": "Tardigrades can survive the vacuum and radiation of open space.",
-          "isFact": true,
-          "explanation": "These tiny 'water bears' survived direct exposure to space in a 2007 experiment."
-        },
-        {
-          "id": "sc_n051",
-          "difficultyLevel": 10,
-          "text": "There are more possible ways to shuffle a deck of cards than atoms on Earth.",
-          "isFact": true,
-          "explanation": "A 52-card deck has about 8 followed by 67 zeros of arrangements, dwarfing Earth's atoms."
-        },
-        {
-          "id": "sc_n052",
-          "difficultyLevel": 10,
-          "text": "If the Sun suddenly vanished, Earth would fly out of orbit instantly.",
-          "isFact": false,
-          "explanation": "Gravity's effect travels at light speed, so Earth would orbit normally for about 8 more minutes."
-        },
-        {
-          "id": "sc_n053",
-          "difficultyLevel": 10,
-          "text": "Hydrogen and helium make up over 98 percent of all ordinary matter in the universe.",
-          "isFact": true,
-          "explanation": "These two lightest elements dominate; everything else is a tiny fraction of normal matter."
-        }
-      ]
-    },
-    {
-      "id": "general_knowledge",
-      "name": "General Knowledge",
-      "questions": [
-        {
-          "id": "g1",
-          "difficultyLevel": 1,
-          "text": "Mount Everest is the tallest mountain above sea level.",
-          "isFact": true,
-          "explanation": "It stands at 8,848 meters."
-        },
-        {
-          "id": "g2",
-          "difficultyLevel": 2,
-          "text": "The Great Wall of China is visible from space with the naked eye.",
-          "isFact": false,
-          "explanation": "It is a myth; you cannot see it without aid from low Earth orbit."
-        },
-        {
-          "id": "g3",
-          "difficultyLevel": 3,
-          "text": "There are 50 states in the United States.",
-          "isFact": true,
-          "explanation": "There are exactly 50 states."
-        },
-        {
-          "id": "g4",
-          "difficultyLevel": 4,
-          "text": "Napoleon Bonaparte was extremely short.",
-          "isFact": false,
-          "explanation": "He was around 5'6\", which was average height for a Frenchman at the time."
-        },
-        {
-          "id": "g5",
-          "difficultyLevel": 5,
-          "text": "Oxford University is older than the Aztec Empire.",
-          "isFact": true,
-          "explanation": "Oxford was founded around 1096, while the city of Tenochtitlán was founded in 1325."
-        },
-        {
-          "id": "g6",
-          "difficultyLevel": 6,
-          "text": "Vikings wore horned helmets in battle.",
-          "isFact": false,
-          "explanation": "There is no historical evidence that Vikings ever wore horned helmets."
-        },
-        {
-          "id": "g7",
-          "difficultyLevel": 7,
-          "text": "Toasters were invented before pre-sliced bread.",
-          "isFact": true,
-          "explanation": "The electric toaster was invented in 1893, while sliced bread came out in 1928."
-        },
-        {
-          "id": "g8",
-          "difficultyLevel": 8,
-          "text": "Humans use only 10% of their brains.",
-          "isFact": false,
-          "explanation": "We use virtually every part of the brain, and most parts are active almost all the time."
-        },
-        {
-          "id": "g9",
-          "difficultyLevel": 9,
-          "text": "Maine is the closest US state to Africa.",
-          "isFact": true,
-          "explanation": "The Quoddy Head peninsula in Maine is closer to Africa than any part of Florida."
-        },
-        {
-          "id": "g10",
-          "difficultyLevel": 10,
-          "text": "Cleopatra lived closer to the iPhone's invention than to the building of the Great Pyramid.",
-          "isFact": true,
-          "explanation": "She lived around 30 BC, whereas the Great Pyramid was built around 2560 BC."
-        },
-        {
-          "id": "gk_n1",
-          "text": "The Eiffel Tower stays exactly the same height year-round.",
-          "isFact": false,
-          "explanation": "It can grow up to 15 cm taller in summer due to thermal expansion of the iron.",
-          "difficultyLevel": 1
-        },
-        {
-          "id": "gk_n2",
-          "text": "Fortune cookies were invented in China.",
-          "isFact": false,
-          "explanation": "They were invented in California in the early 1900s.",
-          "difficultyLevel": 2
-        },
-        {
-          "id": "gk_n3",
-          "text": "Brazil has more lakes than any other country.",
-          "isFact": false,
-          "explanation": "Canada has approximately 2 million lakes — more than the rest of the world combined.",
-          "difficultyLevel": 3
-        },
-        {
-          "id": "gk_n4",
-          "text": "Every continent has at least one McDonald's.",
-          "isFact": false,
-          "explanation": "Antarctica has no McDonald's or any permanent commercial food chain.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "gk_n5",
-          "text": "Australia is wider than the Moon.",
-          "isFact": true,
-          "explanation": "Australia spans almost 4000 km across; the Moon is only 3474 km in diameter.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "gk_n6",
-          "text": "English is the official national language of the United States.",
-          "isFact": false,
-          "explanation": "The US has no federally designated official language.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "gk_n7",
-          "text": "More people are killed by vending machines than by sharks each year.",
-          "isFact": true,
-          "explanation": "Tipping incidents cause several deaths annually vs roughly 10 shark fatalities worldwide.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "gk_n8",
-          "text": "French fries were invented in France.",
-          "isFact": false,
-          "explanation": "They are believed to have originated in Belgium.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "gk_n9",
-          "text": "The letter Q does not appear in any US state name.",
-          "isFact": true,
-          "explanation": "Check all 50 state names and you will find not a single Q.",
-          "difficultyLevel": 9
-        },
-        {
-          "id": "gk_n10",
-          "text": "Alaska is both the westernmost and easternmost US state.",
-          "isFact": true,
-          "explanation": "Its Aleutian Islands cross the 180 degree meridian into the Eastern Hemisphere.",
-          "difficultyLevel": 10
-        },
-        {
-          "id": "gk_n11",
-          "text": "Pineapples grow on trees and ripen within a few weeks.",
-          "isFact": false,
-          "explanation": "Pineapples grow on ground-level plants and take about two years to mature.",
-          "difficultyLevel": 3
-        },
-        {
-          "id": "gk_n12",
-          "text": "A jiffy is an actual scientific unit of time.",
-          "isFact": true,
-          "explanation": "It equals the time light takes to travel one centimeter, about 33 picoseconds.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "gk_n13",
-          "text": "The unicorn is the national animal of Scotland.",
-          "isFact": true,
-          "explanation": "Adopted in the 12th century as the natural rival of England lion symbol.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "gk_n14",
-          "text": "Humans can fully digest cellulose from plants.",
-          "isFact": false,
-          "explanation": "We lack the cellulase enzyme, so dietary fiber passes through us undigested.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "gk_n15",
-          "text": "The Great Wall of China is visible from space with the naked eye.",
-          "isFact": false,
-          "explanation": "Astronauts have confirmed this is impossible without telescopic aids.",
-          "difficultyLevel": 2
-        },
-        {
-          "id": "gk_n16",
-          "text": "Tsar Nicholas II and King George V of England were first cousins.",
-          "isFact": true,
-          "explanation": "They looked so alike that even palace staff sometimes confused them.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "gk_n17",
-          "text": "Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid.",
-          "isFact": true,
-          "explanation": "The pyramids predate her by 2500 years; the Moon landing was only 2000 years after her.",
-          "difficultyLevel": 9
-        },
-        {
-          "id": "gk_n18",
-          "text": "Strawberries have their seeds on the inside.",
-          "isFact": false,
-          "explanation": "Strawberries are the only fruit with seeds on the outside — each dot is a tiny achene.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "gk_n19",
-          "text": "Mount Chimborazo is closer to outer space than Mount Everest.",
-          "isFact": true,
-          "explanation": "The equatorial bulge means Chimborazo peak is the farthest point from Earth center.",
-          "difficultyLevel": 10
-        },
-        {
-          "id": "gk_n20",
-          "text": "Honey never expires.",
-          "isFact": true,
-          "explanation": "Honey found in Egyptian tombs over 3000 years old was still perfectly edible.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "gk_x1",
-          "text": "The hashtag symbol is called an octothorpe.",
-          "isFact": true,
-          "explanation": "Bell Labs engineers coined the term in the 1960s when adding it to phone keypads.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "gk_x2",
-          "text": "A baker's dozen is 12 because bakers wanted to save money.",
-          "isFact": false,
-          "explanation": "A baker's dozen is actually 13 — medieval bakers added an extra to avoid fines.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "gk_x3",
-          "text": "Nintendo was founded in 1889.",
-          "isFact": true,
-          "explanation": "It started as a playing card company, long before video games existed.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "gk_x4",
-          "text": "The inventor of the World Wide Web received a knighthood.",
-          "isFact": true,
-          "explanation": "Tim Berners-Lee was knighted by Queen Elizabeth II in 2004.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "gk_x5",
-          "text": "Oxford and Cambridge universities have their own railway stations.",
-          "isFact": true,
-          "explanation": "Both cities have their own mainline rail connections.",
-          "difficultyLevel": 2
-        },
-        {
-          "id": "gk_x6",
-          "text": "Monaco is the smallest country in the world.",
-          "isFact": false,
-          "explanation": "Vatican City is the smallest at just 0.44 square kilometres.",
-          "difficultyLevel": 1
-        },
-        {
-          "id": "gk_x7",
-          "text": "Iceland has no army.",
-          "isFact": false,
-          "explanation": "Iceland has a Coast Guard and a Crisis Response Unit but no traditional standing army.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "gk_x8",
-          "text": "The Sahara Desert is the largest hot desert in the world.",
-          "isFact": true,
-          "explanation": "It covers about 9.2 million square kilometres across North Africa.",
-          "difficultyLevel": 3
-        },
-        {
-          "id": "gk_x9",
-          "text": "IKEA is named after its founder.",
-          "isFact": true,
-          "explanation": "Ingvar Kamprad, Elmtaryd (his farm), Agunnaryd (his village).",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "gk_x10",
-          "text": "No piece of paper can be folded in half more than eight times.",
-          "isFact": false,
-          "explanation": "Britney Gallivan folded a piece of toilet paper 12 times in 2002, disproving this myth.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "gk_x11",
-          "text": "Sherlock Holmes never actually said Elementary, my dear Watson in the original stories.",
-          "isFact": true,
-          "explanation": "The exact phrase never appears in any of Conan Doyle original works.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "gk_x12",
-          "text": "Cashews grow inside a fruit.",
-          "isFact": true,
-          "explanation": "The cashew apple is a swollen stem; the nut hangs below it in a shell.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "gk_x13",
-          "text": "The symbol on the pound sterling sign is a letter L.",
-          "isFact": true,
-          "explanation": "It stands for libra, the Latin word for balance or scales.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "gk_x14",
-          "text": "Russia has more time zones than any other country.",
-          "isFact": true,
-          "explanation": "Russia spans 11 time zones from Kaliningrad to Kamchatka.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "gk_x15",
-          "text": "The average person walks the equivalent of once around Earth in a lifetime.",
-          "isFact": false,
-          "explanation": "We actually walk about five times around the Earth over a lifetime.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "gk_x16",
-          "text": "Bubble wrap was originally invented as wallpaper.",
-          "isFact": true,
-          "explanation": "Alfred Fielding and Marc Chavannes tried to market it as textured wallpaper in 1957.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "gk_x17",
-          "text": "The shortest commercial flight in the world lasts 90 seconds.",
-          "isFact": true,
-          "explanation": "The Westray to Papa Westray flight in Scotland can take under two minutes.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "gk_x18",
-          "text": "Japan is the most visited country in the world.",
-          "isFact": false,
-          "explanation": "France consistently tops global tourism rankings with about 90 million visitors annually.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "gk_x19",
-          "text": "A group of pandas is called an embarrassment.",
-          "isFact": true,
-          "explanation": "One of the more entertaining official collective nouns.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "gk_x20",
-          "text": "The Atlantic Ocean is saltier than the Pacific Ocean.",
-          "isFact": true,
-          "explanation": "The Atlantic has higher salinity due to less rainfall and more evaporation.",
-          "difficultyLevel": 9
-        },
-        {
-          "id": "gk_n021",
-          "difficultyLevel": 1,
-          "text": "A week has seven days.",
-          "isFact": true,
-          "explanation": "The seven-day week traces back to ancient Babylonian astronomy and is now near-universal."
-        },
-        {
-          "id": "gk_n022",
-          "difficultyLevel": 2,
-          "text": "Honey found sealed in ancient Egyptian tombs is still edible thousands of years later.",
-          "isFact": true,
-          "explanation": "Honey's low water content and acidity make it almost impossible for bacteria to grow."
-        },
-        {
-          "id": "gk_n023",
-          "difficultyLevel": 2,
-          "text": "Goldfish have a memory span of only three seconds.",
-          "isFact": false,
-          "explanation": "They can remember things for months; the three-second myth has been repeatedly debunked."
-        },
-        {
-          "id": "gk_n024",
-          "difficultyLevel": 3,
-          "text": "Bananas grow on trees.",
-          "isFact": false,
-          "explanation": "The banana plant is a giant herb; its 'trunk' is made of tightly packed leaf bases."
-        },
-        {
-          "id": "gk_n025",
-          "difficultyLevel": 3,
-          "text": "The Eiffel Tower can grow more than 15 centimeters taller in summer heat.",
-          "isFact": true,
-          "explanation": "Iron expands when heated, so the tower physically grows on hot days."
-        },
-        {
-          "id": "gk_n026",
-          "difficultyLevel": 4,
-          "text": "There are countries with no rivers at all.",
-          "isFact": true,
-          "explanation": "Saudi Arabia, Qatar, and several others have no permanent natural rivers."
-        },
-        {
-          "id": "gk_n027",
-          "difficultyLevel": 4,
-          "text": "The shortest war in recorded history lasted under an hour.",
-          "isFact": true,
-          "explanation": "The 1896 Anglo-Zanzibar War ended in roughly 38 minutes."
-        },
-        {
-          "id": "gk_n028",
-          "difficultyLevel": 5,
-          "text": "Vatican City is the smallest country in the world by area.",
-          "isFact": true,
-          "explanation": "At about 0.49 square kilometers, it's smaller than many city parks."
-        },
-        {
-          "id": "gk_n029",
-          "difficultyLevel": 5,
-          "text": "The plural of octopus is officially octopi.",
-          "isFact": false,
-          "explanation": "The word is Greek, not Latin, so 'octopuses' or 'octopodes' is more correct."
-        },
-        {
-          "id": "gk_n030",
-          "difficultyLevel": 5,
-          "text": "Australia is wider than the Moon's diameter.",
-          "isFact": true,
-          "explanation": "Australia spans about 4,000 km; the Moon is roughly 3,475 km across."
-        },
-        {
-          "id": "gk_n031",
-          "difficultyLevel": 6,
-          "text": "Russia spans eleven time zones.",
-          "isFact": true,
-          "explanation": "It's the widest country on Earth, stretching across eleven official time zones."
-        },
-        {
-          "id": "gk_n032",
-          "difficultyLevel": 6,
-          "text": "Mount Everest is the closest point on Earth to space.",
-          "isFact": false,
-          "explanation": "Chimborazo's summit is farther from Earth's center thanks to the equatorial bulge."
-        },
-        {
-          "id": "gk_n033",
-          "difficultyLevel": 7,
-          "text": "The dot over a lowercase i or j has its own name.",
-          "isFact": true,
-          "explanation": "It's called a 'tittle', from the same Latin root as 'title'."
-        },
-        {
-          "id": "gk_n034",
-          "difficultyLevel": 7,
-          "text": "The Canary Islands were named after canary birds.",
-          "isFact": false,
-          "explanation": "They were named for dogs ('canis' in Latin); the bird was named after the islands."
-        },
-        {
-          "id": "gk_n035",
-          "difficultyLevel": 7,
-          "text": "Finland has more saunas than cars.",
-          "isFact": true,
-          "explanation": "Roughly three million saunas serve a population of about 5.5 million people."
-        },
-        {
-          "id": "gk_n036",
-          "difficultyLevel": 8,
-          "text": "The longest place name in the world has over 80 letters.",
-          "isFact": true,
-          "explanation": "A New Zealand hill named Taumata...whenuakitanatahu runs to 85 letters."
-        },
-        {
-          "id": "gk_n037",
-          "difficultyLevel": 8,
-          "text": "Antarctica is the only continent without a native ant species.",
-          "isFact": true,
-          "explanation": "Ants colonized every continent except frozen Antarctica."
-        },
-        {
-          "id": "gk_n038",
-          "difficultyLevel": 9,
-          "text": "The word 'set' has historically had the longest entry of any word in the Oxford English Dictionary.",
-          "isFact": true,
-          "explanation": "Older OED editions gave 'set' more distinct senses than any other word."
-        },
-        {
-          "id": "gk_n039",
-          "difficultyLevel": 10,
-          "text": "The Pacific Ocean is wider than the Moon.",
-          "isFact": true,
-          "explanation": "At about 19,000 km across, the Pacific dwarfs the Moon's 3,475 km diameter."
-        },
-        {
-          "id": "gk_n040",
-          "difficultyLevel": 8,
-          "text": "Nintendo started out making playing cards decades before video games existed.",
-          "isFact": true,
-          "explanation": "Founded in 1889 in Kyoto, Nintendo made hanafuda cards long before consoles."
-        },
-        {
-          "id": "gk_n041",
-          "difficultyLevel": 8,
-          "text": "The spiciness of chili peppers is measured in officially named Scoville Heat Units.",
-          "isFact": true,
-          "explanation": "Pharmacist Wilbur Scoville devised the scale in 1912 to rate pepper heat."
-        },
-        {
-          "id": "gk_n042",
-          "difficultyLevel": 9,
-          "text": "The metric system was first officially adopted by the United States in the 1970s.",
-          "isFact": false,
-          "explanation": "The US still uses customary units; it has never fully adopted the metric system."
-        },
-        {
-          "id": "gk_n043",
-          "difficultyLevel": 9,
-          "text": "Saudi Arabia imports sand from abroad despite being mostly desert.",
-          "isFact": true,
-          "explanation": "Desert sand is too smooth for construction, so it imports coarser sand."
-        },
-        {
-          "id": "gk_n044",
-          "difficultyLevel": 9,
-          "text": "The 'black box' flight recorder on aircraft is painted bright orange.",
-          "isFact": true,
-          "explanation": "It's orange for visibility in wreckage; 'black box' is just a nickname."
-        },
-        {
-          "id": "gk_n045",
-          "difficultyLevel": 10,
-          "text": "There is enough water in Lake Baikal to supply the entire world for decades.",
-          "isFact": true,
-          "explanation": "Baikal holds about a fifth of all unfrozen freshwater on Earth's surface."
-        },
-        {
-          "id": "gk_n046",
-          "difficultyLevel": 10,
-          "text": "The official language of the US federal government is English by constitutional decree.",
-          "isFact": false,
-          "explanation": "The US Constitution names no official language; English isn't constitutionally mandated."
-        },
-        {
-          "id": "gk_n047",
-          "difficultyLevel": 10,
-          "text": "Bhutan was among the last countries in the world to introduce television, doing so in 1999.",
-          "isFact": true,
-          "explanation": "Bhutan lifted its TV ban only in 1999, one of the very last nations to allow it."
-        }
-      ]
-    },
-    {
-      "id": "sports",
-      "name": "Sports",
-      "questions": [
-        {
-          "id": "sp1",
-          "difficultyLevel": 1,
-          "text": "A standard soccer match lasts for 90 minutes.",
-          "isFact": true,
-          "explanation": "Two halves of 45 minutes."
-        },
-        {
-          "id": "sp2",
-          "difficultyLevel": 2,
-          "text": "In tennis, the term 'love' means a score of zero.",
-          "isFact": true,
-          "explanation": "It's believed to come from the French word 'l'oeuf' meaning egg (shaped like a zero)."
-        },
-        {
-          "id": "sp3",
-          "difficultyLevel": 3,
-          "text": "Michael Jordan played professional baseball.",
-          "isFact": true,
-          "explanation": "He played Minor League Baseball for the Chicago White Sox organization."
-        },
-        {
-          "id": "sp4",
-          "difficultyLevel": 4,
-          "text": "The Olympics are held every three years.",
-          "isFact": false,
-          "explanation": "Summer and Winter Olympics are each held every four years."
-        },
-        {
-          "id": "sp5",
-          "difficultyLevel": 5,
-          "text": "Tug-of-war was once an Olympic sport.",
-          "isFact": true,
-          "explanation": "It was part of the Olympics from 1900 to 1920."
-        },
-        {
-          "id": "sp6",
-          "difficultyLevel": 6,
-          "text": "Golf balls used to be made out of tightly packed feathers.",
-          "isFact": true,
-          "explanation": "The 'feathery' was a leather pouch stuffed with wet feathers that dried and hardened."
-        },
-        {
-          "id": "sp7",
-          "difficultyLevel": 7,
-          "text": "A bowling pin needs to only tilt 7.5 degrees to fall over.",
-          "isFact": true,
-          "explanation": "Pins are designed with a very high center of gravity."
-        },
-        {
-          "id": "sp8",
-          "difficultyLevel": 8,
-          "text": "Babe Ruth holds the record for the most home runs in MLB history.",
-          "isFact": false,
-          "explanation": "Barry Bonds holds the record, followed by Hank Aaron."
-        },
-        {
-          "id": "sp9",
-          "difficultyLevel": 9,
-          "text": "No boxer in history has ever retired with an undefeated record.",
-          "isFact": false,
-          "explanation": "Rocky Marciano and Floyd Mayweather Jr. both retired undefeated."
-        },
-        {
-          "id": "sp10",
-          "difficultyLevel": 10,
-          "text": "The longest recorded tennis match lasted over 11 hours.",
-          "isFact": true,
-          "explanation": "John Isner and Nicolas Mahut played for 11 hours and 5 minutes at Wimbledon in 2010."
-        },
-        {
-          "id": "sp_n1",
-          "text": "Basketball was originally played with wooden buckets.",
-          "isFact": false,
-          "explanation": "James Naismith used peach baskets, not wooden buckets.",
-          "difficultyLevel": 1
-        },
-        {
-          "id": "sp_n2",
-          "text": "A marathon is exactly 26 miles long.",
-          "isFact": false,
-          "explanation": "The official distance is 26 miles and 385 yards.",
-          "difficultyLevel": 2
-        },
-        {
-          "id": "sp_n3",
-          "text": "The Tour de France was created to sell newspapers.",
-          "isFact": true,
-          "explanation": "It was launched as a publicity stunt by the sports newspaper L Auto in 1903.",
-          "difficultyLevel": 3
-        },
-        {
-          "id": "sp_n4",
-          "text": "The Olympic torch has never accidentally gone out.",
-          "isFact": false,
-          "explanation": "It has been extinguished several times during relay events and discreetly relit.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "sp_n5",
-          "text": "Table tennis was once called whiff-whaff.",
-          "isFact": true,
-          "explanation": "It started as an after-dinner parlor game in Victorian England.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "sp_n6",
-          "text": "Muhammad Ali was born with the name Michael Williams.",
-          "isFact": false,
-          "explanation": "He was born Cassius Marcellus Clay Jr. and changed his name in 1964.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sp_n7",
-          "text": "Wimbledon requires all players to wear all-white clothing.",
-          "isFact": true,
-          "explanation": "The All England Club strictly enforces this tradition to this day.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sp_n8",
-          "text": "Hockey pucks are frozen before NHL games.",
-          "isFact": true,
-          "explanation": "Frozen pucks slide faster and bounce less unpredictably on the ice.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "sp_n9",
-          "text": "The longest boxing match in history lasted over 100 rounds.",
-          "isFact": true,
-          "explanation": "Bowen vs Burke in 1893 went 110 rounds and lasted over 7 hours.",
-          "difficultyLevel": 9
-        },
-        {
-          "id": "sp_n10",
-          "text": "An NFL game contains only about 11 minutes of actual playing time.",
-          "isFact": true,
-          "explanation": "The rest is replays, huddles, clock stoppages, and commercials.",
-          "difficultyLevel": 10
-        },
-        {
-          "id": "sp_n11",
-          "text": "Michael Phelps won fewer gold medals than most Olympic countries.",
-          "isFact": false,
-          "explanation": "His 23 gold medals exceed the all-time totals of the majority of participating nations.",
-          "difficultyLevel": 2
-        },
-        {
-          "id": "sp_n12",
-          "text": "Golf was once banned in Scotland.",
-          "isFact": true,
-          "explanation": "King James II banned it in 1457 because men were skipping archery practice.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "sp_n13",
-          "text": "Volleyball was invented as a less strenuous alternative to basketball.",
-          "isFact": true,
-          "explanation": "William G. Morgan created it in 1895 for older businessmen.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sp_n14",
-          "text": "Players have used the Stanley Cup as a dog bowl.",
-          "isFact": true,
-          "explanation": "Players get personal days with the cup and many have let pets eat from it.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sp_n15",
-          "text": "Baseball umpires are required to wear black underwear.",
-          "isFact": true,
-          "explanation": "This is so nothing bright shows if their pants split during a game.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "sp_n16",
-          "text": "Sumo wrestlers must weigh over 150 kg to compete professionally.",
-          "isFact": false,
-          "explanation": "There is no minimum weight rule in sumo; technique is what matters.",
-          "difficultyLevel": 9
-        },
-        {
-          "id": "sp_n17",
-          "text": "Tennis was originally played with the bare palm of the hand.",
-          "isFact": true,
-          "explanation": "Early jeu de paume, French for palm game, was played with open hands.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sp_n18",
-          "text": "Olympic gold medals are made of solid gold.",
-          "isFact": false,
-          "explanation": "Modern gold medals are mostly silver with only a gold plating.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sp_n19",
-          "text": "Usain Bolt top recorded speed was over 35 mph.",
-          "isFact": false,
-          "explanation": "His top recorded speed was 27.78 mph, still extraordinarily fast.",
-          "difficultyLevel": 3
-        },
-        {
-          "id": "sp_n20",
-          "text": "Competitive eating is an official Olympic sport.",
-          "isFact": false,
-          "explanation": "It has never been part of the Olympic program.",
-          "difficultyLevel": 1
-        },
-        {
-          "id": "sp_x1",
-          "text": "The first modern Olympic Games were held in Rome in 1900.",
-          "isFact": false,
-          "explanation": "The first modern Olympics were held in Athens in 1896.",
-          "difficultyLevel": 2
-        },
-        {
-          "id": "sp_x2",
-          "text": "In the original Olympic Games, athletes competed in the nude.",
-          "isFact": true,
-          "explanation": "Greek athletes competed naked as a celebration of the human form.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "sp_x3",
-          "text": "A cricket ball is heavier than a tennis ball.",
-          "isFact": true,
-          "explanation": "Cricket balls weigh 155-163g; tennis balls are only 56-59g.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "sp_x4",
-          "text": "Cristiano Ronaldo is the highest paid athlete in history.",
-          "isFact": false,
-          "explanation": "Michael Jordan's total earnings adjusted for inflation exceed most active athletes.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sp_x5",
-          "text": "The longest ever tennis rally lasted over 600 shots.",
-          "isFact": true,
-          "explanation": "A practice rally of 643 shots was recorded in 2012.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sp_x6",
-          "text": "Chess is officially recognized as a sport by the International Olympic Committee.",
-          "isFact": true,
-          "explanation": "It was recognized in 1999, though it has never been an Olympic event.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sp_x7",
-          "text": "Serena Williams won a Grand Slam title while pregnant.",
-          "isFact": true,
-          "explanation": "She won the 2017 Australian Open in the early weeks of her pregnancy.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sp_x8",
-          "text": "The New York Yankees have the most World Series titles.",
-          "isFact": true,
-          "explanation": "They have won 27 World Series championships.",
-          "difficultyLevel": 5
-        },
-        {
-          "id": "sp_x9",
-          "text": "In soccer, a hat trick refers to scoring five goals.",
-          "isFact": false,
-          "explanation": "A hat trick means scoring three goals in a single match.",
-          "difficultyLevel": 1
-        },
-        {
-          "id": "sp_x10",
-          "text": "The fastest recorded tennis serve exceeded 250 km per hour.",
-          "isFact": true,
-          "explanation": "Sam Groth holds the record at 263.4 km per hour.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "sp_x11",
-          "text": "NBA hoops are exactly 12 feet off the ground.",
-          "isFact": false,
-          "explanation": "They are exactly 10 feet (3.05 meters) — unchanged since 1891.",
-          "difficultyLevel": 3
-        },
-        {
-          "id": "sp_x12",
-          "text": "Polo is the oldest team sport still played today.",
-          "isFact": true,
-          "explanation": "It originated in ancient Persia around 2500 years ago.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "sp_x13",
-          "text": "Tiger Woods turned professional golfer at age 20.",
-          "isFact": false,
-          "explanation": "He turned professional at age 20 in 1996.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sp_x14",
-          "text": "The Super Bowl has been played on Sundays every year.",
-          "isFact": false,
-          "explanation": "Super Bowl LX in 2026 was moved to a Saturday, breaking the tradition for the first time.",
-          "difficultyLevel": 8
-        },
-        {
-          "id": "sp_x15",
-          "text": "An ice hockey puck travels faster than 160 km per hour during play.",
-          "isFact": true,
-          "explanation": "The hardest slap shots have been recorded above 190 km per hour.",
-          "difficultyLevel": 6
-        },
-        {
-          "id": "sp_x16",
-          "text": "Germany has won the FIFA World Cup more times than any other country.",
-          "isFact": false,
-          "explanation": "Brazil holds the record with five FIFA World Cup titles.",
-          "difficultyLevel": 3
-        },
-        {
-          "id": "sp_x17",
-          "text": "In baseball, three strikes means you are out.",
-          "isFact": true,
-          "explanation": "A fundamental rule of the sport since its codification in 1845.",
-          "difficultyLevel": 1
-        },
-        {
-          "id": "sp_x18",
-          "text": "Jockeys in horse racing must weigh under 60 kg.",
-          "isFact": false,
-          "explanation": "Weight limits vary by race, but many races allow up to around 63 kg including equipment.",
-          "difficultyLevel": 7
-        },
-        {
-          "id": "sp_x19",
-          "text": "The Olympic rings represent the five continents of the world.",
-          "isFact": true,
-          "explanation": "Africa, Americas, Asia, Europe, and Oceania, united by the interlinked rings.",
-          "difficultyLevel": 4
-        },
-        {
-          "id": "sp_x20",
-          "text": "Badminton shuttlecocks can travel faster than 300 km per hour.",
-          "isFact": true,
-          "explanation": "The world record smash speed is 493 km per hour, making it the fastest projectile in sport.",
-          "difficultyLevel": 9
-        },
-        {
-          "id": "sp_n021",
-          "difficultyLevel": 1,
-          "text": "A standard basketball hoop is 10 feet off the ground.",
-          "isFact": true,
-          "explanation": "Set at 10 feet in 1891 and never changed, even as players got taller."
-        },
-        {
-          "id": "sp_n022",
-          "difficultyLevel": 1,
-          "text": "A soccer match has two halves of 45 minutes each.",
-          "isFact": true,
-          "explanation": "Plus stoppage time added by the referee for delays."
-        },
-        {
-          "id": "sp_n023",
-          "difficultyLevel": 2,
-          "text": "Golf is the only sport that has been played on the Moon.",
-          "isFact": true,
-          "explanation": "Alan Shepard hit two golf balls during Apollo 14 in 1971."
-        },
-        {
-          "id": "sp_n024",
-          "difficultyLevel": 2,
-          "text": "A boxing ring is shaped like a perfect circle.",
-          "isFact": false,
-          "explanation": "It's square - the name 'ring' survived from older roped-circle fights."
-        },
-        {
-          "id": "sp_n025",
-          "difficultyLevel": 3,
-          "text": "Table tennis was once banned in the Soviet Union for harming eyesight.",
-          "isFact": true,
-          "explanation": "The USSR banned it in the 1930s-40s believing it damaged players' eyes."
-        },
-        {
-          "id": "sp_n026",
-          "difficultyLevel": 3,
-          "text": "The Olympic marathon distance is exactly 42 kilometers.",
-          "isFact": false,
-          "explanation": "It's 42.195 km, set at the 1908 London Games to reach the royal box."
-        },
-        {
-          "id": "sp_n027",
-          "difficultyLevel": 3,
-          "text": "Cricket Test matches can last up to five days and still end in a draw.",
-          "isFact": true,
-          "explanation": "Five days of play can finish with no winner if no result is reached."
-        },
-        {
-          "id": "sp_n028",
-          "difficultyLevel": 4,
-          "text": "The first ball used in basketball was a soccer ball.",
-          "isFact": true,
-          "explanation": "Naismith used a soccer ball in 1891 before purpose-made balls existed."
-        },
-        {
-          "id": "sp_n029",
-          "difficultyLevel": 4,
-          "text": "Formula 1 tyres are filled with regular compressed air.",
-          "isFact": false,
-          "explanation": "They use nitrogen, which keeps pressure stable as temperatures swing."
-        },
-        {
-          "id": "sp_n030",
-          "difficultyLevel": 4,
-          "text": "An NFL football game has 60 minutes of actual game-clock time.",
-          "isFact": true,
-          "explanation": "Four 15-minute quarters, though real time runs over three hours."
-        },
-        {
-          "id": "sp_n031",
-          "difficultyLevel": 5,
-          "text": "Wimbledon tennis balls are stored at room temperature before matches.",
-          "isFact": false,
-          "explanation": "They're kept at 20C in special containers for consistent bounce."
-        },
-        {
-          "id": "sp_n032",
-          "difficultyLevel": 5,
-          "text": "A regulation baseball has exactly 108 double stitches.",
-          "isFact": true,
-          "explanation": "Every MLB ball is hand-stitched with 108 red double stitches."
-        },
-        {
-          "id": "sp_n033",
-          "difficultyLevel": 6,
-          "text": "The Stanley Cup has had names misspelled and engraved with errors.",
-          "isFact": true,
-          "explanation": "Multiple typos, like 'Bostq Bruins', remain etched on the trophy."
-        },
-        {
-          "id": "sp_n034",
-          "difficultyLevel": 6,
-          "text": "Sumo wrestlers are required to weigh at least 100 kilograms to compete.",
-          "isFact": false,
-          "explanation": "There's no minimum weight rule in professional sumo at all."
-        },
-        {
-          "id": "sp_n035",
-          "difficultyLevel": 7,
-          "text": "Jockeys in horse racing can be disqualified for being overweight, not under.",
-          "isFact": true,
-          "explanation": "Riders must meet a maximum weight, so excess weight gets them ruled out."
-        },
-        {
-          "id": "sp_n036",
-          "difficultyLevel": 7,
-          "text": "A badminton shuttlecock can leave the racquet at over 400 kilometers per hour.",
-          "isFact": true,
-          "explanation": "Smash speeds have topped 400 km/h, fastest of any racquet sport."
-        },
-        {
-          "id": "sp_n037",
-          "difficultyLevel": 8,
-          "text": "Chess boxing alternates rounds of chess and boxing in a single match.",
-          "isFact": true,
-          "explanation": "A real hybrid sport where you can win by checkmate or knockout."
-        },
-        {
-          "id": "sp_n038",
-          "difficultyLevel": 8,
-          "text": "The Tour de France has always been raced entirely within France.",
-          "isFact": false,
-          "explanation": "It regularly crosses into neighbours and has even started abroad."
-        },
-        {
-          "id": "sp_n039",
-          "difficultyLevel": 8,
-          "text": "Pelota's ball can travel faster than 300 kilometers per hour in jai alai.",
-          "isFact": true,
-          "explanation": "Jai alai is among the fastest ball sports, clocking past 300 km/h."
-        },
-        {
-          "id": "sp_n040",
-          "difficultyLevel": 9,
-          "text": "An NBA player once scored 100 points in a single game.",
-          "isFact": true,
-          "explanation": "Wilt Chamberlain dropped 100 for the Warriors in 1962."
-        },
-        {
-          "id": "sp_n041",
-          "difficultyLevel": 9,
-          "text": "The original Olympic torch relay tradition dates back to ancient Greece.",
-          "isFact": false,
-          "explanation": "The modern relay was invented for the 1936 Berlin Games."
-        },
-        {
-          "id": "sp_n042",
-          "difficultyLevel": 10,
-          "text": "Croquet appeared as an Olympic sport with paying spectators in attendance.",
-          "isFact": true,
-          "explanation": "The 1900 Paris croquet event reportedly drew just one paying spectator."
-        },
-        {
-          "id": "sp_n043",
-          "difficultyLevel": 8,
-          "text": "Cricket's longest Test match lasted ten days and still ended without a winner.",
-          "isFact": true,
-          "explanation": "The 1939 'Timeless Test' in Durban was abandoned so England could catch their ship home."
-        },
-        {
-          "id": "sp_n044",
-          "difficultyLevel": 8,
-          "text": "A perfect 10 has been the maximum score in Olympic gymnastics since 2006.",
-          "isFact": false,
-          "explanation": "The 10.0 cap was scrapped in 2006 for an open-ended difficulty scoring system."
-        },
-        {
-          "id": "sp_n045",
-          "difficultyLevel": 9,
-          "text": "A football goalkeeper has scored a goal directly from inside his own half.",
-          "isFact": true,
-          "explanation": "Keepers like Tom King have scored from clearances over 90 metres."
-        },
-        {
-          "id": "sp_n046",
-          "difficultyLevel": 9,
-          "text": "The Indianapolis 500 covers exactly 500 miles around its oval track.",
-          "isFact": true,
-          "explanation": "It's 200 laps of the 2.5-mile oval, run since 1911."
-        },
-        {
-          "id": "sp_n047",
-          "difficultyLevel": 9,
-          "text": "Synchronized swimming allowed male competitors at the Olympics before 2024.",
-          "isFact": false,
-          "explanation": "Men were first permitted in the Olympic event only at Paris 2024."
-        },
-        {
-          "id": "sp_n048",
-          "difficultyLevel": 10,
-          "text": "The world record for farthest accurate archery shot was set by an archer with no arms.",
-          "isFact": true,
-          "explanation": "Matt Stutzman hit a target at 283.47m in 2015, shooting with his feet."
-        },
-        {
-          "id": "sp_n049",
-          "difficultyLevel": 9,
-          "text": "Wilt Chamberlain once grabbed 55 rebounds in a single NBA game.",
-          "isFact": true,
-          "explanation": "His 55-rebound game in 1960 against the Celtics still stands as the NBA record."
-        },
-        {
-          "id": "sp_n050",
-          "difficultyLevel": 10,
-          "text": "The first modern Olympic marathon in 1896 was won by a Greek water carrier.",
-          "isFact": true,
-          "explanation": "Spyridon Louis, a water carrier, won to national jubilation in Athens."
-        },
-        {
-          "id": "sp_n051",
-          "difficultyLevel": 10,
-          "text": "Polo at the Olympics was once contested using motorcycles instead of horses.",
-          "isFact": false,
-          "explanation": "Olympic polo was always on horseback; motoball was never an Olympic event."
-        }
-      ]
-    },
-    {
       "id": "history",
       "name": "History",
+      "disabled": true,
       "questions": [
         {
           "id": "h1",
@@ -2414,579 +2939,6 @@
           "isFact": true,
           "explanation": "All we know of Socrates comes through the writings of his students like Plato.",
           "difficultyLevel": 8
-        }
-      ]
-    },
-    {
-      "id": "fifa_world_cup_football",
-      "name": "FIFA World Cup Football",
-      "questions": [
-        {
-          "id": "fwc_001",
-          "difficultyLevel": 1,
-          "text": "The FIFA World Cup is contested by national teams, not clubs.",
-          "isFact": true,
-          "explanation": "Fact: The men's FIFA World Cup is played by national teams representing their countries."
-        },
-        {
-          "id": "fwc_002",
-          "difficultyLevel": 1,
-          "text": "The first FIFA World Cup was held in Uruguay.",
-          "isFact": true,
-          "explanation": "Fact: Uruguay hosted the first FIFA World Cup in 1930 and also won it."
-        },
-        {
-          "id": "fwc_003",
-          "difficultyLevel": 1,
-          "text": "The World Cup final is played over two legs.",
-          "isFact": false,
-          "explanation": "Fiction: The World Cup final is a single match."
-        },
-        {
-          "id": "fwc_004",
-          "difficultyLevel": 1,
-          "text": "A World Cup group-stage match can end in a draw.",
-          "isFact": true,
-          "explanation": "Fact: Group-stage matches can finish level, with each team receiving one point."
-        },
-        {
-          "id": "fwc_005",
-          "difficultyLevel": 1,
-          "text": "A team must win every match to win the World Cup.",
-          "isFact": false,
-          "explanation": "Fiction: Teams can draw or even lose earlier matches and still win the tournament."
-        },
-        {
-          "id": "fwc_006",
-          "difficultyLevel": 2,
-          "text": "The World Cup has always been played every four years without interruption.",
-          "isFact": false,
-          "explanation": "Fiction: The 1942 and 1946 tournaments were cancelled because of World War II."
-        },
-        {
-          "id": "fwc_007",
-          "difficultyLevel": 2,
-          "text": "Brazil has won more men's World Cups than any other country.",
-          "isFact": true,
-          "explanation": "Fact: Brazil have won the men's FIFA World Cup five times."
-        },
-        {
-          "id": "fwc_008",
-          "difficultyLevel": 2,
-          "text": "Only European teams have ever won the men's FIFA World Cup.",
-          "isFact": false,
-          "explanation": "Fiction: South American teams such as Brazil, Argentina, and Uruguay have won it."
-        },
-        {
-          "id": "fwc_009",
-          "difficultyLevel": 2,
-          "text": "The host nation automatically qualifies for the World Cup.",
-          "isFact": true,
-          "explanation": "Fact: The host nation receives automatic qualification for the tournament."
-        },
-        {
-          "id": "fwc_010",
-          "difficultyLevel": 2,
-          "text": "Argentina won the 2022 FIFA World Cup.",
-          "isFact": true,
-          "explanation": "Fact: Argentina beat France in the 2022 final in Qatar."
-        },
-        {
-          "id": "fwc_011",
-          "difficultyLevel": 2,
-          "text": "The 2022 World Cup was played during the usual June-July window.",
-          "isFact": false,
-          "explanation": "Fiction: Qatar 2022 was played in November and December."
-        },
-        {
-          "id": "fwc_012",
-          "difficultyLevel": 2,
-          "text": "Penalty shoot-outs can decide World Cup knockout matches.",
-          "isFact": true,
-          "explanation": "Fact: Knockout matches tied after extra time can be decided by penalties."
-        },
-        {
-          "id": "fwc_013",
-          "difficultyLevel": 3,
-          "text": "The winner keeps the original World Cup trophy forever.",
-          "isFact": false,
-          "explanation": "Fiction: Winners receive the trophy temporarily and are given a replica to keep."
-        },
-        {
-          "id": "fwc_014",
-          "difficultyLevel": 3,
-          "text": "South Africa hosted the first World Cup on African soil.",
-          "isFact": true,
-          "explanation": "Fact: South Africa 2010 was the first men's FIFA World Cup hosted in Africa."
-        },
-        {
-          "id": "fwc_015",
-          "difficultyLevel": 3,
-          "text": "Qatar hosted the first World Cup held in the Middle East.",
-          "isFact": true,
-          "explanation": "Fact: Qatar 2022 was the first men's FIFA World Cup held in the Middle East."
-        },
-        {
-          "id": "fwc_016",
-          "difficultyLevel": 3,
-          "text": "The 2026 World Cup will have 48 teams.",
-          "isFact": true,
-          "explanation": "Fact: The 2026 men's World Cup expands from 32 to 48 teams."
-        },
-        {
-          "id": "fwc_017",
-          "difficultyLevel": 3,
-          "text": "The 2026 World Cup will be hosted by two countries.",
-          "isFact": false,
-          "explanation": "Fiction: It will be hosted by Canada, Mexico, and the United States."
-        },
-        {
-          "id": "fwc_018",
-          "difficultyLevel": 3,
-          "text": "Brazil has missed at least one men's World Cup.",
-          "isFact": false,
-          "explanation": "Fiction: Brazil have appeared in every men's FIFA World Cup through 2022."
-        },
-        {
-          "id": "fwc_019",
-          "difficultyLevel": 3,
-          "text": "Morocco was the first African team to reach a men's World Cup semi-final.",
-          "isFact": true,
-          "explanation": "Fact: Morocco reached the semi-finals at Qatar 2022."
-        },
-        {
-          "id": "fwc_020",
-          "difficultyLevel": 3,
-          "text": "A red card means the player can be replaced immediately.",
-          "isFact": false,
-          "explanation": "Fiction: A sent-off player cannot be replaced during the match."
-        },
-        {
-          "id": "fwc_021",
-          "difficultyLevel": 3,
-          "text": "The World Cup includes a group stage before knockouts.",
-          "isFact": true,
-          "explanation": "Fact: Modern World Cups use a group phase followed by knockout rounds."
-        },
-        {
-          "id": "fwc_022",
-          "difficultyLevel": 3,
-          "text": "England has won the men's World Cup more than once.",
-          "isFact": false,
-          "explanation": "Fiction: England's only men's World Cup title came in 1966."
-        },
-        {
-          "id": "fwc_023",
-          "difficultyLevel": 3,
-          "text": "Pele won three men's World Cups as a player.",
-          "isFact": true,
-          "explanation": "Fact: Pele was part of Brazil's winning squads in 1958, 1962, and 1970."
-        },
-        {
-          "id": "fwc_024",
-          "difficultyLevel": 3,
-          "text": "The first World Cup final was played between Uruguay and Argentina.",
-          "isFact": true,
-          "explanation": "Fact: Uruguay beat Argentina 4-2 in the 1930 final."
-        },
-        {
-          "id": "fwc_025",
-          "difficultyLevel": 3,
-          "text": "The World Cup final has always avoided penalty shoot-outs.",
-          "isFact": false,
-          "explanation": "Fiction: The 1994 final was decided by a penalty shoot-out."
-        },
-        {
-          "id": "fwc_026",
-          "difficultyLevel": 4,
-          "text": "The 1950 World Cup did not have a traditional one-match final.",
-          "isFact": true,
-          "explanation": "Fact: The champion was decided through a final round-robin group."
-        },
-        {
-          "id": "fwc_027",
-          "difficultyLevel": 4,
-          "text": "The first World Cup penalty shoot-out happened before the 1980s.",
-          "isFact": false,
-          "explanation": "Fiction: The first World Cup penalty shoot-out was West Germany vs France in 1982."
-        },
-        {
-          "id": "fwc_028",
-          "difficultyLevel": 4,
-          "text": "The 1998 World Cup was the first men's edition with 32 teams.",
-          "isFact": true,
-          "explanation": "Fact: France 1998 expanded the tournament to 32 teams."
-        },
-        {
-          "id": "fwc_029",
-          "difficultyLevel": 4,
-          "text": "The 1970 World Cup introduced yellow and red cards.",
-          "isFact": true,
-          "explanation": "Fact: The yellow and red card system was introduced at Mexico 1970."
-        },
-        {
-          "id": "fwc_030",
-          "difficultyLevel": 4,
-          "text": "The first physical red card at a World Cup was shown in 1970.",
-          "isFact": false,
-          "explanation": "Fiction: The card system began in 1970, but the first physical red card came in 1974."
-        },
-        {
-          "id": "fwc_031",
-          "difficultyLevel": 5,
-          "text": "The World Cup trophy was once found by a dog.",
-          "isFact": true,
-          "explanation": "Fact: The stolen Jules Rimet Trophy was found in 1966 by a dog named Pickles."
-        },
-        {
-          "id": "fwc_032",
-          "difficultyLevel": 5,
-          "text": "The original Jules Rimet Trophy is still displayed at FIFA headquarters.",
-          "isFact": false,
-          "explanation": "Fiction: It was stolen in Brazil in 1983 and has never been recovered."
-        },
-        {
-          "id": "fwc_033",
-          "difficultyLevel": 5,
-          "text": "The current FIFA World Cup Trophy replaced the Jules Rimet Trophy after 1970.",
-          "isFact": true,
-          "explanation": "Fact: The current trophy was introduced after Brazil kept the Jules Rimet Trophy permanently."
-        },
-        {
-          "id": "fwc_034",
-          "difficultyLevel": 5,
-          "text": "The Jules Rimet Trophy was stolen twice.",
-          "isFact": true,
-          "explanation": "Fact: It was stolen in England in 1966 and again in Brazil in 1983."
-        },
-        {
-          "id": "fwc_035",
-          "difficultyLevel": 5,
-          "text": "The original Jules Rimet Trophy was recovered after its 1983 theft.",
-          "isFact": false,
-          "explanation": "Fiction: It was stolen in Brazil in 1983 and has never been recovered."
-        },
-        {
-          "id": "fwc_036",
-          "difficultyLevel": 5,
-          "text": "The black-and-white Telstar ball was designed partly for television visibility.",
-          "isFact": true,
-          "explanation": "Fact: Its design helped the ball stand out on black-and-white television."
-        },
-        {
-          "id": "fwc_037",
-          "difficultyLevel": 5,
-          "text": "The 1970 World Cup used the first adidas World Cup match ball.",
-          "isFact": true,
-          "explanation": "Fact: The adidas Telstar debuted at Mexico 1970."
-        },
-        {
-          "id": "fwc_038",
-          "difficultyLevel": 6,
-          "text": "Miroslav Klose is the top scorer in men's World Cup history.",
-          "isFact": true,
-          "explanation": "Fact: Klose scored 16 World Cup goals for Germany."
-        },
-        {
-          "id": "fwc_039",
-          "difficultyLevel": 6,
-          "text": "Ronaldo Nazario scored more World Cup goals than Miroslav Klose.",
-          "isFact": false,
-          "explanation": "Fiction: Ronaldo scored 15; Klose holds the men's record with 16."
-        },
-        {
-          "id": "fwc_040",
-          "difficultyLevel": 6,
-          "text": "Just Fontaine scored all his World Cup goals in one tournament.",
-          "isFact": true,
-          "explanation": "Fact: Fontaine scored 13 goals at the 1958 World Cup."
-        },
-        {
-          "id": "fwc_041",
-          "difficultyLevel": 6,
-          "text": "No player has scored more than ten goals in a single men's World Cup.",
-          "isFact": false,
-          "explanation": "Fiction: Just Fontaine scored 13 goals in 1958."
-        },
-        {
-          "id": "fwc_042",
-          "difficultyLevel": 6,
-          "text": "Pele scored in a World Cup final before turning 18.",
-          "isFact": true,
-          "explanation": "Fact: Pele scored in the 1958 final as a 17-year-old."
-        },
-        {
-          "id": "fwc_043",
-          "difficultyLevel": 6,
-          "text": "A player has scored five goals in one men's World Cup match.",
-          "isFact": true,
-          "explanation": "Fact: Oleg Salenko scored five for Russia against Cameroon in 1994."
-        },
-        {
-          "id": "fwc_044",
-          "difficultyLevel": 6,
-          "text": "The most goals by one player in a World Cup match is four.",
-          "isFact": false,
-          "explanation": "Fiction: Oleg Salenko scored five in one match in 1994."
-        },
-        {
-          "id": "fwc_045",
-          "difficultyLevel": 7,
-          "text": "Roger Milla scored at a men's World Cup after turning 40.",
-          "isFact": true,
-          "explanation": "Fact: Milla scored for Cameroon at age 42 in 1994."
-        },
-        {
-          "id": "fwc_046",
-          "difficultyLevel": 7,
-          "text": "Lionel Messi has more men's World Cup appearances than any other player.",
-          "isFact": true,
-          "explanation": "Fact: Messi reached 26 men's World Cup appearances."
-        },
-        {
-          "id": "fwc_047",
-          "difficultyLevel": 7,
-          "text": "The World Cup Golden Boot always goes to a player from the winning team.",
-          "isFact": false,
-          "explanation": "Fiction: The top scorer often comes from another team."
-        },
-        {
-          "id": "fwc_048",
-          "difficultyLevel": 7,
-          "text": "France won their first men's World Cup before Brazil won their first.",
-          "isFact": false,
-          "explanation": "Fiction: Brazil first won in 1958; France first won in 1998."
-        },
-        {
-          "id": "fwc_049",
-          "difficultyLevel": 7,
-          "text": "A World Cup final has ended goalless after extra time.",
-          "isFact": true,
-          "explanation": "Fact: Brazil vs Italy in 1994 finished 0-0 after extra time."
-        },
-        {
-          "id": "fwc_050",
-          "difficultyLevel": 7,
-          "text": "Germany has played in a men's World Cup final decided by penalties.",
-          "isFact": false,
-          "explanation": "Fiction: Germany's men's World Cup finals have not been decided by penalty shoot-outs."
-        },
-        {
-          "id": "fwc_051",
-          "difficultyLevel": 8,
-          "text": "The 1930 World Cup had no qualification tournament.",
-          "isFact": true,
-          "explanation": "Fact: The first World Cup was invitation-based rather than qualification-based."
-        },
-        {
-          "id": "fwc_052",
-          "difficultyLevel": 8,
-          "text": "All 1930 World Cup matches were played in one city.",
-          "isFact": true,
-          "explanation": "Fact: All matches at the 1930 World Cup were played in Montevideo."
-        },
-        {
-          "id": "fwc_053",
-          "difficultyLevel": 8,
-          "text": "The 1954 World Cup had a match with twelve total goals.",
-          "isFact": true,
-          "explanation": "Fact: Austria beat Switzerland 7-5 in 1954."
-        },
-        {
-          "id": "fwc_054",
-          "difficultyLevel": 8,
-          "text": "Austria beat Switzerland 7-4 in the highest-scoring World Cup match.",
-          "isFact": false,
-          "explanation": "Fiction: The match finished 7-5, with twelve total goals."
-        },
-        {
-          "id": "fwc_055",
-          "difficultyLevel": 8,
-          "text": "The fastest World Cup goal came after less than twenty seconds.",
-          "isFact": true,
-          "explanation": "Fact: Hakan Sukur scored after about 11 seconds in 2002."
-        },
-        {
-          "id": "fwc_056",
-          "difficultyLevel": 8,
-          "text": "The fastest World Cup goal was scored in a final.",
-          "isFact": false,
-          "explanation": "Fiction: Hakan Sukur scored it in the 2002 third-place match."
-        },
-        {
-          "id": "fwc_057",
-          "difficultyLevel": 8,
-          "text": "A World Cup final hat-trick has happened more than once.",
-          "isFact": true,
-          "explanation": "Fact: Geoff Hurst did it in 1966 and Kylian Mbappe did it in 2022."
-        },
-        {
-          "id": "fwc_058",
-          "difficultyLevel": 8,
-          "text": "Kylian Mbappe was the first player to score a World Cup final hat-trick.",
-          "isFact": false,
-          "explanation": "Fiction: Geoff Hurst scored a World Cup final hat-trick in 1966."
-        },
-        {
-          "id": "fwc_059",
-          "difficultyLevel": 8,
-          "text": "Spain won the 2010 World Cup after losing their opening match.",
-          "isFact": true,
-          "explanation": "Fact: Spain lost to Switzerland in their opener and still won the tournament."
-        },
-        {
-          "id": "fwc_060",
-          "difficultyLevel": 8,
-          "text": "Spain conceded a goal in the 2010 World Cup knockout stage.",
-          "isFact": false,
-          "explanation": "Fiction: Spain kept clean sheets in all four knockout matches in 2010."
-        },
-        {
-          "id": "fwc_061",
-          "difficultyLevel": 9,
-          "text": "Italy once won the World Cup as host nation.",
-          "isFact": true,
-          "explanation": "Fact: Italy hosted and won the 1934 World Cup."
-        },
-        {
-          "id": "fwc_062",
-          "difficultyLevel": 9,
-          "text": "England won the World Cup before ever hosting it.",
-          "isFact": false,
-          "explanation": "Fiction: England won their only title as hosts in 1966."
-        },
-        {
-          "id": "fwc_063",
-          "difficultyLevel": 9,
-          "text": "A goalkeeper has been sent off in a World Cup match.",
-          "isFact": true,
-          "explanation": "Fact: Italy's Gianluca Pagliuca was sent off at the 1994 World Cup."
-        },
-        {
-          "id": "fwc_064",
-          "difficultyLevel": 9,
-          "text": "The first physical World Cup red card was shown to a goalkeeper.",
-          "isFact": false,
-          "explanation": "Fiction: Carlos Caszely of Chile received the first physical World Cup red card in 1974."
-        },
-        {
-          "id": "fwc_065",
-          "difficultyLevel": 9,
-          "text": "The first World Cup sending-off happened before red cards existed.",
-          "isFact": true,
-          "explanation": "Fact: Players were sent off before the physical red-card system was introduced."
-        },
-        {
-          "id": "fwc_066",
-          "difficultyLevel": 9,
-          "text": "Carlos Caszely received the first physical red card in World Cup history.",
-          "isFact": true,
-          "explanation": "Fact: Caszely was sent off for Chile against West Germany in 1974."
-        },
-        {
-          "id": "fwc_067",
-          "difficultyLevel": 9,
-          "text": "The 1994 World Cup final was played indoors.",
-          "isFact": false,
-          "explanation": "Fiction: It was played outdoors at the Rose Bowl in Pasadena."
-        },
-        {
-          "id": "fwc_068",
-          "difficultyLevel": 9,
-          "text": "India has played at the men's FIFA World Cup.",
-          "isFact": false,
-          "explanation": "Fiction: India qualified by default for 1950 but withdrew and has never played in the tournament."
-        },
-        {
-          "id": "fwc_069",
-          "difficultyLevel": 10,
-          "text": "Brazil has won a men's World Cup hosted in Europe.",
-          "isFact": true,
-          "explanation": "Fact: Brazil won the 1958 World Cup in Sweden."
-        },
-        {
-          "id": "fwc_070",
-          "difficultyLevel": 10,
-          "text": "No South American team has won a men's World Cup hosted in Europe.",
-          "isFact": false,
-          "explanation": "Fiction: Brazil won the 1958 World Cup in Sweden."
-        },
-        {
-          "id": "fwc_071",
-          "difficultyLevel": 10,
-          "text": "Brazil only needed a draw in their final 1950 match to become champions.",
-          "isFact": true,
-          "explanation": "Fact: Brazil would have won the 1950 title by avoiding defeat against Uruguay."
-        },
-        {
-          "id": "fwc_072",
-          "difficultyLevel": 10,
-          "text": "Uruguay needed only a draw against Brazil in 1950 to become champions.",
-          "isFact": false,
-          "explanation": "Fiction: Uruguay had to beat Brazil in the decisive 1950 match, which they did."
-        },
-        {
-          "id": "fwc_073",
-          "difficultyLevel": 10,
-          "text": "The World Cup has been won by a host nation more than once.",
-          "isFact": true,
-          "explanation": "Fact: Host winners include Uruguay, Italy, England, Argentina, and France."
-        },
-        {
-          "id": "fwc_074",
-          "difficultyLevel": 10,
-          "text": "Every men's World Cup host has reached at least the semi-finals.",
-          "isFact": false,
-          "explanation": "Fiction: Several hosts have failed to reach the semi-finals."
-        },
-        {
-          "id": "fwc_075",
-          "difficultyLevel": 10,
-          "text": "Mexico has hosted the men's FIFA World Cup more than once.",
-          "isFact": true,
-          "explanation": "Fact: Mexico hosted the tournament in 1970 and 1986, and is a co-host again in 2026."
-        },
-        {
-          "id": "fwc_076",
-          "difficultyLevel": 10,
-          "text": "Scotland were eliminated from the 1974 World Cup without losing a match.",
-          "isFact": true,
-          "explanation": "Fact: Scotland beat Zaire and drew with Brazil and Yugoslavia, but went out on goal difference."
-        },
-        {
-          "id": "fwc_081",
-          "difficultyLevel": 10,
-          "text": "The 1974 World Cup was the first to use the current trophy design.",
-          "isFact": true,
-          "explanation": "Fact: The current FIFA World Cup Trophy debuted in 1974 after Brazil kept the Jules Rimet Trophy."
-        },
-        {
-          "id": "fwc_082",
-          "difficultyLevel": 10,
-          "text": "A team once won the World Cup after scoring only eight goals in the tournament.",
-          "isFact": true,
-          "explanation": "Fact: Spain won the 2010 World Cup while scoring only eight goals in seven matches."
-        },
-        {
-          "id": "fwc_083",
-          "difficultyLevel": 10,
-          "text": "Spain won every knockout match at the 2010 World Cup by the same scoreline.",
-          "isFact": true,
-          "explanation": "Fact: Spain won all four knockout matches in 2010 by 1-0."
-        },
-        {
-          "id": "fwc_084",
-          "difficultyLevel": 10,
-          "text": "The first World Cup final used the same ball for both halves.",
-          "isFact": false,
-          "explanation": "Fiction: The 1930 final used Argentina's ball in the first half and Uruguay's ball in the second."
-        },
-        {
-          "id": "fwc_085",
-          "difficultyLevel": 10,
-          "text": "A defending champion has been eliminated from the next World Cup group stage.",
-          "isFact": true,
-          "explanation": "Fact: Several defending champions have gone out in the group stage, including France in 2002, Italy in 2010, Spain in 2014, and Germany in 2018."
         }
       ]
     }
