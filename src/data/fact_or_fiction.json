@@ -709,6 +709,237 @@
           "isFact": true,
           "explanation": "Gravitational waves were confirmed to travel at exactly the speed of light.",
           "difficultyLevel": 10
+        },
+        {
+          "id": "sc_n021",
+          "difficultyLevel": 1,
+          "text": "Humans have five senses and no more.",
+          "isFact": false,
+          "explanation": "We have additional senses like balance and proprioception, the sense of body position."
+        },
+        {
+          "id": "sc_n022",
+          "difficultyLevel": 1,
+          "text": "Light travels faster than sound.",
+          "isFact": true,
+          "explanation": "Light outpaces sound by roughly a million times, which is why you see lightning before thunder."
+        },
+        {
+          "id": "sc_n023",
+          "difficultyLevel": 2,
+          "text": "Saturn is light enough that it would float in a large enough body of water.",
+          "isFact": true,
+          "explanation": "Its average density is about 0.69 g/cm3, less than water's, thanks to its gassy makeup."
+        },
+        {
+          "id": "sc_n024",
+          "difficultyLevel": 3,
+          "text": "The human tongue has specific zones that detect each taste.",
+          "isFact": false,
+          "explanation": "The 'tongue map' is a myth; all taste types are detected across the whole tongue."
+        },
+        {
+          "id": "sc_n025",
+          "difficultyLevel": 3,
+          "text": "Hot water can freeze faster than cold water under the right conditions.",
+          "isFact": true,
+          "explanation": "Known as the Mpemba effect, it's been observed though its causes are still debated."
+        },
+        {
+          "id": "sc_n026",
+          "difficultyLevel": 4,
+          "text": "Mercury is the hottest planet in the solar system because it's closest to the Sun.",
+          "isFact": false,
+          "explanation": "Venus is hottest; its thick CO2 atmosphere traps heat far better than Mercury can."
+        },
+        {
+          "id": "sc_n027",
+          "difficultyLevel": 4,
+          "text": "Your body contains roughly as many bacterial cells as human cells.",
+          "isFact": true,
+          "explanation": "The old 10-to-1 claim was debunked; the real ratio is closer to 1.3 to 1."
+        },
+        {
+          "id": "sc_n028",
+          "difficultyLevel": 4,
+          "text": "Sharks existed before trees did.",
+          "isFact": true,
+          "explanation": "Sharks date back over 400 million years, predating the first trees by tens of millions."
+        },
+        {
+          "id": "sc_n029",
+          "difficultyLevel": 5,
+          "text": "Stomach acid is strong enough to dissolve some metals.",
+          "isFact": true,
+          "explanation": "At a pH near 1.5, stomach acid can corrode materials like zinc."
+        },
+        {
+          "id": "sc_n030",
+          "difficultyLevel": 5,
+          "text": "A bolt of lightning contains enough energy to toast thousands of slices of bread.",
+          "isFact": true,
+          "explanation": "A single strike packs roughly a billion joules of energy."
+        },
+        {
+          "id": "sc_n031",
+          "difficultyLevel": 5,
+          "text": "The Sahara is the largest desert on Earth.",
+          "isFact": false,
+          "explanation": "Antarctica is the largest desert; a desert is defined by low precipitation, not heat."
+        },
+        {
+          "id": "sc_n032",
+          "difficultyLevel": 6,
+          "text": "Hair and fingernails keep growing for a while after a person dies.",
+          "isFact": false,
+          "explanation": "They don't grow; skin dehydrates and retracts, making them only appear longer."
+        },
+        {
+          "id": "sc_n033",
+          "difficultyLevel": 6,
+          "text": "There is no gravity in outer space.",
+          "isFact": false,
+          "explanation": "Astronauts float because they're in continuous free fall, not because gravity is absent."
+        },
+        {
+          "id": "sc_n034",
+          "difficultyLevel": 6,
+          "text": "Octopuses have three hearts and blue blood.",
+          "isFact": true,
+          "explanation": "Two hearts pump to the gills, one to the body; copper-based hemocyanin makes blood blue."
+        },
+        {
+          "id": "sc_n035",
+          "difficultyLevel": 7,
+          "text": "A teaspoon of neutron star material would weigh billions of tonnes on Earth.",
+          "isFact": true,
+          "explanation": "Neutron stars are so dense that a sugar-cube-sized piece outweighs a mountain."
+        },
+        {
+          "id": "sc_n036",
+          "difficultyLevel": 7,
+          "text": "The Great Pyramid contains enough stone to be seen glowing from heat at night.",
+          "isFact": false,
+          "explanation": "Stone doesn't glow from stored heat; this is fabricated pseudo-science."
+        },
+        {
+          "id": "sc_n037",
+          "difficultyLevel": 7,
+          "text": "Helium can make your voice higher and a heavier gas can make it deeper.",
+          "isFact": true,
+          "explanation": "Sound moves faster in helium and slower in dense gases like sulfur hexafluoride."
+        },
+        {
+          "id": "sc_n038",
+          "difficultyLevel": 8,
+          "text": "Light from the Sun takes about eight minutes to reach Earth.",
+          "isFact": true,
+          "explanation": "At 150 million km away, sunlight takes roughly 8 minutes and 20 seconds to arrive."
+        },
+        {
+          "id": "sc_n039",
+          "difficultyLevel": 8,
+          "text": "Water can exist as solid, liquid, and gas at the same time under specific conditions.",
+          "isFact": true,
+          "explanation": "At water's 'triple point' of temperature and pressure, all three states coexist."
+        },
+        {
+          "id": "sc_n040",
+          "difficultyLevel": 8,
+          "text": "DNA from two unrelated humans is on average about 90 percent identical.",
+          "isFact": false,
+          "explanation": "Any two humans share about 99.9 percent of their DNA, not 90 percent."
+        },
+        {
+          "id": "sc_n041",
+          "difficultyLevel": 9,
+          "text": "It rains diamonds on Neptune and Uranus.",
+          "isFact": true,
+          "explanation": "Extreme pressure squeezes carbon in their atmospheres into diamond, which sinks as rain."
+        },
+        {
+          "id": "sc_n042",
+          "difficultyLevel": 9,
+          "text": "Time passes very slightly faster for your head than for your feet when standing.",
+          "isFact": true,
+          "explanation": "General relativity says gravity slows time, so time runs faster farther from Earth's center."
+        },
+        {
+          "id": "sc_n043",
+          "difficultyLevel": 10,
+          "text": "More than 99 percent of the atoms in your body were forged inside stars.",
+          "isFact": true,
+          "explanation": "Elements heavier than hydrogen and helium were made in stars, then scattered by supernovae."
+        },
+        {
+          "id": "sc_n044",
+          "difficultyLevel": 8,
+          "text": "Voyager 1 is the first human-made object to reach interstellar space.",
+          "isFact": true,
+          "explanation": "Launched in 1977, it crossed beyond the Sun's bubble into interstellar space in 2012."
+        },
+        {
+          "id": "sc_n045",
+          "difficultyLevel": 8,
+          "text": "Bees can recognize and remember individual human faces.",
+          "isFact": true,
+          "explanation": "Studies show honeybees learn to distinguish human faces using pattern recognition."
+        },
+        {
+          "id": "sc_n046",
+          "difficultyLevel": 8,
+          "text": "Absolute zero, the coldest possible temperature, has been reached in a lab.",
+          "isFact": false,
+          "explanation": "Scientists get extremely close but absolute zero is physically unreachable."
+        },
+        {
+          "id": "sc_n047",
+          "difficultyLevel": 9,
+          "text": "A photon of light can take tens of thousands of years to travel from the Sun's core to its surface.",
+          "isFact": true,
+          "explanation": "Energy zigzags through dense plasma for millennia before escaping as sunlight."
+        },
+        {
+          "id": "sc_n048",
+          "difficultyLevel": 9,
+          "text": "Bananas are slightly radioactive.",
+          "isFact": true,
+          "explanation": "They contain potassium-40, a naturally radioactive isotope, in harmless amounts."
+        },
+        {
+          "id": "sc_n049",
+          "difficultyLevel": 9,
+          "text": "Sound can travel through the vacuum of space if the source is loud enough.",
+          "isFact": false,
+          "explanation": "Sound needs a medium; a vacuum has no particles to carry the vibrations."
+        },
+        {
+          "id": "sc_n050",
+          "difficultyLevel": 9,
+          "text": "Tardigrades can survive the vacuum and radiation of open space.",
+          "isFact": true,
+          "explanation": "These tiny 'water bears' survived direct exposure to space in a 2007 experiment."
+        },
+        {
+          "id": "sc_n051",
+          "difficultyLevel": 10,
+          "text": "There are more possible ways to shuffle a deck of cards than atoms on Earth.",
+          "isFact": true,
+          "explanation": "A 52-card deck has about 8 followed by 67 zeros of arrangements, dwarfing Earth's atoms."
+        },
+        {
+          "id": "sc_n052",
+          "difficultyLevel": 10,
+          "text": "If the Sun suddenly vanished, Earth would fly out of orbit instantly.",
+          "isFact": false,
+          "explanation": "Gravity's effect travels at light speed, so Earth would orbit normally for about 8 more minutes."
+        },
+        {
+          "id": "sc_n053",
+          "difficultyLevel": 10,
+          "text": "Hydrogen and helium make up over 98 percent of all ordinary matter in the universe.",
+          "isFact": true,
+          "explanation": "These two lightest elements dominate; everything else is a tiny fraction of normal matter."
         }
       ]
     },
@@ -1065,6 +1296,195 @@
           "isFact": true,
           "explanation": "The Atlantic has higher salinity due to less rainfall and more evaporation.",
           "difficultyLevel": 9
+        },
+        {
+          "id": "gk_n021",
+          "difficultyLevel": 1,
+          "text": "A week has seven days.",
+          "isFact": true,
+          "explanation": "The seven-day week traces back to ancient Babylonian astronomy and is now near-universal."
+        },
+        {
+          "id": "gk_n022",
+          "difficultyLevel": 2,
+          "text": "Honey found sealed in ancient Egyptian tombs is still edible thousands of years later.",
+          "isFact": true,
+          "explanation": "Honey's low water content and acidity make it almost impossible for bacteria to grow."
+        },
+        {
+          "id": "gk_n023",
+          "difficultyLevel": 2,
+          "text": "Goldfish have a memory span of only three seconds.",
+          "isFact": false,
+          "explanation": "They can remember things for months; the three-second myth has been repeatedly debunked."
+        },
+        {
+          "id": "gk_n024",
+          "difficultyLevel": 3,
+          "text": "Bananas grow on trees.",
+          "isFact": false,
+          "explanation": "The banana plant is a giant herb; its 'trunk' is made of tightly packed leaf bases."
+        },
+        {
+          "id": "gk_n025",
+          "difficultyLevel": 3,
+          "text": "The Eiffel Tower can grow more than 15 centimeters taller in summer heat.",
+          "isFact": true,
+          "explanation": "Iron expands when heated, so the tower physically grows on hot days."
+        },
+        {
+          "id": "gk_n026",
+          "difficultyLevel": 4,
+          "text": "There are countries with no rivers at all.",
+          "isFact": true,
+          "explanation": "Saudi Arabia, Qatar, and several others have no permanent natural rivers."
+        },
+        {
+          "id": "gk_n027",
+          "difficultyLevel": 4,
+          "text": "The shortest war in recorded history lasted under an hour.",
+          "isFact": true,
+          "explanation": "The 1896 Anglo-Zanzibar War ended in roughly 38 minutes."
+        },
+        {
+          "id": "gk_n028",
+          "difficultyLevel": 5,
+          "text": "Vatican City is the smallest country in the world by area.",
+          "isFact": true,
+          "explanation": "At about 0.49 square kilometers, it's smaller than many city parks."
+        },
+        {
+          "id": "gk_n029",
+          "difficultyLevel": 5,
+          "text": "The plural of octopus is officially octopi.",
+          "isFact": false,
+          "explanation": "The word is Greek, not Latin, so 'octopuses' or 'octopodes' is more correct."
+        },
+        {
+          "id": "gk_n030",
+          "difficultyLevel": 5,
+          "text": "Australia is wider than the Moon's diameter.",
+          "isFact": true,
+          "explanation": "Australia spans about 4,000 km; the Moon is roughly 3,475 km across."
+        },
+        {
+          "id": "gk_n031",
+          "difficultyLevel": 6,
+          "text": "Russia spans eleven time zones.",
+          "isFact": true,
+          "explanation": "It's the widest country on Earth, stretching across eleven official time zones."
+        },
+        {
+          "id": "gk_n032",
+          "difficultyLevel": 6,
+          "text": "Mount Everest is the closest point on Earth to space.",
+          "isFact": false,
+          "explanation": "Chimborazo's summit is farther from Earth's center thanks to the equatorial bulge."
+        },
+        {
+          "id": "gk_n033",
+          "difficultyLevel": 7,
+          "text": "The dot over a lowercase i or j has its own name.",
+          "isFact": true,
+          "explanation": "It's called a 'tittle', from the same Latin root as 'title'."
+        },
+        {
+          "id": "gk_n034",
+          "difficultyLevel": 7,
+          "text": "The Canary Islands were named after canary birds.",
+          "isFact": false,
+          "explanation": "They were named for dogs ('canis' in Latin); the bird was named after the islands."
+        },
+        {
+          "id": "gk_n035",
+          "difficultyLevel": 7,
+          "text": "Finland has more saunas than cars.",
+          "isFact": true,
+          "explanation": "Roughly three million saunas serve a population of about 5.5 million people."
+        },
+        {
+          "id": "gk_n036",
+          "difficultyLevel": 8,
+          "text": "The longest place name in the world has over 80 letters.",
+          "isFact": true,
+          "explanation": "A New Zealand hill named Taumata...whenuakitanatahu runs to 85 letters."
+        },
+        {
+          "id": "gk_n037",
+          "difficultyLevel": 8,
+          "text": "Antarctica is the only continent without a native ant species.",
+          "isFact": true,
+          "explanation": "Ants colonized every continent except frozen Antarctica."
+        },
+        {
+          "id": "gk_n038",
+          "difficultyLevel": 9,
+          "text": "The word 'set' has historically had the longest entry of any word in the Oxford English Dictionary.",
+          "isFact": true,
+          "explanation": "Older OED editions gave 'set' more distinct senses than any other word."
+        },
+        {
+          "id": "gk_n039",
+          "difficultyLevel": 10,
+          "text": "The Pacific Ocean is wider than the Moon.",
+          "isFact": true,
+          "explanation": "At about 19,000 km across, the Pacific dwarfs the Moon's 3,475 km diameter."
+        },
+        {
+          "id": "gk_n040",
+          "difficultyLevel": 8,
+          "text": "Nintendo started out making playing cards decades before video games existed.",
+          "isFact": true,
+          "explanation": "Founded in 1889 in Kyoto, Nintendo made hanafuda cards long before consoles."
+        },
+        {
+          "id": "gk_n041",
+          "difficultyLevel": 8,
+          "text": "The spiciness of chili peppers is measured in officially named Scoville Heat Units.",
+          "isFact": true,
+          "explanation": "Pharmacist Wilbur Scoville devised the scale in 1912 to rate pepper heat."
+        },
+        {
+          "id": "gk_n042",
+          "difficultyLevel": 9,
+          "text": "The metric system was first officially adopted by the United States in the 1970s.",
+          "isFact": false,
+          "explanation": "The US still uses customary units; it has never fully adopted the metric system."
+        },
+        {
+          "id": "gk_n043",
+          "difficultyLevel": 9,
+          "text": "Saudi Arabia imports sand from abroad despite being mostly desert.",
+          "isFact": true,
+          "explanation": "Desert sand is too smooth for construction, so it imports coarser sand."
+        },
+        {
+          "id": "gk_n044",
+          "difficultyLevel": 9,
+          "text": "The 'black box' flight recorder on aircraft is painted bright orange.",
+          "isFact": true,
+          "explanation": "It's orange for visibility in wreckage; 'black box' is just a nickname."
+        },
+        {
+          "id": "gk_n045",
+          "difficultyLevel": 10,
+          "text": "There is enough water in Lake Baikal to supply the entire world for decades.",
+          "isFact": true,
+          "explanation": "Baikal holds about a fifth of all unfrozen freshwater on Earth's surface."
+        },
+        {
+          "id": "gk_n046",
+          "difficultyLevel": 10,
+          "text": "The official language of the US federal government is English by constitutional decree.",
+          "isFact": false,
+          "explanation": "The US Constitution names no official language; English isn't constitutionally mandated."
+        },
+        {
+          "id": "gk_n047",
+          "difficultyLevel": 10,
+          "text": "Bhutan was among the last countries in the world to introduce television, doing so in 1999.",
+          "isFact": true,
+          "explanation": "Bhutan lifted its TV ban only in 1999, one of the very last nations to allow it."
         }
       ]
     },
@@ -1421,6 +1841,223 @@
           "isFact": true,
           "explanation": "The world record smash speed is 493 km per hour, making it the fastest projectile in sport.",
           "difficultyLevel": 9
+        },
+        {
+          "id": "sp_n021",
+          "difficultyLevel": 1,
+          "text": "A standard basketball hoop is 10 feet off the ground.",
+          "isFact": true,
+          "explanation": "Set at 10 feet in 1891 and never changed, even as players got taller."
+        },
+        {
+          "id": "sp_n022",
+          "difficultyLevel": 1,
+          "text": "A soccer match has two halves of 45 minutes each.",
+          "isFact": true,
+          "explanation": "Plus stoppage time added by the referee for delays."
+        },
+        {
+          "id": "sp_n023",
+          "difficultyLevel": 2,
+          "text": "Golf is the only sport that has been played on the Moon.",
+          "isFact": true,
+          "explanation": "Alan Shepard hit two golf balls during Apollo 14 in 1971."
+        },
+        {
+          "id": "sp_n024",
+          "difficultyLevel": 2,
+          "text": "A boxing ring is shaped like a perfect circle.",
+          "isFact": false,
+          "explanation": "It's square - the name 'ring' survived from older roped-circle fights."
+        },
+        {
+          "id": "sp_n025",
+          "difficultyLevel": 3,
+          "text": "Table tennis was once banned in the Soviet Union for harming eyesight.",
+          "isFact": true,
+          "explanation": "The USSR banned it in the 1930s-40s believing it damaged players' eyes."
+        },
+        {
+          "id": "sp_n026",
+          "difficultyLevel": 3,
+          "text": "The Olympic marathon distance is exactly 42 kilometers.",
+          "isFact": false,
+          "explanation": "It's 42.195 km, set at the 1908 London Games to reach the royal box."
+        },
+        {
+          "id": "sp_n027",
+          "difficultyLevel": 3,
+          "text": "Cricket Test matches can last up to five days and still end in a draw.",
+          "isFact": true,
+          "explanation": "Five days of play can finish with no winner if no result is reached."
+        },
+        {
+          "id": "sp_n028",
+          "difficultyLevel": 4,
+          "text": "The first ball used in basketball was a soccer ball.",
+          "isFact": true,
+          "explanation": "Naismith used a soccer ball in 1891 before purpose-made balls existed."
+        },
+        {
+          "id": "sp_n029",
+          "difficultyLevel": 4,
+          "text": "Formula 1 tyres are filled with regular compressed air.",
+          "isFact": false,
+          "explanation": "They use nitrogen, which keeps pressure stable as temperatures swing."
+        },
+        {
+          "id": "sp_n030",
+          "difficultyLevel": 4,
+          "text": "An NFL football game has 60 minutes of actual game-clock time.",
+          "isFact": true,
+          "explanation": "Four 15-minute quarters, though real time runs over three hours."
+        },
+        {
+          "id": "sp_n031",
+          "difficultyLevel": 5,
+          "text": "Wimbledon tennis balls are stored at room temperature before matches.",
+          "isFact": false,
+          "explanation": "They're kept at 20C in special containers for consistent bounce."
+        },
+        {
+          "id": "sp_n032",
+          "difficultyLevel": 5,
+          "text": "A regulation baseball has exactly 108 double stitches.",
+          "isFact": true,
+          "explanation": "Every MLB ball is hand-stitched with 108 red double stitches."
+        },
+        {
+          "id": "sp_n033",
+          "difficultyLevel": 6,
+          "text": "The Stanley Cup has had names misspelled and engraved with errors.",
+          "isFact": true,
+          "explanation": "Multiple typos, like 'Bostq Bruins', remain etched on the trophy."
+        },
+        {
+          "id": "sp_n034",
+          "difficultyLevel": 6,
+          "text": "Sumo wrestlers are required to weigh at least 100 kilograms to compete.",
+          "isFact": false,
+          "explanation": "There's no minimum weight rule in professional sumo at all."
+        },
+        {
+          "id": "sp_n035",
+          "difficultyLevel": 7,
+          "text": "Jockeys in horse racing can be disqualified for being overweight, not under.",
+          "isFact": true,
+          "explanation": "Riders must meet a maximum weight, so excess weight gets them ruled out."
+        },
+        {
+          "id": "sp_n036",
+          "difficultyLevel": 7,
+          "text": "A badminton shuttlecock can leave the racquet at over 400 kilometers per hour.",
+          "isFact": true,
+          "explanation": "Smash speeds have topped 400 km/h, fastest of any racquet sport."
+        },
+        {
+          "id": "sp_n037",
+          "difficultyLevel": 8,
+          "text": "Chess boxing alternates rounds of chess and boxing in a single match.",
+          "isFact": true,
+          "explanation": "A real hybrid sport where you can win by checkmate or knockout."
+        },
+        {
+          "id": "sp_n038",
+          "difficultyLevel": 8,
+          "text": "The Tour de France has always been raced entirely within France.",
+          "isFact": false,
+          "explanation": "It regularly crosses into neighbours and has even started abroad."
+        },
+        {
+          "id": "sp_n039",
+          "difficultyLevel": 8,
+          "text": "Pelota's ball can travel faster than 300 kilometers per hour in jai alai.",
+          "isFact": true,
+          "explanation": "Jai alai is among the fastest ball sports, clocking past 300 km/h."
+        },
+        {
+          "id": "sp_n040",
+          "difficultyLevel": 9,
+          "text": "An NBA player once scored 100 points in a single game.",
+          "isFact": true,
+          "explanation": "Wilt Chamberlain dropped 100 for the Warriors in 1962."
+        },
+        {
+          "id": "sp_n041",
+          "difficultyLevel": 9,
+          "text": "The original Olympic torch relay tradition dates back to ancient Greece.",
+          "isFact": false,
+          "explanation": "The modern relay was invented for the 1936 Berlin Games."
+        },
+        {
+          "id": "sp_n042",
+          "difficultyLevel": 10,
+          "text": "Croquet appeared as an Olympic sport with paying spectators in attendance.",
+          "isFact": true,
+          "explanation": "The 1900 Paris croquet event reportedly drew just one paying spectator."
+        },
+        {
+          "id": "sp_n043",
+          "difficultyLevel": 8,
+          "text": "Cricket's longest Test match lasted ten days and still ended without a winner.",
+          "isFact": true,
+          "explanation": "The 1939 'Timeless Test' in Durban was abandoned so England could catch their ship home."
+        },
+        {
+          "id": "sp_n044",
+          "difficultyLevel": 8,
+          "text": "A perfect 10 has been the maximum score in Olympic gymnastics since 2006.",
+          "isFact": false,
+          "explanation": "The 10.0 cap was scrapped in 2006 for an open-ended difficulty scoring system."
+        },
+        {
+          "id": "sp_n045",
+          "difficultyLevel": 9,
+          "text": "A football goalkeeper has scored a goal directly from inside his own half.",
+          "isFact": true,
+          "explanation": "Keepers like Tom King have scored from clearances over 90 metres."
+        },
+        {
+          "id": "sp_n046",
+          "difficultyLevel": 9,
+          "text": "The Indianapolis 500 covers exactly 500 miles around its oval track.",
+          "isFact": true,
+          "explanation": "It's 200 laps of the 2.5-mile oval, run since 1911."
+        },
+        {
+          "id": "sp_n047",
+          "difficultyLevel": 9,
+          "text": "Synchronized swimming allowed male competitors at the Olympics before 2024.",
+          "isFact": false,
+          "explanation": "Men were first permitted in the Olympic event only at Paris 2024."
+        },
+        {
+          "id": "sp_n048",
+          "difficultyLevel": 10,
+          "text": "The world record for farthest accurate archery shot was set by an archer with no arms.",
+          "isFact": true,
+          "explanation": "Matt Stutzman hit a target at 283.47m in 2015, shooting with his feet."
+        },
+        {
+          "id": "sp_n049",
+          "difficultyLevel": 9,
+          "text": "Wilt Chamberlain once grabbed 55 rebounds in a single NBA game.",
+          "isFact": true,
+          "explanation": "His 55-rebound game in 1960 against the Celtics still stands as the NBA record."
+        },
+        {
+          "id": "sp_n050",
+          "difficultyLevel": 10,
+          "text": "The first modern Olympic marathon in 1896 was won by a Greek water carrier.",
+          "isFact": true,
+          "explanation": "Spyridon Louis, a water carrier, won to national jubilation in Athens."
+        },
+        {
+          "id": "sp_n051",
+          "difficultyLevel": 10,
+          "text": "Polo at the Olympics was once contested using motorcycles instead of horses.",
+          "isFact": false,
+          "explanation": "Olympic polo was always on horseback; motoball was never an Olympic event."
         }
       ]
     },
