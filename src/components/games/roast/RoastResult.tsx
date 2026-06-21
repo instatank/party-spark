@@ -17,7 +17,7 @@ const THEME_LABEL: Record<RoastTheme, string> = {
     tabloid:  'TABLOID',
     movie:    'MOVIE',
     rock:     'ROCK STAR',
-    agra:     'MUGHAL',
+    agra:     'ROYAL',
     worldcup: 'FIFA 2026',
 };
 

@@ -1874,7 +1874,7 @@
     },
     {
       "id": "passport_plate",
-      "name": "Passport & Plate",
+      "name": "Travel, Food & Lifestyle",
       "questions": [
         {
           "id": "PP_001",
@@ -2230,7 +2230,7 @@
     },
     {
       "id": "fifa_world_cup_football",
-      "name": "FIFA World Cup Football",
+      "name": "FIFA World Cup",
       "questions": [
         {
           "id": "fwc_001",
