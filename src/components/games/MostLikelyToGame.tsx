@@ -92,6 +92,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
     const [customError, setCustomError] = useState('');
     const [showPinGate, setShowPinGate] = useState(false);
     const [pendingAdultCat, setPendingAdultCat] = useState<any>(null);
+    const [showHowToPlay, setShowHowToPlay] = useState(false);
 
     const ADULT_CATEGORY_IDS = ['adult', 'scandalous'];
 
@@ -394,6 +395,19 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                     <p className="text-3xl mb-1.5 leading-none">👉</p>
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">Who's <em>really</em> the wildest?</h2>
                     <p className="text-muted text-sm">Read the card. Everyone points on 3.</p>
+                </div>
+                <div className="text-center mb-3">
+                    <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-purple-500 border border-purple-500/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block rounded shadow-lg uppercase">
+                        {showHowToPlay ? 'Hide Rules' : 'How To Play'}
+                    </button>
+                    {showHowToPlay && (
+                        <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
+                            <p><strong className="text-ink">1. GOAL:</strong> Read the "<strong className="text-purple-500">Who's most likely to…</strong>" card out loud to the whole group.</p>
+                            <p><strong className="text-amber-500">2. POINT ON 3:</strong> Count down — on three, <em>everyone</em> points at the person they think fits best. No overthinking.</p>
+                            <p><strong className="text-red-500">3. THE REVEAL:</strong> Whoever gets the most fingers pointed at them owns that card. Expect chaos, denial, and receipts.</p>
+                            <p><strong className="text-emerald-500">4. CUSTOM VIBE:</strong> Tap "Create Your Vibe" to generate cards tailored to your exact friend group, inside jokes and all.</p>
+                        </div>
+                    )}
                 </div>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">

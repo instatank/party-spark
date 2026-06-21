@@ -91,6 +91,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     // still being tuned in production. Same PIN as adult content. Drop
     // showPinGate + the gate intercept once Custom Vibe is signed off.
     const [showPinGate, setShowPinGate] = useState(false);
+    const [showHowToPlay, setShowHowToPlay] = useState(false);
 
     const wordCount = customContext.trim().split(/\s+/).filter(Boolean).length;
 
@@ -197,6 +198,20 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                     <p className="text-3xl mb-1.5 leading-none">🫣</p>
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">What <em>haven't</em> you done?</h2>
                     <p className="text-muted text-sm">Stand up if you've done it. Last one sitting wins.</p>
+                </div>
+
+                <div className="text-center mb-3">
+                    <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-cyan-500 border border-cyan-500/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block rounded shadow-lg uppercase">
+                        {showHowToPlay ? 'Hide Rules' : 'How To Play'}
+                    </button>
+                    {showHowToPlay && (
+                        <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
+                            <p><strong className="text-ink">1. GOAL:</strong> Read the "<strong className="text-cyan-500">Never have I ever…</strong>" card out loud to the group.</p>
+                            <p><strong className="text-amber-500">2. OWN UP:</strong> Anyone who <em>has</em> done it stands up (or drinks / puts a finger down — your house rules). The reactions are the real game.</p>
+                            <p><strong className="text-red-500">3. SPILL:</strong> Caught standing? The table will want the story. That's where the night gets good.</p>
+                            <p><strong className="text-emerald-500">4. PICK A DECK:</strong> Choose a curated category or tap "Create Your Vibe" to generate statements built for your exact group.</p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex-1 overflow-y-auto pb-8">

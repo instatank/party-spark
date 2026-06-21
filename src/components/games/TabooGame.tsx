@@ -40,6 +40,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     const [teams, setTeams] = useState<string[]>(() => sessionService.getTeams());
     const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
     const [teamScores, setTeamScores] = useState<number[]>([]);
+    const [showHowToPlay, setShowHowToPlay] = useState(false);
 
 
     // Initial category tap from CATEGORY screen. Resets team-match state
@@ -166,6 +167,19 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                     <p className="text-3xl mb-1.5 leading-none">🚫</p>
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">Describe it — without saying <em>it</em>.</h2>
                     <p className="text-muted text-sm">{duration} seconds. Avoid the forbidden words.</p>
+                </div>
+                <div className="text-center mb-3">
+                    <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-rose-500 border border-rose-500/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block rounded shadow-lg uppercase">
+                        {showHowToPlay ? 'Hide Rules' : 'How To Play'}
+                    </button>
+                    {showHowToPlay && (
+                        <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
+                            <p><strong className="text-ink">1. GOAL:</strong> One player is the clue-giver. Get your team to shout out the <strong className="text-rose-500">target word</strong> on the card.</p>
+                            <p><strong className="text-red-500">2. FORBIDDEN WORDS:</strong> Each card lists banned words you <em>cannot</em> say, spell, or hint at while describing it. Say one and the card is lost.</p>
+                            <p><strong className="text-amber-500">3. THE CLOCK:</strong> Race through as many cards as you can before the timer runs out. Tap the clock chip above to change the round length.</p>
+                            <p><strong className="text-emerald-500">4. SCORING:</strong> One point per correct guess; skip the ones you can't crack. Add team names to compete head-to-head, or just pass the phone.</p>
+                        </div>
+                    )}
                 </div>
                 <div className="flex justify-center mb-3">
                     <TimerSetting duration={duration} onPick={s => { setDuration(s); setTimeLeft(s); saveTimerPref('taboo_timer', s); }} accent="#F0656D" />

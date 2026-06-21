@@ -44,7 +44,7 @@ const CATEGORIES_PER_GAME = TOTAL_ROUNDS;
 const DIFFICULTY_TILES: { id: Difficulty; title: string; tagline: string; color: string; Icon: LucideIcon; adult?: boolean }[] = [
     { id: 'easy',  title: 'Easy',  tagline: 'Broad categories — everyone can play.',       color: '#10B981', Icon: Timer },
     { id: 'hard',  title: 'Hard',  tagline: 'Specialist territory. Brains required.',      color: '#E11D48', Icon: Timer },
-    { id: 'spicy', title: 'Spicy', tagline: 'After dark · dating, drinks, drama · 18+',    color: '#BE185D', Icon: Flame, adult: true },
+    { id: 'spicy', title: 'Social', tagline: 'After dark · dating, drinks, drama · 18+',    color: '#BE185D', Icon: Flame, adult: true },
 ];
 
 // Static color map for the live timer — green → amber → red as seconds drain.

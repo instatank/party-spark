@@ -50,6 +50,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     const [teams, setTeams] = useState<string[]>(() => sessionService.getTeams());
     const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
     const [teamScores, setTeamScores] = useState<number[]>([]);
+    const [showHowToPlay, setShowHowToPlay] = useState(false);
 
     // const categories = ["Movies", "Animals", "Actions", "Celebrities", "Objects"]; // Replaced by constant
     const categories = CHARADES_CATEGORIES;
@@ -245,6 +246,19 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                     <p className="text-3xl mb-1.5 leading-none">🎭</p>
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">All mime, <em>no</em> words.</h2>
                     <p className="text-muted text-sm">{duration} seconds to act it out.</p>
+                </div>
+                <div className="text-center mb-3">
+                    <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-amber-500 border border-amber-500/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block rounded shadow-lg uppercase">
+                        {showHowToPlay ? 'Hide Rules' : 'How To Play'}
+                    </button>
+                    {showHowToPlay && (
+                        <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
+                            <p><strong className="text-ink">1. GOAL:</strong> One player acts out the word on screen using <strong className="text-amber-500">gestures only</strong> — get your team to guess it.</p>
+                            <p><strong className="text-red-500">2. NO TALKING:</strong> No speaking, no mouthing words, no pointing at objects in the room. Mime it out.</p>
+                            <p><strong className="text-amber-500">3. THE CLOCK:</strong> Act out as many cards as you can before time runs out. Tap the clock chip above to change the round length.</p>
+                            <p><strong className="text-emerald-500">4. SCORING:</strong> One point per correct guess; skip anything too tough. Add team names to compete head-to-head, or just pass the phone.</p>
+                        </div>
+                    )}
                 </div>
                 <div className="flex justify-center mb-3">
                     <TimerSetting duration={duration} onPick={s => { setDuration(s); setTimeLeft(s); saveTimerPref('charades_timer', s); }} accent="#EFC050" />

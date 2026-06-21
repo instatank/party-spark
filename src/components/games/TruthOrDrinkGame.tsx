@@ -187,6 +187,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     };
     const [gameState, setGameState] = useState<GameState>('CATEGORY_SELECT');
     const [showIntimateGate, setShowIntimateGate] = useState(false);
+    const [showHowToPlay, setShowHowToPlay] = useState(false);
     const [category, setCategory] = useState<Category>('classic');
     const [players, setPlayers] = useState<string[]>(() => sessionService.getTeams());
     const [turnIndex, setTurnIndex] = useState(0);
@@ -354,6 +355,19 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     <p className="text-3xl mb-1.5 leading-none">🍷</p>
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">How honest are you <em>really</em>?</h2>
                     <p className="text-muted text-sm">Answer honestly — or take a sip.</p>
+                </div>
+                <div className="text-center mb-3">
+                    <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-red-500 border border-red-500/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block rounded shadow-lg uppercase">
+                        {showHowToPlay ? 'Hide Rules' : 'How To Play'}
+                    </button>
+                    {showHowToPlay && (
+                        <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
+                            <p><strong className="text-ink">1. GOAL:</strong> Take turns reading the question on screen. Answer it <strong className="text-red-500">honestly</strong>… or take a drink to skip.</p>
+                            <p><strong className="text-amber-500">2. NO HALF-TRUTHS:</strong> If you answer, the table decides whether you were honest. Dodge it? That's a sip. Your secret stays safe.</p>
+                            <p><strong className="text-red-500">3. PICK YOUR HEAT:</strong> Five decks from Classic to Chaos — the spicier ones are 18+. "Create Your Vibe" tailors questions to your group.</p>
+                            <p><strong className="text-emerald-500">4. KEEP SCORE:</strong> Add 2+ player names for a truths-vs-drinks leaderboard, or leave it empty and just pass the phone.</p>
+                        </div>
+                    )}
                 </div>
                 {/* Optional roster — add 2+ names to keep score (per-player
                     truths/drinks leaderboard); leave empty for a no-score
