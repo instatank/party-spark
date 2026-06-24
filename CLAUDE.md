@@ -15,6 +15,7 @@ You are the lead developer and architect of **PartySpark**, a premium, AI-powere
 - **Styling:** Tailwind CSS v4
 - **Routing:** State-based `switch` in `App.tsx` driven by the `GameType` enum — no React Router, no Next.js
 - **Data Strategy:** Offline-first. Questions/cards live in static JSON files under `src/data/*.json`
+- **Offline app loading (PWA):** A service worker (via `vite-plugin-pwa`, configured in `vite.config.ts`) precaches the app shell (HTML/JS/CSS + the lazy `jumble_sets` chunk + splash image) so the app **boots with no connection** — not just plays offline once loaded. Without this, the static-JSON data is moot because the shell itself couldn't load. `registerType: 'autoUpdate'` keeps users off stale caches. `/api/*` is `NetworkOnly` + on the navigate-fallback denylist, so AI calls always hit the network and fail gracefully offline. The hand-authored `public/manifest.json` is kept (`manifest: false` in the plugin) — don't let the plugin generate a second manifest. The SW is **disabled in `npm run dev`** (`devOptions.enabled: false`); to test it, `npm run build` then `vite preview`.
 - **AI Integration:** Hybrid. See the **AI Services** section below for the current provider layout.
 
 ## 🎨 Design System (current standard)
