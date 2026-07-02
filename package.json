@@ -16,17 +16,17 @@
     "@anthropic-ai/sdk": "^0.90.0",
     "@google/genai": "^1.33.0",
     "@tailwindcss/postcss": "^4.1.17",
-    "dotenv": "^17.2.3",
     "lucide-react": "^0.560.0",
     "postcss": "^8.5.6",
-    "puppeteer": "^24.40.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "tailwindcss": "^4.1.17",
-    "xlsx": "^0.18.5"
+    "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "dotenv": "^17.2.3",
+    "puppeteer": "^24.40.0",
+    "xlsx": "^0.18.5",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",

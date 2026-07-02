@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-06-13. If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+> **Last reconciled with code:** 2026-07-02. If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 
 ## 🤖 Role & Core Directives
 
@@ -71,6 +71,8 @@ This bit us several times. If you add a new accent color, verify it in the compi
 - **Tabs hidden:** the old "Play Now / Coming Soon" tab bar is gated behind a `SHOW_TABS` flag (currently `false`) — the front end shows only the Play Now games. All Coming Soon games + tab logic stay in code; flip `SHOW_TABS = true` to bring them back for testing.
 - **Filter pills** (`HOME_FILTERS` in `constants.tsx`): All / Quick / Solo / Couples / Crowd / Spicy. `quick` matches by short duration; the rest match by tag in `GAME_RICH_META[id].tags`.
 - **Game cards** use tightened vertical padding (`!px-4 !py-2.5`) and the header spacing is compact.
+- **Splash** is 1.5s max and tap-skippable — never make users wait on it.
+- **"Tonight's crew" banner**: when the shared session roster (`sessionService.getTeams()`) is non-empty, Home shows a gold banner listing the names with an X to clear — this is how users discover that names carry across games.
 
 ## 🚫 Explicit Constraints & "Do Not Touch" Rules
 
@@ -105,13 +107,13 @@ This bit us several times. If you add a new accent color, verify it in the compi
 | Roast Me | `ROAST` | AI roast from uploaded image | Gemini (image + text) | Uses image gen, can't swap to Claude |
 | Imposter | `IMPOSTER` | Find the fake among friends | Gemini | |
 | Would You Rather | `WOULD_YOU_RATHER` | Paired dilemmas | Local static data | |
-| Most Likely To | `MOST_LIKELY_TO` | Vote on friends | **Claude → Gemini fallback** | Has "Create Your Vibe" AI custom deck |
+| Most Likely To | `MOST_LIKELY_TO` | Vote on friends | **Claude → Gemini fallback** | Has "Create Your Vibe" AI custom deck (not PIN-gated; adult decks still are). Plays in 10-card rounds with a ROUND_END break screen (next 10 / change deck) |
 | Would I Lie To You | `WOULD_I_LIE_TO_YOU` | Truth vs lie storytelling | Gemini | |
-| Never Have I Ever | `NEVER_HAVE_I_EVER` | Stand up if you've done it | Gemini | Has curated "Rehaan"/"Agra"/"BBF" decks; no Claude custom yet |
+| Never Have I Ever | `NEVER_HAVE_I_EVER` | Stand up if you've done it | Gemini | Has curated "Rehaan"/"Agra"/"BBF" decks; no Claude custom yet. "Someone Has / All Clean" buttons record a room verdict per card; every 10 cards a RECAP screen scores the group's innocence. Custom Vibe not PIN-gated |
 | Mini Mafia (The Traitors) | `MINI_MAFIA` | Pass-and-play betrayal | Gemini (narration) | |
 | Icebreakers | `ICEBREAKERS` | Conversation starters | Gemini | Partial — SELECT→PLAY only |
 | Fact or Fiction | `FACT_OR_FICTION` | Beat the clock on true facts | Local static | |
-| The Forecast (Compatibility Test) | `COMPATIBILITY_TEST` | Player A predicts Player B's answers | Static (`compatibility_test.json`) | Adult-gated. Modes: Couples / Friends / Bunny. Known issue: deeper screens use dynamic Tailwind classes — see Known Issues. |
+| The Forecast (Compatibility Test) | `COMPATIBILITY_TEST` | Player A predicts Player B's answers | Static (`compatibility_test.json`) | Adult-gated. Modes: Couples / Friends / Bunny. |
 | **Truth or Drink** | `TRUTH_OR_DRINK` | Confess or sip | **Claude → Gemini fallback** | Adult-gated. 5 decks (Classic/Spicy/Deep Cuts/Ex Files/Chaos) + "Create Your Vibe" AI custom deck. 10 rounds. No dedicated roster screen — a deck tap drops straight into play. Optional compact `TeamRosterRow` on the category screen: add 2+ names → named mode (per-player truths/drinks leaderboard), else pass-the-phone just-play (like MLT/NHIE). Roster persists across games via the shared session team store. Custom deck routes to its context screen first. Also exposes an **Intimate Drinking** tile (adult dice sub-game, `IntimateDiceGame`) gated by a *separate* PIN `2525` — three two-dice modes ("The Action" = action × target-zone; "The High-Stakes Countdown" = sensation × duration, rolled number × 10s; "Positions" = position × twist/modifier). Offline, mappings live in the component. |
 | **5 Alive** | `FIVE_ALIVE` | Name N in N seconds, beat the bell | None (offline) | 5 descending rounds — name 5/4/3/2/1, timed 6/5/4/3/2s (extra second to read the clue) — perfect-round bonus, judge tallies. Easy + Hard category pools in `src/data/five_alive.json` (Easy = 124 mainstream + Indian-context; Hard = 106 recall-pressure categories). End-of-round bell + tick synthesized via Web Audio (no bundled assets); the landing screen uses the shared compact `TeamRosterRow` (collapsed gold prompt) for optional player names (persists across games via the shared session team store), difficulty picked after. Also has a "Just Play" no-scoring mode. |
 | **Linked** | `LINKED` | One connector word pairs with all 3 clues (e.g. water/down/rain → FALL) | None (offline) | Two modes: **Pass and Play** (60s per player, self-reported "Got it!"/"Skip", leaderboard, both flash the answer before advancing) and **Just Play** (no timer, group shout, Reveal → self-reported Correct/Incorrect tiles that score a running "solved" count and advance). Easy (78) + Hard (36) puzzle pools in `src/data/linked.json` — shape `{ clues: [3], answer, position? }` (`position` optional, defaults `'suffix'`; bundled data is all-suffix). Buzzer + tick + got-it ding synthesized via Web Audio. Per-puzzle session dedupe via `SessionManager`. |
@@ -237,27 +239,15 @@ Copy `.env.example` → `.env.local` in the repo root and fill in both keys. `.e
 
 ## 🛠️ Known Issues / Technical Debt
 
-Flagged during the 2026-04-21 audit. None blocking, but worth cleaning up when you're already in the area.
+Reconciled against code 2026-07-02. Several items from the 2026-04-21 audit were verified fixed and removed (Forecast dynamic Tailwind classes, Roast LOADING back-trap, stray `console.log`s, duplicate `useContent` import, client-side API keys — the last is fully solved by the `/api/ai` proxy).
 
-### High-value / low-cost
+1. **Coming Soon tab is hidden on the front end** via the `SHOW_TABS = false` flag in `App.tsx` (the strong games all live in Play Now now). `comingSoonGameIds` (WILTY / Icebreakers / Mini Mafia / WYR) + the tab logic still exist in code so the tabs can be re-enabled for testing by flipping the flag. All of those games are routed and playable. Icebreakers in particular should stay hidden until it's a real game loop (today it's a single screen swapping one AI line, with no offline fallback).
 
-1. **The Forecast has 7 dynamic Tailwind classes** in `CompatibilityTestGame.tsx` at lines 273, 284, 339, 360, 375, 378, 403 — template literals like `text-${accentColor}-400` that Tailwind v4's JIT won't reliably compile. The MODE_SELECT screen is clean; the PREDICT / ANSWER / PASS_TO_* states may be rendering without accent colors on mobile. Replace with static class maps following the Slim Row pattern.
+2. **NHIE has no Claude fallback yet.** `generateNeverHaveIEver` is Gemini-only. Same quota vulnerability TOD/MLT had before the port.
 
-2. **Coming Soon tab is hidden on the front end** via the `SHOW_TABS = false` flag in `App.tsx` (the strong games all live in Play Now now). `comingSoonGameIds` (WILTY / Icebreakers / Mini Mafia / WYR) + the tab logic still exist in code so the tabs can be re-enabled for testing by flipping the flag. All of those games are routed and playable.
+3. **No code splitting.** All 17 games and their JSON data are statically imported in `App.tsx` — only Scramble's `jumble_sets.json` is lazy-loaded. Everything ships in the initial bundle. Planned Phase 1 fix: `React.lazy` per game + dynamic `import()` per data file.
 
-### Medium
-
-3. **`RoastGame.tsx` line ~156** — LOADING state has `onBack={() => {}}`. User is stuck during image generation. Change to `onExit` or a state-specific handler.
-
-4. **NHIE has no Claude fallback yet.** `generateNeverHaveIEver` is Gemini-only. Same quota vulnerability TOD/MLT had before the port.
-
-### Low
-
-5. **Leftover `console.log`s** in production code — `CharadesGame` (3x), `TabooGame` (1x). Remove or demote to `console.debug`.
-
-6. **Duplicate `useContent` import** in `CharadesGame.tsx` around line 5-6.
-
-7. **API keys are in client JS** (both Gemini and Claude). Fine for testing, but before merging to production-facing work, proxy through a backend. Anyone can inspect the bundle and pull the keys.
+4. **No service worker.** The PWA manifest exists but the app can't boot offline. Planned Phase 1 fix: vite-plugin-pwa precaching the shell + data.
 
 ## 📁 Key files
 
@@ -281,7 +271,7 @@ src/
 │   ├── claudeService.ts             # Thin fetch wrappers (back-compat)
 │   ├── jumbleEngine.ts              # Scramble runtime: set picker, validation, scoring, missed-words
 │   ├── LocalGameService.ts          # Static data readers
-│   └── SessionManager.ts            # sessionStorage wrapper (used-content tracking, shared team roster)
+│   └── SessionManager.ts            # localStorage-backed session store (used-content tracking, shared team roster; 2h sliding window)
 └── index.css                        # Tailwind v4 @theme (custom props + keyframes only)
 
 (repo root) scripts/build-jumble-sets.mjs   # DEV-only generator → src/data/jumble_sets.json (needs cached dicts under scripts/.cache/)
