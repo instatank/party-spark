@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, X, Users } from 'lucide-react';
+import { sessionService } from './services/SessionManager';
 import { GameType } from './types';
 import { GAMES, getIcon, GAME_RICH_META, HOME_FILTERS, gameMatchesFilter, getSubcategoryMatches, type HomeFilter } from './constants';
 import { Card } from './components/ui/Layout';
@@ -22,8 +23,11 @@ import { FiveAliveGame } from './components/games/FiveAliveGame';
 import { LinkedGame } from './components/games/LinkedGame';
 import { JumbleGame } from './components/games/JumbleGame';
 
-const SplashScreen = () => (
-  <div className="fixed inset-0 z-[100] bg-app flex items-center justify-center overflow-hidden font-sans">
+const SplashScreen = ({ onSkip }: { onSkip: () => void }) => (
+  <div
+    onClick={onSkip}
+    className="fixed inset-0 z-[100] bg-app flex items-center justify-center overflow-hidden font-sans cursor-pointer"
+  >
     {/* Background layer — bg image is dark-tuned. Dark mode uses an
         overlay blend at 40%; light mode swaps to a multiply blend at
         25% (handled in .splash-bg CSS) so the image reads as a soft
@@ -66,10 +70,11 @@ const App = () => {
   const [activeGame, setActiveGame] = useState<GameType>(GameType.HOME);
 
   useEffect(() => {
-    // Show splash screen for 5 seconds then transition to home
+    // Brief splash, then home. Kept short (and tap-skippable) — it runs on
+    // every cold start, so it must never feel like a wait.
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 5000);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -115,7 +120,7 @@ const App = () => {
   };
 
   if (showSplash) {
-    return <SplashScreen />;
+    return <SplashScreen onSkip={() => setShowSplash(false)} />;
   }
 
   return (
@@ -179,12 +184,21 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
     GameType.WOULD_YOU_RATHER,
   ];
 
-  // Adult-gated games — require PIN before entering. Roast Me + Custom
-  // Vibe paths are also temporarily gated here while AI prompts/output
-  // are still being tuned in production. REMOVE Roast from this list
-  // once those flows are signed off; the Custom Vibe gates live inside
-  // MLT and NHIE (TOD inherits the gate from this list).
+  // Adult-gated games — require PIN before entering. Roast Me is also
+  // temporarily gated here while AI prompts/output are still being tuned
+  // in production. REMOVE Roast from this list once those flows are
+  // signed off. (The Create-Your-Vibe custom decks inside MLT/NHIE are
+  // no longer PIN-gated — tone chips are the safety layer there.)
   const ADULT_GAME_IDS = [GameType.COMPATIBILITY_TEST, GameType.TRUTH_OR_DRINK, GameType.ROAST];
+
+  // Shared session crew (set via any game's TeamRosterRow / player setup).
+  // Surfacing it here tells users the one thing they can't otherwise
+  // discover: names carry across every game for the rest of the night.
+  const [crew, setCrew] = useState<string[]>(() => sessionService.getTeams());
+  const clearCrew = () => {
+    sessionService.clearTeams();
+    setCrew([]);
+  };
   const [showPinGate, setShowPinGate] = useState(false);
   const [pendingGameId, setPendingGameId] = useState<GameType | null>(null);
 
@@ -283,6 +297,26 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
             setPendingGameId(null);
           }}
         />
+      )}
+
+      {/* Tonight's crew — visible whenever a shared roster exists so users
+          learn that names entered in one game follow them into the next. */}
+      {crew.length > 0 && (
+        <div className="flex items-center gap-2 bg-gold/10 border border-gold/30 rounded-xl px-3 py-2 animate-fade-in">
+          <Users size={14} className="text-gold flex-shrink-0" />
+          <p className="flex-1 text-xs text-ink-soft truncate min-w-0">
+            <span className="font-bold text-gold">Tonight's crew:</span>{' '}
+            {crew.join(', ')}
+            <span className="text-muted"> — names carry into every game</span>
+          </p>
+          <button
+            onClick={clearCrew}
+            aria-label="Clear saved players"
+            className="flex-shrink-0 p-1 rounded-full text-muted hover:text-ink transition-colors"
+          >
+            <X size={14} />
+          </button>
+        </div>
       )}
 
       {/* Filter chips + tap-to-expand search.

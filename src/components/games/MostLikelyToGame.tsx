@@ -75,7 +75,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
         const entry = TILES_MAP[id] || { solid: '#94A3B8', tintAlpha: 0.18 };
         return { solid: entry.solid, tint: hexToRgba(entry.solid, entry.tintAlpha) };
     };
-    const [gameState, setGameState] = useState<'CATEGORY' | 'CUSTOM_SETUP' | 'LOADING' | 'PLAYING'>('CATEGORY');
+    const [gameState, setGameState] = useState<'CATEGORY' | 'CUSTOM_SETUP' | 'LOADING' | 'PLAYING' | 'ROUND_END'>('CATEGORY');
     // Mid-play exit guard — covers the custom PLAY-screen back/home buttons.
     const { guard: guardPlay, dialog: playExitDialog } = useExitConfirm(gameState === 'PLAYING');
     const [category, setCategory] = useState<any>(null);
@@ -83,6 +83,11 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [countingDown, setCountingDown] = useState(false);
     const [count, setCount] = useState(3);
+    // Round arc: every ROUND_SIZE cards the ROUND_END screen offers a natural
+    // pause — keep going, change deck, or call it. Gives the endless stack
+    // a rhythm and an exit ramp.
+    const ROUND_SIZE = 10;
+    const [roundPlayed, setRoundPlayed] = useState(0);
 
     // Custom vibe state
     const [selectedGroupType, setSelectedGroupType] = useState('friends');
@@ -99,10 +104,10 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
     const wordCount = customContext.trim().split(/\s+/).filter(Boolean).length;
 
     const startGame = async (cat: any) => {
-        // Gate adult categories AND custom-vibe (the latter is temporary
-        // while AI prompts are still being tuned in production — drop the
-        // `|| cat.isCustom` clause once Custom Vibe is signed off).
-        const needsPin = ADULT_CATEGORY_IDS.includes(cat.id) || cat.isCustom;
+        // Gate adult categories only. Create-Your-Vibe is NOT PIN-gated —
+        // it's the app's standout personalization feature and the tone
+        // chips (Clean default) are the safety layer for its output.
+        const needsPin = ADULT_CATEGORY_IDS.includes(cat.id);
         if (needsPin && !isAdultUnlocked()) {
             setPendingAdultCat(cat);
             setShowPinGate(true);
@@ -150,6 +155,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
 
         setCards(selectedCards);
         setCurrentIndex(0);
+        setRoundPlayed(0);
         setGameState('PLAYING');
     };
 
@@ -176,6 +182,7 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
             if (generatedCards.length > 0) {
                 setCards(generatedCards);
                 setCurrentIndex(0);
+                setRoundPlayed(0);
                 setGameState('PLAYING');
             } else {
                 setCustomError('AI generation failed. Please try again or tweak your description.');
@@ -203,7 +210,8 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
         }
     }, [countingDown, count]);
 
-    const nextCard = async () => {
+    // Move to the next card, refilling the deck (AI) when the pool runs dry.
+    const advanceCard = async () => {
         if (currentIndex < cards.length - 1) {
             setCurrentIndex(c => c + 1);
         } else if (category?.id === 'custom_vibe') {
@@ -221,6 +229,25 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
             setCurrentIndex(c => c + 1);
             setGameState('PLAYING');
         }
+    };
+
+    // Skip / Next both land here: count the card toward the round and pause
+    // at ROUND_END every ROUND_SIZE cards.
+    const nextCard = async () => {
+        const played = roundPlayed + 1;
+        setRoundPlayed(played);
+        if (played >= ROUND_SIZE) {
+            setGameState('ROUND_END');
+            return;
+        }
+        await advanceCard();
+    };
+
+    // Continue past the round break into the next ROUND_SIZE cards.
+    const startNextRound = async () => {
+        setRoundPlayed(0);
+        setGameState('PLAYING');
+        await advanceCard();
     };
 
     // --- CUSTOM SETUP SCREEN ---
@@ -500,9 +527,48 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
+    // ROUND_END — a breather every ROUND_SIZE cards: keep going or switch.
+    if (gameState === 'ROUND_END') {
+        const tile = tilePalette((category?.id as string) || 'fun');
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Round Done" onBack={() => setGameState('CATEGORY')} onHome={onExit} />
+                <div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
+                    <div className="text-center">
+                        <p className="text-5xl mb-3 leading-none">👉</p>
+                        <h2 className="text-xl font-serif font-bold text-ink mb-1">That's {ROUND_SIZE} cards!</h2>
+                        <p className="text-muted text-sm">
+                            The fingers have spoken. Someone owes the group an explanation.
+                        </p>
+                    </div>
+                    <div
+                        className="text-[11px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md"
+                        style={{ background: tile.tint, color: tile.solid }}
+                    >
+                        {category?.label}
+                    </div>
+                    <div className="w-full max-w-sm flex flex-col gap-3">
+                        <button
+                            onClick={startNextRound}
+                            className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:scale-[0.98] shadow-lg"
+                            style={{ background: tile.solid, boxShadow: `0 8px 24px ${hexToRgba(tile.solid, 0.35)}` }}
+                        >
+                            Next {ROUND_SIZE} Cards
+                        </button>
+                        <button
+                            onClick={() => setGameState('CATEGORY')}
+                            className="w-full py-3 rounded-xl font-medium text-sm bg-surface text-ink border border-divider hover:bg-surface-alt transition-all active:scale-95"
+                        >
+                            Change Deck
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     // PLAYING State — V1 top + portrait card, original 3-2-1 / Skip / Next bottom.
     const playTile = tilePalette((category?.id as string) || 'fun');
-    const total = cards.length;
 
     return (
         <div className="h-full flex flex-col animate-fade-in -mx-4 md:-mx-6 -mt-4 md:-mt-6">
@@ -534,17 +600,18 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
                 </button>
             </div>
 
-            {/* Counter + progress dots */}
+            {/* Counter + progress dots — track the 10-card round, not the
+                whole (endlessly refilling) deck. */}
             <div className="px-5 pb-3.5">
                 <div className="text-[11px] text-muted text-center mb-1.5">
-                    Card {currentIndex + 1} of {total}
+                    Card {roundPlayed + 1} of {ROUND_SIZE}
                 </div>
                 <div className="flex justify-center gap-[5px]">
-                    {Array.from({ length: total }).map((_, i) => (
+                    {Array.from({ length: ROUND_SIZE }).map((_, i) => (
                         <div
                             key={i}
                             className="h-[3px] flex-1 max-w-[32px] rounded-[2px] transition-colors"
-                            style={{ background: i <= currentIndex ? playTile.solid : 'var(--c-border)' }}
+                            style={{ background: i <= roundPlayed ? playTile.solid : 'var(--c-border)' }}
                         />
                     ))}
                 </div>
