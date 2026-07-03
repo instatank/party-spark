@@ -1,26 +1,43 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, Suspense, lazy } from 'react';
 import { Search, X } from 'lucide-react';
 import { GameType } from './types';
 import { GAMES, getIcon, GAME_RICH_META, HOME_FILTERS, gameMatchesFilter, getSubcategoryMatches, type HomeFilter } from './constants';
 import { Card } from './components/ui/Layout';
 import { PinGateModal, isAdultUnlocked } from './components/ui/PinGate';
 import { ThemeToggle } from './components/ui/ThemeToggle';
-import { CharadesGame } from './components/games/CharadesGame';
-import { TabooGame } from './components/games/TabooGame';
-import { IcebreakerGame } from './components/games/IcebreakerGame';
-import { ImposterGame } from './components/games/ImposterGame';
-import { WouldYouRatherGame } from './components/games/WouldYouRatherGame';
-import RoastGame from './components/games/RoastGame';
-import { MostLikelyToGame } from './components/games/MostLikelyToGame';
-import { WouldILieToYouGame } from './components/games/WouldILieToYouGame';
-import { NeverHaveIEverGame } from './components/games/NeverHaveIEverGame';
-import { MiniMafiaGame } from './components/games/MiniMafiaGame';
-import { FactOrFictionGame } from './components/games/FactOrFictionGame';
-import { CompatibilityTestGame } from './components/games/CompatibilityTestGame';
-import { TruthOrDrinkGame } from './components/games/TruthOrDrinkGame';
-import { FiveAliveGame } from './components/games/FiveAliveGame';
-import { LinkedGame } from './components/games/LinkedGame';
-import { JumbleGame } from './components/games/JumbleGame';
+
+// Every game is lazy-loaded so the initial bundle only carries the home
+// screen. Each game (and its JSON data) becomes its own chunk, fetched on
+// first tap-in and cached by the service worker after that. Most games use
+// named exports, hence the .then() re-mapping to a default export.
+const CharadesGame = lazy(() => import('./components/games/CharadesGame').then(m => ({ default: m.CharadesGame })));
+const TabooGame = lazy(() => import('./components/games/TabooGame').then(m => ({ default: m.TabooGame })));
+const IcebreakerGame = lazy(() => import('./components/games/IcebreakerGame').then(m => ({ default: m.IcebreakerGame })));
+const ImposterGame = lazy(() => import('./components/games/ImposterGame').then(m => ({ default: m.ImposterGame })));
+const WouldYouRatherGame = lazy(() => import('./components/games/WouldYouRatherGame').then(m => ({ default: m.WouldYouRatherGame })));
+const RoastGame = lazy(() => import('./components/games/RoastGame'));
+const MostLikelyToGame = lazy(() => import('./components/games/MostLikelyToGame').then(m => ({ default: m.MostLikelyToGame })));
+const WouldILieToYouGame = lazy(() => import('./components/games/WouldILieToYouGame').then(m => ({ default: m.WouldILieToYouGame })));
+const NeverHaveIEverGame = lazy(() => import('./components/games/NeverHaveIEverGame').then(m => ({ default: m.NeverHaveIEverGame })));
+const MiniMafiaGame = lazy(() => import('./components/games/MiniMafiaGame').then(m => ({ default: m.MiniMafiaGame })));
+const FactOrFictionGame = lazy(() => import('./components/games/FactOrFictionGame').then(m => ({ default: m.FactOrFictionGame })));
+const CompatibilityTestGame = lazy(() => import('./components/games/CompatibilityTestGame').then(m => ({ default: m.CompatibilityTestGame })));
+const TruthOrDrinkGame = lazy(() => import('./components/games/TruthOrDrinkGame').then(m => ({ default: m.TruthOrDrinkGame })));
+const FiveAliveGame = lazy(() => import('./components/games/FiveAliveGame').then(m => ({ default: m.FiveAliveGame })));
+const LinkedGame = lazy(() => import('./components/games/LinkedGame').then(m => ({ default: m.LinkedGame })));
+const JumbleGame = lazy(() => import('./components/games/JumbleGame').then(m => ({ default: m.JumbleGame })));
+
+// Suspense fallback while a game chunk loads — same bouncing dots as the
+// splash screen so the transition reads as intentional, not a blank flash.
+const GameLoading = () => (
+  <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="flex gap-3">
+      <div className="w-3 h-3 bg-accent rounded-full animate-bounce [animation-delay:-0.3s]" />
+      <div className="w-3 h-3 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]" />
+      <div className="w-3 h-3 bg-accent rounded-full animate-bounce" />
+    </div>
+  </div>
+);
 
 const SplashScreen = () => (
   <div className="fixed inset-0 z-[100] bg-app flex items-center justify-center overflow-hidden font-sans">
@@ -120,7 +137,9 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-app text-ink p-4 md:p-6 lg:max-w-md lg:mx-auto shadow-2xl overflow-hidden">
-      {renderContent()}
+      <Suspense fallback={<GameLoading />}>
+        {renderContent()}
+      </Suspense>
     </div>
   );
 };
