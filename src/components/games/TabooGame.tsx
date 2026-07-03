@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { Button, Card, ScreenHeader } from '../ui/Layout';
 // generateTabooCards removed — full local deck is loaded each round
 import { useContent } from '../../contexts/ContentContext';
@@ -7,9 +7,14 @@ import { Timer, ThumbsUp, X, Ban, Trophy, ChevronRight, Sparkles, Zap, Flame } f
 import type { LucideIcon } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
-import gamesDataRaw from '../../data/games_data.json';
+import { loadGamesData } from '../../services/LocalGameService';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
+
+// games_data.json is lazy-loaded via LocalGameService (one shared chunk with
+// Charades). The fetch starts as soon as this game chunk loads; use() below
+// suspends into the App-level Suspense boundary on first render.
+const gamesDataPromise = loadGamesData();
 
 // Difficulty tiles for the CATEGORY screen — Slim Row pattern (matches
 // 5 Alive / Linked). Inline hex colors drive the left accent bar + icon.
@@ -24,6 +29,7 @@ interface Props {
 }
 
 export const TabooGame: React.FC<Props> = ({ onExit }) => {
+    const gamesDataRaw = use(gamesDataPromise);
     const [gameState, setGameState] = useState<'CATEGORY' | 'LOADING' | 'READY' | 'PLAYING' | 'SUMMARY'>('CATEGORY');
     const [cards, setCards] = useState<TabooCard[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);

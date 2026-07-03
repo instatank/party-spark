@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { Button, ScreenHeader } from '../ui/Layout';
 import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles, Trophy } from 'lucide-react';
 import { generateCharadesWords } from '../../services/geminiService';
 import { useContent } from '../../contexts/ContentContext';
 import { CHARADES_CATEGORIES } from '../../constants';
-import gamesDataRaw from '../../data/games_data.json';
+import { loadGamesData } from '../../services/LocalGameService';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { useTheme } from '../../contexts/ThemeContext';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
+
+// games_data.json is lazy-loaded via LocalGameService (one shared chunk with
+// Taboo). The fetch starts as soon as this game chunk loads; use() below
+// suspends into the App-level Suspense boundary on first render.
+const gamesDataPromise = loadGamesData();
 
 interface Props {
     onExit: () => void;
@@ -30,6 +35,7 @@ const TILES_LIGHT: Record<string, string> = {
 };
 
 export const CharadesGame: React.FC<Props> = ({ onExit }) => {
+    const gamesDataRaw = use(gamesDataPromise);
     const { theme } = useTheme();
     const TILES_MAP = theme === 'light' ? TILES_LIGHT : TILES_DARK;
     const [words, setWords] = useState<string[]>([]);

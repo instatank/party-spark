@@ -1,9 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import { Link2, ChevronRight, Plus, X, Zap, Trophy, ArrowRight, Eye, Check } from 'lucide-react';
-import linkedData from '../../data/linked.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
+
+// The puzzle pools are lazy-loaded so they code-split out of this game's
+// chunk. The fetch starts as soon as the chunk loads; use() in the component
+// suspends into the App-level Suspense boundary on first render.
+const linkedDataPromise = import('../../data/linked.json').then(m => m.default);
 
 interface Props {
     onExit: () => void;
@@ -123,7 +127,6 @@ function playDing() {
 }
 
 // ---------------------------------------------------------------------------
-const POOL = linkedData as unknown as Record<Difficulty, Puzzle[]>;
 const puzzleId = (p: Puzzle) => `${p.clues.join('+')}>${p.answer}`;
 const posOf = (p: Puzzle): Position => p.position ?? 'suffix';
 
@@ -171,6 +174,7 @@ const ClueLine: React.FC<{ clue: string; answer: string; position: Position; rev
 };
 
 export const LinkedGame: React.FC<Props> = ({ onExit }) => {
+    const POOL = use(linkedDataPromise) as unknown as Record<Difficulty, Puzzle[]>;
     const [gameState, setGameState] = useState<GameState>('SETUP');
     const [showHowToPlay, setShowHowToPlay] = useState(false);
     const [mode, setMode] = useState<Mode>('pass');

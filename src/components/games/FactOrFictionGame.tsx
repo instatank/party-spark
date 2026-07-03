@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
 import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Atom, Lightbulb, Medal, Landmark, Brain, Clapperboard, Plane, Lock } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-import factData from '../../data/fact_or_fiction.json';
 import { sessionService } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import TeamRosterRow from '../ui/TeamRosterRow';
+
+// The question bank is lazy-loaded so it code-splits out of this game's chunk.
+// The fetch starts as soon as the chunk loads; use() below suspends into the
+// App-level Suspense boundary on first render.
+const factDataPromise = import('../../data/fact_or_fiction.json').then(m => m.default);
 
 interface Question {
     id: string;
@@ -43,6 +47,7 @@ const TOPIC_META: Record<string, { tagline: string; color: string; Icon?: Lucide
 const TOPIC_DEFAULT = { color: '#EC4899', Icon: Brain };
 
 export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
+    const factData = use(factDataPromise);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [difficulty, setDifficulty] = useState(1);
     const [score, setScore] = useState(0);

@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import { Timer, ChevronRight, Plus, Zap, Trophy, ArrowRight, Minus, Flame } from 'lucide-react';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import type { LucideIcon } from 'lucide-react';
-import fiveAliveData from '../../data/five_alive.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
+
+// The category pools are lazy-loaded so they code-split out of this game's
+// chunk. The fetch starts as soon as the chunk loads; use() below suspends
+// into the App-level Suspense boundary on first render.
+const fiveAliveDataPromise = import('../../data/five_alive.json').then(m => m.default);
 
 interface Props {
     onExit: () => void;
@@ -130,6 +134,7 @@ function playTick() {
 interface PlayerScore { name: string; total: number; breakdown: number[] }
 
 export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
+    const fiveAliveData = use(fiveAliveDataPromise);
     const [gameState, setGameState] = useState<GameState>('SETUP');
     const [difficulty, setDifficulty] = useState<Difficulty>('easy');
     const [mode, setMode] = useState<Mode>('named');
