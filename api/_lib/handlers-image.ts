@@ -11,7 +11,7 @@
 import { getGemini } from './clients.js';
 
 const TEXT_MODEL = 'gemini-2.5-flash';
-const IMAGE_MODEL = 'gemini-3-pro-image-preview';
+const IMAGE_MODEL = 'gemini-3-pro-image';
 
 // Team metadata for the WORLDCUP theme — keeps the jersey + flag specifics in
 // one place so both the caricature and the roast prompt stay in sync.

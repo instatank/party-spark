@@ -15,7 +15,7 @@ export const GAMES: GameMeta[] = [
     {
         id: GameType.FIVE_ALIVE,
         title: "5 Alive",
-        description: "Name 5 in 5 seconds — beat the buzzer.",
+        description: "Name 5 in 6 seconds — beat the buzzer.",
         icon: "timer",
         color: "bg-emerald-500",
         minPlayers: 2

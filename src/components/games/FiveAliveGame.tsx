@@ -348,7 +348,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                     <div className="text-center mb-3 -mt-2">
                         <p className="text-2xl mb-1 leading-none">⏱️</p>
                         <h2 className="text-base font-serif font-bold text-ink">Can you beat the <em>buzzer</em>?</h2>
-                        <p className="text-muted text-xs mt-0.5">5 in 5 seconds. Then 4 in 4. Then 3 in 3…</p>
+                        <p className="text-muted text-xs mt-0.5">5 in 6 seconds. Then 4 in 5. Then 3 in 4…</p>
                     </div>
 
                     <div className="text-center mb-3">

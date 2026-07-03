@@ -10,6 +10,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "check:api": "node scripts/check-api-landmines.mjs",
     "test": "vitest run",
     "preview": "vite preview"
   },
