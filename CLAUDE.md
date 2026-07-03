@@ -156,7 +156,7 @@ Browser ─── fetch('/api/ai', {type, ...}) ───► Vercel Serverless F
 
 - **Claude Haiku 4.5** (`claude-haiku-4-5`) — custom generation paths. Cheap, fast, structured output via `output_config.format`.
 - **Gemini 2.5 Flash** (`gemini-2.5-flash`) — all other text generation + Roast Me text captions. (Was `gemini-2.0-flash-001`, which Google shut down 2026-06-01; the 2.0 retirement is what broke all text generation until this bump.)
-- **Gemini 3 Pro Image Preview** (`gemini-3-pro-image-preview`) — image editing for Roast Me caricatures. ⚠️ This is a *preview* model slated to retire ~2026-07-17; bump to the stable `gemini-3-pro-image` before then or Roast Me image gen will 404 (same failure class as the 2.0-flash text shutdown). Image gen also depends on the Gemini billing account being funded — an empty balance 404s/erros it.
+- **Gemini 3 Pro Image** (`gemini-3-pro-image`) — image editing for Roast Me caricatures. (Bumped 2026-07-02 from the preview model, which was slated to retire ~2026-07-17 — same failure class as the 2.0-flash text shutdown that broke prod on 2026-06-01. Lesson: never leave a `-preview` model id in production; check model retirement dates monthly.) Image gen also depends on the Gemini billing account being funded — an empty balance 404s/errors it.
 
 ### Claude-first, Gemini-fallback (custom flows)
 
