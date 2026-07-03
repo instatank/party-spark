@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Link2, ChevronRight, Plus, X, Zap, Trophy, ArrowRight, Eye, Check } from 'lucide-react';
+import { Link2, ChevronRight, Plus, X, Zap, ArrowRight, Eye, Check } from 'lucide-react';
+import EndScreen from '../ui/EndScreen';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { unlockAudio, playBuzzer, playTick, playDing } from '../../services/audio';
@@ -572,36 +573,16 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
 
     // ---- END (pass mode) ----
     if (gameState === 'END') {
-        const ranked = [...scores].sort((a, b) => b.score - a.score);
-        const top = ranked[0];
-        const tiedTop = ranked.filter(r => r.score === top.score).length > 1;
         return (
-            <div className="h-full flex flex-col">
-                <ScreenHeader title="Final Scores" onBack={backToSetup} onHome={onExit} />
-                <div className="flex-1 overflow-y-auto px-4 pb-8 animate-slide-up">
-                    <div className="text-center mb-5">
-                        <div className="text-5xl mb-2">🏆</div>
-                        {tiedTop
-                            ? <p className="text-muted">It's a tie at the top.</p>
-                            : <p className="text-muted"><span className="font-bold text-ink">{top.name}</span> wins with {top.score}.</p>}
-                    </div>
-                    <div className="space-y-2 max-w-[360px] mx-auto">
-                        {ranked.map((s, i) => (
-                            <div key={s.name + i} className={`flex items-center justify-between px-4 py-3 rounded-xl border ${i === 0 ? 'bg-indigo-500/10 border-indigo-500/50' : 'bg-surface border-divider'}`}>
-                                <div className="flex items-center gap-2 min-w-0">
-                                    {i === 0 && <Trophy size={16} className="text-indigo-500 flex-shrink-0" />}
-                                    <span className="font-bold text-ink truncate">{s.name}</span>
-                                </div>
-                                <span className="text-2xl font-black text-ink">{s.score}</span>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex flex-col gap-3 w-full max-w-[360px] mx-auto mt-6">
-                        <Button onClick={handlePlayAgain} fullWidth>Play Again</Button>
-                        <Button onClick={onExit} variant="secondary" fullWidth>Back to Home</Button>
-                    </div>
-                </div>
-            </div>
+            <EndScreen
+                title="Final Scores"
+                onBack={backToSetup}
+                onHome={onExit}
+                accent="indigo"
+                entries={scores.map(s => ({ name: s.name, score: s.score }))}
+                onPlayAgain={handlePlayAgain}
+                onExit={onExit}
+            />
         );
     }
 

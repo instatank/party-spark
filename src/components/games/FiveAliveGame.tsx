@@ -1,7 +1,8 @@
 import React, { useState, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Timer, ChevronRight, Plus, Zap, Trophy, ArrowRight, Minus, Flame } from 'lucide-react';
+import { Timer, ChevronRight, Plus, Zap, ArrowRight, Minus, Flame } from 'lucide-react';
 import TeamRosterRow from '../ui/TeamRosterRow';
+import EndScreen from '../ui/EndScreen';
 import type { LucideIcon } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
@@ -82,7 +83,6 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     const [turnCategories, setTurnCategories] = useState<string[]>([]);
     const [scores, setScores] = useState<PlayerScore[]>([]);
     const [tally, setTally] = useState(0);          // judge's entered count for the current round
-    const [expandedPlayer, setExpandedPlayer] = useState<number | null>(null); // END-screen breakdown toggle
 
     const round = ROUNDS[roundIndex];
     const trimmedPlayers = players.map(p => p.trim()).filter(Boolean);
@@ -218,7 +218,6 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
             setScores([{ name: 'Just Play', total: 0, breakdown: [] }]);
         }
         setPlayerIndex(0);
-        setExpandedPlayer(null);
         setTurnCategories(drawTurnCategories(difficulty));
         setRoundIndex(0);
         setTally(0);
@@ -522,57 +521,29 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
 
     // ---- END (named-mode leaderboard only — just_play wraps inside TURN_END) ----
     if (gameState === 'END') {
-        const ranked = [...scores].sort((a, b) => b.total - a.total);
-        const top = ranked[0];
-        const tiedTop = ranked.filter(r => r.total === top.total).length > 1;
         return (
-            <div className="h-full flex flex-col">
-                <ScreenHeader title="Final Scores" onBack={() => setGameState('CATEGORY_SELECT')} onHome={onExit} />
-                <div className="flex-1 overflow-y-auto px-4 pb-8 animate-slide-up">
-                    <div className="text-center mb-5">
-                        <div className="text-5xl mb-2">🏆</div>
-                        {tiedTop
-                            ? <p className="text-muted">It's a tie at the top.</p>
-                            : <p className="text-muted"><span className="font-bold text-ink">{top.name}</span> wins with {top.total}.</p>}
-                    </div>
-                    <div className="space-y-2 max-w-[360px] mx-auto">
-                        {ranked.map((s, i) => {
-                            const open = expandedPlayer === i;
-                            return (
-                                <div key={s.name + i} className={`rounded-xl border ${i === 0 ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-surface border-divider'}`}>
-                                    <button
-                                        onClick={() => setExpandedPlayer(open ? null : i)}
-                                        className="w-full flex items-center justify-between px-4 py-3"
-                                    >
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            {i === 0 && <Trophy size={16} className="text-emerald-500 flex-shrink-0" />}
-                                            <span className="font-bold text-ink truncate">{s.name}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-2xl font-black text-ink">{s.total}</span>
-                                            <ChevronRight size={16} className={`text-muted transition-transform ${open ? 'rotate-90' : ''}`} />
-                                        </div>
-                                    </button>
-                                    {open && (
-                                        <div className="px-4 pb-3 grid grid-cols-5 gap-1.5">
-                                            {ROUNDS.map((_, ri) => (
-                                                <div key={ri} className="text-center bg-surface-alt rounded-md py-1.5">
-                                                    <div className="text-[9px] uppercase tracking-wider text-muted">R{ri + 1}</div>
-                                                    <div className="text-sm font-bold text-ink">{s.breakdown[ri] ?? 0}</div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+            <EndScreen
+                title="Final Scores"
+                onBack={() => setGameState('CATEGORY_SELECT')}
+                onHome={onExit}
+                accent="emerald"
+                entries={scores.map(s => ({
+                    name: s.name,
+                    score: s.total,
+                    expand: (
+                        <div className="px-4 pb-3 grid grid-cols-5 gap-1.5">
+                            {ROUNDS.map((_, ri) => (
+                                <div key={ri} className="text-center bg-surface-alt rounded-md py-1.5">
+                                    <div className="text-[9px] uppercase tracking-wider text-muted">R{ri + 1}</div>
+                                    <div className="text-sm font-bold text-ink">{s.breakdown[ri] ?? 0}</div>
                                 </div>
-                            );
-                        })}
-                    </div>
-                    <div className="flex flex-col gap-3 w-full max-w-[360px] mx-auto mt-6">
-                        <Button onClick={handlePlayAgain} fullWidth>Play Again</Button>
-                        <Button onClick={onExit} variant="secondary" fullWidth>Back to Home</Button>
-                    </div>
-                </div>
-            </div>
+                            ))}
+                        </div>
+                    ),
+                }))}
+                onPlayAgain={handlePlayAgain}
+                onExit={onExit}
+            />
         );
     }
 

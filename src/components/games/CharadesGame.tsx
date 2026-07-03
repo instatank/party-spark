@@ -1,6 +1,7 @@
 import React, { useState, use } from 'react';
 import { Button, ScreenHeader } from '../ui/Layout';
-import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles, Trophy } from 'lucide-react';
+import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles } from 'lucide-react';
+import EndScreen from '../ui/EndScreen';
 import { generateCharadesWords } from '../../services/geminiService';
 import { useContent } from '../../contexts/ContentContext';
 import { CHARADES_CATEGORIES } from '../../constants';
@@ -348,60 +349,33 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
 
     if (gameState === 'SUMMARY') {
         const inTeamMode = teamScores.length > 0;
-        const ranked = inTeamMode
-            ? teamScores
-                .map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }))
-                .sort((a, b) => b.score - a.score)
-            : [];
-        const winner = ranked[0];
-        const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
+        if (inTeamMode) {
+            return (
+                <EndScreen
+                    title="Game Over"
+                    onBack={() => setGameState('SETUP')}
+                    onHome={onExit}
+                    heading="Time's Up!"
+                    accent="theme"
+                    entries={teamScores.map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }))}
+                    winnerText={() => 'takes it.'}
+                    onPlayAgain={() => setGameState('SETUP')}
+                    exitLabel="Exit"
+                    onExit={onExit}
+                />
+            );
+        }
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Game Over" onBack={() => setGameState('SETUP')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-slide-up">
-                    {inTeamMode ? (
-                        <>
-                            <div className="text-center">
-                                <h2 className="text-3xl font-bold mb-1 text-ink">Time's Up!</h2>
-                                {tiedTop ? (
-                                    <p className="text-muted">It's a tie at the top.</p>
-                                ) : (
-                                    <p className="text-muted">
-                                        <span className="font-bold text-ink">{winner.name}</span> takes it.
-                                    </p>
-                                )}
-                            </div>
-                            <div className="w-full max-w-[320px] space-y-2">
-                                {ranked.map((r, i) => (
-                                    <div
-                                        key={i}
-                                        className={`flex items-center justify-between rounded-xl px-4 py-3 border ${
-                                            i === 0
-                                                ? 'bg-accent-soft border-accent text-ink'
-                                                : 'bg-surface border-divider text-ink-soft'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            {i === 0 && <Trophy size={16} className="text-accent flex-shrink-0" />}
-                                            <span className="font-bold truncate">{r.name}</span>
-                                        </div>
-                                        <span className="text-2xl font-black ml-3">{r.score}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="text-center">
-                                <h2 className="text-4xl font-bold mb-2 text-ink">Time's Up!</h2>
-                                <p className="text-muted">You got</p>
-                            </div>
-                            <div className="text-8xl font-black text-accent">
-                                {score}
-                            </div>
-                        </>
-                    )}
-
+                    <div className="text-center">
+                        <h2 className="text-4xl font-bold mb-2 text-ink">Time's Up!</h2>
+                        <p className="text-muted">You got</p>
+                    </div>
+                    <div className="text-8xl font-black text-accent">
+                        {score}
+                    </div>
                     <div className="flex flex-col gap-3 w-full">
                         <Button onClick={() => setGameState('SETUP')} fullWidth>Play Again</Button>
                         <Button onClick={onExit} variant="secondary" fullWidth>Exit</Button>

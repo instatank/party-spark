@@ -3,7 +3,8 @@ import { Button, Card, ScreenHeader } from '../ui/Layout';
 // generateTabooCards removed — full local deck is loaded each round
 import { useContent } from '../../contexts/ContentContext';
 import type { TabooCard } from '../../types';
-import { Timer, ThumbsUp, X, Ban, Trophy, ChevronRight, Sparkles, Zap, Flame } from 'lucide-react';
+import { Timer, ThumbsUp, X, Ban, ChevronRight, Sparkles, Zap, Flame } from 'lucide-react';
+import EndScreen from '../ui/EndScreen';
 import type { LucideIcon } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
@@ -285,60 +286,34 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
 
     if (gameState === 'SUMMARY') {
         const inTeamMode = teamScores.length > 0;
-        const ranked = inTeamMode
-            ? teamScores
-                .map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }))
-                .sort((a, b) => b.score - a.score)
-            : [];
-        const winner = ranked[0];
-        const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
+        if (inTeamMode) {
+            return (
+                <EndScreen
+                    title="Time's Up!"
+                    onBack={() => setGameState('CATEGORY')}
+                    onHome={onExit}
+                    heading="Round Over"
+                    accent="theme"
+                    entries={teamScores.map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }))}
+                    winnerText={() => 'takes it.'}
+                    playAgainLabel="Next Category"
+                    onPlayAgain={() => setGameState('CATEGORY')}
+                    exitLabel="Exit"
+                    onExit={onExit}
+                />
+            );
+        }
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Time's Up!" onBack={() => setGameState('CATEGORY')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-slide-up">
-                    {inTeamMode ? (
-                        <>
-                            <div className="text-center">
-                                <h2 className="text-3xl font-bold mb-1">Round Over</h2>
-                                {tiedTop ? (
-                                    <p className="text-muted">It's a tie at the top.</p>
-                                ) : (
-                                    <p className="text-muted">
-                                        <span className="font-bold text-ink">{winner.name}</span> takes it.
-                                    </p>
-                                )}
-                            </div>
-                            <div className="w-full max-w-[320px] space-y-2">
-                                {ranked.map((r, i) => (
-                                    <div
-                                        key={i}
-                                        className={`flex items-center justify-between rounded-xl px-4 py-3 border ${
-                                            i === 0
-                                                ? 'bg-accent-soft border-accent text-ink'
-                                                : 'bg-surface border-divider text-ink-soft'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            {i === 0 && <Trophy size={16} className="text-accent flex-shrink-0" />}
-                                            <span className="font-bold truncate">{r.name}</span>
-                                        </div>
-                                        <span className="text-2xl font-black ml-3">{r.score}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="text-center">
-                                <h2 className="text-4xl font-bold mb-2">Round Over</h2>
-                                <p className="text-muted">Team Score</p>
-                            </div>
-                            <div className="text-9xl font-black text-party-secondary drop-shadow-lg">
-                                {score}
-                            </div>
-                        </>
-                    )}
-
+                    <div className="text-center">
+                        <h2 className="text-4xl font-bold mb-2">Round Over</h2>
+                        <p className="text-muted">Team Score</p>
+                    </div>
+                    <div className="text-9xl font-black text-party-secondary drop-shadow-lg">
+                        {score}
+                    </div>
                     <div className="flex flex-col gap-3 w-full">
                         <Button onClick={() => setGameState('CATEGORY')} fullWidth>Next Category</Button>
                         <Button onClick={onExit} variant="secondary" fullWidth>Exit</Button>
