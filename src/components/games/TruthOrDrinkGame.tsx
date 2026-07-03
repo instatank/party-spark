@@ -1,11 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Flame, ChevronRight, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2, Dices, Lock } from 'lucide-react';
+import { Sparkles, Flame, ChevronRight, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2, Dices, Lock, Share2 } from 'lucide-react';
 import questionData from '../../data/truth_or_drink.json';
 import { generateCustomTruthOrDrink } from '../../services/geminiService';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService, shuffle } from '../../services/SessionManager';
+import { shareResultCard } from '../../services/shareCard';
+import { statsStore } from '../../services/statsStore';
+import { gameNightService } from '../../services/gameNightService';
+import { shouldAutoExpandRules } from '../../services/firstPlay';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import { PinGateModal, isUnlocked } from '../ui/PinGate';
 import { IntimateDiceGame } from './IntimateDiceGame';
@@ -187,7 +191,9 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     };
     const [gameState, setGameState] = useState<GameState>('CATEGORY_SELECT');
     const [showIntimateGate, setShowIntimateGate] = useState(false);
-    const [showHowToPlay, setShowHowToPlay] = useState(false);
+    // Auto-expand the rules on this device's very first Truth or Drink open.
+    const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('tod'));
+    const [isSharing, setIsSharing] = useState(false);
     const [category, setCategory] = useState<Category>('classic');
     const [players, setPlayers] = useState<string[]>(() => sessionService.getTeams());
     const [turnIndex, setTurnIndex] = useState(0);
@@ -235,6 +241,37 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     const currentQuestion = deck[roundIndex] || '';
     const isLastRound = roundIndex >= deck.length - 1;
 
+    // Named-mode wrap-up data: per-player tallies + most-truths winners
+    // (ties share the crown). Used by both the stats effect and the share card.
+    const getNamedResults = () => {
+        const entries = trimmedPlayers.map(name => {
+            const s = scores[name] || { truths: 0, drinks: 0 };
+            return { name, truths: s.truths, drinks: s.drinks };
+        });
+        const topTruths = entries.length ? Math.max(...entries.map(e => e.truths)) : 0;
+        const winners = entries.filter(e => e.truths === topTruths).map(e => e.name);
+        return { entries, winners };
+    };
+
+    // Record lifetime stats (and report to an active Game Night) exactly once
+    // per game when the wrap screen is reached. The ref is re-armed on every
+    // new deck selection so a replay records again.
+    const endRecordedRef = useRef(false);
+    useEffect(() => {
+        if (gameState !== 'END' || endRecordedRef.current) return;
+        endRecordedRef.current = true;
+        statsStore.recordPlay('TRUTH_OR_DRINK');
+        if (playMode === 'named' && trimmedPlayers.length >= 2) {
+            const { entries, winners } = getNamedResults();
+            statsStore.recordWins('TRUTH_OR_DRINK', winners);
+            gameNightService.reportResult(
+                'TRUTH_OR_DRINK',
+                entries.map(e => ({ name: e.name, score: e.truths })),
+            );
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gameState]);
+
     // ========================
     // Handlers
     // ========================
@@ -244,6 +281,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setRoundIndex(0);
         setLastChoice(null);
         setScores({});
+        endRecordedRef.current = false;
         // No dedicated roster screen — a deck tap drops straight into play.
         // If the optional roster on the category screen has 2+ names we run
         // named mode (per-player turns + leaderboard); otherwise it's a
@@ -335,6 +373,46 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
         setCustomTone(null);
         setCustomError('');
         setScores({});
+        endRecordedRef.current = false;
+    };
+
+    // Share the wrap screen as a result-card image. Named mode leads with the
+    // most-truths winner(s) + a per-player leaderboard; just-play shares the
+    // rounds survived. Card carries names/counts only — never question text.
+    const handleShareResult = async () => {
+        if (isSharing) return;
+        setIsSharing(true);
+        try {
+            const accent = deckPalette(category).solid;
+            const roundsPlayed = roundIndex + (lastChoice ? 1 : 0);
+            if (playMode === 'named' && trimmedPlayers.length >= 2) {
+                const { entries, winners } = getNamedResults();
+                await shareResultCard({
+                    gameTitle: 'Truth or Drink',
+                    accent,
+                    emoji: '🥂',
+                    heading: winners.length === 1
+                        ? `${winners[0]} told the truth`
+                        : 'Tied on truths',
+                    sub: `${categoryMeta.title} · ${roundsPlayed} rounds`,
+                    rows: entries.map(e => ({
+                        label: e.name,
+                        value: `${e.truths} truths · ${e.drinks} sips`,
+                        highlight: winners.includes(e.name),
+                    })),
+                });
+            } else {
+                await shareResultCard({
+                    gameTitle: 'Truth or Drink',
+                    accent,
+                    emoji: '🥂',
+                    heading: `${roundsPlayed} rounds survived`,
+                    sub: categoryMeta.title,
+                });
+            }
+        } finally {
+            setIsSharing(false);
+        }
     };
 
     // ========================
@@ -746,6 +824,13 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     </div>
 
                     <div className="flex flex-col gap-3 w-full mt-2">
+                        <button
+                            onClick={handleShareResult}
+                            disabled={isSharing}
+                            className="w-full py-3 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                            <Share2 size={18} /> Share Result
+                        </button>
                         <Button onClick={handlePlayAgain} className="w-full py-3">
                             <Shuffle className="inline mr-2" size={18} /> Play Again
                         </Button>

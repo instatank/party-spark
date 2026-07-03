@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NEVER_HAVE_I_EVER_CATEGORIES } from '../../constants';
 import { ScreenHeader } from '../ui/Layout';
 import neverHaveIEverData from '../../data/never_have_i_ever.json';
@@ -6,8 +6,12 @@ import { generateNeverHaveIEver, generateCustomNeverHaveIEver } from '../../serv
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Lock, ChevronRight, Hand, Users, Wand2, ShieldCheck, Flame, Smile } from 'lucide-react';
+import { Sparkles, Lock, ChevronRight, Hand, Users, Wand2, ShieldCheck, Flame, Smile, Share2 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { unlockAudio, playPop, playDing, hapticTap, hapticSuccess } from '../../services/audio';
+import { shareResultCard } from '../../services/shareCard';
+import { statsStore } from '../../services/statsStore';
+import { shouldAutoExpandRules } from '../../services/firstPlay';
 
 interface GameProps {
     onExit: () => void;
@@ -91,9 +95,27 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     const [customError, setCustomError] = useState('');
     const [placeholderIdx] = useState(Math.floor(Math.random() * PLACEHOLDER_EXAMPLES.length));
 
-    const [showHowToPlay, setShowHowToPlay] = useState(false);
+    const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('nhie'));
+    const [isSharing, setIsSharing] = useState(false);
+
+    // Once-per-round guard for RECAP-entry effects (sound + stats). Reset when
+    // play resumes so the next round's recap fires again.
+    const recapDoneRef = useRef(false);
 
     const wordCount = customContext.trim().split(/\s+/).filter(Boolean).length;
+
+    // RECAP entry: celebratory ding + haptic, and count the round as a play in
+    // the lifetime stats store. Guarded so re-renders of RECAP don't repeat it.
+    useEffect(() => {
+        if (gameState === 'RECAP' && !recapDoneRef.current) {
+            recapDoneRef.current = true;
+            playDing();
+            hapticSuccess();
+            statsStore.recordPlay('NEVER_HAVE_I_EVER');
+        } else if (gameState === 'PLAY') {
+            recapDoneRef.current = false;
+        }
+    }, [gameState]);
 
     // Initialize with local data depending on category. Skip for custom_vibe —
     // its deck comes from AI generation and is set directly by startCustomGame.
@@ -176,6 +198,8 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     // Record the room's verdict for the current card ("I Have" = at least one
     // confession), then advance — or show the recap when the round is done.
     const handleResponse = async (someoneHas: boolean) => {
+        playPop();
+        hapticTap();
         // Mark the card the user just saw as played so it won't repeat this session.
         // Custom-vibe cards are AI-generated per session and not tracked.
         if (cards[currentIndex] && category && category !== 'custom_vibe') {
@@ -237,6 +261,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                 <button
                                     key={cat.id}
                                     onClick={() => {
+                                        unlockAudio();
                                         setCategory(cat.id);
                                         setGameState(isCustom ? 'CUSTOM_SETUP' : 'PLAY');
                                     }}
@@ -464,6 +489,32 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                         </div>
                     </div>
                     <div className="w-full max-w-sm flex flex-col gap-3">
+                        <button
+                            onClick={async () => {
+                                if (isSharing) return;
+                                setIsSharing(true);
+                                try {
+                                    await shareResultCard({
+                                        gameTitle: 'Never Have I Ever',
+                                        accent: palette.solid,
+                                        emoji: verdict.emoji,
+                                        heading: verdict.line,
+                                        sub: '10 cards · ' + (NEVER_HAVE_I_EVER_CATEGORIES.find(c => c.id === category)?.label || 'Custom Vibe'),
+                                        rows: [
+                                            { label: 'Owned Up', value: String(confessions), highlight: true },
+                                            { label: 'Stayed Clean', value: String(innocent) },
+                                        ],
+                                    });
+                                } finally {
+                                    setIsSharing(false);
+                                }
+                            }}
+                            disabled={isSharing}
+                            className="w-full py-3 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Share2 size={18} />
+                            Share Result
+                        </button>
                         <button
                             onClick={startNextRound}
                             className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:scale-[0.98] shadow-lg"

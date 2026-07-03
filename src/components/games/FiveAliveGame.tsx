@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Timer, ChevronRight, Plus, Zap, Trophy, ArrowRight, Minus, Flame } from 'lucide-react';
+import { Timer, ChevronRight, Plus, Zap, Trophy, ArrowRight, Minus, Flame, Share2 } from 'lucide-react';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import type { LucideIcon } from 'lucide-react';
 import fiveAliveData from '../../data/five_alive.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
+import { unlockAudio, playBell, playTick, hapticBuzz, hapticTap } from '../../services/audio';
+import { shareResultCard } from '../../services/shareCard';
+import { statsStore } from '../../services/statsStore';
+import { gameNightService } from '../../services/gameNightService';
 
 interface Props {
     onExit: () => void;
@@ -55,77 +59,6 @@ const TIMER_TIERS: Record<'green' | 'amber' | 'red', { text: string; ring: strin
     red:   { text: 'text-red-500',     ring: '#EF4444' },
 };
 const tierForSecond = (sec: number): 'green' | 'amber' | 'red' => (sec >= 3 ? 'green' : sec === 2 ? 'amber' : 'red');
-
-// ---------------------------------------------------------------------------
-// Audio — synthesized via Web Audio API. No bundled assets, sub-millisecond
-// latency, and dodges the royalty-free-buzzer hunt entirely. The context is
-// created lazily and resumed on the first user gesture (mobile autoplay
-// unlock), which happens when the player taps a difficulty tile or "Start".
-// ---------------------------------------------------------------------------
-let audioCtx: AudioContext | null = null;
-function getAudioCtx(): AudioContext | null {
-    try {
-        if (!audioCtx) {
-            const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-            if (!Ctor) return null;
-            audioCtx = new Ctor();
-        }
-        if (audioCtx.state === 'suspended') void audioCtx.resume();
-        return audioCtx;
-    } catch {
-        return null;
-    }
-}
-// Call on a user gesture to prime the context before the first round.
-function unlockAudio() { getAudioCtx(); }
-
-// End-of-round signal — a bright bell "ding-ding" rather than a harsh buzzer.
-// Each strike is a stack of sine partials (roughly modeled on a struck bell:
-// fundamental + a few inharmonic overtones) with a fast attack and a long
-// exponential ring-out.
-function playBell() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const strike = (t0: number, base: number) => {
-        const partials: { ratio: number; gain: number; decay: number }[] = [
-            { ratio: 1.0,  gain: 0.26, decay: 1.5 },
-            { ratio: 2.0,  gain: 0.16, decay: 1.0 },
-            { ratio: 2.97, gain: 0.10, decay: 0.7 },
-            { ratio: 4.1,  gain: 0.06, decay: 0.45 },
-        ];
-        partials.forEach(({ ratio, gain, decay }) => {
-            const osc = ctx.createOscillator();
-            const g = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.value = base * ratio;
-            g.gain.setValueAtTime(0.0001, t0);
-            g.gain.exponentialRampToValueAtTime(gain, t0 + 0.006);
-            g.gain.exponentialRampToValueAtTime(0.0001, t0 + decay);
-            osc.connect(g).connect(ctx.destination);
-            osc.start(t0);
-            osc.stop(t0 + decay + 0.05);
-        });
-    };
-    const now = ctx.currentTime;
-    strike(now, 880);          // first ding (~A5)
-    strike(now + 0.17, 1175);  // second, brighter (~D6) — "ding-ding, time!"
-}
-
-function playTick() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'square';
-    osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.16, now + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.1);
-}
 
 interface PlayerScore { name: string; total: number; breakdown: number[] }
 
@@ -190,6 +123,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                 if (!firedRef.current) {
                     firedRef.current = true;
                     playBell();
+                    hapticBuzz();
                     setTally(0);
                     setGameState('TALLY');
                 }
@@ -201,6 +135,60 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         return () => cancelAnimationFrame(raf);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameState, roundIndex]);
+
+    // -----------------------------------------------------------------------
+    // Lifetime stats + Game Night reporting — fires once per finished game.
+    // The final screen is END in named mode; in just-play, TURN_END doubles
+    // as the end screen. The ref resets whenever we leave the final screen so
+    // Play Again records a fresh game. gameNightService.reportResult is a
+    // no-op when no night is active.
+    // -----------------------------------------------------------------------
+    const recordedRef = useRef(false);
+    useEffect(() => {
+        const atFinal = gameState === 'END' || (gameState === 'TURN_END' && mode === 'just_play');
+        if (!atFinal) { recordedRef.current = false; return; }
+        if (recordedRef.current) return;
+        recordedRef.current = true;
+        statsStore.recordPlay('FIVE_ALIVE');
+        if (mode === 'named' && scores.length > 0) {
+            const topTotal = Math.max(...scores.map(s => s.total));
+            statsStore.recordWins('FIVE_ALIVE', scores.filter(s => s.total === topTotal).map(s => s.name));
+            gameNightService.reportResult('FIVE_ALIVE', scores.map(s => ({ name: s.name, score: s.total })));
+        }
+    }, [gameState, mode, scores]);
+
+    // -----------------------------------------------------------------------
+    // Share Result — renders the end-of-game card (leaderboard in named mode,
+    // the solo total in just-play) and hands it to the share sheet.
+    // -----------------------------------------------------------------------
+    const [sharing, setSharing] = useState(false);
+    const handleShare = async () => {
+        if (sharing) return;
+        setSharing(true);
+        const diffTitle = DIFFICULTY_TILES.find(t => t.id === difficulty)?.title ?? 'Easy';
+        if (mode === 'named' && scores.length > 0) {
+            const ranked = [...scores].sort((a, b) => b.total - a.total);
+            const top = ranked[0];
+            const tied = ranked.filter(r => r.total === top.total).length > 1;
+            await shareResultCard({
+                gameTitle: '5 Alive',
+                accent: '#10B981',
+                emoji: '🔔',
+                heading: tied ? "It's a tie!" : `${top.name} wins!`,
+                sub: `${diffTitle} · ${TOTAL_ROUNDS} rounds`,
+                rows: ranked.map(s => ({ label: s.name, value: `${s.total} pts`, highlight: s.total === top.total })),
+            });
+        } else {
+            await shareResultCard({
+                gameTitle: '5 Alive',
+                accent: '#10B981',
+                emoji: '🔔',
+                heading: `${scores[0]?.total ?? 0} out of 20`,
+                sub: `Just Play · ${diffTitle} · ${TOTAL_ROUNDS} rounds`,
+            });
+        }
+        setSharing(false);
+    };
 
     // -----------------------------------------------------------------------
     // Flow handlers
@@ -516,7 +504,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                     </p>
                     <div className="flex items-center gap-5">
                         <button
-                            onClick={() => setTally(t => Math.max(0, t - 1))}
+                            onClick={() => { hapticTap(); setTally(t => Math.max(0, t - 1)); }}
                             disabled={tally <= 0}
                             aria-label="Decrease"
                             className="w-12 h-12 rounded-full bg-surface-alt border border-divider text-ink disabled:opacity-30 flex items-center justify-center hover:bg-app-tint transition-colors"
@@ -525,7 +513,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                         </button>
                         <span className="text-6xl font-black tabular-nums text-ink w-20">{tally}</span>
                         <button
-                            onClick={() => setTally(t => Math.min(round.count, t + 1))}
+                            onClick={() => { hapticTap(); setTally(t => Math.min(round.count, t + 1)); }}
                             disabled={tally >= round.count}
                             aria-label="Increase"
                             className="w-12 h-12 rounded-full bg-surface-alt border border-divider text-ink disabled:opacity-30 flex items-center justify-center hover:bg-app-tint transition-colors"
@@ -597,6 +585,13 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                     </div>
                     {isJustPlay ? (
                         <div className="flex flex-col gap-3 w-full max-w-[340px] mt-2">
+                            <button
+                                onClick={handleShare}
+                                disabled={sharing}
+                                className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                            >
+                                <Share2 size={18} /> Share Result
+                            </button>
                             <Button onClick={handlePlayAgain} fullWidth>Play Again</Button>
                             <Button onClick={onExit} variant="secondary" fullWidth>Back to Home</Button>
                         </div>
@@ -658,6 +653,13 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                         })}
                     </div>
                     <div className="flex flex-col gap-3 w-full max-w-[360px] mx-auto mt-6">
+                        <button
+                            onClick={handleShare}
+                            disabled={sharing}
+                            className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                            <Share2 size={18} /> Share Result
+                        </button>
                         <Button onClick={handlePlayAgain} fullWidth>Play Again</Button>
                         <Button onClick={onExit} variant="secondary" fullWidth>Back to Home</Button>
                     </div>

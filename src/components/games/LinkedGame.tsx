@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Link2, ChevronRight, Plus, X, Zap, Trophy, ArrowRight, Eye, Check } from 'lucide-react';
+import { Link2, ChevronRight, Plus, X, Zap, Trophy, ArrowRight, Eye, Check, Share2 } from 'lucide-react';
 import linkedData from '../../data/linked.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
+import { unlockAudio, playBuzzer, playTick, playDing, hapticBuzz, hapticSuccess } from '../../services/audio';
+import { shareResultCard } from '../../services/shareCard';
+import { statsStore } from '../../services/statsStore';
+import { gameNightService } from '../../services/gameNightService';
 
 interface Props {
     onExit: () => void;
@@ -45,82 +49,6 @@ const DIFFICULTY_TILES: { id: Difficulty; title: string; tagline: string; color:
     { id: 'easy', title: 'Easy', tagline: 'Everyday words — warm-up territory.', color: '#10B981' },
     { id: 'hard', title: 'Hard', tagline: 'Trickier connectors. Brains on.',     color: '#E11D48' },
 ];
-
-// ---------------------------------------------------------------------------
-// Audio — synthesized via Web Audio API (same approach as 5 Alive). No bundled
-// assets, sub-millisecond latency. Context is created lazily and resumed on the
-// first user gesture (tile tap / "I'm Ready").
-// ---------------------------------------------------------------------------
-let audioCtx: AudioContext | null = null;
-function getAudioCtx(): AudioContext | null {
-    try {
-        if (!audioCtx) {
-            const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-            if (!Ctor) return null;
-            audioCtx = new Ctor();
-        }
-        if (audioCtx.state === 'suspended') void audioCtx.resume();
-        return audioCtx;
-    } catch {
-        return null;
-    }
-}
-function unlockAudio() { getAudioCtx(); }
-
-function playBuzzer() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const dur = 0.85;
-    [110, 165].forEach((freq) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(0.3, now + 0.01);
-        gain.gain.setValueAtTime(0.3, now + dur - 0.06);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + dur);
-    });
-}
-
-function playTick() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'square';
-    osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.14, now + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.1);
-}
-
-function playDing() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    [660, 990].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        const t = now + i * 0.07;
-        gain.gain.setValueAtTime(0.0001, t);
-        gain.gain.exponentialRampToValueAtTime(0.18, t + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(t);
-        osc.stop(t + 0.25);
-    });
-}
 
 // ---------------------------------------------------------------------------
 const POOL = linkedData as unknown as Record<Difficulty, Puzzle[]>;
@@ -235,6 +163,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                     firedRef.current = true;
                     clearFlash();
                     playBuzzer();
+                    hapticBuzz();
                     setGameState('ROUND_OVER');
                 }
                 return;
@@ -245,6 +174,60 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
         return () => cancelAnimationFrame(raf);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameState, turnId]);
+
+    // -----------------------------------------------------------------------
+    // Lifetime stats + Game Night reporting — fires once when a pass-and-play
+    // match reaches the END leaderboard. The ref resets whenever we leave END
+    // so Play Again records a fresh game. Just Play has no end screen (it's
+    // endless), so it records its play when the session starts instead — see
+    // handlePickDifficulty. gameNightService.reportResult is a no-op when no
+    // night is active.
+    // -----------------------------------------------------------------------
+    const recordedRef = useRef(false);
+    useEffect(() => {
+        if (gameState !== 'END') { recordedRef.current = false; return; }
+        if (recordedRef.current) return;
+        recordedRef.current = true;
+        statsStore.recordPlay('LINKED');
+        if (scores.length > 0) {
+            const topScore = Math.max(...scores.map(s => s.score));
+            statsStore.recordWins('LINKED', scores.filter(s => s.score === topScore).map(s => s.name));
+            gameNightService.reportResult('LINKED', scores.map(s => ({ name: s.name, score: s.score })));
+        }
+    }, [gameState, scores]);
+
+    // -----------------------------------------------------------------------
+    // Share Result — renders the result card (leaderboard in pass mode, the
+    // running solved count in Just Play) and hands it to the share sheet.
+    // -----------------------------------------------------------------------
+    const [sharing, setSharing] = useState(false);
+    const handleShare = async () => {
+        if (sharing) return;
+        setSharing(true);
+        const diffLabel = difficulty === 'easy' ? 'Easy' : 'Hard';
+        if (mode === 'pass' && scores.length > 0) {
+            const ranked = [...scores].sort((a, b) => b.score - a.score);
+            const top = ranked[0];
+            const tied = ranked.filter(r => r.score === top.score).length > 1;
+            await shareResultCard({
+                gameTitle: 'Linked',
+                accent: '#6366F1',
+                emoji: '🔗',
+                heading: tied ? "It's a tie!" : `${top.name} wins!`,
+                sub: `${diffLabel} · ${ROUND_SECONDS}s per player`,
+                rows: ranked.map(s => ({ label: s.name, value: `${s.score} link${s.score === 1 ? '' : 's'}`, highlight: s.score === top.score })),
+            });
+        } else {
+            await shareResultCard({
+                gameTitle: 'Linked',
+                accent: '#6366F1',
+                emoji: '🔗',
+                heading: `${roundGot} linked`,
+                sub: `Just Play · ${diffLabel}`,
+            });
+        }
+        setSharing(false);
+    };
 
     // -----------------------------------------------------------------------
     // Queue helpers
@@ -305,6 +288,9 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
         unlockAudio();
         setDifficulty(diff);
         if (mode === 'just_play') {
+            // Just Play is endless (no END screen), so the play is recorded
+            // when the session starts rather than when it "finishes".
+            statsStore.recordPlay('LINKED');
             setRoundGot(0);
             startQueue(diff);
             setGameState('PLAY');
@@ -334,6 +320,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     const handleGotIt = () => {
         if (revealed) return;
         playDing();
+        hapticSuccess();
         setScores(prev => prev.map((s, i) => (i === playerIndex ? { ...s, score: s.score + 1 } : s)));
         setRoundGot(g => g + 1);
         flashThenAdvance('got');
@@ -348,7 +335,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     // reports whether they got it — "Correct" scores +1, "Incorrect" doesn't.
     // Both advance to the next puzzle (no separate Next step).
     const handleReveal = () => { setRevealed(true); };
-    const handleJustPlayCorrect = () => { playDing(); setRoundGot(g => g + 1); advance(); };
+    const handleJustPlayCorrect = () => { playDing(); hapticSuccess(); setRoundGot(g => g + 1); advance(); };
     const handleJustPlayIncorrect = () => { advance(); };
 
     // ROUND_OVER → next player (or END)
@@ -614,26 +601,40 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                                 </div>
                             )
                         ) : (
-                            revealed ? (
-                                <div className="flex gap-3">
+                            <>
+                                {revealed ? (
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={handleJustPlayIncorrect}
+                                            className="flex-1 py-4 rounded-xl font-bold text-base text-rose-600 bg-transparent border-2 border-rose-500/60 hover:bg-rose-500/10 hover:border-rose-500 transition-colors active:scale-95 flex items-center justify-center gap-2"
+                                        >
+                                            <X size={18} /> Incorrect
+                                        </button>
+                                        <button
+                                            onClick={handleJustPlayCorrect}
+                                            className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors active:scale-95 flex items-center justify-center gap-2"
+                                        >
+                                            <Check size={18} /> Correct
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <Button onClick={handleReveal} fullWidth className="h-14 text-lg">
+                                        <Eye size={20} className="inline mr-2" /> Reveal
+                                    </Button>
+                                )}
+                                {/* Just Play has no end screen, so the share
+                                    affordance lives here — compact, so the
+                                    play actions above keep the hierarchy. */}
+                                {roundGot > 0 && (
                                     <button
-                                        onClick={handleJustPlayIncorrect}
-                                        className="flex-1 py-4 rounded-xl font-bold text-base text-rose-600 bg-transparent border-2 border-rose-500/60 hover:bg-rose-500/10 hover:border-rose-500 transition-colors active:scale-95 flex items-center justify-center gap-2"
+                                        onClick={handleShare}
+                                        disabled={sharing}
+                                        className="w-full mt-3 py-2.5 px-6 text-sm bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
                                     >
-                                        <X size={18} /> Incorrect
+                                        <Share2 size={18} /> Share Result
                                     </button>
-                                    <button
-                                        onClick={handleJustPlayCorrect}
-                                        className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors active:scale-95 flex items-center justify-center gap-2"
-                                    >
-                                        <Check size={18} /> Correct
-                                    </button>
-                                </div>
-                            ) : (
-                                <Button onClick={handleReveal} fullWidth className="h-14 text-lg">
-                                    <Eye size={20} className="inline mr-2" /> Reveal
-                                </Button>
-                            )
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
@@ -692,6 +693,13 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                         ))}
                     </div>
                     <div className="flex flex-col gap-3 w-full max-w-[360px] mx-auto mt-6">
+                        <button
+                            onClick={handleShare}
+                            disabled={sharing}
+                            className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                            <Share2 size={18} /> Share Result
+                        </button>
                         <Button onClick={handlePlayAgain} fullWidth>Play Again</Button>
                         <Button onClick={onExit} variant="secondary" fullWidth>Back to Home</Button>
                     </div>

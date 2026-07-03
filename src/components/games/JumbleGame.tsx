@@ -1,18 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Shuffle, Delete, Plus, ArrowRight, User, Users, Check, X } from 'lucide-react';
+import { Shuffle, Delete, Plus, ArrowRight, User, Users, Check, X, CalendarDays, Share2, Image as ImageIcon } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
 import {
     loadJumblePack, pickSet, buildAnswerIndex, validateWord, summarizeMisses,
-    scoreForWord, setKey, TILE_COUNT,
-    type JumbleSet, type JumbleDifficulty, type ValidationStatus,
+    scoreForWord, setKey, TILE_COUNT, poolSize, setAtIndex, commonWordCount,
+    type JumbleSet, type JumbleDifficulty, type ValidationStatus, type JumblePack,
 } from '../../services/jumbleEngine';
+import { unlockAudio, playDingSoft, playPangram, playBuzzEnd, playTickSoft, hapticSuccess, hapticBuzz } from '../../services/audio';
+import { shareResultCard, shareText } from '../../services/shareCard';
+import { statsStore } from '../../services/statsStore';
+import { gameNightService } from '../../services/gameNightService';
+import { dayLabel, dailySetIndex, dailyStore, buildDailyShareText, type DailyResult } from '../../services/dailyChallenge';
+import { shouldAutoExpandRules } from '../../services/firstPlay';
 
 interface Props { onExit: () => void; }
 
-type GameMode = 'solo' | 'multi';
-type GameState = 'MODE_SELECT' | 'DIFFICULTY_SELECT' | 'SETUP' | 'READY' | 'PASS_TO_NEXT' | 'TIMER_ACTIVE' | 'END';
+type GameMode = 'solo' | 'multi' | 'daily';
+type GameState = 'MODE_SELECT' | 'DIFFICULTY_SELECT' | 'SETUP' | 'READY' | 'PASS_TO_NEXT' | 'TIMER_ACTIVE' | 'END' | 'DAILY_RESULT';
 
 interface FoundWord { word: string; points: number; pangram: boolean }
 interface PlayerResult { name: string; words: string[] }
@@ -22,9 +28,16 @@ const MAX_PLAYERS = 8;
 
 const ACCENT = '#14B8A6';        // teal — Jumble's brand color
 const CENTER = '#F59E0B';        // amber — the hard-mode center tile
+const GOLD = '#F2B544';          // brand gold — the Daily Scramble accent
+
+const DAILY_SECONDS = 60;                          // the Daily is a fixed 60s run for everyone
+const DAILY_DEEP_LINK = 'partyspark_open_daily';   // sessionStorage flag set by Home, consumed here
 
 const TIMER_KEY = 'jumble_timer';
 const bestKey = (d: JumbleDifficulty) => `jumble_best_${d}`;
+
+// Gold-outline share button (shared convention across games' end screens).
+const SHARE_BTN = 'py-3 px-4 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50';
 
 const DIFFICULTY_TILES: { id: JumbleDifficulty; title: string; tagline: string; color: string; Icon: LucideIcon }[] = [
     { id: 'easy', title: 'Easy', tagline: 'Use any of the 7 letters.',          color: '#10B981', Icon: Shuffle },
@@ -40,42 +53,27 @@ const REJECT_MSG: Record<Exclude<ValidationStatus, 'valid'>, string> = {
     not_a_word:     'Not in the word list',
 };
 
-// --- tiny Web Audio kit (synth, no assets; respects the iOS mute switch) ----
-let audioCtx: AudioContext | null = null;
-const getCtx = (): AudioContext | null => {
-    try {
-        if (!audioCtx) {
-            const C = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-            if (!C) return null;
-            audioCtx = new C();
-        }
-        return audioCtx;
-    } catch { return null; }
-};
-const unlockAudio = () => { const c = getCtx(); if (c && c.state === 'suspended') void c.resume(); };
-const beep = (freq: number, dur: number, type: OscillatorType = 'sine', gain = 0.18) => {
-    const ctx = getCtx(); if (!ctx) return;
-    const run = () => {
-        const t = ctx.currentTime + 0.02;
-        const osc = ctx.createOscillator(); const g = ctx.createGain();
-        osc.type = type; osc.frequency.value = freq;
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(gain, t + 0.01);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        osc.connect(g).connect(ctx.destination);
-        osc.start(t); osc.stop(t + dur + 0.03);
-    };
-    if (ctx.state === 'suspended') ctx.resume().then(run).catch(() => {}); else run();
-};
-const dingValid = () => beep(880, 0.12, 'sine', 0.16);
-const dingPangram = () => { beep(880, 0.18); setTimeout(() => beep(1320, 0.25), 120); };
-const buzzEnd = () => { beep(180, 0.5, 'sawtooth', 0.2); };
-const tick = () => beep(700, 0.05, 'square', 0.1);
+// Pass-and-Play unique-word scoring (Boggle rule): a word scores for a player
+// only if nobody else found it. Shared by the END screen, the stats/Game
+// Night reporting, and the share card.
+interface MultiDetailRow { name: string; unique: string[]; total: number; score: number }
+const byLenThenAlpha = (a: string, b: string) => b.length - a.length || (a < b ? -1 : a > b ? 1 : 0);
+function computeMultiDetail(results: PlayerResult[]): { detail: MultiDetailRow[]; counts: Map<string, number> } {
+    const counts = new Map<string, number>();
+    results.forEach(r => r.words.forEach(w => counts.set(w, (counts.get(w) || 0) + 1)));
+    const detail = results
+        .map(r => {
+            const unique = r.words.filter(w => counts.get(w) === 1).sort(byLenThenAlpha);
+            return { name: r.name, unique, total: r.words.length, score: unique.reduce((s, w) => s + scoreForWord(w), 0) };
+        })
+        .sort((a, b) => b.score - a.score || b.unique.length - a.unique.length);
+    return { detail, counts };
+}
 
 export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<GameState>('MODE_SELECT');
     const [mode, setMode] = useState<GameMode>('solo');
-    const [showHowToPlay, setShowHowToPlay] = useState(false);
+    const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('jumble'));
     const [difficulty, setDifficulty] = useState<JumbleDifficulty>('easy');
     const [duration, setDuration] = useState<number>(() => loadTimerPref(TIMER_KEY));
 
@@ -92,6 +90,21 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [tappedIdx, setTappedIdx] = useState<number | null>(null);  // brief tile press feedback
     const [remainingMs, setRemainingMs] = useState(duration * 1000);
     const [best, setBest] = useState(0);
+    const [sharing, setSharing] = useState(false);
+
+    // Daily Scramble: the streak/freeze outcome of THIS run (set once on END).
+    const [dailyOutcome, setDailyOutcome] = useState<{ streak: number; usedFreeze: boolean } | null>(null);
+    // Home's Daily card sets this flag before routing here — consume it once
+    // (same side-effectful-initializer pattern as shouldAutoExpandRules).
+    const [deepLinkDaily] = useState<boolean>(() => {
+        try {
+            if (sessionStorage.getItem(DAILY_DEEP_LINK) === '1') {
+                sessionStorage.removeItem(DAILY_DEEP_LINK);
+                return true;
+            }
+        } catch { /* privacy mode */ }
+        return false;
+    });
 
     // Pass-and-Play state
     const [players, setPlayers] = useState<string[]>(['', '']);
@@ -101,20 +114,32 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const answerIndex = useRef<Set<string>>(new Set());
     const foundSet = useRef<Set<string>>(new Set());
     const seenSets = useRef<Set<string>>(new Set());      // session dedupe
+    const packRef = useRef<JumblePack | null>(null);      // resolved pack (for the deterministic Daily pick)
     const fbTimer = useRef<number | null>(null);
     const lastTickSec = useRef(99);
     const tapTimer = useRef<number | null>(null);
 
-    const totalSeconds = duration;
+    const totalSeconds = mode === 'daily' ? DAILY_SECONDS : duration;
 
     // ---- load the sets pack lazily on first entry ----
     useEffect(() => {
         let alive = true;
         setLoading(true);
         loadJumblePack()
-            .then(() => { if (alive) setLoading(false); })
+            .then((pack) => {
+                if (!alive) return;
+                packRef.current = pack;
+                setLoading(false);
+                // Deep link from Home: jump straight into the Daily flow —
+                // today's summary if already played, else the run itself.
+                if (deepLinkDaily) {
+                    if (dailyStore.hasPlayedToday()) { setMode('daily'); setGameState('DAILY_RESULT'); }
+                    else void startDaily(pack);
+                }
+            })
             .catch(() => { if (alive) { setLoading(false); setLoadError(true); } });
         return () => { alive = false; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // ---- timer loop (RAF) ----
@@ -128,8 +153,8 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             const left = Math.max(0, deadline - performance.now());
             setRemainingMs(left);
             const sec = Math.ceil(left / 1000);
-            if (sec <= 3 && sec >= 1 && sec !== lastTickSec.current) { lastTickSec.current = sec; tick(); }
-            if (left <= 0) { buzzEnd(); endRound(); return; }
+            if (sec <= 3 && sec >= 1 && sec !== lastTickSec.current) { lastTickSec.current = sec; playTickSoft(); }
+            if (left <= 0) { playBuzzEnd(); hapticBuzz(); endRound(); return; }
             raf = requestAnimationFrame(frame);
         };
         raf = requestAnimationFrame(frame);
@@ -140,12 +165,9 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     // ---- flow ----
     const trimmedPlayers = players.map(p => p.trim()).filter(Boolean);
 
-    // Pick one fresh letter set, build its answer index, lay out the honeycomb.
+    // Lay out a chosen set: build its answer index, lay out the honeycomb.
     // Center hex = the required letter on Hard, else an arbitrary one (no rule).
-    const prepareSet = async (): Promise<void> => {
-        const pack = await loadJumblePack();
-        const chosen = pickSet(pack, difficulty, seenSets.current);
-        seenSets.current.add(setKey(chosen));
+    const applySet = (chosen: JumbleSet) => {
         answerIndex.current = buildAnswerIndex(chosen);
         const letters = [...chosen.letters];
         const center = chosen.center ?? letters[0];
@@ -153,6 +175,47 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         setSet(chosen);
         setCenterLetter(center);
         setTiles(shuffle(letters));                   // 6 outer
+    };
+
+    // Pick one fresh letter set (session-deduped) for Solo / Pass and Play.
+    const prepareSet = async (): Promise<void> => {
+        const pack = await loadJumblePack();
+        packRef.current = pack;
+        const chosen = pickSet(pack, difficulty, seenSets.current);
+        seenSets.current.add(setKey(chosen));
+        applySet(chosen);
+    };
+
+    // Today's Daily set — date-seeded deterministic pick from the EASY pool
+    // (same set for everyone in the world today; session dedupe does NOT apply).
+    const getDailySet = (pack?: JumblePack | null): JumbleSet | null => {
+        const p = pack ?? packRef.current;
+        if (!p) return null;
+        return setAtIndex(p, 'easy', dailySetIndex(poolSize(p, 'easy')));
+    };
+
+    // Daily Scramble: EASY pool, fixed 60s, one attempt per day.
+    const startDaily = async (loaded?: JumblePack): Promise<void> => {
+        unlockAudio();
+        if (dailyStore.hasPlayedToday()) { setMode('daily'); setGameState('DAILY_RESULT'); return; }
+        const pack = loaded ?? await loadJumblePack();
+        packRef.current = pack;
+        const chosen = getDailySet(pack);
+        if (!chosen) return;
+        seenSets.current.add(setKey(chosen));   // a later Solo round shouldn't re-serve today's Daily
+        applySet(chosen);
+        resetTurnState();
+        setDailyOutcome(null);
+        setMode('daily');
+        setDifficulty('easy');
+        setGameState('READY');
+    };
+
+    // Daily READY → the one timed attempt (set already prepared by startDaily).
+    const startDailyRun = () => {
+        unlockAudio();
+        resetTurnState();
+        setGameState('TIMER_ACTIVE');
     };
 
     // Wipe per-turn state (kept separate so a new player reuses the SAME set).
@@ -197,7 +260,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         setGameState('TIMER_ACTIVE');
     };
 
-    const playAgain = () => { if (mode === 'multi') beginMultiGame(); else startSolo(); };
+    const playAgain = () => { if (mode === 'multi') beginMultiGame(); else if (mode === 'solo') startSolo(); };
 
     const endRound = () => {
         if (mode === 'multi') {
@@ -214,16 +277,44 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             }
             return;
         }
-        // solo — read the live score via the functional updater (avoids the
-        // stale closure the RAF callback would otherwise capture).
-        setGameState('END');
-        setScore(s => {
+        // solo & daily — the RAF callback captures stale state, so re-derive the
+        // final tally from the live foundSet ref (score is a pure function of it).
+        const words = [...foundSet.current];
+        const finalScore = words.reduce((s, w) => s + scoreForWord(w), 0);
+        setScore(finalScore);
+        if (mode === 'solo') {
+            // The pre-existing per-difficulty solo bests (jumble_best_*) are the
+            // in-game source of truth — the Daily doesn't touch them.
             const prevBest = Number(localStorage.getItem(bestKey(difficulty))) || 0;
-            if (s > prevBest) { localStorage.setItem(bestKey(difficulty), String(s)); setBest(s); }
+            if (finalScore > prevBest) { localStorage.setItem(bestKey(difficulty), String(finalScore)); setBest(finalScore); }
             else setBest(prevBest);
-            return s;
-        });
+        }
+        setGameState('END');
     };
+
+    // ---- lifetime stats + Daily record + Game Night — once per finished game.
+    // Runs after the END render, when score/found/results state has settled.
+    // The ref resets on leaving END so Play Again records a fresh game;
+    // dailyStore.recordResult additionally ignores repeat calls same-day.
+    const recordedRef = useRef(false);
+    useEffect(() => {
+        if (gameState !== 'END') { recordedRef.current = false; return; }
+        if (recordedRef.current) return;
+        recordedRef.current = true;
+        statsStore.recordPlay('JUMBLE');
+        if (mode === 'multi') {
+            const { detail } = computeMultiDetail(results);
+            const top = detail[0]?.score ?? 0;
+            if (top > 0) statsStore.recordWins('JUMBLE', detail.filter(d => d.score === top).map(d => d.name));
+            gameNightService.reportResult('JUMBLE', detail.map(d => ({ name: d.name, score: d.score })));
+        } else if (mode === 'daily') {
+            const outcome = dailyStore.recordResult({ score, words: found.length, pangram: found.some(f => f.pangram) });
+            setDailyOutcome(outcome);
+            statsStore.recordBest('JUMBLE', score, `${score} pts · Daily`);
+        } else {
+            statsStore.recordBest('JUMBLE', score, `${score} pts · ${difficulty === 'hard' ? 'Hard' : 'Easy'}`);
+        }
+    }, [gameState, mode, results, score, found, difficulty]);
 
     // Player-setup field handlers (multiplayer SETUP screen).
     const addPlayer = () => { if (players.length < MAX_PLAYERS) setPlayers([...players, '']); };
@@ -244,12 +335,13 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             setFound(prev => [{ word: res.word, points: res.points, pangram: res.isPangram }, ...prev]);
             setScore(s => s + res.points);
             if (res.isPangram) {
-                dingPangram();
+                playPangram();
+                hapticSuccess();
                 setPangramFlash(true);
                 setTimeout(() => setPangramFlash(false), 1500);
                 flashFeedback('ok', `PANGRAM! +${res.points}`);
             } else {
-                dingValid();
+                playDingSoft();
                 flashFeedback('ok', `+${res.points}  ${res.word}`);
             }
         } else if (res.status === 'already_found') {
@@ -273,6 +365,59 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
 
     const onPickTimer = (secs: number) => { setDuration(secs); saveTimerPref(TIMER_KEY, secs); };
 
+    // ---- share (all handlers disabled while a share is in flight) ----
+    const handleShareSolo = async () => {
+        if (sharing) return;
+        setSharing(true);
+        const foundPangram = found.some(f => f.pangram);
+        await shareResultCard({
+            gameTitle: 'Scramble',
+            accent: ACCENT,
+            emoji: '🔠',
+            heading: `${score} pts`,
+            sub: `${found.length} words · ${difficulty === 'hard' ? 'Hard' : 'Easy'}${foundPangram ? ' · pangram!' : ''}`,
+        });
+        setSharing(false);
+    };
+
+    const handleShareMulti = async () => {
+        if (sharing) return;
+        setSharing(true);
+        const { detail } = computeMultiDetail(results);
+        const top = detail[0]?.score ?? 0;
+        const tied = detail.filter(d => d.score === top).length > 1;
+        await shareResultCard({
+            gameTitle: 'Scramble',
+            accent: ACCENT,
+            emoji: '🔠',
+            heading: top > 0 ? (tied ? "It's a tie!" : `${detail[0].name} wins!`) : 'All words cancelled!',
+            sub: `${detail.length} players · ${difficulty === 'hard' ? 'Hard' : 'Easy'}`,
+            rows: detail.map(d => ({ label: d.name, value: `${d.score} pts`, highlight: d.score === top && top > 0 })),
+        });
+        setSharing(false);
+    };
+
+    // Daily share — spoiler-free emoji grid (text) or the image card. Used by
+    // both the daily END screen and the played-today summary (after reload).
+    const shareDaily = async (kind: 'text' | 'card', res: DailyResult, streak: number) => {
+        if (sharing) return;
+        setSharing(true);
+        const dSet = getDailySet();
+        const maxWords = dSet ? commonWordCount(dSet) : Math.max(1, res.words);
+        if (kind === 'text') {
+            await shareText(buildDailyShareText({ words: res.words, score: res.score, pangram: res.pangram, streak, maxWords }));
+        } else {
+            await shareResultCard({
+                gameTitle: 'Daily Scramble',
+                accent: GOLD,
+                emoji: '🔠',
+                heading: `${res.score} pts`,
+                sub: `${res.words}/${maxWords} words · ${dayLabel()}${res.pangram ? ' · pangram!' : ''}`,
+            });
+        }
+        setSharing(false);
+    };
+
     const sec = Math.max(0, Math.ceil(remainingMs / 1000));
     const low = sec <= 10;
 
@@ -282,6 +427,8 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
 
     // ---- MODE_SELECT ----
     if (gameState === 'MODE_SELECT') {
+        const streak = dailyStore.getStreak();
+        const playedToday = dailyStore.hasPlayedToday();
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Scramble" onBack={onExit} onHome={onExit} />
@@ -300,6 +447,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                             <p><strong className="text-teal-500">2. WORDS:</strong> 4+ letters only. Longer words score more — a 7-letter word (a <strong className="text-ink">pangram</strong>) is the jackpot.</p>
                             <p><strong className="text-amber-500">3. HARD MODE:</strong> every word must include the highlighted <strong style={{ color: CENTER }}>center letter</strong>. Easy uses any of the 7.</p>
                             <p><strong className="text-violet-500">4. PLAY:</strong> Go <strong className="text-ink">Solo</strong> to beat your best, or <strong className="text-ink">Pass and Play</strong> — everyone gets the same letters and the most <em>unique</em> words wins (shared words cancel).</p>
+                            <p><strong className="text-gold">5. DAILY:</strong> one shared puzzle a day — the same letters for everyone, one attempt, 60 seconds. Keep the streak alive.</p>
                         </div>
                     )}
                 </div>
@@ -308,6 +456,12 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                 )}
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
+                        <ModeTile Icon={CalendarDays} title="Daily"
+                            tagline={playedToday ? 'Played today ✓ — see your result' : "Today's letters — same for everyone."}
+                            color={GOLD}
+                            badge={streak > 0 ? `🔥 ${streak} day streak` : undefined}
+                            onClick={() => { if (playedToday) { setMode('daily'); setGameState('DAILY_RESULT'); } else void startDaily(); }}
+                            disabled={loading} />
                         <ModeTile Icon={User} title="Solo" tagline="One round, beat your own best." color={ACCENT}
                             onClick={() => { setMode('solo'); setGameState('DIFFICULTY_SELECT'); }} disabled={loading} />
                         <ModeTile Icon={Users} title="Pass and Play" tagline="Same letters — most unique words wins." color="#8B5CF6"
@@ -415,22 +569,87 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
-    // ---- READY ----
+    // ---- READY (solo + the Daily's pre-attempt gate) ----
     if (gameState === 'READY') {
+        const isDaily = mode === 'daily';
+        const streakOnTheLine = isDaily ? dailyStore.getStreak() : 0;
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="Ready?" onBack={() => setGameState('DIFFICULTY_SELECT')} onHome={onExit} />
+                <ScreenHeader title={isDaily ? 'Daily Scramble' : 'Ready?'}
+                    onBack={() => setGameState(isDaily ? 'MODE_SELECT' : 'DIFFICULTY_SELECT')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center px-6 text-center gap-5 animate-slide-up">
                     <p className="text-5xl">🔠</p>
-                    <h2 className="text-2xl font-serif font-bold text-ink">Find as many words as you can</h2>
-                    <p className="text-muted text-sm max-w-[300px]">
-                        {difficulty === 'hard'
-                            ? <>Every word must use the <span className="font-bold" style={{ color: CENTER }}>center letter</span>. </>
-                            : null}
-                        Words are 4+ letters. Longer words score more — a 7-letter <span className="font-bold text-ink">pangram</span> is the jackpot.
-                    </p>
-                    <p className="text-xs text-muted">{duration}s · {difficulty === 'easy' ? 'Easy' : 'Hard'}</p>
-                    <Button onClick={startSolo} fullWidth className="h-14 text-lg max-w-[300px]">Start</Button>
+                    {isDaily ? (
+                        <>
+                            <h2 className="text-2xl font-serif font-bold text-ink">Today's puzzle · {dayLabel()}</h2>
+                            <p className="text-muted text-sm max-w-[300px]">
+                                Everyone gets the <span className="font-bold text-ink">same 7 letters</span> today.
+                                You get <span className="font-bold text-ink">one attempt</span> — make it count.
+                            </p>
+                            {streakOnTheLine > 0 && (
+                                <p className="text-sm font-bold" style={{ color: GOLD }}>🔥 {streakOnTheLine}-day streak on the line</p>
+                            )}
+                            <p className="text-xs text-muted">{DAILY_SECONDS}s · Easy</p>
+                            <Button onClick={startDailyRun} fullWidth className="h-14 text-lg max-w-[300px]">Start Today's Scramble</Button>
+                        </>
+                    ) : (
+                        <>
+                            <h2 className="text-2xl font-serif font-bold text-ink">Find as many words as you can</h2>
+                            <p className="text-muted text-sm max-w-[300px]">
+                                {difficulty === 'hard'
+                                    ? <>Every word must use the <span className="font-bold" style={{ color: CENTER }}>center letter</span>. </>
+                                    : null}
+                                Words are 4+ letters. Longer words score more — a 7-letter <span className="font-bold text-ink">pangram</span> is the jackpot.
+                            </p>
+                            <p className="text-xs text-muted">{duration}s · {difficulty === 'easy' ? 'Easy' : 'Hard'}</p>
+                            <Button onClick={startSolo} fullWidth className="h-14 text-lg max-w-[300px]">Start</Button>
+                        </>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // ---- DAILY_RESULT (already played today — the persistent summary) ----
+    if (gameState === 'DAILY_RESULT') {
+        const res = dailyStore.getTodayResult();
+        const streak = dailyStore.getStreak();
+        const dSet = getDailySet();
+        const maxWords = dSet ? commonWordCount(dSet) : 0;
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Daily Scramble" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <div className="flex-1 overflow-y-auto px-3 pb-6">
+                    <div className="text-center mt-3 mb-5">
+                        <p className="text-4xl mb-1.5">🔠</p>
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-muted">Played today ✓ · {dayLabel()}</p>
+                        {res ? (
+                            <>
+                                <p className="text-6xl font-black tabular-nums mt-1" style={{ color: GOLD }}>{res.score}</p>
+                                <p className="text-xs text-muted mt-1">
+                                    {res.words}{maxWords > 0 ? `/${maxWords}` : ''} word{res.words === 1 ? '' : 's'}
+                                    {res.pangram && <span className="font-bold" style={{ color: CENTER }}> · ✨ pangram!</span>}
+                                </p>
+                            </>
+                        ) : (
+                            <p className="text-sm text-muted mt-3">Today's attempt is done.</p>
+                        )}
+                        {streak > 0 && <p className="text-xl font-black mt-3" style={{ color: GOLD }}>🔥 {streak}-day streak</p>}
+                        <p className="text-xs text-muted mt-2">New letters tomorrow — come back to keep the streak alive.</p>
+                    </div>
+                    {res && (
+                        <div className="max-w-[340px] mx-auto w-full flex gap-3">
+                            <button onClick={() => void shareDaily('text', res, streak)} disabled={sharing} className={`flex-1 ${SHARE_BTN}`}>
+                                <Share2 size={18} /> Share
+                            </button>
+                            <button onClick={() => void shareDaily('card', res, streak)} disabled={sharing} className={`flex-1 ${SHARE_BTN}`}>
+                                <ImageIcon size={18} /> Share Card
+                            </button>
+                        </div>
+                    )}
+                    <div className="max-w-[340px] mx-auto w-full mt-4">
+                        <Button onClick={() => setGameState('MODE_SELECT')} variant="secondary" fullWidth>Back to Scramble</Button>
+                    </div>
                 </div>
             </div>
         );
@@ -439,15 +658,8 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     // ---- END (multiplayer leaderboard — unique-word scoring) ----
     if (gameState === 'END' && mode === 'multi') {
         // A word scores for a player only if no one else found it (Boggle rule).
-        const counts = new Map<string, number>();
-        results.forEach(r => r.words.forEach(w => counts.set(w, (counts.get(w) || 0) + 1)));
-        const byLen = (a: string, b: string) => b.length - a.length || (a < b ? -1 : a > b ? 1 : 0);
-        const detail = results
-            .map(r => {
-                const unique = r.words.filter(w => counts.get(w) === 1).sort(byLen);
-                return { name: r.name, unique, total: r.words.length, score: unique.reduce((s, w) => s + scoreForWord(w), 0) };
-            })
-            .sort((a, b) => b.score - a.score || b.unique.length - a.unique.length);
+        const { detail, counts } = computeMultiDetail(results);
+        const byLen = byLenThenAlpha;
         const topScore = detail[0]?.score ?? 0;
         // Words found by 2+ players (cancelled for everyone), listed once.
         const sharedAll = [...counts.entries()].filter(([, n]) => n >= 2).map(([w]) => w).sort(byLen);
@@ -534,12 +746,80 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     )}
 
                     <div className="max-w-[340px] mx-auto w-full mt-6 flex flex-col gap-3">
+                        <button onClick={() => void handleShareMulti()} disabled={sharing} className={`w-full ${SHARE_BTN}`}>
+                            <Share2 size={18} /> Share Result
+                        </button>
                         <Button onClick={playAgain} fullWidth className="h-13 text-lg">
                             <Shuffle className="inline mr-2" size={18} /> Play Again
                         </Button>
                         <button onClick={() => setGameState('MODE_SELECT')} className="w-full py-3 rounded-xl font-bold text-sm text-muted hover:text-ink border border-divider transition-colors">
                             Change level / players
                         </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ---- END (daily) — recording happened in the END effect; show the streak
+    // prominently + spoiler-free share. One attempt: no Play Again.
+    if (gameState === 'END' && mode === 'daily') {
+        const summary = set ? summarizeMisses(set, foundSet.current) : null;
+        const maxWords = set ? commonWordCount(set) : 0;
+        const streak = dailyOutcome?.streak ?? dailyStore.getStreak();
+        const res: DailyResult = { score, words: found.length, pangram: found.some(f => f.pangram) };
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Time!" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
+                <div className="flex-1 overflow-y-auto px-3 pb-6">
+                    <div className="text-center mt-1 mb-4">
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-muted">Daily Scramble · {dayLabel()}</p>
+                        <p className="text-6xl font-black tabular-nums" style={{ color: GOLD }}>{score}</p>
+                        <p className="text-xs text-muted mt-1">{found.length}{maxWords > 0 ? `/${maxWords}` : ''} word{found.length === 1 ? '' : 's'} · one attempt a day</p>
+                        {res.pangram && <p className="text-xs font-bold mt-1 text-teal-500">✨ You found a pangram!</p>}
+                        <p className="text-2xl font-black mt-3" style={{ color: GOLD }}>🔥 {streak}-day streak</p>
+                        {dailyOutcome?.usedFreeze && (
+                            <p className="text-xs font-bold text-sky-400 mt-1">❄️ streak freeze used — one missed day forgiven</p>
+                        )}
+                    </div>
+
+                    <div className="max-w-[340px] mx-auto w-full flex gap-3 mb-5">
+                        <button onClick={() => void shareDaily('text', res, streak)} disabled={sharing} className={`flex-1 ${SHARE_BTN}`}>
+                            <Share2 size={18} /> Share
+                        </button>
+                        <button onClick={() => void shareDaily('card', res, streak)} disabled={sharing} className={`flex-1 ${SHARE_BTN}`}>
+                            <ImageIcon size={18} /> Share Card
+                        </button>
+                    </div>
+
+                    {found.length > 0 && (
+                        <Section title={`You found (${found.length})`}>
+                            <div className="flex flex-wrap gap-1.5">
+                                {found.map(f => (
+                                    <span key={f.word} className={`text-xs font-bold px-2 py-1 rounded-md ${f.pangram ? 'text-white' : 'text-ink bg-surface-alt border border-divider'}`}
+                                        style={f.pangram ? { background: CENTER } : undefined}>
+                                        {f.word} <span className="opacity-60">+{f.points}</span>
+                                    </span>
+                                ))}
+                            </div>
+                        </Section>
+                    )}
+
+                    {summary && summary.topMisses.length > 0 && (
+                        <Section title={`Words you missed (${summary.topMisses.length} big ones)`}>
+                            <div className="flex flex-wrap gap-1.5">
+                                {summary.topMisses.slice(0, 40).map(w => (
+                                    <span key={w} className="text-xs font-semibold px-2 py-1 rounded-md text-ink-soft bg-surface-alt border border-divider">
+                                        {w} <span className="opacity-50">+{scoreForWord(w)}</span>
+                                    </span>
+                                ))}
+                            </div>
+                        </Section>
+                    )}
+
+                    <div className="max-w-[340px] mx-auto w-full mt-6 flex flex-col gap-3">
+                        <p className="text-center text-xs text-muted">New letters tomorrow — come back to keep the streak alive.</p>
+                        <Button onClick={() => setGameState('MODE_SELECT')} fullWidth>Done</Button>
                     </div>
                 </div>
             </div>
@@ -594,6 +874,9 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     )}
 
                     <div className="max-w-[340px] mx-auto w-full mt-6 flex flex-col gap-3">
+                        <button onClick={() => void handleShareSolo()} disabled={sharing} className={`w-full ${SHARE_BTN}`}>
+                            <Share2 size={18} /> Share Result
+                        </button>
                         <Button onClick={playAgain} fullWidth className="h-13 text-lg">
                             <Shuffle className="inline mr-2" size={18} /> Play Again
                         </Button>
@@ -609,6 +892,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     // ---- TIMER_ACTIVE ----
     // Tap-only honeycomb — no text input / no keyboard. Center hex is the
     // required letter on Hard (amber); on Easy it's just the middle position.
+    const runAccent = mode === 'daily' ? GOLD : ACCENT;   // the Daily plays in gold
     const HEX_CLIP = 'polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%)';
     const SP_W = 80, SP_H = 70, HEX_W = 79, HEX_H = 69;   // near-touching → minimal dead gap between hexes
     const outerPos = [
@@ -618,7 +902,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const renderHex = (letter: string, key: number, isCenterHex: boolean, x: number, y: number) => {
         const requiredCenter = isCenterHex && !!set?.center;
         const pressed = tappedIdx === key;
-        const fill = requiredCenter ? CENTER : (pressed ? ACCENT : 'var(--color-app-tint)');
+        const fill = requiredCenter ? CENTER : (pressed ? runAccent : 'var(--color-app-tint)');
         const color = requiredCenter ? '#1a1a1a' : (pressed ? '#ffffff' : 'var(--color-ink)');
         // Fire on pointer-DOWN (not click) for instant response on fast taps,
         // and touch-manipulation to kill the tap delay + double-tap zoom that
@@ -650,13 +934,13 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                     className="w-full bg-surface border border-divider rounded-[22px] px-4 py-3.5 flex flex-col relative overflow-hidden mt-1"
                     style={{ boxShadow: 'var(--shadow-card)' }}
                 >
-                    <div className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none" style={{ background: ACCENT + '22' }} />
+                    <div className="absolute -top-[60px] -right-[60px] w-[160px] h-[160px] rounded-full pointer-events-none" style={{ background: runAccent + '22' }} />
 
                     {/* pill (left) + timer (right) */}
                     <div className="flex items-center justify-between relative z-10">
                         <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md"
-                            style={{ background: ACCENT + '22', color: ACCENT }}>
-                            Scramble · {difficulty === 'easy' ? 'Easy' : 'Hard'}
+                            style={{ background: runAccent + '22', color: runAccent }}>
+                            {mode === 'daily' ? `Daily · ${dayLabel()}` : `Scramble · ${difficulty === 'easy' ? 'Easy' : 'Hard'}`}
                         </span>
                         <div className="flex items-baseline gap-1">
                             <span className={`text-3xl font-black tabular-nums leading-none ${low ? 'text-red-500 animate-pulse' : 'text-ink'}`}>{sec}</span>
@@ -689,9 +973,9 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                             {mode === 'multi' && (
                                 <span className="text-ink-soft font-semibold">{(players[playerIndex] || '').trim() || `Player ${playerIndex + 1}`} · {playerIndex + 1}/{players.length} · </span>
                             )}
-                            Score <span className="font-black tabular-nums" style={{ color: ACCENT }}>{score}</span>
+                            Score <span className="font-black tabular-nums" style={{ color: runAccent }}>{score}</span>
                         </span>
-                        <span className="font-serif italic text-[12px]" style={{ color: ACCENT }}>PartySpark</span>
+                        <span className="font-serif italic text-[12px]" style={{ color: runAccent }}>PartySpark</span>
                     </div>
                 </div>
 
@@ -714,7 +998,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                         <Shuffle size={16} /> Shuffle
                     </button>
                     <button onClick={submit} className="flex-[1.3] flex items-center justify-center gap-1.5 py-3 rounded-xl text-white font-bold text-base shadow-lg active:scale-95 transition-transform"
-                        style={{ background: ACCENT }}>
+                        style={{ background: runAccent }}>
                         <Check size={18} /> Enter
                     </button>
                 </div>

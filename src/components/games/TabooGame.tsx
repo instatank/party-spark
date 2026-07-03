@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Card, ScreenHeader } from '../ui/Layout';
 // generateTabooCards removed — full local deck is loaded each round
 import { useContent } from '../../contexts/ContentContext';
 import type { TabooCard } from '../../types';
-import { Timer, ThumbsUp, X, Ban, Trophy, ChevronRight, Sparkles, Zap, Flame } from 'lucide-react';
+import { Timer, ThumbsUp, X, Ban, Trophy, ChevronRight, Sparkles, Zap, Flame, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import gamesDataRaw from '../../data/games_data.json';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
+import { unlockAudio, playTick, playBuzzer, playDing, hapticTap, hapticBuzz } from '../../services/audio';
+import { shareResultCard } from '../../services/shareCard';
+import { statsStore } from '../../services/statsStore';
+import { gameNightService } from '../../services/gameNightService';
+import { shouldAutoExpandRules } from '../../services/firstPlay';
 
 // Difficulty tiles for the CATEGORY screen — Slim Row pattern (matches
 // 5 Alive / Linked). Inline hex colors drive the left accent bar + icon.
@@ -40,7 +45,13 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     const [teams, setTeams] = useState<string[]>(() => sessionService.getTeams());
     const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
     const [teamScores, setTeamScores] = useState<number[]>([]);
-    const [showHowToPlay, setShowHowToPlay] = useState(false);
+    const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('taboo'));
+    // Match-wide skip tally (across all team rounds) — feeds the share card.
+    const [skipped, setSkipped] = useState(0);
+    const [sharing, setSharing] = useState(false);
+    // Guards the SUMMARY side-effects (stats + game-night report) so they
+    // fire exactly once per round end, even across re-renders.
+    const recordedRef = useRef(false);
 
 
     // Initial category tap from CATEGORY screen. Resets team-match state
@@ -51,6 +62,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
             setCurrentTeamIndex(0);
             setTeamScores([]);
         }
+        setSkipped(0);
         startGame(category);
     };
 
@@ -104,6 +116,8 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     };
 
     const startRound = () => {
+        // User gesture — prime the Web Audio context before the first tick.
+        unlockAudio();
         setGameState('PLAYING');
     };
 
@@ -127,8 +141,13 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     useEffect(() => {
         let interval: ReturnType<typeof setInterval>;
         if (gameState === 'PLAYING' && timeLeft > 0) {
+            // Countdown tick over the final 10 seconds only (effect re-runs
+            // once per second, so this fires once per remaining second).
+            if (timeLeft <= 10) playTick();
             interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
         } else if (timeLeft === 0 && gameState === 'PLAYING') {
+            playBuzzer();
+            hapticBuzz();
             endRound();
         }
         return () => clearInterval(interval);
@@ -136,13 +155,38 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     }, [gameState, timeLeft]);
 
     const handleCorrect = () => {
+        hapticTap();
+        playDing();
         setScore(s => s + 1);
         nextCard();
     };
 
     const handleSkip = () => {
+        hapticTap();
+        setSkipped(n => n + 1);
         nextCard();
     };
+
+    // Once per round end: lifetime stats + (in team mode) win credits and
+    // the Game Night report. reportResult is a safe no-op when no night is
+    // active. The ref resets whenever we leave SUMMARY so "Next Category"
+    // rounds record again.
+    useEffect(() => {
+        if (gameState !== 'SUMMARY') {
+            recordedRef.current = false;
+            return;
+        }
+        if (recordedRef.current) return;
+        recordedRef.current = true;
+        statsStore.recordPlay('TABOO');
+        if (teamScores.length > 0) {
+            const entries = teamScores.map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }));
+            const top = Math.max(...entries.map(e => e.score));
+            statsStore.recordWins('TABOO', entries.filter(e => e.score === top).map(e => e.name));
+            gameNightService.reportResult('TABOO', entries);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gameState]);
 
     const nextCard = () => {
         // Mark current as used
@@ -291,6 +335,23 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
             : [];
         const winner = ranked[0];
         const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
+        const levelTile = LEVEL_TILES.find(t => t.id === currentCategory);
+        const totalCorrect = inTeamMode ? teamScores.reduce((a, b) => a + b, 0) : score;
+        const handleShare = async () => {
+            if (sharing) return;
+            setSharing(true);
+            await shareResultCard({
+                gameTitle: 'Taboo',
+                accent: levelTile?.color ?? '#F43F5E',
+                emoji: '🚫',
+                heading: `${totalCorrect} guessed!`,
+                sub: `${skipped} skipped · ${levelTile?.title ?? currentCategory}`,
+                rows: inTeamMode
+                    ? ranked.map(r => ({ label: r.name, value: `${r.score}`, highlight: r.score === winner.score }))
+                    : undefined,
+            });
+            setSharing(false);
+        };
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Time's Up!" onBack={() => setGameState('CATEGORY')} onHome={onExit} />
@@ -339,6 +400,13 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                     )}
 
                     <div className="flex flex-col gap-3 w-full">
+                        <button
+                            onClick={handleShare}
+                            disabled={sharing}
+                            className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Share2 size={18} /> Share Result
+                        </button>
                         <Button onClick={() => setGameState('CATEGORY')} fullWidth>Next Category</Button>
                         <Button onClick={onExit} variant="secondary" fullWidth>Exit</Button>
                     </div>

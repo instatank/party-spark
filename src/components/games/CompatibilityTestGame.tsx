@@ -1,5 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
+import { unlockAudio, playReveal, playBell, hapticTap, hapticSuccess } from '../../services/audio';
+import { statsStore } from '../../services/statsStore';
 import { Heart, Users, ArrowRight, ChevronRight, Eye, EyeOff, Target, User, Shuffle, Rabbit } from 'lucide-react';
 import questionData from '../../data/compatibility_test.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
@@ -139,14 +141,34 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
     const roundTheme = ROUND_THEMES[mode];
     const accent = ACCENT_CLASSES[mode];
 
+    // Once-per-game guard for the FINAL_VERDICT effects (bell + stats).
+    // Reset when a new game starts so "Play Again" counts too.
+    const verdictRecordedRef = useRef(false);
+
+    // Screen-entry audio/haptics: every per-question REVEAL gets a reveal
+    // sweep; the FINAL_VERDICT gets the bell plus a lifetime-stats play count.
+    useEffect(() => {
+        if (gameState === 'REVEAL') {
+            playReveal();
+            hapticTap();
+        } else if (gameState === 'FINAL_VERDICT' && !verdictRecordedRef.current) {
+            verdictRecordedRef.current = true;
+            playBell();
+            hapticSuccess();
+            statsStore.recordPlay('COMPATIBILITY_TEST');
+        }
+    }, [gameState]);
+
     // Handlers
     const handleModeSelect = (m: GameMode) => {
+        unlockAudio();
         setMode(m);
         setGameState('SETUP');
     };
 
     const handleStartGame = () => {
         if (!playerA.trim() || !playerB.trim()) return;
+        verdictRecordedRef.current = false;
         setCurrentRound('round1');
         setQuestionIndex(0);
         setScoreA(0);

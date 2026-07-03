@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
-import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Atom, Lightbulb, Medal, Landmark, Brain, Clapperboard, Plane, Lock } from 'lucide-react';
+import { Check, X, Clock, Trophy, AlertTriangle, ArrowRight, ChevronRight, PawPrint, Atom, Lightbulb, Medal, Landmark, Brain, Clapperboard, Plane, Lock, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import factData from '../../data/fact_or_fiction.json';
 import { sessionService } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import TeamRosterRow from '../ui/TeamRosterRow';
+import { shareResultCard } from '../../services/shareCard';
+import { statsStore } from '../../services/statsStore';
+import { gameNightService } from '../../services/gameNightService';
+import { shouldAutoExpandRules } from '../../services/firstPlay';
 
 interface Question {
     id: string;
@@ -49,7 +53,10 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
     const [strikes, setStrikes] = useState(0);
     const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
     const [gameState, setGameState] = useState<'category_select' | 'playing' | 'answer_reveal' | 'team_transition' | 'round_over'>('category_select');
-    const [showHowToPlay, setShowHowToPlay] = useState(false);
+    // Auto-expand the rules on this device's very first Fact or Fiction open.
+    const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('fof'));
+    const [isSharing, setIsSharing] = useState(false);
+    const [isNewBest, setIsNewBest] = useState(false);
 
     // Team mode: opt-in via TeamRosterRow on the category-select screen. Each
     // team plays solo until they hit 3 strikes, then passes the phone. Strikes
@@ -71,6 +78,26 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
 
     const categories = factData.categories as Category[];
 
+    // Record lifetime stats (and report to an active Game Night) exactly once
+    // per game when the summary screen is reached. Re-armed on every category
+    // select so a replay records again. Mirrors the render's team/solo split:
+    // team standings exist only once teamScores has been tallied.
+    const endRecordedRef = useRef(false);
+    useEffect(() => {
+        if (gameState !== 'round_over' || endRecordedRef.current) return;
+        endRecordedRef.current = true;
+        statsStore.recordPlay('FACT_OR_FICTION');
+        if (teamScores.length > 0) {
+            const entries = teamScores.map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }));
+            const top = Math.max(...entries.map(e => e.score));
+            statsStore.recordWins('FACT_OR_FICTION', entries.filter(e => e.score === top).map(e => e.name));
+            gameNightService.reportResult('FACT_OR_FICTION', entries);
+        } else {
+            setIsNewBest(statsStore.recordBest('FACT_OR_FICTION', score, `${score} pts`));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gameState]);
+
     const handleCategorySelect = (category: Category) => {
         // Drop questions already played this session for the chosen category;
         // fall back to the full pool if the player has exhausted it.
@@ -88,6 +115,8 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
         setStrikes(0);
         setWrongStreak(0);
         answeredRef.current = false;
+        endRecordedRef.current = false;
+        setIsNewBest(false);
         // Team mode setup: zero out match-level state on first entry.
         setCurrentTeamIndex(0);
         setTeamScores([]);
@@ -386,6 +415,34 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
             : [];
         const winner = ranked[0];
         const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
+        const accentHex = (selectedCategory && TOPIC_META[selectedCategory.id]?.color) || '#F43F5E';
+        const topicName = selectedCategory?.name ?? 'Fact or Fiction';
+        // Share the summary as a result-card image — points headline, topic +
+        // level context, team standings as leaderboard rows when present.
+        const handleShareResult = async () => {
+            if (isSharing) return;
+            setIsSharing(true);
+            try {
+                await shareResultCard({
+                    gameTitle: 'Fact or Fiction',
+                    accent: accentHex,
+                    emoji: '🧠',
+                    heading: `${inTeamMode ? winner.score : score} points`,
+                    sub: inTeamMode
+                        ? `${topicName} · ${teams.length} teams`
+                        : `${topicName} · Level ${difficulty} reached`,
+                    rows: inTeamMode
+                        ? ranked.map(r => ({
+                            label: r.name,
+                            value: `${r.score} pts`,
+                            highlight: r.score === winner.score,
+                        }))
+                        : undefined,
+                });
+            } finally {
+                setIsSharing(false);
+            }
+        };
         return (
             <div className="flex flex-col h-full animate-fade-in relative z-10">
                 <ScreenHeader title="Round Summary" onBack={() => setGameState('category_select')} onHome={onExit} confirmOnExit />
@@ -429,10 +486,22 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                             <div className="bg-surface-alt w-full p-6 rounded-2xl border border-divider-soft mb-8">
                                 <p className="text-sm uppercase tracking-widest text-muted font-bold mb-2">Survived</p>
                                 <p className="text-6xl font-black text-rose-500">{score}<span className="text-3xl text-muted"> Facts</span></p>
+                                {isNewBest && (
+                                    <p className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-500 text-xs font-bold uppercase tracking-widest">
+                                        🏆 New Best!
+                                    </p>
+                                )}
                             </div>
                         </>
                     )}
 
+                    <button
+                        onClick={handleShareResult}
+                        disabled={isSharing}
+                        className="w-full py-3 mb-3 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                        <Share2 size={18} /> Share Result
+                    </button>
                     <Button onClick={() => setGameState('category_select')} className="w-full mb-3" variant="primary">
                         Play Another Category
                     </Button>

@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ScreenHeader, useExitConfirm } from '../ui/Layout';
+import { statsStore } from '../../services/statsStore';
+import { shouldAutoExpandRules } from '../../services/firstPlay';
 import { generateMostLikelyTo, generateCustomMostLikelyTo } from '../../services/geminiService';
 import { MOST_LIKELY_TO_CATEGORIES } from '../../constants';
 import { Users, ChevronRight, Hand, AlertTriangle, Sparkles, Flame, Zap, Wand2, ArrowLeft, Home } from 'lucide-react';
@@ -97,11 +99,25 @@ export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
     const [customError, setCustomError] = useState('');
     const [showPinGate, setShowPinGate] = useState(false);
     const [pendingAdultCat, setPendingAdultCat] = useState<any>(null);
-    const [showHowToPlay, setShowHowToPlay] = useState(false);
+    const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('mlt'));
+
+    // Once-per-round guard for the ROUND_END stats write. Reset when play
+    // resumes so the next round counts again.
+    const roundEndRecordedRef = useRef(false);
 
     const ADULT_CATEGORY_IDS = ['adult', 'scandalous'];
 
     const wordCount = customContext.trim().split(/\s+/).filter(Boolean).length;
+
+    // Count a finished 10-card round as a play in the lifetime stats store.
+    useEffect(() => {
+        if (gameState === 'ROUND_END' && !roundEndRecordedRef.current) {
+            roundEndRecordedRef.current = true;
+            statsStore.recordPlay('MOST_LIKELY_TO');
+        } else if (gameState === 'PLAYING') {
+            roundEndRecordedRef.current = false;
+        }
+    }, [gameState]);
 
     const startGame = async (cat: any) => {
         // Gate adult categories only. Create-Your-Vibe is NOT PIN-gated —

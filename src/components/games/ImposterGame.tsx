@@ -1,11 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, Button, ScreenHeader } from '../ui/Layout';
 import { VenetianMask, Check, User, Eye, ArrowRight, RotateCcw, Loader2 } from 'lucide-react';
 import { IMPOSTER_CATEGORIES } from '../../constants';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { generateImposterContent } from '../../services/geminiService';
 import { GameType } from '../../types';
+import { unlockAudio, playReveal, playDing, playBuzzer, hapticTap, hapticSuccess, hapticBuzz } from '../../services/audio';
+import { statsStore } from '../../services/statsStore';
+import { shouldAutoExpandRules } from '../../services/firstPlay';
 
 interface Player {
     id: string;
@@ -28,7 +31,11 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
         { id: '3', name: '', isImposter: false }
     ]);
     const [savedGroups, setSavedGroups] = useState<Record<string, string[]>>({});
-    const [showHowToPlay, setShowHowToPlay] = useState(false);
+    const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('imposter'));
+
+    // Once-per-game guard for the RESULT effects (win/lose sound + stats).
+    // Reset when back on SETUP so "Play Again" counts a fresh game.
+    const resultRecordedRef = useRef(false);
 
     React.useEffect(() => {
         const loaded = localStorage.getItem('imposterGroups');
@@ -43,6 +50,24 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
     const [winner, setWinner] = useState<'CIVILIANS' | 'IMPOSTER' | null>(null);
     const [imposterName, setImposterName] = useState('');
     const [isHardMode, setIsHardMode] = useState(false);
+
+    // RESULT entry: ding for a civilian win, buzzer for an imposter win, and
+    // count the game as a play in the lifetime stats store.
+    useEffect(() => {
+        if (gameState === 'RESULT' && !resultRecordedRef.current) {
+            resultRecordedRef.current = true;
+            if (winner === 'CIVILIANS') {
+                playDing();
+                hapticSuccess();
+            } else {
+                playBuzzer();
+                hapticBuzz();
+            }
+            statsStore.recordPlay('IMPOSTER');
+        } else if (gameState === 'SETUP') {
+            resultRecordedRef.current = false;
+        }
+    }, [gameState, winner]);
 
     const handleAddPlayer = () => {
         setPlayers([...players, { id: Date.now().toString(), name: '', isImposter: false }]);
@@ -76,6 +101,7 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
         const validPlayers = players.filter(p => p.name.trim() !== '');
         if (validPlayers.length < 3) return;
 
+        unlockAudio();
         setGameState('LOADING');
 
         // Logic to pick a word
@@ -339,6 +365,8 @@ export const ImposterGame: React.FC<ImposterGameProps> = ({ onExit }) => {
                                     key={p.id}
                                     onClick={() => {
                                         if (!hasRevealed) {
+                                            playReveal();
+                                            hapticTap();
                                             setCurrentPlayerIndex(idx);
                                             setIsRevealing(true);
                                         }

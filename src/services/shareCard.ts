@@ -153,11 +153,14 @@ export function renderShareCard(data: ShareCardData): HTMLCanvasElement {
     }
 
     ctx.fillStyle = '#E8EEF9';
-    ctx.font = `bold 82px ${SERIF}`;
-    const headingLines = wrapLines(ctx, data.heading, W - 160, 2);
+    // Long headings step down a size and gain a line rather than ellipsizing —
+    // a truncated punchline kills the joke.
+    const big = data.heading.length <= 30;
+    ctx.font = `bold ${big ? 82 : 64}px ${SERIF}`;
+    const headingLines = wrapLines(ctx, data.heading, W - 160, big ? 2 : 3);
     for (const line of headingLines) {
         ctx.fillText(line, W / 2, y);
-        y += 96;
+        y += big ? 96 : 76;
     }
 
     if (data.sub) {

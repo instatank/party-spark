@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, ScreenHeader } from '../ui/Layout';
-import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles, Trophy } from 'lucide-react';
+import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles, Trophy, Share2 } from 'lucide-react';
 import { generateCharadesWords } from '../../services/geminiService';
 import { useContent } from '../../contexts/ContentContext';
 import { CHARADES_CATEGORIES } from '../../constants';
@@ -10,6 +10,10 @@ import { GameType } from '../../types';
 import { useTheme } from '../../contexts/ThemeContext';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
+import { shareResultCard } from '../../services/shareCard';
+import { statsStore } from '../../services/statsStore';
+import { gameNightService } from '../../services/gameNightService';
+import { shouldAutoExpandRules } from '../../services/firstPlay';
 
 interface Props {
     onExit: () => void;
@@ -50,7 +54,11 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     const [teams, setTeams] = useState<string[]>(() => sessionService.getTeams());
     const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
     const [teamScores, setTeamScores] = useState<number[]>([]);
-    const [showHowToPlay, setShowHowToPlay] = useState(false);
+    const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('charades'));
+    const [sharing, setSharing] = useState(false);
+    // Guards the SUMMARY side-effects (stats + game-night report) so they
+    // fire exactly once per game end, even across re-renders.
+    const recordedRef = useRef(false);
 
     // const categories = ["Movies", "Animals", "Actions", "Celebrities", "Objects"]; // Replaced by constant
     const categories = CHARADES_CATEGORIES;
@@ -178,6 +186,26 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameState, timeLeft]);
+
+    // Once per game end: lifetime stats + (in team mode) win credits and the
+    // Game Night report. reportResult is a safe no-op when no night is
+    // active. The ref resets on leaving SUMMARY so "Play Again" records too.
+    useEffect(() => {
+        if (gameState !== 'SUMMARY') {
+            recordedRef.current = false;
+            return;
+        }
+        if (recordedRef.current) return;
+        recordedRef.current = true;
+        statsStore.recordPlay('CHARADES');
+        if (teamScores.length > 0) {
+            const entries = teamScores.map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }));
+            const top = Math.max(...entries.map(e => e.score));
+            statsStore.recordWins('CHARADES', entries.filter(e => e.score === top).map(e => e.name));
+            gameNightService.reportResult('CHARADES', entries);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gameState]);
 
     const handleCorrect = () => {
         setScore(s => s + 1);
@@ -354,6 +382,24 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
             : [];
         const winner = ranked[0];
         const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
+        const catLabel = categories.find(c => c.id === category)?.label ?? category;
+        const handleShare = async () => {
+            if (sharing) return;
+            setSharing(true);
+            await shareResultCard({
+                gameTitle: 'Charades',
+                accent: TILES_MAP[category] || '#F59E0B',
+                emoji: '🎭',
+                heading: inTeamMode
+                    ? (tiedTop ? 'Tie at the top!' : `${winner.name} wins!`)
+                    : `${score} acted out!`,
+                sub: `${catLabel} · ${duration}s ${inTeamMode ? 'rounds' : 'round'}`,
+                rows: inTeamMode
+                    ? ranked.map(r => ({ label: r.name, value: `${r.score}`, highlight: r.score === winner.score }))
+                    : undefined,
+            });
+            setSharing(false);
+        };
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Game Over" onBack={() => setGameState('SETUP')} onHome={onExit} />
@@ -402,6 +448,13 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                     )}
 
                     <div className="flex flex-col gap-3 w-full">
+                        <button
+                            onClick={handleShare}
+                            disabled={sharing}
+                            className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Share2 size={18} /> Share Result
+                        </button>
                         <Button onClick={() => setGameState('SETUP')} fullWidth>Play Again</Button>
                         <Button onClick={onExit} variant="secondary" fullWidth>Exit</Button>
                     </div>
