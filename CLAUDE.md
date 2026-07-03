@@ -73,6 +73,20 @@ This bit us several times. If you add a new accent color, verify it in the compi
 - **Game cards** use tightened vertical padding (`!px-4 !py-2.5`) and the header spacing is compact.
 - **Splash** is 1.5s max and tap-skippable — never make users wait on it.
 - **"Tonight's crew" banner**: when the shared session roster (`sessionService.getTeams()`) is non-empty, Home shows a gold banner listing the names with an X to clear — this is how users discover that names carry across games.
+- **Quick-action row**: two slim tiles above the filter pills — Game Night (violet, shows "live · Next up: X" during an active night) and Daily Scramble (gold, shows streak / done state). Header has a Trophy button (Stats screen) and a mute toggle on the left, mirroring the ThemeToggle on the right.
+
+## 🔁 Engagement layer (Phase 2, added 2026-07-03)
+
+Cross-game retention + sharing systems. All localStorage, **no accounts, ever**; all fully offline.
+
+| Piece | Where | What it does |
+|---|---|---|
+| **Share cards** | `src/services/shareCard.ts` | Canvas-rendered 1080×1350 result card (navy/gold/game-accent) → `navigator.share`, download fallback. Wired into the end screens of 5 Alive, Scramble, Linked, Fact or Fiction, Charades, Taboo, Truth or Drink (named), NHIE recap, Game Night recap. `shareText()` for text-only shares. |
+| **Shared audio + haptics** | `src/services/audio.ts` | ONE Web Audio synth module (the old per-game copies in 5 Alive/Linked/Scramble were extracted verbatim) + `navigator.vibrate` helpers. App-wide mute (toggle on Home header, `partyspark_muted`) silences both. Taboo/NHIE/Forecast/Imposter got sounds+haptics; new games should import from here, never hand-roll a synth. |
+| **Game Night** | `src/services/gameNightService.ts` + `src/components/GameNightScreen.tsx` (route `GameType.GAME_NIGHT`) | Crew + 3–5 game playlist → hub with running leaderboard (3 pts for topping a game, 1 for playing) → recap + share card. Scored games call `reportResult()` from their end screens (no-op when inactive); `App.tsx` reroutes game exits to the hub while a night is active. **Playlist deliberately excludes adult-gated games** (hub launch bypasses the Home PIN gate). |
+| **Daily Scramble** | `src/services/dailyChallenge.ts` + Daily mode in `JumbleGame` | Same date-seeded easy set for everyone (FNV hash of local date), 60s, one attempt/day, streak with ONE freeze/ISO-week, spoiler-free emoji-grid share. Home tile deep-links via sessionStorage `partyspark_open_daily`. |
+| **Lifetime stats** | `src/services/statsStore.ts` + `src/components/StatsScreen.tsx` (route `GameType.STATS`, trophy button on Home) | Plays / bests / wins-per-player-name across all scored games; backfills `jumble_best_*`. Two-tap reset. |
+| **First-play rules** | `src/services/firstPlay.ts` | Each game's How-To-Play auto-expands on first open (`useState(() => shouldAutoExpandRules('key'))`), collapsed forever after. |
 
 ## 🚫 Explicit Constraints & "Do Not Touch" Rules
 

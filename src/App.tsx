@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, X, Users } from 'lucide-react';
+import { Search, X, Users, Trophy, Volume2, VolumeX, PartyPopper, CalendarCheck2 } from 'lucide-react';
 import { sessionService } from './services/SessionManager';
+import { gameNightService } from './services/gameNightService';
+import { dailyStore } from './services/dailyChallenge';
+import { isMuted, toggleMuted } from './services/audio';
+import { GameNightScreen } from './components/GameNightScreen';
+import { StatsScreen } from './components/StatsScreen';
 import { GameType } from './types';
 import { GAMES, getIcon, GAME_RICH_META, HOME_FILTERS, gameMatchesFilter, getSubcategoryMatches, type HomeFilter } from './constants';
 import { Card } from './components/ui/Layout';
@@ -79,41 +84,56 @@ const App = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Leaving a game returns to Home — unless a Game Night is running, in
+  // which case the hub reclaims the player so the playlist keeps moving.
+  const exitGame = () => {
+    setActiveGame(gameNightService.isActive() ? GameType.GAME_NIGHT : GameType.HOME);
+  };
+
   // Simple Router Switch
   const renderContent = () => {
     switch (activeGame) {
       case GameType.ROAST:
-        return <RoastGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <RoastGame onExit={exitGame} />;
       case GameType.IMPOSTER:
-        return <ImposterGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <ImposterGame onExit={exitGame} />;
       case GameType.CHARADES:
-        return <CharadesGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <CharadesGame onExit={exitGame} />;
       case GameType.TABOO:
-        return <TabooGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <TabooGame onExit={exitGame} />;
       case GameType.WOULD_YOU_RATHER:
-        return <WouldYouRatherGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <WouldYouRatherGame onExit={exitGame} />;
       case GameType.MOST_LIKELY_TO:
-        return <MostLikelyToGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <MostLikelyToGame onExit={exitGame} />;
       case GameType.WOULD_I_LIE_TO_YOU:
-        return <WouldILieToYouGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <WouldILieToYouGame onExit={exitGame} />;
       case GameType.NEVER_HAVE_I_EVER:
-        return <NeverHaveIEverGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <NeverHaveIEverGame onExit={exitGame} />;
       case GameType.MINI_MAFIA:
-        return <MiniMafiaGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <MiniMafiaGame onExit={exitGame} />;
       case GameType.ICEBREAKERS:
-        return <IcebreakerGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <IcebreakerGame onExit={exitGame} />;
       case GameType.FACT_OR_FICTION:
-        return <FactOrFictionGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <FactOrFictionGame onExit={exitGame} />;
       case GameType.COMPATIBILITY_TEST:
-        return <CompatibilityTestGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <CompatibilityTestGame onExit={exitGame} />;
       case GameType.TRUTH_OR_DRINK:
-        return <TruthOrDrinkGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <TruthOrDrinkGame onExit={exitGame} />;
       case GameType.FIVE_ALIVE:
-        return <FiveAliveGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <FiveAliveGame onExit={exitGame} />;
       case GameType.LINKED:
-        return <LinkedGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <LinkedGame onExit={exitGame} />;
       case GameType.JUMBLE:
-        return <JumbleGame onExit={() => setActiveGame(GameType.HOME)} />;
+        return <JumbleGame onExit={exitGame} />;
+      case GameType.GAME_NIGHT:
+        return (
+          <GameNightScreen
+            onExit={() => setActiveGame(GameType.HOME)}
+            onLaunchGame={setActiveGame}
+          />
+        );
+      case GameType.STATS:
+        return <StatsScreen onExit={() => setActiveGame(GameType.HOME)} />;
       default:
         return <HomeMenu onSelectGame={setActiveGame} />;
     }
@@ -199,6 +219,23 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
     sessionService.clearTeams();
     setCrew([]);
   };
+
+  // App-wide mute (silences shared-audio sounds AND haptics).
+  const [muted, setMutedUi] = useState<boolean>(() => isMuted());
+
+  // Game Night + Daily Scramble surface state — read fresh on every Home
+  // mount (the switch remounts HomeMenu whenever a game exits).
+  const nightActive = gameNightService.isActive();
+  const nextNightGame = nightActive
+    ? GAMES.find(g => g.id === gameNightService.currentGame())?.title ?? null
+    : null;
+  const dailyPlayed = dailyStore.hasPlayedToday();
+  const dailyStreak = dailyStore.getStreak();
+  const openDaily = () => {
+    // Deep link consumed by Scramble on mount — drops straight into Daily.
+    try { sessionStorage.setItem('partyspark_open_daily', '1'); } catch { /* ignore */ }
+    onSelectGame(GameType.JUMBLE);
+  };
   const [showPinGate, setShowPinGate] = useState(false);
   const [pendingGameId, setPendingGameId] = useState<GameType | null>(null);
 
@@ -242,6 +279,23 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
   return (
     <div className="flex flex-col gap-2.5 animate-slide-up min-h-[80vh]">
       <header className="pt-1 pb-0 text-center relative">
+        {/* Trophies + mute, mirroring the theme toggle on the right */}
+        <div className="absolute top-1 left-0 flex gap-1.5">
+          <button
+            onClick={() => onSelectGame(GameType.STATS)}
+            aria-label="Trophies and stats"
+            className="w-9 h-9 rounded-full bg-surface-alt border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
+          >
+            <Trophy size={16} />
+          </button>
+          <button
+            onClick={() => setMutedUi(toggleMuted())}
+            aria-label={muted ? 'Unmute sounds' : 'Mute sounds'}
+            className="w-9 h-9 rounded-full bg-surface-alt border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
+          >
+            {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+          </button>
+        </div>
         <ThemeToggle className="absolute top-1 right-0" />
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gold mb-1 font-serif flex items-center justify-center gap-2">
           PartySpark <span className="text-2xl sm:text-3xl">✨</span>
@@ -298,6 +352,45 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
           }}
         />
       )}
+
+      {/* Game Night + Daily Scramble quick actions — the two engagement
+          anchors live above the fold, styled as slim accent tiles. */}
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={() => onSelectGame(GameType.GAME_NIGHT)}
+          className="game-card group text-left bg-surface-alt backdrop-blur-sm border border-divider border-l-4 border-l-violet-500 hover:bg-app-tint rounded-xl py-2.5 px-3 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <PartyPopper size={16} className="text-violet-400 flex-shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-ink leading-tight truncate">
+                {nightActive ? 'Game Night · live' : 'Game Night'}
+              </p>
+              <p className="text-[11px] text-muted leading-snug truncate">
+                {nightActive
+                  ? (nextNightGame ? `Next up: ${nextNightGame}` : 'See the recap')
+                  : 'Pick games, crown a champ'}
+              </p>
+            </div>
+          </div>
+        </button>
+        <button
+          onClick={openDaily}
+          className="game-card group text-left bg-surface-alt backdrop-blur-sm border border-divider border-l-4 border-l-gold hover:bg-app-tint rounded-xl py-2.5 px-3 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <CalendarCheck2 size={16} className="text-gold flex-shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-ink leading-tight truncate">Daily Scramble</p>
+              <p className="text-[11px] text-muted leading-snug truncate">
+                {dailyPlayed
+                  ? (dailyStreak > 1 ? `Done · 🔥 ${dailyStreak}-day streak` : 'Done for today ✓')
+                  : (dailyStreak > 1 ? `🔥 ${dailyStreak}-day streak` : 'One puzzle, every day')}
+              </p>
+            </div>
+          </div>
+        </button>
+      </div>
 
       {/* Tonight's crew — visible whenever a shared roster exists so users
           learn that names entered in one game follow them into the next. */}
