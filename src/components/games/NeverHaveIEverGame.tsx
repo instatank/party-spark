@@ -8,6 +8,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Sparkles, Lock, ChevronRight, Hand, Users, Wand2, ShieldCheck, Flame, Smile } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
+import { hapticLight } from '../../services/haptics';
 
 interface GameProps {
     onExit: () => void;
@@ -152,6 +153,8 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     };
 
     const handleNextCard = async () => {
+        // Only called by the two in-play choice buttons (I Have / I've Never).
+        hapticLight();
         // Mark the card the user just saw as played so it won't repeat this session.
         // Custom-vibe cards are AI-generated per session and not tracked.
         if (cards[currentIndex] && category && category !== 'custom_vibe') {

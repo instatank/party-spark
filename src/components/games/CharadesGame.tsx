@@ -12,6 +12,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
 import { useCountdown } from '../../hooks/useCountdown';
+import { hapticLight, hapticSuccess, hapticHeavy } from '../../services/haptics';
 
 // games_data.json is lazy-loaded via LocalGameService (one shared chunk with
 // Taboo). The fetch starts as soon as this game chunk loads; use() below
@@ -178,15 +179,17 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     const { secondsLeft: timeLeft } = useCountdown({
         running: gameState === 'PLAYING',
         durationMs: duration * 1000,
-        onExpire: endRound,
+        onExpire: () => { hapticHeavy(); endRound(); },
     });
 
     const handleCorrect = () => {
+        hapticSuccess();
         setScore(s => s + 1);
         nextCard();
     };
 
     const handleSkip = () => {
+        hapticLight();
         nextCard();
     };
 

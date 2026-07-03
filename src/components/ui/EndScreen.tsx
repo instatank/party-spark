@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trophy, ChevronRight } from 'lucide-react';
 import { Button, ScreenHeader } from './Layout';
+import { hapticSuccess } from '../../services/haptics';
 
 // Shared end-of-game leaderboard screen. Two layouts, both in real use:
 //   - scroll (default): 🏆 hero + "X wins with N." — 5 Alive, Linked
@@ -62,6 +63,9 @@ const EndScreen: React.FC<EndScreenProps> = ({
     onExit,
 }) => {
     const [openIdx, setOpenIdx] = useState<number | null>(null);
+    // Win moment — one buzz as the leaderboard appears (covers all four
+    // games that end on this screen).
+    useEffect(() => { hapticSuccess(); }, []);
     const acc = ACCENT[accent];
     const ranked = [...entries].sort((a, b) => b.score - a.score);
     const top = ranked[0];

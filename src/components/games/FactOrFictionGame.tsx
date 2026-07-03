@@ -7,6 +7,7 @@ import { sessionService } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import { useCountdown } from '../../hooks/useCountdown';
+import { hapticSuccess, hapticError, hapticHeavy } from '../../services/haptics';
 
 // The question bank is lazy-loaded so it code-splits out of this game's chunk.
 // The fetch starts as soon as the chunk loads; use() below suspends into the
@@ -175,6 +176,7 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
             // Trigger timeout as incorrect answer
             if (!answeredRef.current) {
                 answeredRef.current = true;
+                hapticHeavy();
                 handleTimedOut();
             }
         },
@@ -202,6 +204,7 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
         answeredRef.current = true;
 
         const isCorrect = guessedFact === currentQuestion.isFact;
+        if (isCorrect) hapticSuccess(); else hapticError();
         setLastAnswerCorrect(isCorrect);
 
         if (isCorrect) {

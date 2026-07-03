@@ -9,6 +9,7 @@ import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 import { unlockAudio, playBell, playTick } from '../../services/audio';
 import { useCountdown } from '../../hooks/useCountdown';
+import { hapticLight, hapticHeavy } from '../../services/haptics';
 
 // The category pools are lazy-loaded so they code-split out of this game's
 // chunk. The fetch starts as soon as the chunk loads; use() below suspends
@@ -107,6 +108,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         onSecond: (sec) => { if (sec >= 1 && sec <= 3) playTick(0.16); },
         onExpire: () => {
             playBell();
+            hapticHeavy();
             setTally(0);
             setGameState('TALLY');
         },
@@ -425,7 +427,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                     </p>
                     <div className="flex items-center gap-5">
                         <button
-                            onClick={() => setTally(t => Math.max(0, t - 1))}
+                            onClick={() => { hapticLight(); setTally(t => Math.max(0, t - 1)); }}
                             disabled={tally <= 0}
                             aria-label="Decrease"
                             className="w-12 h-12 rounded-full bg-surface-alt border border-divider text-ink disabled:opacity-30 flex items-center justify-center hover:bg-app-tint transition-colors"
@@ -434,7 +436,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                         </button>
                         <span className="text-6xl font-black tabular-nums text-ink w-20">{tally}</span>
                         <button
-                            onClick={() => setTally(t => Math.min(round.count, t + 1))}
+                            onClick={() => { hapticLight(); setTally(t => Math.min(round.count, t + 1)); }}
                             disabled={tally >= round.count}
                             aria-label="Increase"
                             className="w-12 h-12 rounded-full bg-surface-alt border border-divider text-ink disabled:opacity-30 flex items-center justify-center hover:bg-app-tint transition-colors"

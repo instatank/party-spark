@@ -10,6 +10,7 @@ import {
 } from '../../services/jumbleEngine';
 import { unlockAudio, beep } from '../../services/audio';
 import { useCountdown } from '../../hooks/useCountdown';
+import { hapticSuccess, hapticError, hapticHeavy } from '../../services/haptics';
 
 interface Props { onExit: () => void; }
 
@@ -97,7 +98,7 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         durationMs: totalSeconds * 1000,
         restartKey: playerIndex,
         onSecond: (s) => { if (s <= 3 && s >= 1) tick(); },
-        onExpire: () => { buzzEnd(); endRound(); },
+        onExpire: () => { buzzEnd(); hapticHeavy(); endRound(); },
     });
 
     // ---- flow ----
@@ -208,16 +209,20 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             setScore(s => s + res.points);
             if (res.isPangram) {
                 dingPangram();
+                hapticHeavy();
                 setPangramFlash(true);
                 setTimeout(() => setPangramFlash(false), 1500);
                 flashFeedback('ok', `PANGRAM! +${res.points}`);
             } else {
                 dingValid();
+                hapticSuccess();
                 flashFeedback('ok', `+${res.points}  ${res.word}`);
             }
         } else if (res.status === 'already_found') {
+            hapticError();
             flashFeedback('dup', REJECT_MSG.already_found);
         } else {
+            hapticError();
             flashFeedback('bad', REJECT_MSG[res.status]);
         }
         setInput('');

@@ -6,6 +6,7 @@ import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { unlockAudio, playBuzzer, playTick, playDing } from '../../services/audio';
 import { useCountdown } from '../../hooks/useCountdown';
+import { hapticLight, hapticSuccess, hapticError, hapticHeavy } from '../../services/haptics';
 
 // The puzzle pools are lazy-loaded so they code-split out of this game's
 // chunk. The fetch starts as soon as the chunk loads; use() in the component
@@ -148,6 +149,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
         onExpire: () => {
             clearFlash();
             playBuzzer();
+            hapticHeavy();
             setGameState('ROUND_OVER');
         },
     });
@@ -240,12 +242,14 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     const handleGotIt = () => {
         if (revealed) return;
         playDing();
+        hapticSuccess();
         setScores(prev => prev.map((s, i) => (i === playerIndex ? { ...s, score: s.score + 1 } : s)));
         setRoundGot(g => g + 1);
         flashThenAdvance('got');
     };
     const handleSkip = () => {
         if (revealed) return;
+        hapticLight();
         setRoundSkipped(s => s + 1);
         flashThenAdvance('skip');
     };
@@ -254,8 +258,8 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     // reports whether they got it — "Correct" scores +1, "Incorrect" doesn't.
     // Both advance to the next puzzle (no separate Next step).
     const handleReveal = () => { setRevealed(true); };
-    const handleJustPlayCorrect = () => { playDing(); setRoundGot(g => g + 1); advance(); };
-    const handleJustPlayIncorrect = () => { advance(); };
+    const handleJustPlayCorrect = () => { playDing(); hapticSuccess(); setRoundGot(g => g + 1); advance(); };
+    const handleJustPlayIncorrect = () => { hapticError(); advance(); };
 
     // ROUND_OVER → next player (or END)
     const handleAfterRound = () => {
