@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { ChevronLeft, Drama, User, Eye, Users, HelpCircle, CheckCircle2, XCircle, Sparkles, Loader2 } from 'lucide-react';
-import gameData from '../../data/would_i_lie_to_you.json';
 import { generateContextualLies } from '../../services/geminiService';
 import { sessionService } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { useExitConfirm } from '../ui/Layout';
 
+// The topic bank is lazy-loaded so it code-splits out of this game's chunk.
+// The fetch starts as soon as the chunk loads; use() below suspends into the
+// App-level Suspense boundary on first render.
+const gameDataPromise = import('../../data/would_i_lie_to_you.json').then(m => m.default);
+type WiltyData = Awaited<typeof gameDataPromise>;
+
 // Pick a random index from the data, skipping topics already used this session.
 // Falls back to the full pool if every topic has been seen (so the game never
 // ends due to dedupe). Returns -1 only if gameData is empty (defensive).
-const pickFreshTopicIndex = (): number => {
+const pickFreshTopicIndex = (gameData: WiltyData): number => {
     if (gameData.length === 0) return -1;
     const available: number[] = [];
     for (let i = 0; i < gameData.length; i++) {
@@ -31,6 +36,7 @@ interface WouldILieToYouGameProps {
 }
 
 export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }) => {
+    const gameData = use(gameDataPromise);
     const [gameState, setGameState] = useState<GameState>('truth-input');
     // Guard accidental exits during gameplay (custom header below).
     const { guard: guardExit, dialog: exitDialog } = useExitConfirm(true);
@@ -45,7 +51,7 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
 
     useEffect(() => {
         // Pick a topic right on load — skipping any already used this session.
-        setCurrentCardIndex(pickFreshTopicIndex());
+        setCurrentCardIndex(pickFreshTopicIndex(gameData));
     }, []);
 
     const currentCard = gameData[currentCardIndex];
@@ -80,7 +86,7 @@ export const WouldILieToYouGame: React.FC<WouldILieToYouGameProps> = ({ onExit }
         setGeneratedLies(null);
         setSelectedOption(null);
         setErrorMsg('');
-        setCurrentCardIndex(pickFreshTopicIndex());
+        setCurrentCardIndex(pickFreshTopicIndex(gameData));
         setGameState('truth-input');
     };
 

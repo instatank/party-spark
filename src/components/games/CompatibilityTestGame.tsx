@@ -1,9 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef, use } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
+import { unlockAudio, playReveal, playBell, hapticTap, hapticSuccess } from '../../services/audio';
+import { statsStore } from '../../services/statsStore';
 import { Heart, Users, ArrowRight, ChevronRight, Eye, EyeOff, Target, User, Shuffle, Rabbit } from 'lucide-react';
-import questionData from '../../data/compatibility_test.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
+
+// The question bank is lazy-loaded so it code-splits out of this game's chunk.
+// The fetch starts as soon as the chunk loads; use() below suspends into the
+// App-level Suspense boundary on first render.
+const questionDataPromise = import('../../data/compatibility_test.json').then(m => m.default);
 
 interface Question {
     text: string;
@@ -92,6 +98,7 @@ interface RoundResult {
 }
 
 export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
+    const questionData = use(questionDataPromise);
     // State
     const [gameState, setGameState] = useState<GameState>('MODE_SELECT');
     const [showHowToPlay, setShowHowToPlay] = useState(false);
@@ -139,14 +146,34 @@ export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit
     const roundTheme = ROUND_THEMES[mode];
     const accent = ACCENT_CLASSES[mode];
 
+    // Once-per-game guard for the FINAL_VERDICT effects (bell + stats).
+    // Reset when a new game starts so "Play Again" counts too.
+    const verdictRecordedRef = useRef(false);
+
+    // Screen-entry audio/haptics: every per-question REVEAL gets a reveal
+    // sweep; the FINAL_VERDICT gets the bell plus a lifetime-stats play count.
+    useEffect(() => {
+        if (gameState === 'REVEAL') {
+            playReveal();
+            hapticTap();
+        } else if (gameState === 'FINAL_VERDICT' && !verdictRecordedRef.current) {
+            verdictRecordedRef.current = true;
+            playBell();
+            hapticSuccess();
+            statsStore.recordPlay('COMPATIBILITY_TEST');
+        }
+    }, [gameState]);
+
     // Handlers
     const handleModeSelect = (m: GameMode) => {
+        unlockAudio();
         setMode(m);
         setGameState('SETUP');
     };
 
     const handleStartGame = () => {
         if (!playerA.trim() || !playerB.trim()) return;
+        verdictRecordedRef.current = false;
         setCurrentRound('round1');
         setQuestionIndex(0);
         setScoreA(0);

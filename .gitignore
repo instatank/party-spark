@@ -30,3 +30,6 @@ dist-ssr
 
 # Jumble dev build cache (dictionary, not shipped)
 scripts/.cache/
+
+# Vite dep-optimizer cache (was accidentally committed once)
+.vite/

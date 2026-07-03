@@ -1,15 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { Button, Card, ScreenHeader } from '../ui/Layout';
 // generateTabooCards removed — full local deck is loaded each round
 import { useContent } from '../../contexts/ContentContext';
 import type { TabooCard } from '../../types';
-import { Timer, ThumbsUp, X, Ban, Trophy, ChevronRight, Sparkles, Zap, Flame } from 'lucide-react';
+import { Timer, ThumbsUp, X, Ban, ChevronRight, Sparkles, Zap, Flame, Share2 } from 'lucide-react';
+import EndScreen from '../ui/EndScreen';
 import type { LucideIcon } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
-import gamesDataRaw from '../../data/games_data.json';
+import { loadGamesData } from '../../services/LocalGameService';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
+import { unlockAudio, playTick, playBuzzer, playDing } from '../../services/audio';
+import { shareResultCard } from '../../services/shareCard';
+import { statsStore } from '../../services/statsStore';
+import { gameNightService } from '../../services/gameNightService';
+import { shouldAutoExpandRules } from '../../services/firstPlay';
+import { useCountdown } from '../../hooks/useCountdown';
+import { hapticLight, hapticSuccess, hapticHeavy } from '../../services/haptics';
+
+// games_data.json is lazy-loaded via LocalGameService (one shared chunk with
+// Charades). The fetch starts as soon as this game chunk loads; use() below
+// suspends into the App-level Suspense boundary on first render.
+const gamesDataPromise = loadGamesData();
 
 // Difficulty tiles for the CATEGORY screen — Slim Row pattern (matches
 // 5 Alive / Linked). Inline hex colors drive the left accent bar + icon.
@@ -24,12 +37,12 @@ interface Props {
 }
 
 export const TabooGame: React.FC<Props> = ({ onExit }) => {
+    const gamesDataRaw = use(gamesDataPromise);
     const [gameState, setGameState] = useState<'CATEGORY' | 'LOADING' | 'READY' | 'PLAYING' | 'SUMMARY'>('CATEGORY');
     const [cards, setCards] = useState<TabooCard[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [duration, setDuration] = useState(() => loadTimerPref('taboo_timer'));
-    const [timeLeft, setTimeLeft] = useState(duration);
     const [currentCategory, setCurrentCategory] = useState("");
     const { prefetchGameContent } = useContent();
 
@@ -40,7 +53,13 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     const [teams, setTeams] = useState<string[]>(() => sessionService.getTeams());
     const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
     const [teamScores, setTeamScores] = useState<number[]>([]);
-    const [showHowToPlay, setShowHowToPlay] = useState(false);
+    const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('taboo'));
+    // Match-wide skip tally (across all team rounds) — feeds the share card.
+    const [skipped, setSkipped] = useState(0);
+    const [sharing, setSharing] = useState(false);
+    // Guards the SUMMARY side-effects (stats + game-night report) so they
+    // fire exactly once per round end, even across re-renders.
+    const recordedRef = useRef(false);
 
 
     // Initial category tap from CATEGORY screen. Resets team-match state
@@ -51,6 +70,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
             setCurrentTeamIndex(0);
             setTeamScores([]);
         }
+        setSkipped(0);
         startGame(category);
     };
 
@@ -99,11 +119,12 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
         setCards(selectedCards);
         setScore(0);
         setCurrentIndex(0);
-        setTimeLeft(duration);
         setGameState('READY');
     };
 
     const startRound = () => {
+        // User gesture — prime the Web Audio context before the first tick.
+        unlockAudio();
         setGameState('PLAYING');
     };
 
@@ -124,25 +145,48 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
         setGameState('SUMMARY');
     };
 
-    useEffect(() => {
-        let interval: ReturnType<typeof setInterval>;
-        if (gameState === 'PLAYING' && timeLeft > 0) {
-            interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
-        } else if (timeLeft === 0 && gameState === 'PLAYING') {
-            endRound();
-        }
-        return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState, timeLeft]);
+    // Round clock — shared deadline-based countdown (no interval drift).
+    // Tick over the final 10 seconds; buzzer + heavy buzz on expiry.
+    const { secondsLeft: timeLeft } = useCountdown({
+        running: gameState === 'PLAYING',
+        durationMs: duration * 1000,
+        onSecond: s => { if (s > 0 && s <= 10) playTick(); },
+        onExpire: () => { playBuzzer(); hapticHeavy(); endRound(); },
+    });
 
     const handleCorrect = () => {
+        hapticSuccess();
+        playDing();
         setScore(s => s + 1);
         nextCard();
     };
 
     const handleSkip = () => {
+        hapticLight();
+        setSkipped(n => n + 1);
         nextCard();
     };
+
+    // Once per round end: lifetime stats + (in team mode) win credits and
+    // the Game Night report. reportResult is a safe no-op when no night is
+    // active. The ref resets whenever we leave SUMMARY so "Next Category"
+    // rounds record again.
+    useEffect(() => {
+        if (gameState !== 'SUMMARY') {
+            recordedRef.current = false;
+            return;
+        }
+        if (recordedRef.current) return;
+        recordedRef.current = true;
+        statsStore.recordPlay('TABOO');
+        if (teamScores.length > 0) {
+            const entries = teamScores.map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }));
+            const top = Math.max(...entries.map(e => e.score));
+            statsStore.recordWins('TABOO', entries.filter(e => e.score === top).map(e => e.name));
+            gameNightService.reportResult('TABOO', entries);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gameState]);
 
     const nextCard = () => {
         // Mark current as used
@@ -182,7 +226,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                     )}
                 </div>
                 <div className="flex justify-center mb-3">
-                    <TimerSetting duration={duration} onPick={s => { setDuration(s); setTimeLeft(s); saveTimerPref('taboo_timer', s); }} accent="#F0656D" />
+                    <TimerSetting duration={duration} onPick={s => { setDuration(s); saveTimerPref('taboo_timer', s); }} accent="#F0656D" />
                 </div>
                 <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
                 <div className="flex-1 overflow-y-auto pb-8">
@@ -290,55 +334,69 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                 .sort((a, b) => b.score - a.score)
             : [];
         const winner = ranked[0];
-        const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
+        const levelTile = LEVEL_TILES.find(t => t.id === currentCategory);
+        const totalCorrect = inTeamMode ? teamScores.reduce((a, b) => a + b, 0) : score;
+        const handleShare = async () => {
+            if (sharing) return;
+            setSharing(true);
+            await shareResultCard({
+                gameTitle: 'Taboo',
+                accent: levelTile?.color ?? '#F43F5E',
+                emoji: '🚫',
+                heading: `${totalCorrect} guessed!`,
+                sub: `${skipped} skipped · ${levelTile?.title ?? currentCategory}`,
+                rows: inTeamMode
+                    ? ranked.map(r => ({ label: r.name, value: `${r.score}`, highlight: r.score === winner.score }))
+                    : undefined,
+            });
+            setSharing(false);
+        };
+        const shareButton = (
+            <button
+                onClick={handleShare}
+                disabled={sharing}
+                className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <Share2 size={18} /> Share Result
+            </button>
+        );
+        if (inTeamMode) {
+            return (
+                <EndScreen
+                    title="Time's Up!"
+                    onBack={() => setGameState('CATEGORY')}
+                    onHome={onExit}
+                    heading="Round Over"
+                    accent="theme"
+                    entries={ranked}
+                    winnerText={() => 'takes it.'}
+                    footerExtra={shareButton}
+                    playAgainLabel="Next Category"
+                    onPlayAgain={() => setGameState('CATEGORY')}
+                    exitLabel="Exit"
+                    onExit={onExit}
+                />
+            );
+        }
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Time's Up!" onBack={() => setGameState('CATEGORY')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-slide-up">
-                    {inTeamMode ? (
-                        <>
-                            <div className="text-center">
-                                <h2 className="text-3xl font-bold mb-1">Round Over</h2>
-                                {tiedTop ? (
-                                    <p className="text-muted">It's a tie at the top.</p>
-                                ) : (
-                                    <p className="text-muted">
-                                        <span className="font-bold text-ink">{winner.name}</span> takes it.
-                                    </p>
-                                )}
-                            </div>
-                            <div className="w-full max-w-[320px] space-y-2">
-                                {ranked.map((r, i) => (
-                                    <div
-                                        key={i}
-                                        className={`flex items-center justify-between rounded-xl px-4 py-3 border ${
-                                            i === 0
-                                                ? 'bg-accent-soft border-accent text-ink'
-                                                : 'bg-surface border-divider text-ink-soft'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            {i === 0 && <Trophy size={16} className="text-accent flex-shrink-0" />}
-                                            <span className="font-bold truncate">{r.name}</span>
-                                        </div>
-                                        <span className="text-2xl font-black ml-3">{r.score}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="text-center">
-                                <h2 className="text-4xl font-bold mb-2">Round Over</h2>
-                                <p className="text-muted">Team Score</p>
-                            </div>
-                            <div className="text-9xl font-black text-party-secondary drop-shadow-lg">
-                                {score}
-                            </div>
-                        </>
-                    )}
-
+                    <div className="text-center">
+                        <h2 className="text-4xl font-bold mb-2">Round Over</h2>
+                        <p className="text-muted">Team Score</p>
+                    </div>
+                    <div className="text-9xl font-black text-party-secondary drop-shadow-lg">
+                        {score}
+                    </div>
                     <div className="flex flex-col gap-3 w-full">
+                        <button
+                            onClick={handleShare}
+                            disabled={sharing}
+                            className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Share2 size={18} /> Share Result
+                        </button>
                         <Button onClick={() => setGameState('CATEGORY')} fullWidth>Next Category</Button>
                         <Button onClick={onExit} variant="secondary" fullWidth>Exit</Button>
                     </div>

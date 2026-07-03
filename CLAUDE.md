@@ -1,6 +1,8 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-06-13. If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+> **Last reconciled with code:** 2026-07-03 (Phase 1 architecture hardening + Phase 2 engagement layer merged). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+>
+> There is also a `notes/` directory — one *lesson* per file (what was tried, what broke, what fixed it). Architecture facts live here; war stories live there.
 
 ## Shared playbook (cross-project — read at session start)
 
@@ -18,8 +20,18 @@ You are the lead developer and architect of **PartySpark**, a premium, AI-powere
 - **Framework:** React + TypeScript via Vite 7
 - **Styling:** Tailwind CSS v4
 - **Routing:** State-based `switch` in `App.tsx` driven by the `GameType` enum — no React Router, no Next.js
-- **Data Strategy:** Offline-first. Questions/cards live in static JSON files under `src/data/*.json`
+- **Code splitting:** Every game is `React.lazy` in `App.tsx` (one shared `<Suspense>` boundary with the bouncing-dots `GameLoading` fallback). The initial bundle carries only the home screen; each game is its own chunk.
+- **Data Strategy:** Offline-first. Questions/cards live in static JSON files under `src/data/*.json`, but they are **dynamic-imported**, never statically imported — each dataset is its own lazy chunk. House pattern: a module-level memoized `import('../../data/x.json').then(m => m.default)` promise resolved with React 19's `use()` inside the component (suspends into the App-level boundary). `games_data.json` is shared by Charades + Taboo and loads through `loadGamesData()` in `LocalGameService`. Adding a static JSON import to a game undoes its code splitting — don't.
+- **Offline/PWA:** `vite-plugin-pwa` in `vite.config.ts` (registerType `autoUpdate`, registered in `main.tsx`). The service worker precaches every built asset (all game + data chunks, icons, splash), so the whole app works offline after first load. The existing `public/manifest.json` stays the single manifest (`manifest: false` in the plugin). `/api/*` is never cached and is denylisted from the SPA navigate fallback. Google Fonts get runtime caching.
 - **AI Integration:** Hybrid. See the **AI Services** section below for the current provider layout.
+
+### Shared modules (use these — do not re-duplicate per game)
+
+- `src/hooks/useCountdown.ts` — the round-timer driver for all 6 timer games (Charades, Taboo, Fact or Fiction, 5 Alive, Linked, Scramble). rAF against a `performance.now()` deadline; `{ running, durationMs, restartKey?, onSecond?, onExpire? }` → `{ remainingMs, secondsLeft }`. No game should own a `setInterval`/rAF countdown again.
+- `src/services/audio.ts` — the Web Audio synth kit (lazy singleton `AudioContext`, `unlockAudio()`, `beep()`, `playBell`, `playBuzzer`, `playTick`, `playDing`). Formerly duplicated in 5 Alive / Linked / Scramble.
+- `src/services/haptics.ts` — `hapticLight` / `hapticSuccess` / `hapticError` / `hapticHeavy` on `navigator.vibrate` (feature-checked; iOS Safari never supports it — Android/Chrome only). Wired at the same moments as sounds.
+- `src/components/ui/EndScreen.tsx` — the ranked-leaderboard end screen (winner tint + trophy, tie line, optional expandable row detail, Play Again/exit footer). Used by 5 Alive, Linked, Charades, Taboo. Fact or Fiction / Scramble / Truth or Drink end screens are structurally different and intentionally NOT on it — don't force them without a design pass.
+- `src/components/ui/TimerSetting.tsx` + `TeamRosterRow.tsx` — as before (see Design System).
 
 ## 🎨 Design System (current standard)
 
@@ -75,6 +87,22 @@ This bit us several times. If you add a new accent color, verify it in the compi
 - **Tabs hidden:** the old "Play Now / Coming Soon" tab bar is gated behind a `SHOW_TABS` flag (currently `false`) — the front end shows only the Play Now games. All Coming Soon games + tab logic stay in code; flip `SHOW_TABS = true` to bring them back for testing.
 - **Filter pills** (`HOME_FILTERS` in `constants.tsx`): All / Quick / Solo / Couples / Crowd / Spicy. `quick` matches by short duration; the rest match by tag in `GAME_RICH_META[id].tags`.
 - **Game cards** use tightened vertical padding (`!px-4 !py-2.5`) and the header spacing is compact.
+- **Splash** is 1.5s max and tap-skippable — never make users wait on it.
+- **"Tonight's crew" banner**: when the shared session roster (`sessionService.getTeams()`) is non-empty, Home shows a gold banner listing the names with an X to clear — this is how users discover that names carry across games.
+- **Quick-action row**: two slim tiles above the filter pills — Game Night (violet, shows "live · Next up: X" during an active night) and Daily Scramble (gold, shows streak / done state). Header has a Trophy button (Stats screen) and a mute toggle on the left, mirroring the ThemeToggle on the right.
+
+## 🔁 Engagement layer (Phase 2, added 2026-07-03)
+
+Cross-game retention + sharing systems. All localStorage, **no accounts, ever**; all fully offline.
+
+| Piece | Where | What it does |
+|---|---|---|
+| **Share cards** | `src/services/shareCard.ts` | Canvas-rendered 1080×1350 result card (navy/gold/game-accent) → `navigator.share`, download fallback. Wired into the end screens of 5 Alive, Scramble, Linked, Fact or Fiction, Charades, Taboo, Truth or Drink (named), NHIE recap, Game Night recap. `shareText()` for text-only shares. |
+| **Shared audio + haptics** | `src/services/audio.ts` | ONE Web Audio synth module (the old per-game copies in 5 Alive/Linked/Scramble were extracted verbatim) + `navigator.vibrate` helpers. App-wide mute (toggle on Home header, `partyspark_muted`) silences both. Taboo/NHIE/Forecast/Imposter got sounds+haptics; new games should import from here, never hand-roll a synth. |
+| **Game Night** | `src/services/gameNightService.ts` + `src/components/GameNightScreen.tsx` (route `GameType.GAME_NIGHT`) | Crew + 3–5 game playlist → hub with running leaderboard (3 pts for topping a game, 1 for playing) → recap + share card. Scored games call `reportResult()` from their end screens (no-op when inactive); `App.tsx` reroutes game exits to the hub while a night is active. **Playlist deliberately excludes adult-gated games** (hub launch bypasses the Home PIN gate). |
+| **Daily Scramble** | `src/services/dailyChallenge.ts` + Daily mode in `JumbleGame` | Same date-seeded easy set for everyone (FNV hash of local date), 60s, one attempt/day, streak with ONE freeze/ISO-week, spoiler-free emoji-grid share. Home tile deep-links via sessionStorage `partyspark_open_daily`. |
+| **Lifetime stats** | `src/services/statsStore.ts` + `src/components/StatsScreen.tsx` (route `GameType.STATS`, trophy button on Home) | Plays / bests / wins-per-player-name across all scored games; backfills `jumble_best_*`. Two-tap reset. |
+| **First-play rules** | `src/services/firstPlay.ts` | Each game's How-To-Play auto-expands on first open (`useState(() => shouldAutoExpandRules('key'))`), collapsed forever after. |
 
 ## 🚫 Explicit Constraints & "Do Not Touch" Rules
 
@@ -109,13 +137,13 @@ This bit us several times. If you add a new accent color, verify it in the compi
 | Roast Me | `ROAST` | AI roast from uploaded image | Gemini (image + text) | Uses image gen, can't swap to Claude |
 | Imposter | `IMPOSTER` | Find the fake among friends | Gemini | |
 | Would You Rather | `WOULD_YOU_RATHER` | Paired dilemmas | Local static data | |
-| Most Likely To | `MOST_LIKELY_TO` | Vote on friends | **Claude → Gemini fallback** | Has "Create Your Vibe" AI custom deck |
+| Most Likely To | `MOST_LIKELY_TO` | Vote on friends | **Claude → Gemini fallback** | Has "Create Your Vibe" AI custom deck (not PIN-gated; adult decks still are). Plays in 10-card rounds with a ROUND_END break screen (next 10 / change deck) |
 | Would I Lie To You | `WOULD_I_LIE_TO_YOU` | Truth vs lie storytelling | Gemini | |
-| Never Have I Ever | `NEVER_HAVE_I_EVER` | Stand up if you've done it | Gemini | Has curated "Rehaan"/"Agra"/"BBF" decks; no Claude custom yet |
+| Never Have I Ever | `NEVER_HAVE_I_EVER` | Stand up if you've done it | Gemini | Has curated "Rehaan"/"Agra"/"BBF" decks; no Claude custom yet. "Someone Has / All Clean" buttons record a room verdict per card; every 10 cards a RECAP screen scores the group's innocence. Custom Vibe not PIN-gated |
 | Mini Mafia (The Traitors) | `MINI_MAFIA` | Pass-and-play betrayal | Gemini (narration) | |
 | Icebreakers | `ICEBREAKERS` | Conversation starters | Gemini | Partial — SELECT→PLAY only |
 | Fact or Fiction | `FACT_OR_FICTION` | Beat the clock on true facts | Local static | |
-| The Forecast (Compatibility Test) | `COMPATIBILITY_TEST` | Player A predicts Player B's answers | Static (`compatibility_test.json`) | Adult-gated. Modes: Couples / Friends / Bunny. Known issue: deeper screens use dynamic Tailwind classes — see Known Issues. |
+| The Forecast (Compatibility Test) | `COMPATIBILITY_TEST` | Player A predicts Player B's answers | Static (`compatibility_test.json`) | Adult-gated. Modes: Couples / Friends / Bunny. |
 | **Truth or Drink** | `TRUTH_OR_DRINK` | Confess or sip | **Claude → Gemini fallback** | Adult-gated. 5 decks (Classic/Spicy/Deep Cuts/Ex Files/Chaos) + "Create Your Vibe" AI custom deck. 10 rounds. No dedicated roster screen — a deck tap drops straight into play. Optional compact `TeamRosterRow` on the category screen: add 2+ names → named mode (per-player truths/drinks leaderboard), else pass-the-phone just-play (like MLT/NHIE). Roster persists across games via the shared session team store. Custom deck routes to its context screen first. Also exposes an **Intimate Drinking** tile (adult dice sub-game, `IntimateDiceGame`) gated by a *separate* PIN `2525` — three two-dice modes ("The Action" = action × target-zone; "The High-Stakes Countdown" = sensation × duration, rolled number × 10s; "Positions" = position × twist/modifier). Offline, mappings live in the component. |
 | **5 Alive** | `FIVE_ALIVE` | Name N in N seconds, beat the bell | None (offline) | 5 descending rounds — name 5/4/3/2/1, timed 6/5/4/3/2s (extra second to read the clue) — perfect-round bonus, judge tallies. Easy + Hard category pools in `src/data/five_alive.json` (Easy = 124 mainstream + Indian-context; Hard = 106 recall-pressure categories). End-of-round bell + tick synthesized via Web Audio (no bundled assets); the landing screen uses the shared compact `TeamRosterRow` (collapsed gold prompt) for optional player names (persists across games via the shared session team store), difficulty picked after. Also has a "Just Play" no-scoring mode. |
 | **Linked** | `LINKED` | One connector word pairs with all 3 clues (e.g. water/down/rain → FALL) | None (offline) | Two modes: **Pass and Play** (60s per player, self-reported "Got it!"/"Skip", leaderboard, both flash the answer before advancing) and **Just Play** (no timer, group shout, Reveal → self-reported Correct/Incorrect tiles that score a running "solved" count and advance). Easy (78) + Hard (36) puzzle pools in `src/data/linked.json` — shape `{ clues: [3], answer, position? }` (`position` optional, defaults `'suffix'`; bundled data is all-suffix). Buzzer + tick + got-it ding synthesized via Web Audio. Per-puzzle session dedupe via `SessionManager`. |
@@ -147,7 +175,8 @@ Browser ─── fetch('/api/ai', {type, ...}) ───► Vercel Serverless F
 
 | File | Purpose |
 |---|---|
-| `api/ai.ts` | Dispatcher. Reads `body.type`, routes to the right handler. Returns `{ ok, data }` or `{ ok: false, error }`. |
+| `api/ai.ts` | Dispatcher. Reads `body.type`, routes to the right handler. Validates params with zod before dispatch (invalid → 400 naming the failing field). Returns `{ ok, data }` or `{ ok: false, error }`. |
+| `api/_lib/schemas.ts` | One zod schema per request type (`z.looseObject` — extra keys pass through; only what handlers genuinely require is enforced). `AIRequestType` is derived from this map, so schemas and dispatch can't drift. Adding a handler = add its schema here + dispatch entry in `ai.ts`. |
 | `api/_lib/clients.ts` | Lazy SDK singletons (one GoogleGenAI + one Anthropic per cold start). |
 | `api/_lib/handlers-custom.ts` | Custom MLT + custom TOD. Tries Claude first, falls back to Gemini. |
 | `api/_lib/handlers-gemini.ts` | Charades, Taboo, NHIE, WILTY, Mafia, WYR, Imposter, MLT, contextual lies. |
@@ -216,6 +245,9 @@ The basic / env-var-switched mode was simplified out once advanced was validated
 
 - **Local dev:** `vercel dev` (runs both Vite AND serverless functions). Or `npm run dev` if you're only touching client UI.
 - **Local build:** `npm run build` (runs `tsc -b && vite build`)
+- **Tests:** `npm test` → vitest render smoke test (`tests/App.smoke.test.tsx`: splash → home menu through the real module graph; jsdom, fetch/matchMedia stubbed in `tests/setup.ts`). Config in `vitest.config.ts` (deliberately separate from `vite.config.ts`).
+- **CI:** `.github/workflows/ci.yml` — on push to `main` + PRs: `npm ci`, `npm run build`, `npm test`. **Lint is NOT in CI** — `npm run lint` currently fails with ~56 pre-existing errors (mostly `no-explicit-any` and `react-refresh/only-export-components`); add it back once that debt is paid.
+- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens all 16 games headless, fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) against `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code.
 - **Deployment target:** Vercel, auto-triggered by `git push`
 - **Preview URL format:** `party-spark-git-{branch-slug}-{scope}.vercel.app` (has "Deployment Protection" enabled — you'll see a 401 on manifest.json that can be ignored)
 - **Production URL:** set by the user's Vercel project config (deployed from `main`)
@@ -241,23 +273,19 @@ Copy `.env.example` → `.env.local` in the repo root and fill in both keys. `.e
 
 ## 🛠️ Known Issues / Technical Debt
 
-Flagged during the 2026-04-21 audit. None blocking, but worth cleaning up when you're already in the area.
+Reconciled against code 2026-07-02. Several items from the 2026-04-21 audit were verified fixed and removed (Forecast dynamic Tailwind classes, Roast LOADING back-trap, stray `console.log`s, duplicate `useContent` import, client-side API keys — the last is fully solved by the `/api/ai` proxy).
 
-### High-value / low-cost
+1. **Coming Soon tab is hidden on the front end** via the `SHOW_TABS = false` flag in `App.tsx` (the strong games all live in Play Now now). `comingSoonGameIds` (WILTY / Icebreakers / Mini Mafia / WYR) + the tab logic still exist in code so the tabs can be re-enabled for testing by flipping the flag. All of those games are routed and playable. Icebreakers in particular should stay hidden until it's a real game loop (today it's a single screen swapping one AI line, with no offline fallback).
 
-1. **The Forecast has 7 dynamic Tailwind classes** in `CompatibilityTestGame.tsx` at lines 273, 284, 339, 360, 375, 378, 403 — template literals like `text-${accentColor}-400` that Tailwind v4's JIT won't reliably compile. The MODE_SELECT screen is clean; the PREDICT / ANSWER / PASS_TO_* states may be rendering without accent colors on mobile. Replace with static class maps following the Slim Row pattern.
+2. **NHIE has no Claude fallback yet.** `generateNeverHaveIEver` is Gemini-only. Same quota vulnerability TOD/MLT had before the port.
 
-2. **Coming Soon tab is hidden on the front end** via the `SHOW_TABS = false` flag in `App.tsx` (the strong games all live in Play Now now). `comingSoonGameIds` (WILTY / Icebreakers / Mini Mafia / WYR) + the tab logic still exist in code so the tabs can be re-enabled for testing by flipping the flag. All of those games are routed and playable.
+3. **`npm run lint` fails with ~56 pre-existing errors** (`no-explicit-any` in data-loading code, `react-refresh/only-export-components` in contexts/UI). Lint is therefore excluded from CI. Pay this down, then add `npm run lint` to `.github/workflows/ci.yml`.
 
-### Medium
+4. **A handler param named `type` can never reach `/api/ai` handlers** — the dispatcher strips `type` as its routing key, and the client spread can even overwrite it (breaks the icebreaker "deep" and roast_or_toast "toast" variants over the wire). Details + the fix recipe: `notes/01-api-type-param-collision.md`.
 
-3. **`RoastGame.tsx` line ~156** — LOADING state has `onBack={() => {}}`. User is stuck during image generation. Change to `onExit` or a state-specific handler.
+~~Old items "No code splitting" and "No service worker" removed 2026-07-03: fixed by Phase 1 hardening — every game is `React.lazy`, every data JSON is a dynamic import, and vite-plugin-pwa precaches the shell (see Key files).~~
 
-4. **NHIE has no Claude fallback yet.** `generateNeverHaveIEver` is Gemini-only. Same quota vulnerability TOD/MLT had before the port.
-
-### Low
-
-*(2026-07-03 sweep: the leftover `console.log`s in CharadesGame/TabooGame and the duplicate `useContent` import in CharadesGame were verified already fixed in code — removed from this list. The old "API keys are in client JS" item was resolved by the `/api/ai` proxy refactor described in AI Services.)*
+*(2026-07-02/03 sweep: the leftover `console.log`s in CharadesGame/TabooGame, the duplicate `useContent` import in CharadesGame, the Forecast dynamic Tailwind classes, and the Roast LOADING back-trap were all verified already fixed in code — removed from this list. The old "API keys are in client JS" item was resolved by the `/api/ai` proxy refactor described in AI Services.)*
 
 ## 📁 Key files
 
@@ -271,20 +299,36 @@ src/
 │   │   ├── Layout.tsx               # Card, Button, ScreenHeader (reuse)
 │   │   ├── PinGate.tsx              # PIN gate — 0438 default (DO NOT change); parameterised for extra gates (e.g. 2525)
 │   │   ├── TeamRosterRow.tsx        # Shared optional player/team-names row (gold pill, persists)
-│   │   └── TimerSetting.tsx         # Shared editable round-timer chip (Scramble/Charades/Taboo)
+│   │   ├── TimerSetting.tsx         # Shared editable round-timer chip (Scramble/Charades/Taboo)
+│   │   └── EndScreen.tsx            # Shared ranked-leaderboard end screen (5 Alive/Linked/Charades/Taboo)
 │   └── games/                       # One file per game (incl. JumbleGame = "Scramble", IntimateDiceGame)
 ├── contexts/
 │   └── ContentContext.tsx           # AI content prefetch cache
-├── data/                            # Static JSON question banks (+ jumble_sets.json, baked answer keys)
+├── data/                            # Static JSON question banks — dynamic-imported only (each is a lazy chunk)
+├── hooks/
+│   └── useCountdown.ts              # Shared rAF-deadline round timer (all 6 timer games)
 ├── services/
 │   ├── geminiService.ts             # Thin fetch wrappers around /api/ai (not a direct Google client)
 │   ├── claudeService.ts             # Thin fetch wrappers (back-compat)
 │   ├── jumbleEngine.ts              # Scramble runtime: set picker, validation, scoring, missed-words
-│   ├── LocalGameService.ts          # Static data readers
-│   └── SessionManager.ts            # sessionStorage wrapper (used-content tracking, shared team roster)
+│   ├── audio.ts                     # Shared Web Audio synth kit + app-wide mute + compact haptic aliases
+│   ├── haptics.ts                   # hapticLight/Success/Error/Heavy (navigator.vibrate; no-op on iOS; respects the mute switch)
+│   ├── shareCard.ts                 # Canvas share cards + shareText (see Engagement layer)
+│   ├── gameNightService.ts          # Game Night playlist/leaderboard store
+│   ├── statsStore.ts                # Lifetime plays/bests/wins (localStorage)
+│   ├── dailyChallenge.ts            # Daily Scramble seed + streak store
+│   ├── firstPlay.ts                 # First-open auto-expand for How-To-Play
+│   ├── LocalGameService.ts          # Static data readers (async — games_data.json loads lazily via loadGamesData)
+│   └── SessionManager.ts            # localStorage-backed session store (used-content tracking, shared team roster; 2h sliding window)
 └── index.css                        # Tailwind v4 @theme (custom props + keyframes only)
 
-(repo root) scripts/build-jumble-sets.mjs   # DEV-only generator → src/data/jumble_sets.json (needs cached dicts under scripts/.cache/)
+api/_lib/schemas.ts                  # zod schema per /api/ai request type (see AI Services)
+tests/App.smoke.test.tsx             # vitest render smoke test (run by CI)
+.github/workflows/ci.yml             # CI: npm ci, build, test (lint excluded — see Known Issues)
+notes/                               # One lesson per file (what broke + fix); see notes/README.md
+scripts/build-jumble-sets.mjs        # DEV-only generator → src/data/jumble_sets.json (needs cached dicts under scripts/.cache/)
+scripts/drive-games.mjs              # DEV-only headless-browser drive: opens all 16 games, fails on console errors
+scripts/deep-drive.mjs               # DEV-only deep flows for the 6 timer games (countdown/expiry/scoring)
 ```
 
 ## 🎓 End of Session Learning Recap

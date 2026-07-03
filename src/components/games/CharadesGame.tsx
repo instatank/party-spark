@@ -1,15 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { Button, ScreenHeader } from '../ui/Layout';
-import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles, Trophy } from 'lucide-react';
+import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles, Share2 } from 'lucide-react';
+import EndScreen from '../ui/EndScreen';
 import { generateCharadesWords } from '../../services/geminiService';
 import { useContent } from '../../contexts/ContentContext';
 import { CHARADES_CATEGORIES } from '../../constants';
-import gamesDataRaw from '../../data/games_data.json';
+import { loadGamesData } from '../../services/LocalGameService';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { useTheme } from '../../contexts/ThemeContext';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
+import { shareResultCard } from '../../services/shareCard';
+import { statsStore } from '../../services/statsStore';
+import { gameNightService } from '../../services/gameNightService';
+import { shouldAutoExpandRules } from '../../services/firstPlay';
+import { useCountdown } from '../../hooks/useCountdown';
+import { hapticLight, hapticSuccess, hapticHeavy } from '../../services/haptics';
+
+// games_data.json is lazy-loaded via LocalGameService (one shared chunk with
+// Taboo). The fetch starts as soon as this game chunk loads; use() below
+// suspends into the App-level Suspense boundary on first render.
+const gamesDataPromise = loadGamesData();
 
 interface Props {
     onExit: () => void;
@@ -30,6 +42,7 @@ const TILES_LIGHT: Record<string, string> = {
 };
 
 export const CharadesGame: React.FC<Props> = ({ onExit }) => {
+    const gamesDataRaw = use(gamesDataPromise);
     const { theme } = useTheme();
     const TILES_MAP = theme === 'light' ? TILES_LIGHT : TILES_DARK;
     const [words, setWords] = useState<string[]>([]);
@@ -38,7 +51,6 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<'SETUP' | 'TEAM_INTRO' | 'PLAYING' | 'SUMMARY'>('SETUP');
     const [score, setScore] = useState(0);
     const [duration, setDuration] = useState(() => loadTimerPref('charades_timer'));
-    const [timeLeft, setTimeLeft] = useState(duration);
     const [category, setCategory] = useState("mix_movies");
     const { prefetchGameContent } = useContent();
 
@@ -50,7 +62,11 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     const [teams, setTeams] = useState<string[]>(() => sessionService.getTeams());
     const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
     const [teamScores, setTeamScores] = useState<number[]>([]);
-    const [showHowToPlay, setShowHowToPlay] = useState(false);
+    const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('charades'));
+    const [sharing, setSharing] = useState(false);
+    // Guards the SUMMARY side-effects (stats + game-night report) so they
+    // fire exactly once per game end, even across re-renders.
+    const recordedRef = useRef(false);
 
     // const categories = ["Movies", "Animals", "Actions", "Celebrities", "Objects"]; // Replaced by constant
     const categories = CHARADES_CATEGORIES;
@@ -149,7 +165,6 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         setGameState('PLAYING');
         setScore(0);
         setCurrentIndex(0);
-        setTimeLeft(duration);
     };
 
     // End the current team's round. In team mode, push the score onto the
@@ -168,23 +183,41 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         setGameState('SUMMARY');
     };
 
+    // Round clock — shared deadline-based countdown (no interval drift).
+    const { secondsLeft: timeLeft } = useCountdown({
+        running: gameState === 'PLAYING',
+        durationMs: duration * 1000,
+        onExpire: () => { hapticHeavy(); endRound(); },
+    });
+
+    // Once per game end: lifetime stats + (in team mode) win credits and the
+    // Game Night report. reportResult is a safe no-op when no night is
+    // active. The ref resets on leaving SUMMARY so "Play Again" records too.
     useEffect(() => {
-        let interval: ReturnType<typeof setInterval>;
-        if (gameState === 'PLAYING' && timeLeft > 0) {
-            interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
-        } else if (timeLeft === 0 && gameState === 'PLAYING') {
-            endRound();
+        if (gameState !== 'SUMMARY') {
+            recordedRef.current = false;
+            return;
         }
-        return () => clearInterval(interval);
+        if (recordedRef.current) return;
+        recordedRef.current = true;
+        statsStore.recordPlay('CHARADES');
+        if (teamScores.length > 0) {
+            const entries = teamScores.map((s, i) => ({ name: teams[i] || `Team ${i + 1}`, score: s }));
+            const top = Math.max(...entries.map(e => e.score));
+            statsStore.recordWins('CHARADES', entries.filter(e => e.score === top).map(e => e.name));
+            gameNightService.reportResult('CHARADES', entries);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState, timeLeft]);
+    }, [gameState]);
 
     const handleCorrect = () => {
+        hapticSuccess();
         setScore(s => s + 1);
         nextCard();
     };
 
     const handleSkip = () => {
+        hapticLight();
         nextCard();
     };
 
@@ -261,7 +294,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                     )}
                 </div>
                 <div className="flex justify-center mb-3">
-                    <TimerSetting duration={duration} onPick={s => { setDuration(s); setTimeLeft(s); saveTimerPref('charades_timer', s); }} accent="#EFC050" />
+                    <TimerSetting duration={duration} onPick={s => { setDuration(s); saveTimerPref('charades_timer', s); }} accent="#EFC050" />
                 </div>
                 <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
                 <div className="flex-1 overflow-y-auto pb-8">
@@ -354,54 +387,69 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
             : [];
         const winner = ranked[0];
         const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
+        const catLabel = categories.find(c => c.id === category)?.label ?? category;
+        const handleShare = async () => {
+            if (sharing) return;
+            setSharing(true);
+            await shareResultCard({
+                gameTitle: 'Charades',
+                accent: TILES_MAP[category] || '#F59E0B',
+                emoji: '🎭',
+                heading: inTeamMode
+                    ? (tiedTop ? 'Tie at the top!' : `${winner.name} wins!`)
+                    : `${score} acted out!`,
+                sub: `${catLabel} · ${duration}s ${inTeamMode ? 'rounds' : 'round'}`,
+                rows: inTeamMode
+                    ? ranked.map(r => ({ label: r.name, value: `${r.score}`, highlight: r.score === winner.score }))
+                    : undefined,
+            });
+            setSharing(false);
+        };
+        const shareButton = (
+            <button
+                onClick={handleShare}
+                disabled={sharing}
+                className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <Share2 size={18} /> Share Result
+            </button>
+        );
+        if (inTeamMode) {
+            return (
+                <EndScreen
+                    title="Game Over"
+                    onBack={() => setGameState('SETUP')}
+                    onHome={onExit}
+                    heading="Time's Up!"
+                    accent="theme"
+                    entries={ranked}
+                    winnerText={() => 'takes it.'}
+                    footerExtra={shareButton}
+                    onPlayAgain={() => setGameState('SETUP')}
+                    exitLabel="Exit"
+                    onExit={onExit}
+                />
+            );
+        }
         return (
             <div className="h-full flex flex-col">
                 <ScreenHeader title="Game Over" onBack={() => setGameState('SETUP')} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center space-y-8 animate-slide-up">
-                    {inTeamMode ? (
-                        <>
-                            <div className="text-center">
-                                <h2 className="text-3xl font-bold mb-1 text-ink">Time's Up!</h2>
-                                {tiedTop ? (
-                                    <p className="text-muted">It's a tie at the top.</p>
-                                ) : (
-                                    <p className="text-muted">
-                                        <span className="font-bold text-ink">{winner.name}</span> takes it.
-                                    </p>
-                                )}
-                            </div>
-                            <div className="w-full max-w-[320px] space-y-2">
-                                {ranked.map((r, i) => (
-                                    <div
-                                        key={i}
-                                        className={`flex items-center justify-between rounded-xl px-4 py-3 border ${
-                                            i === 0
-                                                ? 'bg-accent-soft border-accent text-ink'
-                                                : 'bg-surface border-divider text-ink-soft'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            {i === 0 && <Trophy size={16} className="text-accent flex-shrink-0" />}
-                                            <span className="font-bold truncate">{r.name}</span>
-                                        </div>
-                                        <span className="text-2xl font-black ml-3">{r.score}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="text-center">
-                                <h2 className="text-4xl font-bold mb-2 text-ink">Time's Up!</h2>
-                                <p className="text-muted">You got</p>
-                            </div>
-                            <div className="text-8xl font-black text-accent">
-                                {score}
-                            </div>
-                        </>
-                    )}
-
+                    <div className="text-center">
+                        <h2 className="text-4xl font-bold mb-2 text-ink">Time's Up!</h2>
+                        <p className="text-muted">You got</p>
+                    </div>
+                    <div className="text-8xl font-black text-accent">
+                        {score}
+                    </div>
                     <div className="flex flex-col gap-3 w-full">
+                        <button
+                            onClick={handleShare}
+                            disabled={sharing}
+                            className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Share2 size={18} /> Share Result
+                        </button>
                         <Button onClick={() => setGameState('SETUP')} fullWidth>Play Again</Button>
                         <Button onClick={onExit} variant="secondary" fullWidth>Exit</Button>
                     </div>

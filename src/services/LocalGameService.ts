@@ -1,8 +1,15 @@
-import gamesDataRaw from '../data/games_data.json';
 import { shuffle } from './SessionManager';
-const gamesData = gamesDataRaw as any;
 
-export const getLocalCharadesWords = (categoryId: string, count: number = 20): string[] => {
+// games_data.json is shared by Charades, Taboo, and this service. It is loaded
+// through this single memoized dynamic import so it code-splits into ONE shared
+// lazy chunk instead of being inlined into each game's JS. The fetch starts as
+// soon as any consumer's chunk loads.
+const gamesDataPromise = import('../data/games_data.json').then(m => m.default);
+
+export const loadGamesData = () => gamesDataPromise;
+
+export const getLocalCharadesWords = async (categoryId: string, count: number = 20): Promise<string[]> => {
+    const gamesData = (await gamesDataPromise) as any;
     try {
         const categoryCallback = (cat: any) => cat.id === categoryId;
         const category = gamesData.games.charades.categories.find(categoryCallback);
@@ -27,7 +34,8 @@ export const getLocalCharadesWords = (categoryId: string, count: number = 20): s
     }
 };
 
-export const getLocalTabooCards = (categoryId: string, count: number = 20): any[] => {
+export const getLocalTabooCards = async (categoryId: string, count: number = 20): Promise<any[]> => {
+    const gamesData = (await gamesDataPromise) as any;
     try {
         if (categoryId === 'mix_taboo') {
             const allCards = gamesData.games.taboo.categories

@@ -1,0 +1,29 @@
+# Minimal CI: typecheck + build + smoke test.
+# `npm run lint` is intentionally NOT here — eslint currently fails on
+# pre-existing issues (56 errors as of 2026-07-03). Add it once those are fixed.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (tsc + vite)
+        run: npm run build
+
+      - name: Smoke test
+        run: npm test

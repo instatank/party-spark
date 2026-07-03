@@ -20,7 +20,7 @@ export interface JumbleSet {
     pangrams: string[];     // 7-letter answers that use every tile (Easy: common ones)
 }
 
-interface JumblePack {
+export interface JumblePack {
     generatedAt: string;
     tileCount: number;
     minWordLen: number;
@@ -60,6 +60,20 @@ export const pickSet = (pack: JumblePack, difficulty: JumbleDifficulty, exclude?
     const source = fresh.length > 0 ? fresh : pool;
     return source[Math.floor(Math.random() * source.length)];
 };
+
+// Deterministic accessors — the Daily Scramble picks the SAME set for everyone
+// on a given date (dailySetIndex(poolSize(...)) → setAtIndex(...)). Session
+// dedupe deliberately does NOT apply to a deterministic pick.
+export const poolSize = (pack: JumblePack, difficulty: JumbleDifficulty): number => pack[difficulty].length;
+
+export const setAtIndex = (pack: JumblePack, difficulty: JumbleDifficulty, index: number): JumbleSet => {
+    const pool = pack[difficulty];
+    return pool[((index % pool.length) + pool.length) % pool.length];
+};
+
+// The realistic target count for a set — the common subset on Easy, the full
+// answer key otherwise. Used as `maxWords` in the Daily's share grid.
+export const commonWordCount = (set: JumbleSet): number => (set.commonWords ?? set.words).length;
 
 // --- validation -------------------------------------------------------------
 export type ValidationStatus =

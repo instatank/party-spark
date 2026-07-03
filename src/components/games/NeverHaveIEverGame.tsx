@@ -1,18 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { NEVER_HAVE_I_EVER_CATEGORIES } from '../../constants';
 import { ScreenHeader } from '../ui/Layout';
-import neverHaveIEverData from '../../data/never_have_i_ever.json';
 import { generateNeverHaveIEver, generateCustomNeverHaveIEver } from '../../services/geminiService';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Lock, ChevronRight, Hand, Users, Wand2, ShieldCheck, Flame, Smile } from 'lucide-react';
+import { Sparkles, Lock, ChevronRight, Hand, Users, Wand2, ShieldCheck, Flame, Smile, Share2 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
+import { unlockAudio, playPop, playDing, hapticTap, hapticSuccess } from '../../services/audio';
+import { shareResultCard } from '../../services/shareCard';
+import { statsStore } from '../../services/statsStore';
+import { shouldAutoExpandRules } from '../../services/firstPlay';
 
 interface GameProps {
     onExit: () => void;
 }
+
+// The question bank is lazy-loaded so it code-splits out of this game's chunk.
+// The fetch starts as soon as the chunk loads; use() below suspends into the
+// App-level Suspense boundary on first render.
+const neverHaveIEverDataPromise = import('../../data/never_have_i_ever.json').then(m => m.default);
 
 // Per-category palette shared by the SELECT screen tile accents and the PLAY
 // screen card body. Two variants — light values darkened ~20% and tint
@@ -68,17 +75,23 @@ const PLACEHOLDER_EXAMPLES = [
 ];
 
 export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
+    const neverHaveIEverData = use(neverHaveIEverDataPromise);
     const { theme } = useTheme();
     const PALETTE_MAP = theme === 'light' ? CATEGORY_LIGHT : CATEGORY_DARK;
     const catPalette = (id: string) => {
         const e = PALETTE_MAP[id] || { Icon: Sparkles as LucideIcon, solid: '#94A3B8', tintAlpha: 0.18 };
         return { Icon: e.Icon, solid: e.solid, tint: hexToRgba(e.solid, e.tintAlpha) };
     };
-    const [gameState, setGameState] = useState<'SELECT' | 'CUSTOM_SETUP' | 'LOADING' | 'PLAY'>('SELECT');
+    const [gameState, setGameState] = useState<'SELECT' | 'CUSTOM_SETUP' | 'LOADING' | 'PLAY' | 'RECAP'>('SELECT');
     const [category, setCategory] = useState<string>('');
     const [cards, setCards] = useState<string[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    // Round arc: each card gets a room verdict — did anyone own up? After
+    // ROUND_SIZE verdicts the RECAP screen scores the group's innocence,
+    // giving the endless card stack a payoff every 10 cards.
+    const ROUND_SIZE = 10;
+    const [roundResults, setRoundResults] = useState<boolean[]>([]);
 
     // Custom-vibe state — same shape as MLT/TOD's custom flow.
     const [selectedGroupType, setSelectedGroupType] = useState('friends');
@@ -87,13 +100,27 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
     const [customError, setCustomError] = useState('');
     const [placeholderIdx] = useState(Math.floor(Math.random() * PLACEHOLDER_EXAMPLES.length));
 
-    // Temporary PIN gate on the Create-Your-Vibe tile while AI prompts are
-    // still being tuned in production. Same PIN as adult content. Drop
-    // showPinGate + the gate intercept once Custom Vibe is signed off.
-    const [showPinGate, setShowPinGate] = useState(false);
-    const [showHowToPlay, setShowHowToPlay] = useState(false);
+    const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('nhie'));
+    const [isSharing, setIsSharing] = useState(false);
+
+    // Once-per-round guard for RECAP-entry effects (sound + stats). Reset when
+    // play resumes so the next round's recap fires again.
+    const recapDoneRef = useRef(false);
 
     const wordCount = customContext.trim().split(/\s+/).filter(Boolean).length;
+
+    // RECAP entry: celebratory ding + haptic, and count the round as a play in
+    // the lifetime stats store. Guarded so re-renders of RECAP don't repeat it.
+    useEffect(() => {
+        if (gameState === 'RECAP' && !recapDoneRef.current) {
+            recapDoneRef.current = true;
+            playDing();
+            hapticSuccess();
+            statsStore.recordPlay('NEVER_HAVE_I_EVER');
+        } else if (gameState === 'PLAY') {
+            recapDoneRef.current = false;
+        }
+    }, [gameState]);
 
     // Initialize with local data depending on category. Skip for custom_vibe —
     // its deck comes from AI generation and is set directly by startCustomGame.
@@ -111,6 +138,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
             const pool = available.length > 0 ? available : localCards;
             setCards(shuffle(pool));
             setCurrentIndex(0);
+            setRoundResults([]);
         }
     }, [gameState, category]);
 
@@ -134,6 +162,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
             if (generated.length > 0) {
                 setCards(generated);
                 setCurrentIndex(0);
+                setRoundResults([]);
                 setGameState('PLAY');
             } else {
                 setCustomError('AI generation failed. Please try again or tweak your description.');
@@ -146,18 +175,13 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
         }
     };
 
-    const handleNextCard = async () => {
-        // Mark the card the user just saw as played so it won't repeat this session.
-        // Custom-vibe cards are AI-generated per session and not tracked.
-        if (cards[currentIndex] && category && category !== 'custom_vibe') {
-            sessionService.markAsUsed(GameType.NEVER_HAVE_I_EVER, category, cards[currentIndex]);
-        }
-
+    // Move to the next card, refilling the deck via the matching generator
+    // when the pool runs dry.
+    const advanceCard = async () => {
         if (currentIndex < cards.length - 1) {
             setCurrentIndex(prev => prev + 1);
             return;
         }
-        // Out of cards — refill via the matching generator.
         setIsLoading(true);
         try {
             let newCards: string[] = [];
@@ -176,6 +200,33 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
         }
     };
 
+    // Record the room's verdict for the current card ("I Have" = at least one
+    // confession), then advance — or show the recap when the round is done.
+    const handleResponse = async (someoneHas: boolean) => {
+        playPop();
+        hapticTap();
+        // Mark the card the user just saw as played so it won't repeat this session.
+        // Custom-vibe cards are AI-generated per session and not tracked.
+        if (cards[currentIndex] && category && category !== 'custom_vibe') {
+            sessionService.markAsUsed(GameType.NEVER_HAVE_I_EVER, category, cards[currentIndex]);
+        }
+
+        const results = [...roundResults, someoneHas];
+        setRoundResults(results);
+        if (results.length >= ROUND_SIZE) {
+            setGameState('RECAP');
+            return;
+        }
+        await advanceCard();
+    };
+
+    // Continue past the recap into the next 10 cards of the same deck.
+    const startNextRound = async () => {
+        setRoundResults([]);
+        setGameState('PLAY');
+        await advanceCard();
+    };
+
     if (gameState === 'SELECT') {
         // Slim Row pattern: 3px inset left bar + 33% center bottom line for the
         // curated decks. The custom-vibe tile gets the MLT-style 2px ring +
@@ -183,16 +234,6 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
         return (
             <div className="flex flex-col h-full animate-fade-in relative">
                 <ScreenHeader title="Never Have I Ever" onBack={onExit} onHome={onExit} />
-
-                {showPinGate && (
-                    <PinGateModal
-                        onSuccess={() => {
-                            setShowPinGate(false);
-                            setGameState('CUSTOM_SETUP');
-                        }}
-                        onCancel={() => setShowPinGate(false)}
-                    />
-                )}
 
                 <div className="text-center mb-4 -mt-3">
                     <p className="text-3xl mb-1.5 leading-none">🫣</p>
@@ -208,7 +249,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                         <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
                             <p><strong className="text-ink">1. GOAL:</strong> Read the "<strong className="text-cyan-500">Never have I ever…</strong>" card out loud to the group.</p>
                             <p><strong className="text-amber-500">2. OWN UP:</strong> Anyone who <em>has</em> done it stands up (or drinks / puts a finger down — your house rules). The reactions are the real game.</p>
-                            <p><strong className="text-red-500">3. SPILL:</strong> Caught standing? The table will want the story. That's where the night gets good.</p>
+                            <p><strong className="text-red-500">3. SPILL:</strong> Caught standing? The table will want the story. Tap <strong className="text-rose-500">Someone Has</strong> or <strong className="text-emerald-500">All Clean</strong> to log the room's verdict — every 10 cards you get an innocence recap.</p>
                             <p><strong className="text-emerald-500">4. PICK A DECK:</strong> Choose a curated category or tap "Create Your Vibe" to generate statements built for your exact group.</p>
                         </div>
                     )}
@@ -225,13 +266,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                 <button
                                     key={cat.id}
                                     onClick={() => {
-                                        // PIN gate on Custom Vibe (temporary,
-                                        // while AI prompts are being tuned).
-                                        if (isCustom && !isAdultUnlocked()) {
-                                            setCategory(cat.id);
-                                            setShowPinGate(true);
-                                            return;
-                                        }
+                                        unlockAudio();
                                         setCategory(cat.id);
                                         setGameState(isCustom ? 'CUSTOM_SETUP' : 'PLAY');
                                     }}
@@ -429,6 +464,81 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
         );
     }
 
+    // RECAP — the payoff every ROUND_SIZE cards: how innocent is this room?
+    if (gameState === 'RECAP') {
+        const confessions = roundResults.filter(Boolean).length;
+        const innocent = roundResults.length - confessions;
+        const verdict =
+            confessions <= 2 ? { emoji: '😇', line: 'Suspiciously innocent. Someone is definitely lying.' } :
+            confessions <= 5 ? { emoji: '🫢', line: 'A few skeletons rattled loose tonight.' } :
+            confessions <= 8 ? { emoji: '🔥', line: 'The secrets are OUT. No going back now.' } :
+                               { emoji: '😈', line: 'Zero innocence in this room. Respect.' };
+        const palette = catPalette(category);
+        return (
+            <div className="flex flex-col h-full animate-fade-in">
+                <ScreenHeader title="Round Recap" onBack={() => setGameState('SELECT')} onHome={onExit} />
+                <div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
+                    <div className="text-center">
+                        <p className="text-5xl mb-3 leading-none">{verdict.emoji}</p>
+                        <h2 className="text-xl font-serif font-bold text-ink mb-1">{verdict.line}</h2>
+                        <p className="text-muted text-sm">{roundResults.length} cards. The room has spoken.</p>
+                    </div>
+                    <div className="w-full max-w-sm grid grid-cols-2 gap-3">
+                        <div className="bg-transparent border-2 border-rose-500/60 rounded-xl py-4 text-center">
+                            <p className="text-3xl font-bold text-rose-600 leading-none mb-1">{confessions}</p>
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-rose-600/80">Owned Up</p>
+                        </div>
+                        <div className="bg-transparent border-2 border-emerald-500/60 rounded-xl py-4 text-center">
+                            <p className="text-3xl font-bold text-emerald-600 leading-none mb-1">{innocent}</p>
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-600/80">Stayed Clean</p>
+                        </div>
+                    </div>
+                    <div className="w-full max-w-sm flex flex-col gap-3">
+                        <button
+                            onClick={async () => {
+                                if (isSharing) return;
+                                setIsSharing(true);
+                                try {
+                                    await shareResultCard({
+                                        gameTitle: 'Never Have I Ever',
+                                        accent: palette.solid,
+                                        emoji: verdict.emoji,
+                                        heading: verdict.line,
+                                        sub: '10 cards · ' + (NEVER_HAVE_I_EVER_CATEGORIES.find(c => c.id === category)?.label || 'Custom Vibe'),
+                                        rows: [
+                                            { label: 'Owned Up', value: String(confessions), highlight: true },
+                                            { label: 'Stayed Clean', value: String(innocent) },
+                                        ],
+                                    });
+                                } finally {
+                                    setIsSharing(false);
+                                }
+                            }}
+                            disabled={isSharing}
+                            className="w-full py-3 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Share2 size={18} />
+                            Share Result
+                        </button>
+                        <button
+                            onClick={startNextRound}
+                            className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:scale-[0.98] shadow-lg"
+                            style={{ background: palette.solid, boxShadow: `0 8px 24px ${hexToRgba(palette.solid, 0.35)}` }}
+                        >
+                            Next 10 Cards
+                        </button>
+                        <button
+                            onClick={() => setGameState('SELECT')}
+                            className="w-full py-3 rounded-xl font-medium text-sm bg-surface text-ink border border-divider hover:bg-surface-alt transition-all active:scale-95"
+                        >
+                            Change Deck
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     if (cards.length === 0) {
         return (
             <div className="flex flex-col h-full">
@@ -488,7 +598,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                     </p>
                                 </div>
                                 <div className="text-[11px] text-muted flex items-center justify-between relative z-10">
-                                    <span>Card {currentIndex + 1} of {cards.length}</span>
+                                    <span>Card {roundResults.length + 1} of {ROUND_SIZE}</span>
                                     <span className="font-serif italic text-[12px]" style={{ color: palette.solid }}>PartySpark</span>
                                 </div>
                             </div>
@@ -496,29 +606,28 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                     );
                 })()}
 
-                {/* I've Never / I Have — outline-only CTAs matching the
+                {/* Someone Has / All Clean — outline-only CTAs matching the
                     TOD Truth/Drink row. Emerald for the innocent claim,
                     rose for the confession. Tint only appears on hover.
-                    Both buttons advance to the next statement (NHIE has
-                    no per-player turn so the declaration is purely
-                    flavor). */}
+                    Each tap records the room's verdict for this card and
+                    feeds the every-10-cards RECAP. */}
                 <div className="w-full max-w-sm mt-12 flex flex-col gap-3">
                     <div className="flex gap-3">
                         <button
-                            onClick={handleNextCard}
+                            onClick={() => handleResponse(true)}
                             disabled={isLoading}
                             className="flex-1 py-4 rounded-xl font-bold text-base text-rose-600 bg-transparent border-2 border-rose-500/60 hover:bg-rose-500/10 hover:border-rose-500 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Hand size={18} />
-                            I Have
+                            Someone Has
                         </button>
                         <button
-                            onClick={handleNextCard}
+                            onClick={() => handleResponse(false)}
                             disabled={isLoading}
                             className="flex-1 py-4 rounded-xl font-bold text-base text-emerald-600 bg-transparent border-2 border-emerald-500/60 hover:bg-emerald-500/10 hover:border-emerald-500 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <ShieldCheck size={18} />
-                            I've Never
+                            All Clean
                         </button>
                     </div>
                     {isLoading ? (
@@ -526,7 +635,7 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                             <Sparkles className="animate-spin" size={14} /> Generating more statements…
                         </p>
                     ) : (
-                        <p className="text-center text-xs text-muted font-medium">Stand up if you've done it!</p>
+                        <p className="text-center text-xs text-muted font-medium">Stand up if you've done it — then tap what the room says.</p>
                     )}
                 </div>
             </div>

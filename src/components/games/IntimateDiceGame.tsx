@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import { Dices, Flame, Hourglass, Repeat, ChevronRight, ArrowRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { hapticLight, hapticSuccess } from '../../services/haptics';
 
 // "Intimate Drinking" — a pair of adult two-dice games surfaced inside Truth or
 // Drink and gated by its own PIN. Each roll randomizes two dice; the numbers
@@ -86,6 +87,7 @@ export const IntimateDiceGame: React.FC<Props> = ({ onExit }) => {
 
     const roll = () => {
         if (rolling) return;
+        hapticLight();
         setRolling(true);
         setRolled(false);
         if (flickRef.current) clearInterval(flickRef.current);
@@ -96,6 +98,7 @@ export const IntimateDiceGame: React.FC<Props> = ({ onExit }) => {
             setD2(rand());
             setRolling(false);
             setRolled(true);
+            hapticSuccess();
         }, 650);
     };
 

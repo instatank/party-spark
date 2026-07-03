@@ -1,13 +1,17 @@
 
-import React, { useState } from 'react';
+import React, { useState, use } from 'react';
 import { Card, Button } from '../ui/Layout';
 import { ScreenHeader } from '../ui/Layout';
 import { ArrowRight, Brain, ChevronRight, Sparkles, Compass, Film, Flame } from 'lucide-react';
-import WYR_DATA from '../../data/would_you_rather.json';
 import { WOULD_YOU_RATHER_CATEGORIES } from '../../constants';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
+
+// The dilemma bank is lazy-loaded so it code-splits out of this game's chunk.
+// The fetch starts as soon as the chunk loads; use() below suspends into the
+// App-level Suspense boundary on first render.
+const wyrDataPromise = import('../../data/would_you_rather.json').then(m => m.default);
 
 const CATEGORY_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
     classic_chaos: Sparkles,
@@ -40,6 +44,7 @@ interface WouldYouRatherGameProps {
 const ROUND_SIZE = 10;
 
 export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }) => {
+    const WYR_DATA = use(wyrDataPromise);
     const [gameState, setGameState] = useState<'CATEGORY' | 'PLAYING'>('CATEGORY');
     const [activeCategory, setActiveCategory] = useState<WYRCategory | null>(null);
     const [questions, setQuestions] = useState<WYRQuestion[]>([]);
