@@ -1,73 +1,29 @@
-# React + TypeScript + Vite
+# PartySpark
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A premium, AI-spiced party game app: a dozen-plus pass-the-phone and solo games (Charades, Taboo, 5 Alive, Scramble, Truth or Drink, Roast Me, …). Offline-first — question banks ship as static JSON, and AI generation (Claude + Gemini, proxied server-side) is optional spice, never a hard dependency.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React + TypeScript via **Vite 7**, styled with **Tailwind CSS v4**
+- No router — a state-based `switch` in `src/App.tsx` driven by the `GameType` enum
+- **Vercel** hosting + serverless functions under `api/` (all AI calls go through `/api/ai`; API keys are server-side only)
 
-## React Compiler
+## Development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+vercel dev        # full app INCLUDING /api/* serverless functions
+npm run dev       # Vite only — /api/* does NOT run; AI features 404. UI-only work.
+npm run build     # tsc -b && vite build (type-checks src/ AND api/)
+npm run check:api # landmine linter for api/ (run before pushing api/ changes)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+> **Gotcha:** `npm run dev` does not serve the serverless functions. Anything touching AI must be tested with `vercel dev` or on a Vercel preview deploy. Local env: copy `.env.example` → `.env.local` with server-side `GEMINI_API_KEY` / `ANTHROPIC_API_KEY`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Deployment
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Vercel GitHub integration: every branch push gets a preview deploy; merges to `main` deploy production.
+
+## Full context
+
+See **`CLAUDE.md`** for architecture, the design system, AI service layout, critical `api/` landmines, and the game roster. `HANDOFF.md` covers recent session state.

@@ -253,11 +253,7 @@ Flagged during the 2026-04-21 audit. None blocking, but worth cleaning up when y
 
 ### Low
 
-5. **Leftover `console.log`s** in production code — `CharadesGame` (3x), `TabooGame` (1x). Remove or demote to `console.debug`.
-
-6. **Duplicate `useContent` import** in `CharadesGame.tsx` around line 5-6.
-
-7. **API keys are in client JS** (both Gemini and Claude). Fine for testing, but before merging to production-facing work, proxy through a backend. Anyone can inspect the bundle and pull the keys.
+*(2026-07-03 sweep: the leftover `console.log`s in CharadesGame/TabooGame and the duplicate `useContent` import in CharadesGame were verified already fixed in code — removed from this list. The old "API keys are in client JS" item was resolved by the `/api/ai` proxy refactor described in AI Services.)*
 
 ## 📁 Key files
 
