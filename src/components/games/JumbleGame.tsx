@@ -8,6 +8,8 @@ import {
     scoreForWord, setKey, TILE_COUNT,
     type JumbleSet, type JumbleDifficulty, type ValidationStatus,
 } from '../../services/jumbleEngine';
+import { unlockAudio, beep } from '../../services/audio';
+import { useCountdown } from '../../hooks/useCountdown';
 
 interface Props { onExit: () => void; }
 
@@ -40,33 +42,7 @@ const REJECT_MSG: Record<Exclude<ValidationStatus, 'valid'>, string> = {
     not_a_word:     'Not in the word list',
 };
 
-// --- tiny Web Audio kit (synth, no assets; respects the iOS mute switch) ----
-let audioCtx: AudioContext | null = null;
-const getCtx = (): AudioContext | null => {
-    try {
-        if (!audioCtx) {
-            const C = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-            if (!C) return null;
-            audioCtx = new C();
-        }
-        return audioCtx;
-    } catch { return null; }
-};
-const unlockAudio = () => { const c = getCtx(); if (c && c.state === 'suspended') void c.resume(); };
-const beep = (freq: number, dur: number, type: OscillatorType = 'sine', gain = 0.18) => {
-    const ctx = getCtx(); if (!ctx) return;
-    const run = () => {
-        const t = ctx.currentTime + 0.02;
-        const osc = ctx.createOscillator(); const g = ctx.createGain();
-        osc.type = type; osc.frequency.value = freq;
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(gain, t + 0.01);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        osc.connect(g).connect(ctx.destination);
-        osc.start(t); osc.stop(t + dur + 0.03);
-    };
-    if (ctx.state === 'suspended') ctx.resume().then(run).catch(() => {}); else run();
-};
+// --- Jumble's sounds, composed on the shared Web Audio kit (services/audio) --
 const dingValid = () => beep(880, 0.12, 'sine', 0.16);
 const dingPangram = () => { beep(880, 0.18); setTimeout(() => beep(1320, 0.25), 120); };
 const buzzEnd = () => { beep(180, 0.5, 'sawtooth', 0.2); };
@@ -90,7 +66,6 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [feedback, setFeedback] = useState<{ kind: 'ok' | 'bad' | 'dup'; text: string } | null>(null);
     const [pangramFlash, setPangramFlash] = useState(false);
     const [tappedIdx, setTappedIdx] = useState<number | null>(null);  // brief tile press feedback
-    const [remainingMs, setRemainingMs] = useState(duration * 1000);
     const [best, setBest] = useState(0);
 
     // Pass-and-Play state
@@ -102,7 +77,6 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const foundSet = useRef<Set<string>>(new Set());
     const seenSets = useRef<Set<string>>(new Set());      // session dedupe
     const fbTimer = useRef<number | null>(null);
-    const lastTickSec = useRef(99);
     const tapTimer = useRef<number | null>(null);
 
     const totalSeconds = duration;
@@ -117,25 +91,14 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         return () => { alive = false; };
     }, []);
 
-    // ---- timer loop (RAF) ----
-    useEffect(() => {
-        if (gameState !== 'TIMER_ACTIVE') return;
-        const deadline = performance.now() + totalSeconds * 1000;
-        lastTickSec.current = 99;
-        setRemainingMs(totalSeconds * 1000);
-        let raf = 0;
-        const frame = () => {
-            const left = Math.max(0, deadline - performance.now());
-            setRemainingMs(left);
-            const sec = Math.ceil(left / 1000);
-            if (sec <= 3 && sec >= 1 && sec !== lastTickSec.current) { lastTickSec.current = sec; tick(); }
-            if (left <= 0) { buzzEnd(); endRound(); return; }
-            raf = requestAnimationFrame(frame);
-        };
-        raf = requestAnimationFrame(frame);
-        return () => cancelAnimationFrame(raf);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState, playerIndex]);
+    // ---- timer (shared RAF countdown) ----
+    const { remainingMs } = useCountdown({
+        running: gameState === 'TIMER_ACTIVE',
+        durationMs: totalSeconds * 1000,
+        restartKey: playerIndex,
+        onSecond: (s) => { if (s <= 3 && s >= 1) tick(); },
+        onExpire: () => { buzzEnd(); endRound(); },
+    });
 
     // ---- flow ----
     const trimmedPlayers = players.map(p => p.trim()).filter(Boolean);
@@ -548,6 +511,11 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
 
     // ---- END (solo) ----
     if (gameState === 'END') {
+        // foundSet stops mutating once the round ends, so this render-time read
+        // is stable. (Pre-existing pattern; flagged only now that the old timer
+        // effect's eslint suppression no longer bails the whole component out
+        // of react-hooks analysis.)
+        // eslint-disable-next-line react-hooks/refs
         const summary = set ? summarizeMisses(set, foundSet.current) : null;
         const isNewBest = score > 0 && score >= best;
         return (

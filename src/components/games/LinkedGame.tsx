@@ -3,6 +3,8 @@ import { ScreenHeader, Button } from '../ui/Layout';
 import { Link2, ChevronRight, Plus, X, Zap, Trophy, ArrowRight, Eye, Check } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
+import { unlockAudio, playBuzzer, playTick, playDing } from '../../services/audio';
+import { useCountdown } from '../../hooks/useCountdown';
 
 // The puzzle pools are lazy-loaded so they code-split out of this game's
 // chunk. The fetch starts as soon as the chunk loads; use() in the component
@@ -49,82 +51,6 @@ const DIFFICULTY_TILES: { id: Difficulty; title: string; tagline: string; color:
     { id: 'easy', title: 'Easy', tagline: 'Everyday words — warm-up territory.', color: '#10B981' },
     { id: 'hard', title: 'Hard', tagline: 'Trickier connectors. Brains on.',     color: '#E11D48' },
 ];
-
-// ---------------------------------------------------------------------------
-// Audio — synthesized via Web Audio API (same approach as 5 Alive). No bundled
-// assets, sub-millisecond latency. Context is created lazily and resumed on the
-// first user gesture (tile tap / "I'm Ready").
-// ---------------------------------------------------------------------------
-let audioCtx: AudioContext | null = null;
-function getAudioCtx(): AudioContext | null {
-    try {
-        if (!audioCtx) {
-            const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-            if (!Ctor) return null;
-            audioCtx = new Ctor();
-        }
-        if (audioCtx.state === 'suspended') void audioCtx.resume();
-        return audioCtx;
-    } catch {
-        return null;
-    }
-}
-function unlockAudio() { getAudioCtx(); }
-
-function playBuzzer() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const dur = 0.85;
-    [110, 165].forEach((freq) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(0.3, now + 0.01);
-        gain.gain.setValueAtTime(0.3, now + dur - 0.06);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + dur);
-    });
-}
-
-function playTick() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'square';
-    osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.14, now + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.1);
-}
-
-function playDing() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    [660, 990].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        const t = now + i * 0.07;
-        gain.gain.setValueAtTime(0.0001, t);
-        gain.gain.exponentialRampToValueAtTime(0.18, t + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(t);
-        osc.stop(t + 0.25);
-    });
-}
 
 // ---------------------------------------------------------------------------
 const puzzleId = (p: Puzzle) => `${p.clues.join('+')}>${p.answer}`;
@@ -196,10 +122,6 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     // mode): 'got' = scored, 'skip' = skipped, null = not from an action.
     const [revealKind, setRevealKind] = useState<'got' | 'skip' | null>(null);
 
-    // Live timer (pass mode)
-    const [remainingMs, setRemainingMs] = useState(ROUND_SECONDS * 1000);
-    const firedRef = useRef(false);
-    const lastTickRef = useRef(99);
     const flashRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const clearFlash = () => { if (flashRef.current) { clearTimeout(flashRef.current); flashRef.current = null; } };
@@ -213,42 +135,21 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     const puzzle: Puzzle | undefined = queue[qIndex];
 
     // -----------------------------------------------------------------------
-    // Timer loop — RAF-driven for a smooth countdown. Only runs in pass mode
+    // Timer — shared RAF countdown for a smooth drain. Only runs in pass mode
     // while PLAY is active. Ticks once per second over the last 5 seconds;
     // buzzer the instant the deadline passes → ROUND_OVER.
     // -----------------------------------------------------------------------
-    useEffect(() => {
-        if (gameState !== 'PLAY' || mode !== 'pass') return;
-        const totalMs = ROUND_SECONDS * 1000;
-        const deadline = performance.now() + totalMs;
-        firedRef.current = false;
-        lastTickRef.current = 99;
-        setRemainingMs(totalMs);
-
-        let raf = 0;
-        const frame = () => {
-            const left = Math.max(0, deadline - performance.now());
-            setRemainingMs(left);
-            const sec = Math.ceil(left / 1000);
-            if (sec >= 1 && sec <= 5 && sec !== lastTickRef.current) {
-                lastTickRef.current = sec;
-                playTick();
-            }
-            if (left <= 0) {
-                if (!firedRef.current) {
-                    firedRef.current = true;
-                    clearFlash();
-                    playBuzzer();
-                    setGameState('ROUND_OVER');
-                }
-                return;
-            }
-            raf = requestAnimationFrame(frame);
-        };
-        raf = requestAnimationFrame(frame);
-        return () => cancelAnimationFrame(raf);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState, turnId]);
+    const { remainingMs } = useCountdown({
+        running: gameState === 'PLAY' && mode === 'pass',
+        durationMs: ROUND_SECONDS * 1000,
+        restartKey: turnId,
+        onSecond: (sec) => { if (sec >= 1 && sec <= 5) playTick(0.14); },
+        onExpire: () => {
+            clearFlash();
+            playBuzzer();
+            setGameState('ROUND_OVER');
+        },
+    });
 
     // -----------------------------------------------------------------------
     // Queue helpers

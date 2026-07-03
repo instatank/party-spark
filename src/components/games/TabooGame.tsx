@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, use } from 'react';
 import { Button, Card, ScreenHeader } from '../ui/Layout';
 // generateTabooCards removed — full local deck is loaded each round
 import { useContent } from '../../contexts/ContentContext';
@@ -10,6 +10,7 @@ import { GameType } from '../../types';
 import { loadGamesData } from '../../services/LocalGameService';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
+import { useCountdown } from '../../hooks/useCountdown';
 
 // games_data.json is lazy-loaded via LocalGameService (one shared chunk with
 // Charades). The fetch starts as soon as this game chunk loads; use() below
@@ -35,7 +36,6 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [duration, setDuration] = useState(() => loadTimerPref('taboo_timer'));
-    const [timeLeft, setTimeLeft] = useState(duration);
     const [currentCategory, setCurrentCategory] = useState("");
     const { prefetchGameContent } = useContent();
 
@@ -105,7 +105,6 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
         setCards(selectedCards);
         setScore(0);
         setCurrentIndex(0);
-        setTimeLeft(duration);
         setGameState('READY');
     };
 
@@ -130,16 +129,12 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
         setGameState('SUMMARY');
     };
 
-    useEffect(() => {
-        let interval: ReturnType<typeof setInterval>;
-        if (gameState === 'PLAYING' && timeLeft > 0) {
-            interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
-        } else if (timeLeft === 0 && gameState === 'PLAYING') {
-            endRound();
-        }
-        return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState, timeLeft]);
+    // Round clock — shared deadline-based countdown (no interval drift).
+    const { secondsLeft: timeLeft } = useCountdown({
+        running: gameState === 'PLAYING',
+        durationMs: duration * 1000,
+        onExpire: endRound,
+    });
 
     const handleCorrect = () => {
         setScore(s => s + 1);
@@ -188,7 +183,7 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                     )}
                 </div>
                 <div className="flex justify-center mb-3">
-                    <TimerSetting duration={duration} onPick={s => { setDuration(s); setTimeLeft(s); saveTimerPref('taboo_timer', s); }} accent="#F0656D" />
+                    <TimerSetting duration={duration} onPick={s => { setDuration(s); saveTimerPref('taboo_timer', s); }} accent="#F0656D" />
                 </div>
                 <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
                 <div className="flex-1 overflow-y-auto pb-8">

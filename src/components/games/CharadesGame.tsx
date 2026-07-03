@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, use } from 'react';
 import { Button, ScreenHeader } from '../ui/Layout';
 import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles, Trophy } from 'lucide-react';
 import { generateCharadesWords } from '../../services/geminiService';
@@ -10,6 +10,7 @@ import { GameType } from '../../types';
 import { useTheme } from '../../contexts/ThemeContext';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
+import { useCountdown } from '../../hooks/useCountdown';
 
 // games_data.json is lazy-loaded via LocalGameService (one shared chunk with
 // Taboo). The fetch starts as soon as this game chunk loads; use() below
@@ -44,7 +45,6 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     const [gameState, setGameState] = useState<'SETUP' | 'TEAM_INTRO' | 'PLAYING' | 'SUMMARY'>('SETUP');
     const [score, setScore] = useState(0);
     const [duration, setDuration] = useState(() => loadTimerPref('charades_timer'));
-    const [timeLeft, setTimeLeft] = useState(duration);
     const [category, setCategory] = useState("mix_movies");
     const { prefetchGameContent } = useContent();
 
@@ -155,7 +155,6 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         setGameState('PLAYING');
         setScore(0);
         setCurrentIndex(0);
-        setTimeLeft(duration);
     };
 
     // End the current team's round. In team mode, push the score onto the
@@ -174,16 +173,12 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         setGameState('SUMMARY');
     };
 
-    useEffect(() => {
-        let interval: ReturnType<typeof setInterval>;
-        if (gameState === 'PLAYING' && timeLeft > 0) {
-            interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
-        } else if (timeLeft === 0 && gameState === 'PLAYING') {
-            endRound();
-        }
-        return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState, timeLeft]);
+    // Round clock — shared deadline-based countdown (no interval drift).
+    const { secondsLeft: timeLeft } = useCountdown({
+        running: gameState === 'PLAYING',
+        durationMs: duration * 1000,
+        onExpire: endRound,
+    });
 
     const handleCorrect = () => {
         setScore(s => s + 1);
@@ -267,7 +262,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                     )}
                 </div>
                 <div className="flex justify-center mb-3">
-                    <TimerSetting duration={duration} onPick={s => { setDuration(s); setTimeLeft(s); saveTimerPref('charades_timer', s); }} accent="#EFC050" />
+                    <TimerSetting duration={duration} onPick={s => { setDuration(s); saveTimerPref('charades_timer', s); }} accent="#EFC050" />
                 </div>
                 <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
                 <div className="flex-1 overflow-y-auto pb-8">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, use } from 'react';
+import React, { useState, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import { Timer, ChevronRight, Plus, Zap, Trophy, ArrowRight, Minus, Flame } from 'lucide-react';
 import TeamRosterRow from '../ui/TeamRosterRow';
@@ -6,6 +6,8 @@ import type { LucideIcon } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
+import { unlockAudio, playBell, playTick } from '../../services/audio';
+import { useCountdown } from '../../hooks/useCountdown';
 
 // The category pools are lazy-loaded so they code-split out of this game's
 // chunk. The fetch starts as soon as the chunk loads; use() below suspends
@@ -60,77 +62,6 @@ const TIMER_TIERS: Record<'green' | 'amber' | 'red', { text: string; ring: strin
 };
 const tierForSecond = (sec: number): 'green' | 'amber' | 'red' => (sec >= 3 ? 'green' : sec === 2 ? 'amber' : 'red');
 
-// ---------------------------------------------------------------------------
-// Audio — synthesized via Web Audio API. No bundled assets, sub-millisecond
-// latency, and dodges the royalty-free-buzzer hunt entirely. The context is
-// created lazily and resumed on the first user gesture (mobile autoplay
-// unlock), which happens when the player taps a difficulty tile or "Start".
-// ---------------------------------------------------------------------------
-let audioCtx: AudioContext | null = null;
-function getAudioCtx(): AudioContext | null {
-    try {
-        if (!audioCtx) {
-            const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-            if (!Ctor) return null;
-            audioCtx = new Ctor();
-        }
-        if (audioCtx.state === 'suspended') void audioCtx.resume();
-        return audioCtx;
-    } catch {
-        return null;
-    }
-}
-// Call on a user gesture to prime the context before the first round.
-function unlockAudio() { getAudioCtx(); }
-
-// End-of-round signal — a bright bell "ding-ding" rather than a harsh buzzer.
-// Each strike is a stack of sine partials (roughly modeled on a struck bell:
-// fundamental + a few inharmonic overtones) with a fast attack and a long
-// exponential ring-out.
-function playBell() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const strike = (t0: number, base: number) => {
-        const partials: { ratio: number; gain: number; decay: number }[] = [
-            { ratio: 1.0,  gain: 0.26, decay: 1.5 },
-            { ratio: 2.0,  gain: 0.16, decay: 1.0 },
-            { ratio: 2.97, gain: 0.10, decay: 0.7 },
-            { ratio: 4.1,  gain: 0.06, decay: 0.45 },
-        ];
-        partials.forEach(({ ratio, gain, decay }) => {
-            const osc = ctx.createOscillator();
-            const g = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.value = base * ratio;
-            g.gain.setValueAtTime(0.0001, t0);
-            g.gain.exponentialRampToValueAtTime(gain, t0 + 0.006);
-            g.gain.exponentialRampToValueAtTime(0.0001, t0 + decay);
-            osc.connect(g).connect(ctx.destination);
-            osc.start(t0);
-            osc.stop(t0 + decay + 0.05);
-        });
-    };
-    const now = ctx.currentTime;
-    strike(now, 880);          // first ding (~A5)
-    strike(now + 0.17, 1175);  // second, brighter (~D6) — "ding-ding, time!"
-}
-
-function playTick() {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'square';
-    osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.16, now + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.1);
-}
-
 interface PlayerScore { name: string; total: number; breakdown: number[] }
 
 export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
@@ -153,11 +84,6 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     const [tally, setTally] = useState(0);          // judge's entered count for the current round
     const [expandedPlayer, setExpandedPlayer] = useState<number | null>(null); // END-screen breakdown toggle
 
-    // Live timer
-    const [remainingMs, setRemainingMs] = useState(ROUNDS[0].time * 1000);
-    const firedRef = useRef(false);                 // guards against double buzzer
-    const lastTickRef = useRef<number>(99);         // last second that played a tick
-
     const round = ROUNDS[roundIndex];
     const trimmedPlayers = players.map(p => p.trim()).filter(Boolean);
     const canStartNamed = trimmedPlayers.length >= MIN_PLAYERS;
@@ -169,43 +95,22 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     const currentPlayerName = mode === 'named' ? (trimmedPlayers[playerIndex] || '') : '';
 
     // -----------------------------------------------------------------------
-    // Timer loop — RAF-driven so the visual ring drains smoothly. Buzzer fires
-    // the instant the deadline passes (well under the 50ms target). Tick plays
-    // once at each of 3 / 2 / 1 seconds remaining (so a 1-second round still
-    // gets a single tick at the start — extra urgency).
+    // Timer — shared RAF countdown so the visual ring drains smoothly. Bell
+    // fires the instant the deadline passes (well under the 50ms target).
+    // Tick plays once at each of 3 / 2 / 1 seconds remaining (so a 1-second
+    // round still gets a single tick at the start — extra urgency).
     // -----------------------------------------------------------------------
-    useEffect(() => {
-        if (gameState !== 'PLAYING') return;
-        const totalMs = round.time * 1000;
-        const deadline = performance.now() + totalMs;
-        firedRef.current = false;
-        lastTickRef.current = 99;
-        setRemainingMs(totalMs);
-
-        let raf = 0;
-        const frame = () => {
-            const left = Math.max(0, deadline - performance.now());
-            setRemainingMs(left);
-            const sec = Math.ceil(left / 1000);
-            if (sec >= 1 && sec <= 3 && sec !== lastTickRef.current) {
-                lastTickRef.current = sec;
-                playTick();
-            }
-            if (left <= 0) {
-                if (!firedRef.current) {
-                    firedRef.current = true;
-                    playBell();
-                    setTally(0);
-                    setGameState('TALLY');
-                }
-                return;
-            }
-            raf = requestAnimationFrame(frame);
-        };
-        raf = requestAnimationFrame(frame);
-        return () => cancelAnimationFrame(raf);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState, roundIndex]);
+    const { remainingMs } = useCountdown({
+        running: gameState === 'PLAYING',
+        durationMs: round.time * 1000,
+        restartKey: roundIndex,
+        onSecond: (sec) => { if (sec >= 1 && sec <= 3) playTick(0.16); },
+        onExpire: () => {
+            playBell();
+            setTally(0);
+            setGameState('TALLY');
+        },
+    });
 
     // -----------------------------------------------------------------------
     // Flow handlers

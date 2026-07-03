@@ -6,6 +6,7 @@ import type { LucideIcon } from 'lucide-react';
 import { sessionService } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import TeamRosterRow from '../ui/TeamRosterRow';
+import { useCountdown } from '../../hooks/useCountdown';
 
 // The question bank is lazy-loaded so it code-splits out of this game's chunk.
 // The fetch starts as soon as the chunk loads; use() below suspends into the
@@ -52,7 +53,6 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
     const [difficulty, setDifficulty] = useState(1);
     const [score, setScore] = useState(0);
     const [strikes, setStrikes] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
     const [gameState, setGameState] = useState<'category_select' | 'playing' | 'answer_reveal' | 'team_transition' | 'round_over'>('category_select');
     const [showHowToPlay, setShowHowToPlay] = useState(false);
 
@@ -100,12 +100,10 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
             // Don't auto-start — let the first team see who's up via the
             // team_transition screen.
             setGameState('team_transition');
-            setTimeLeft(TIMER_SECONDS);
             return;
         }
         loadNextQuestion(startingPool, 1, category.id);
         setGameState('playing');
-        setTimeLeft(TIMER_SECONDS);
     };
 
     // Pull the next question and put the new team on the clock. Used both
@@ -115,7 +113,6 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
         setStrikes(0);
         setWrongStreak(0);
         setDifficulty(1);
-        setTimeLeft(TIMER_SECONDS);
         answeredRef.current = false;
         loadNextQuestion(availableQuestions, 1);
         setGameState('playing');
@@ -163,30 +160,25 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
         }
     };
 
-    // Timer Effect — uses a ref flag to prevent double-fire
+    // Re-arm the double-fire guard whenever a new question goes on the clock.
     useEffect(() => {
-        if (gameState !== 'playing') return;
-        answeredRef.current = false;
-
-        const timer = setInterval(() => {
-            setTimeLeft((prev) => {
-                if (prev <= 1) {
-                    clearInterval(timer);
-                    // Trigger timeout as incorrect answer
-                    setTimeout(() => {
-                        if (!answeredRef.current) {
-                            answeredRef.current = true;
-                            handleTimedOut();
-                        }
-                    }, 0);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-
-        return () => clearInterval(timer);
+        if (gameState === 'playing') answeredRef.current = false;
     }, [gameState, currentQuestion]);
+
+    // Question clock — shared deadline-based countdown. The answeredRef guard
+    // stays here (not in the hook): it also arbitrates against manual answers.
+    const { secondsLeft: timeLeft } = useCountdown({
+        running: gameState === 'playing',
+        durationMs: TIMER_SECONDS * 1000,
+        restartKey: currentQuestion,
+        onExpire: () => {
+            // Trigger timeout as incorrect answer
+            if (!answeredRef.current) {
+                answeredRef.current = true;
+                handleTimedOut();
+            }
+        },
+    });
 
     // Separate handler for time-out so it doesn't conflict with the answeredRef guard
     const handleTimedOut = () => {
@@ -246,7 +238,6 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
         } else {
             loadNextQuestion(availableQuestions, difficulty);
             setGameState('playing');
-            setTimeLeft(TIMER_SECONDS);
         }
     };
 
