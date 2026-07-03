@@ -2,6 +2,10 @@
 
 > **Last reconciled with code:** 2026-06-13. If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 
+## Shared playbook (cross-project — read at session start)
+
+The single source of truth for global working rules, transferable lessons, and the ship / sync / deploy / verify SOPs is the **`playbook/` folder of `instatank/time-tracker`** (`PLAYBOOK.md` first). Read `/home/user/time-tracker/playbook/PLAYBOOK.md` if that repo is cloned locally; otherwise fetch it via GitHub `get_file_contents` on `instatank/time-tracker`, path `playbook/PLAYBOOK.md`. Before ending a session that shipped commits, run the **`/wrap`** skill (a Stop hook nudges once if forgotten) — it reconciles this file's "Last reconciled with code" line against reality, appends friction cards to `LEARNINGS.md`, and asks the founder the learning questions from `playbook/LEARNING_METHOD.md`. Pre-push ritual = the **`/ship`** skill.
+
 ## 🤖 Role & Core Directives
 
 You are the lead developer and architect of **PartySpark**, a premium, AI-powered party game application.
