@@ -1,6 +1,8 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-06-13. If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+> **Last reconciled with code:** 2026-07-03 (Phase 1 architecture hardening). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+>
+> There is also a `notes/` directory — one *lesson* per file (what was tried, what broke, what fixed it). Architecture facts live here; war stories live there.
 
 ## 🤖 Role & Core Directives
 
@@ -14,8 +16,18 @@ You are the lead developer and architect of **PartySpark**, a premium, AI-powere
 - **Framework:** React + TypeScript via Vite 7
 - **Styling:** Tailwind CSS v4
 - **Routing:** State-based `switch` in `App.tsx` driven by the `GameType` enum — no React Router, no Next.js
-- **Data Strategy:** Offline-first. Questions/cards live in static JSON files under `src/data/*.json`
+- **Code splitting:** Every game is `React.lazy` in `App.tsx` (one shared `<Suspense>` boundary with the bouncing-dots `GameLoading` fallback). The initial bundle carries only the home screen; each game is its own chunk.
+- **Data Strategy:** Offline-first. Questions/cards live in static JSON files under `src/data/*.json`, but they are **dynamic-imported**, never statically imported — each dataset is its own lazy chunk. House pattern: a module-level memoized `import('../../data/x.json').then(m => m.default)` promise resolved with React 19's `use()` inside the component (suspends into the App-level boundary). `games_data.json` is shared by Charades + Taboo and loads through `loadGamesData()` in `LocalGameService`. Adding a static JSON import to a game undoes its code splitting — don't.
+- **Offline/PWA:** `vite-plugin-pwa` in `vite.config.ts` (registerType `autoUpdate`, registered in `main.tsx`). The service worker precaches every built asset (all game + data chunks, icons, splash), so the whole app works offline after first load. The existing `public/manifest.json` stays the single manifest (`manifest: false` in the plugin). `/api/*` is never cached and is denylisted from the SPA navigate fallback. Google Fonts get runtime caching.
 - **AI Integration:** Hybrid. See the **AI Services** section below for the current provider layout.
+
+### Shared modules (use these — do not re-duplicate per game)
+
+- `src/hooks/useCountdown.ts` — the round-timer driver for all 6 timer games (Charades, Taboo, Fact or Fiction, 5 Alive, Linked, Scramble). rAF against a `performance.now()` deadline; `{ running, durationMs, restartKey?, onSecond?, onExpire? }` → `{ remainingMs, secondsLeft }`. No game should own a `setInterval`/rAF countdown again.
+- `src/services/audio.ts` — the Web Audio synth kit (lazy singleton `AudioContext`, `unlockAudio()`, `beep()`, `playBell`, `playBuzzer`, `playTick`, `playDing`). Formerly duplicated in 5 Alive / Linked / Scramble.
+- `src/services/haptics.ts` — `hapticLight` / `hapticSuccess` / `hapticError` / `hapticHeavy` on `navigator.vibrate` (feature-checked; iOS Safari never supports it — Android/Chrome only). Wired at the same moments as sounds.
+- `src/components/ui/EndScreen.tsx` — the ranked-leaderboard end screen (winner tint + trophy, tie line, optional expandable row detail, Play Again/exit footer). Used by 5 Alive, Linked, Charades, Taboo. Fact or Fiction / Scramble / Truth or Drink end screens are structurally different and intentionally NOT on it — don't force them without a design pass.
+- `src/components/ui/TimerSetting.tsx` + `TeamRosterRow.tsx` — as before (see Design System).
 
 ## 🎨 Design System (current standard)
 
@@ -143,7 +155,8 @@ Browser ─── fetch('/api/ai', {type, ...}) ───► Vercel Serverless F
 
 | File | Purpose |
 |---|---|
-| `api/ai.ts` | Dispatcher. Reads `body.type`, routes to the right handler. Returns `{ ok, data }` or `{ ok: false, error }`. |
+| `api/ai.ts` | Dispatcher. Reads `body.type`, routes to the right handler. Validates params with zod before dispatch (invalid → 400 naming the failing field). Returns `{ ok, data }` or `{ ok: false, error }`. |
+| `api/_lib/schemas.ts` | One zod schema per request type (`z.looseObject` — extra keys pass through; only what handlers genuinely require is enforced). `AIRequestType` is derived from this map, so schemas and dispatch can't drift. Adding a handler = add its schema here + dispatch entry in `ai.ts`. |
 | `api/_lib/clients.ts` | Lazy SDK singletons (one GoogleGenAI + one Anthropic per cold start). |
 | `api/_lib/handlers-custom.ts` | Custom MLT + custom TOD. Tries Claude first, falls back to Gemini. |
 | `api/_lib/handlers-gemini.ts` | Charades, Taboo, NHIE, WILTY, Mafia, WYR, Imposter, MLT, contextual lies. |
@@ -212,6 +225,9 @@ The basic / env-var-switched mode was simplified out once advanced was validated
 
 - **Local dev:** `vercel dev` (runs both Vite AND serverless functions). Or `npm run dev` if you're only touching client UI.
 - **Local build:** `npm run build` (runs `tsc -b && vite build`)
+- **Tests:** `npm test` → vitest render smoke test (`tests/App.smoke.test.tsx`: splash → home menu through the real module graph; jsdom, fetch/matchMedia stubbed in `tests/setup.ts`). Config in `vitest.config.ts` (deliberately separate from `vite.config.ts`).
+- **CI:** `.github/workflows/ci.yml` — on push to `main` + PRs: `npm ci`, `npm run build`, `npm test`. **Lint is NOT in CI** — `npm run lint` currently fails with ~56 pre-existing errors (mostly `no-explicit-any` and `react-refresh/only-export-components`); add it back once that debt is paid.
+- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens all 16 games headless, fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) against `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code.
 - **Deployment target:** Vercel, auto-triggered by `git push`
 - **Preview URL format:** `party-spark-git-{branch-slug}-{scope}.vercel.app` (has "Deployment Protection" enabled — you'll see a 401 on manifest.json that can be ignored)
 - **Production URL:** set by the user's Vercel project config (deployed from `main`)
@@ -257,7 +273,11 @@ Flagged during the 2026-04-21 audit. None blocking, but worth cleaning up when y
 
 6. **Duplicate `useContent` import** in `CharadesGame.tsx` around line 5-6.
 
-7. **API keys are in client JS** (both Gemini and Claude). Fine for testing, but before merging to production-facing work, proxy through a backend. Anyone can inspect the bundle and pull the keys.
+7. **`npm run lint` fails with ~56 pre-existing errors** (`no-explicit-any` in data-loading code, `react-refresh/only-export-components` in contexts/UI). Lint is therefore excluded from CI. Pay this down, then add `npm run lint` to `.github/workflows/ci.yml`.
+
+8. **A handler param named `type` can never reach `/api/ai` handlers** — the dispatcher strips `type` as its routing key, and the client spread can even overwrite it (breaks the icebreaker "deep" and roast_or_toast "toast" variants over the wire). Details + the fix recipe: `notes/01-api-type-param-collision.md`.
+
+~~Old item 7 ("API keys are in client JS") removed 2026-07-03: obsolete since the `/api/ai` proxy refactor — keys are server-side only (see AI Services).~~
 
 ## 📁 Key files
 
@@ -271,20 +291,31 @@ src/
 │   │   ├── Layout.tsx               # Card, Button, ScreenHeader (reuse)
 │   │   ├── PinGate.tsx              # PIN gate — 0438 default (DO NOT change); parameterised for extra gates (e.g. 2525)
 │   │   ├── TeamRosterRow.tsx        # Shared optional player/team-names row (gold pill, persists)
-│   │   └── TimerSetting.tsx         # Shared editable round-timer chip (Scramble/Charades/Taboo)
+│   │   ├── TimerSetting.tsx         # Shared editable round-timer chip (Scramble/Charades/Taboo)
+│   │   └── EndScreen.tsx            # Shared ranked-leaderboard end screen (5 Alive/Linked/Charades/Taboo)
 │   └── games/                       # One file per game (incl. JumbleGame = "Scramble", IntimateDiceGame)
 ├── contexts/
 │   └── ContentContext.tsx           # AI content prefetch cache
-├── data/                            # Static JSON question banks (+ jumble_sets.json, baked answer keys)
+├── data/                            # Static JSON question banks — dynamic-imported only (each is a lazy chunk)
+├── hooks/
+│   └── useCountdown.ts              # Shared rAF-deadline round timer (all 6 timer games)
 ├── services/
 │   ├── geminiService.ts             # Thin fetch wrappers around /api/ai (not a direct Google client)
 │   ├── claudeService.ts             # Thin fetch wrappers (back-compat)
 │   ├── jumbleEngine.ts              # Scramble runtime: set picker, validation, scoring, missed-words
-│   ├── LocalGameService.ts          # Static data readers
+│   ├── audio.ts                     # Shared Web Audio synth kit (bell/buzzer/tick/ding + beep)
+│   ├── haptics.ts                   # hapticLight/Success/Error/Heavy (navigator.vibrate; no-op on iOS)
+│   ├── LocalGameService.ts          # Static data readers (async — games_data.json loads lazily via loadGamesData)
 │   └── SessionManager.ts            # sessionStorage wrapper (used-content tracking, shared team roster)
 └── index.css                        # Tailwind v4 @theme (custom props + keyframes only)
 
-(repo root) scripts/build-jumble-sets.mjs   # DEV-only generator → src/data/jumble_sets.json (needs cached dicts under scripts/.cache/)
+api/_lib/schemas.ts                  # zod schema per /api/ai request type (see AI Services)
+tests/App.smoke.test.tsx             # vitest render smoke test (run by CI)
+.github/workflows/ci.yml             # CI: npm ci, build, test (lint excluded — see Known Issues)
+notes/                               # One lesson per file (what broke + fix); see notes/README.md
+scripts/build-jumble-sets.mjs        # DEV-only generator → src/data/jumble_sets.json (needs cached dicts under scripts/.cache/)
+scripts/drive-games.mjs              # DEV-only headless-browser drive: opens all 16 games, fails on console errors
+scripts/deep-drive.mjs               # DEV-only deep flows for the 6 timer games (countdown/expiry/scoring)
 ```
 
 ## 🎓 End of Session Learning Recap
