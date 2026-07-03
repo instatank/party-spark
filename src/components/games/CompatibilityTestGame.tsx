@@ -1,11 +1,15 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, use } from 'react';
 import { Card, ScreenHeader, Button } from '../ui/Layout';
 import { unlockAudio, playReveal, playBell, hapticTap, hapticSuccess } from '../../services/audio';
 import { statsStore } from '../../services/statsStore';
 import { Heart, Users, ArrowRight, ChevronRight, Eye, EyeOff, Target, User, Shuffle, Rabbit } from 'lucide-react';
-import questionData from '../../data/compatibility_test.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
+
+// The question bank is lazy-loaded so it code-splits out of this game's chunk.
+// The fetch starts as soon as the chunk loads; use() below suspends into the
+// App-level Suspense boundary on first render.
+const questionDataPromise = import('../../data/compatibility_test.json').then(m => m.default);
 
 interface Question {
     text: string;
@@ -94,6 +98,7 @@ interface RoundResult {
 }
 
 export const CompatibilityTestGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
+    const questionData = use(questionDataPromise);
     // State
     const [gameState, setGameState] = useState<GameState>('MODE_SELECT');
     const [showHowToPlay, setShowHowToPlay] = useState(false);

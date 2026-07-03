@@ -1,13 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Link2, ChevronRight, Plus, X, Zap, Trophy, ArrowRight, Eye, Check, Share2 } from 'lucide-react';
-import linkedData from '../../data/linked.json';
+import { Link2, ChevronRight, Plus, X, Zap, ArrowRight, Eye, Check, Share2 } from 'lucide-react';
+import EndScreen from '../ui/EndScreen';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
-import { unlockAudio, playBuzzer, playTick, playDing, hapticBuzz, hapticSuccess } from '../../services/audio';
+import { unlockAudio, playBuzzer, playTick, playDing } from '../../services/audio';
 import { shareResultCard } from '../../services/shareCard';
 import { statsStore } from '../../services/statsStore';
 import { gameNightService } from '../../services/gameNightService';
+import { useCountdown } from '../../hooks/useCountdown';
+import { hapticLight, hapticSuccess, hapticError, hapticHeavy } from '../../services/haptics';
+
+// The puzzle pools are lazy-loaded so they code-split out of this game's
+// chunk. The fetch starts as soon as the chunk loads; use() in the component
+// suspends into the App-level Suspense boundary on first render.
+const linkedDataPromise = import('../../data/linked.json').then(m => m.default);
 
 interface Props {
     onExit: () => void;
@@ -51,7 +58,6 @@ const DIFFICULTY_TILES: { id: Difficulty; title: string; tagline: string; color:
 ];
 
 // ---------------------------------------------------------------------------
-const POOL = linkedData as unknown as Record<Difficulty, Puzzle[]>;
 const puzzleId = (p: Puzzle) => `${p.clues.join('+')}>${p.answer}`;
 const posOf = (p: Puzzle): Position => p.position ?? 'suffix';
 
@@ -99,6 +105,7 @@ const ClueLine: React.FC<{ clue: string; answer: string; position: Position; rev
 };
 
 export const LinkedGame: React.FC<Props> = ({ onExit }) => {
+    const POOL = use(linkedDataPromise) as unknown as Record<Difficulty, Puzzle[]>;
     const [gameState, setGameState] = useState<GameState>('SETUP');
     const [showHowToPlay, setShowHowToPlay] = useState(false);
     const [mode, setMode] = useState<Mode>('pass');
@@ -120,10 +127,6 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     // mode): 'got' = scored, 'skip' = skipped, null = not from an action.
     const [revealKind, setRevealKind] = useState<'got' | 'skip' | null>(null);
 
-    // Live timer (pass mode)
-    const [remainingMs, setRemainingMs] = useState(ROUND_SECONDS * 1000);
-    const firedRef = useRef(false);
-    const lastTickRef = useRef(99);
     const flashRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const clearFlash = () => { if (flashRef.current) { clearTimeout(flashRef.current); flashRef.current = null; } };
@@ -137,43 +140,22 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     const puzzle: Puzzle | undefined = queue[qIndex];
 
     // -----------------------------------------------------------------------
-    // Timer loop — RAF-driven for a smooth countdown. Only runs in pass mode
+    // Timer — shared RAF countdown for a smooth drain. Only runs in pass mode
     // while PLAY is active. Ticks once per second over the last 5 seconds;
     // buzzer the instant the deadline passes → ROUND_OVER.
     // -----------------------------------------------------------------------
-    useEffect(() => {
-        if (gameState !== 'PLAY' || mode !== 'pass') return;
-        const totalMs = ROUND_SECONDS * 1000;
-        const deadline = performance.now() + totalMs;
-        firedRef.current = false;
-        lastTickRef.current = 99;
-        setRemainingMs(totalMs);
-
-        let raf = 0;
-        const frame = () => {
-            const left = Math.max(0, deadline - performance.now());
-            setRemainingMs(left);
-            const sec = Math.ceil(left / 1000);
-            if (sec >= 1 && sec <= 5 && sec !== lastTickRef.current) {
-                lastTickRef.current = sec;
-                playTick();
-            }
-            if (left <= 0) {
-                if (!firedRef.current) {
-                    firedRef.current = true;
-                    clearFlash();
-                    playBuzzer();
-                    hapticBuzz();
-                    setGameState('ROUND_OVER');
-                }
-                return;
-            }
-            raf = requestAnimationFrame(frame);
-        };
-        raf = requestAnimationFrame(frame);
-        return () => cancelAnimationFrame(raf);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState, turnId]);
+    const { remainingMs } = useCountdown({
+        running: gameState === 'PLAY' && mode === 'pass',
+        durationMs: ROUND_SECONDS * 1000,
+        restartKey: turnId,
+        onSecond: (sec) => { if (sec >= 1 && sec <= 5) playTick(0.14); },
+        onExpire: () => {
+            clearFlash();
+            playBuzzer();
+            hapticHeavy();
+            setGameState('ROUND_OVER');
+        },
+    });
 
     // -----------------------------------------------------------------------
     // Lifetime stats + Game Night reporting — fires once when a pass-and-play
@@ -327,6 +309,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     };
     const handleSkip = () => {
         if (revealed) return;
+        hapticLight();
         setRoundSkipped(s => s + 1);
         flashThenAdvance('skip');
     };
@@ -336,7 +319,7 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
     // Both advance to the next puzzle (no separate Next step).
     const handleReveal = () => { setRevealed(true); };
     const handleJustPlayCorrect = () => { playDing(); hapticSuccess(); setRoundGot(g => g + 1); advance(); };
-    const handleJustPlayIncorrect = () => { advance(); };
+    const handleJustPlayIncorrect = () => { hapticError(); advance(); };
 
     // ROUND_OVER → next player (or END)
     const handleAfterRound = () => {
@@ -668,43 +651,25 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
 
     // ---- END (pass mode) ----
     if (gameState === 'END') {
-        const ranked = [...scores].sort((a, b) => b.score - a.score);
-        const top = ranked[0];
-        const tiedTop = ranked.filter(r => r.score === top.score).length > 1;
         return (
-            <div className="h-full flex flex-col">
-                <ScreenHeader title="Final Scores" onBack={backToSetup} onHome={onExit} />
-                <div className="flex-1 overflow-y-auto px-4 pb-8 animate-slide-up">
-                    <div className="text-center mb-5">
-                        <div className="text-5xl mb-2">🏆</div>
-                        {tiedTop
-                            ? <p className="text-muted">It's a tie at the top.</p>
-                            : <p className="text-muted"><span className="font-bold text-ink">{top.name}</span> wins with {top.score}.</p>}
-                    </div>
-                    <div className="space-y-2 max-w-[360px] mx-auto">
-                        {ranked.map((s, i) => (
-                            <div key={s.name + i} className={`flex items-center justify-between px-4 py-3 rounded-xl border ${i === 0 ? 'bg-indigo-500/10 border-indigo-500/50' : 'bg-surface border-divider'}`}>
-                                <div className="flex items-center gap-2 min-w-0">
-                                    {i === 0 && <Trophy size={16} className="text-indigo-500 flex-shrink-0" />}
-                                    <span className="font-bold text-ink truncate">{s.name}</span>
-                                </div>
-                                <span className="text-2xl font-black text-ink">{s.score}</span>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex flex-col gap-3 w-full max-w-[360px] mx-auto mt-6">
-                        <button
-                            onClick={handleShare}
-                            disabled={sharing}
-                            className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
-                        >
-                            <Share2 size={18} /> Share Result
-                        </button>
-                        <Button onClick={handlePlayAgain} fullWidth>Play Again</Button>
-                        <Button onClick={onExit} variant="secondary" fullWidth>Back to Home</Button>
-                    </div>
-                </div>
-            </div>
+            <EndScreen
+                title="Final Scores"
+                onBack={backToSetup}
+                onHome={onExit}
+                accent="indigo"
+                entries={scores.map(s => ({ name: s.name, score: s.score }))}
+                footerExtra={(
+                    <button
+                        onClick={handleShare}
+                        disabled={sharing}
+                        className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                        <Share2 size={18} /> Share Result
+                    </button>
+                )}
+                onPlayAgain={handlePlayAgain}
+                onExit={onExit}
+            />
         );
     }
 

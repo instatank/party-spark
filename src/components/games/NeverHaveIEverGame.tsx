@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { NEVER_HAVE_I_EVER_CATEGORIES } from '../../constants';
 import { ScreenHeader } from '../ui/Layout';
-import neverHaveIEverData from '../../data/never_have_i_ever.json';
 import { generateNeverHaveIEver, generateCustomNeverHaveIEver } from '../../services/geminiService';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
@@ -16,6 +15,11 @@ import { shouldAutoExpandRules } from '../../services/firstPlay';
 interface GameProps {
     onExit: () => void;
 }
+
+// The question bank is lazy-loaded so it code-splits out of this game's chunk.
+// The fetch starts as soon as the chunk loads; use() below suspends into the
+// App-level Suspense boundary on first render.
+const neverHaveIEverDataPromise = import('../../data/never_have_i_ever.json').then(m => m.default);
 
 // Per-category palette shared by the SELECT screen tile accents and the PLAY
 // screen card body. Two variants — light values darkened ~20% and tint
@@ -71,6 +75,7 @@ const PLACEHOLDER_EXAMPLES = [
 ];
 
 export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
+    const neverHaveIEverData = use(neverHaveIEverDataPromise);
     const { theme } = useTheme();
     const PALETTE_MAP = theme === 'light' ? CATEGORY_LIGHT : CATEGORY_DARK;
     const catPalette = (id: string) => {

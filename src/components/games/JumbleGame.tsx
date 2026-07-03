@@ -8,12 +8,14 @@ import {
     scoreForWord, setKey, TILE_COUNT, poolSize, setAtIndex, commonWordCount,
     type JumbleSet, type JumbleDifficulty, type ValidationStatus, type JumblePack,
 } from '../../services/jumbleEngine';
-import { unlockAudio, playDingSoft, playPangram, playBuzzEnd, playTickSoft, hapticSuccess, hapticBuzz } from '../../services/audio';
+import { unlockAudio, playDingSoft, playPangram, playBuzzEnd, playTickSoft } from '../../services/audio';
 import { shareResultCard, shareText } from '../../services/shareCard';
 import { statsStore } from '../../services/statsStore';
 import { gameNightService } from '../../services/gameNightService';
 import { dayLabel, dailySetIndex, dailyStore, buildDailyShareText, type DailyResult } from '../../services/dailyChallenge';
 import { shouldAutoExpandRules } from '../../services/firstPlay';
+import { useCountdown } from '../../hooks/useCountdown';
+import { hapticSuccess, hapticError, hapticHeavy } from '../../services/haptics';
 
 interface Props { onExit: () => void; }
 
@@ -88,7 +90,6 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [feedback, setFeedback] = useState<{ kind: 'ok' | 'bad' | 'dup'; text: string } | null>(null);
     const [pangramFlash, setPangramFlash] = useState(false);
     const [tappedIdx, setTappedIdx] = useState<number | null>(null);  // brief tile press feedback
-    const [remainingMs, setRemainingMs] = useState(duration * 1000);
     const [best, setBest] = useState(0);
     const [sharing, setSharing] = useState(false);
 
@@ -116,7 +117,6 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const seenSets = useRef<Set<string>>(new Set());      // session dedupe
     const packRef = useRef<JumblePack | null>(null);      // resolved pack (for the deterministic Daily pick)
     const fbTimer = useRef<number | null>(null);
-    const lastTickSec = useRef(99);
     const tapTimer = useRef<number | null>(null);
 
     const totalSeconds = mode === 'daily' ? DAILY_SECONDS : duration;
@@ -142,25 +142,14 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // ---- timer loop (RAF) ----
-    useEffect(() => {
-        if (gameState !== 'TIMER_ACTIVE') return;
-        const deadline = performance.now() + totalSeconds * 1000;
-        lastTickSec.current = 99;
-        setRemainingMs(totalSeconds * 1000);
-        let raf = 0;
-        const frame = () => {
-            const left = Math.max(0, deadline - performance.now());
-            setRemainingMs(left);
-            const sec = Math.ceil(left / 1000);
-            if (sec <= 3 && sec >= 1 && sec !== lastTickSec.current) { lastTickSec.current = sec; playTickSoft(); }
-            if (left <= 0) { playBuzzEnd(); hapticBuzz(); endRound(); return; }
-            raf = requestAnimationFrame(frame);
-        };
-        raf = requestAnimationFrame(frame);
-        return () => cancelAnimationFrame(raf);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState, playerIndex]);
+    // ---- timer (shared RAF countdown) ----
+    const { remainingMs } = useCountdown({
+        running: gameState === 'TIMER_ACTIVE',
+        durationMs: totalSeconds * 1000,
+        restartKey: playerIndex,
+        onSecond: (s) => { if (s <= 3 && s >= 1) playTickSoft(); },
+        onExpire: () => { playBuzzEnd(); hapticHeavy(); endRound(); },
+    });
 
     // ---- flow ----
     const trimmedPlayers = players.map(p => p.trim()).filter(Boolean);
@@ -336,17 +325,20 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             setScore(s => s + res.points);
             if (res.isPangram) {
                 playPangram();
-                hapticSuccess();
+                hapticHeavy();
                 setPangramFlash(true);
                 setTimeout(() => setPangramFlash(false), 1500);
                 flashFeedback('ok', `PANGRAM! +${res.points}`);
             } else {
                 playDingSoft();
+                hapticSuccess();
                 flashFeedback('ok', `+${res.points}  ${res.word}`);
             }
         } else if (res.status === 'already_found') {
+            hapticError();
             flashFeedback('dup', REJECT_MSG.already_found);
         } else {
+            hapticError();
             flashFeedback('bad', REJECT_MSG[res.status]);
         }
         setInput('');
@@ -828,6 +820,11 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
 
     // ---- END (solo) ----
     if (gameState === 'END') {
+        // foundSet stops mutating once the round ends, so this render-time read
+        // is stable. (Pre-existing pattern; flagged only now that the old timer
+        // effect's eslint suppression no longer bails the whole component out
+        // of react-hooks analysis.)
+        // eslint-disable-next-line react-hooks/refs
         const summary = set ? summarizeMisses(set, foundSet.current) : null;
         const isNewBest = score > 0 && score >= best;
         return (

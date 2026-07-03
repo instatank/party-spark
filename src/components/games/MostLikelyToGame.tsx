@@ -1,15 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { ScreenHeader, useExitConfirm } from '../ui/Layout';
 import { statsStore } from '../../services/statsStore';
 import { shouldAutoExpandRules } from '../../services/firstPlay';
 import { generateMostLikelyTo, generateCustomMostLikelyTo } from '../../services/geminiService';
 import { MOST_LIKELY_TO_CATEGORIES } from '../../constants';
 import { Users, ChevronRight, Hand, AlertTriangle, Sparkles, Flame, Zap, Wand2, ArrowLeft, Home } from 'lucide-react';
-import MOST_LIKELY_TO_DATA from '../../data/most_likely_to.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 import { useTheme } from '../../contexts/ThemeContext';
+
+// The question bank is lazy-loaded so it code-splits out of this game's chunk.
+// The fetch starts as soon as the chunk loads; use() below suspends into the
+// App-level Suspense boundary on first render.
+const mostLikelyToDataPromise = import('../../data/most_likely_to.json').then(m => m.default);
 
 // Per-category accent colors. Dark values are the original hues; light values
 // are darkened/saturated so they read against #EEF4FA. Tint opacity bumps in
@@ -71,6 +75,7 @@ const PLACEHOLDER_EXAMPLES = [
 ];
 
 export const MostLikelyToGame: React.FC<Props> = ({ onExit }) => {
+    const MOST_LIKELY_TO_DATA = use(mostLikelyToDataPromise);
     const { theme } = useTheme();
     const TILES_MAP = theme === 'light' ? TILES_LIGHT : TILES_DARK;
     const tilePalette = (id: string) => {

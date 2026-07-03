@@ -1,8 +1,7 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import type { LucideIcon } from 'lucide-react';
 import { Sparkles, Flame, ChevronRight, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2, Dices, Lock, Share2 } from 'lucide-react';
-import questionData from '../../data/truth_or_drink.json';
 import { generateCustomTruthOrDrink } from '../../services/geminiService';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService, shuffle } from '../../services/SessionManager';
@@ -14,6 +13,11 @@ import TeamRosterRow from '../ui/TeamRosterRow';
 import { PinGateModal, isUnlocked } from '../ui/PinGate';
 import { IntimateDiceGame } from './IntimateDiceGame';
 import { GameType } from '../../types';
+
+// The question decks are lazy-loaded so they code-split out of this game's
+// chunk. The fetch starts as soon as the chunk loads; use() below suspends
+// into the App-level Suspense boundary on first render.
+const questionDataPromise = import('../../data/truth_or_drink.json').then(m => m.default);
 
 type Category = 'classic' | 'spicy' | 'deep' | 'exes' | 'chaos' | 'custom';
 type GameState =
@@ -183,6 +187,7 @@ const CATEGORIES: CategoryMeta[] = [
 const TOTAL_ROUNDS = 10;
 
 export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
+    const questionData = use(questionDataPromise);
     const { theme } = useTheme();
     const DECK_MAP = theme === 'light' ? DECK_PALETTE_LIGHT : DECK_PALETTE_DARK;
     const deckPalette = (id: Category): { solid: string; tint: string } => {

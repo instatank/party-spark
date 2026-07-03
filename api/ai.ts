@@ -7,9 +7,12 @@
 // Response shape: 200 OK         { ok: true, data: <typed payload> }
 //                 4xx/5xx        { ok: false, error: string }
 //
-// Types are validated by the dispatch table below; unknown types 400.
+// Unknown types 400. Params are validated against the zod schemas in
+// _lib/schemas.ts before dispatch; invalid params also 400 with a message
+// naming the failing field.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { AI_REQUEST_SCHEMAS, type AIRequestType } from './_lib/schemas.js';
 import { handleCustomMostLikelyTo, handleCustomTruthOrDrink, handleCustomNeverHaveIEver } from './_lib/handlers-custom.js';
 import {
     handleCharadesWords,
@@ -30,25 +33,9 @@ import {
     handleRoastOrToast,
 } from './_lib/handlers-image.js';
 
-// Union of all accepted request types. If you add a handler, add its type here.
-type AIRequestType =
-    | 'custom_mlt'
-    | 'custom_tod'
-    | 'custom_nhie'
-    | 'charades_words'
-    | 'wilty'
-    | 'nhie'
-    | 'taboo_cards'
-    | 'icebreaker'
-    | 'mafia_narrative'
-    | 'wyr_batch'
-    | 'psycho_analysis'
-    | 'imposter_content'
-    | 'mlt'
-    | 'contextual_lies'
-    | 'generate_roast'
-    | 'edit_image'
-    | 'roast_or_toast';
+// AIRequestType (the union of accepted request types) is derived from the
+// schema map in _lib/schemas.ts. If you add a handler, add its schema there
+// and its dispatch entry below.
 
 // Dispatch table: type → handler. Each handler accepts the rest of the body
 // (everything except `type`) and returns a serializable payload.
@@ -89,8 +76,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ ok: false, error: `Unknown type: ${type}` });
     }
 
+    // Validate params against this type's schema before dispatching. Schemas
+    // are loose objects — unknown extra keys pass through to the handler.
+    const parsed = AI_REQUEST_SCHEMAS[type as AIRequestType].safeParse(params);
+    if (!parsed.success) {
+        const detail = parsed.error.issues
+            .map((issue) => (issue.path.length ? `${issue.path.map(String).join('.')}: ` : '') + issue.message)
+            .join('; ');
+        return res.status(400).json({ ok: false, error: `Invalid params for type "${type}": ${detail}` });
+    }
+
     try {
-        const data = await dispatcher(params);
+        const data = await dispatcher(parsed.data);
         return res.status(200).json({ ok: true, data });
     } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);

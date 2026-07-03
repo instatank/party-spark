@@ -1,16 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Timer, ChevronRight, Plus, Zap, Trophy, ArrowRight, Minus, Flame, Share2 } from 'lucide-react';
+import { Timer, ChevronRight, Plus, Zap, ArrowRight, Minus, Flame, Share2 } from 'lucide-react';
 import TeamRosterRow from '../ui/TeamRosterRow';
+import EndScreen from '../ui/EndScreen';
 import type { LucideIcon } from 'lucide-react';
-import fiveAliveData from '../../data/five_alive.json';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
-import { unlockAudio, playBell, playTick, hapticBuzz, hapticTap } from '../../services/audio';
+import { unlockAudio, playBell, playTick } from '../../services/audio';
 import { shareResultCard } from '../../services/shareCard';
 import { statsStore } from '../../services/statsStore';
 import { gameNightService } from '../../services/gameNightService';
+import { useCountdown } from '../../hooks/useCountdown';
+import { hapticLight, hapticHeavy } from '../../services/haptics';
+
+// The category pools are lazy-loaded so they code-split out of this game's
+// chunk. The fetch starts as soon as the chunk loads; use() below suspends
+// into the App-level Suspense boundary on first render.
+const fiveAliveDataPromise = import('../../data/five_alive.json').then(m => m.default);
 
 interface Props {
     onExit: () => void;
@@ -63,6 +70,7 @@ const tierForSecond = (sec: number): 'green' | 'amber' | 'red' => (sec >= 3 ? 'g
 interface PlayerScore { name: string; total: number; breakdown: number[] }
 
 export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
+    const fiveAliveData = use(fiveAliveDataPromise);
     const [gameState, setGameState] = useState<GameState>('SETUP');
     const [difficulty, setDifficulty] = useState<Difficulty>('easy');
     const [mode, setMode] = useState<Mode>('named');
@@ -79,12 +87,6 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     const [turnCategories, setTurnCategories] = useState<string[]>([]);
     const [scores, setScores] = useState<PlayerScore[]>([]);
     const [tally, setTally] = useState(0);          // judge's entered count for the current round
-    const [expandedPlayer, setExpandedPlayer] = useState<number | null>(null); // END-screen breakdown toggle
-
-    // Live timer
-    const [remainingMs, setRemainingMs] = useState(ROUNDS[0].time * 1000);
-    const firedRef = useRef(false);                 // guards against double buzzer
-    const lastTickRef = useRef<number>(99);         // last second that played a tick
 
     const round = ROUNDS[roundIndex];
     const trimmedPlayers = players.map(p => p.trim()).filter(Boolean);
@@ -97,44 +99,23 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     const currentPlayerName = mode === 'named' ? (trimmedPlayers[playerIndex] || '') : '';
 
     // -----------------------------------------------------------------------
-    // Timer loop — RAF-driven so the visual ring drains smoothly. Buzzer fires
-    // the instant the deadline passes (well under the 50ms target). Tick plays
-    // once at each of 3 / 2 / 1 seconds remaining (so a 1-second round still
-    // gets a single tick at the start — extra urgency).
+    // Timer — shared RAF countdown so the visual ring drains smoothly. Bell
+    // fires the instant the deadline passes (well under the 50ms target).
+    // Tick plays once at each of 3 / 2 / 1 seconds remaining (so a 1-second
+    // round still gets a single tick at the start — extra urgency).
     // -----------------------------------------------------------------------
-    useEffect(() => {
-        if (gameState !== 'PLAYING') return;
-        const totalMs = round.time * 1000;
-        const deadline = performance.now() + totalMs;
-        firedRef.current = false;
-        lastTickRef.current = 99;
-        setRemainingMs(totalMs);
-
-        let raf = 0;
-        const frame = () => {
-            const left = Math.max(0, deadline - performance.now());
-            setRemainingMs(left);
-            const sec = Math.ceil(left / 1000);
-            if (sec >= 1 && sec <= 3 && sec !== lastTickRef.current) {
-                lastTickRef.current = sec;
-                playTick();
-            }
-            if (left <= 0) {
-                if (!firedRef.current) {
-                    firedRef.current = true;
-                    playBell();
-                    hapticBuzz();
-                    setTally(0);
-                    setGameState('TALLY');
-                }
-                return;
-            }
-            raf = requestAnimationFrame(frame);
-        };
-        raf = requestAnimationFrame(frame);
-        return () => cancelAnimationFrame(raf);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameState, roundIndex]);
+    const { remainingMs } = useCountdown({
+        running: gameState === 'PLAYING',
+        durationMs: round.time * 1000,
+        restartKey: roundIndex,
+        onSecond: (sec) => { if (sec >= 1 && sec <= 3) playTick(0.16); },
+        onExpire: () => {
+            playBell();
+            hapticHeavy();
+            setTally(0);
+            setGameState('TALLY');
+        },
+    });
 
     // -----------------------------------------------------------------------
     // Lifetime stats + Game Night reporting — fires once per finished game.
@@ -296,7 +277,6 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
             setScores([{ name: 'Just Play', total: 0, breakdown: [] }]);
         }
         setPlayerIndex(0);
-        setExpandedPlayer(null);
         setTurnCategories(drawTurnCategories(difficulty));
         setRoundIndex(0);
         setTally(0);
@@ -504,7 +484,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                     </p>
                     <div className="flex items-center gap-5">
                         <button
-                            onClick={() => { hapticTap(); setTally(t => Math.max(0, t - 1)); }}
+                            onClick={() => { hapticLight(); setTally(t => Math.max(0, t - 1)); }}
                             disabled={tally <= 0}
                             aria-label="Decrease"
                             className="w-12 h-12 rounded-full bg-surface-alt border border-divider text-ink disabled:opacity-30 flex items-center justify-center hover:bg-app-tint transition-colors"
@@ -513,7 +493,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                         </button>
                         <span className="text-6xl font-black tabular-nums text-ink w-20">{tally}</span>
                         <button
-                            onClick={() => { hapticTap(); setTally(t => Math.min(round.count, t + 1)); }}
+                            onClick={() => { hapticLight(); setTally(t => Math.min(round.count, t + 1)); }}
                             disabled={tally >= round.count}
                             aria-label="Increase"
                             className="w-12 h-12 rounded-full bg-surface-alt border border-divider text-ink disabled:opacity-30 flex items-center justify-center hover:bg-app-tint transition-colors"
@@ -607,64 +587,38 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
 
     // ---- END (named-mode leaderboard only — just_play wraps inside TURN_END) ----
     if (gameState === 'END') {
-        const ranked = [...scores].sort((a, b) => b.total - a.total);
-        const top = ranked[0];
-        const tiedTop = ranked.filter(r => r.total === top.total).length > 1;
         return (
-            <div className="h-full flex flex-col">
-                <ScreenHeader title="Final Scores" onBack={() => setGameState('CATEGORY_SELECT')} onHome={onExit} />
-                <div className="flex-1 overflow-y-auto px-4 pb-8 animate-slide-up">
-                    <div className="text-center mb-5">
-                        <div className="text-5xl mb-2">🏆</div>
-                        {tiedTop
-                            ? <p className="text-muted">It's a tie at the top.</p>
-                            : <p className="text-muted"><span className="font-bold text-ink">{top.name}</span> wins with {top.total}.</p>}
-                    </div>
-                    <div className="space-y-2 max-w-[360px] mx-auto">
-                        {ranked.map((s, i) => {
-                            const open = expandedPlayer === i;
-                            return (
-                                <div key={s.name + i} className={`rounded-xl border ${i === 0 ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-surface border-divider'}`}>
-                                    <button
-                                        onClick={() => setExpandedPlayer(open ? null : i)}
-                                        className="w-full flex items-center justify-between px-4 py-3"
-                                    >
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            {i === 0 && <Trophy size={16} className="text-emerald-500 flex-shrink-0" />}
-                                            <span className="font-bold text-ink truncate">{s.name}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-2xl font-black text-ink">{s.total}</span>
-                                            <ChevronRight size={16} className={`text-muted transition-transform ${open ? 'rotate-90' : ''}`} />
-                                        </div>
-                                    </button>
-                                    {open && (
-                                        <div className="px-4 pb-3 grid grid-cols-5 gap-1.5">
-                                            {ROUNDS.map((_, ri) => (
-                                                <div key={ri} className="text-center bg-surface-alt rounded-md py-1.5">
-                                                    <div className="text-[9px] uppercase tracking-wider text-muted">R{ri + 1}</div>
-                                                    <div className="text-sm font-bold text-ink">{s.breakdown[ri] ?? 0}</div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+            <EndScreen
+                title="Final Scores"
+                onBack={() => setGameState('CATEGORY_SELECT')}
+                onHome={onExit}
+                accent="emerald"
+                entries={scores.map(s => ({
+                    name: s.name,
+                    score: s.total,
+                    expand: (
+                        <div className="px-4 pb-3 grid grid-cols-5 gap-1.5">
+                            {ROUNDS.map((_, ri) => (
+                                <div key={ri} className="text-center bg-surface-alt rounded-md py-1.5">
+                                    <div className="text-[9px] uppercase tracking-wider text-muted">R{ri + 1}</div>
+                                    <div className="text-sm font-bold text-ink">{s.breakdown[ri] ?? 0}</div>
                                 </div>
-                            );
-                        })}
-                    </div>
-                    <div className="flex flex-col gap-3 w-full max-w-[360px] mx-auto mt-6">
-                        <button
-                            onClick={handleShare}
-                            disabled={sharing}
-                            className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
-                        >
-                            <Share2 size={18} /> Share Result
-                        </button>
-                        <Button onClick={handlePlayAgain} fullWidth>Play Again</Button>
-                        <Button onClick={onExit} variant="secondary" fullWidth>Back to Home</Button>
-                    </div>
-                </div>
-            </div>
+                            ))}
+                        </div>
+                    ),
+                }))}
+                footerExtra={(
+                    <button
+                        onClick={handleShare}
+                        disabled={sharing}
+                        className="w-full py-3 px-6 bg-transparent border-2 border-gold/60 text-gold hover:bg-gold/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                        <Share2 size={18} /> Share Result
+                    </button>
+                )}
+                onPlayAgain={handlePlayAgain}
+                onExit={onExit}
+            />
         );
     }
 

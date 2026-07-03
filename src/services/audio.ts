@@ -11,6 +11,8 @@
 //
 // App-wide mute: persisted in localStorage; silences BOTH sound and haptics
 // (one quiet switch — a muted phone at a party shouldn't buzz either).
+// Semantic haptic levels (light/success/error/heavy) live in haptics.ts and
+// respect the same switch via isMuted().
 // ---------------------------------------------------------------------------
 
 const MUTE_KEY = 'partyspark_muted';
@@ -52,29 +54,36 @@ function getCtx(): AudioContext | null {
 // Call on a user gesture to prime the context before the first scheduled sound.
 export function unlockAudio(): void { getCtx(); }
 
-// Low-level one-oscillator envelope beep. `at` is an offset (s) from now.
-function beep(freq: number, dur: number, type: OscillatorType = 'sine', gain = 0.18, at = 0): void {
+// Generic one-oscillator envelope blip. `at` is an offset (s) from now. Unlike
+// the raw scheduling in the named sounds below, this waits for a suspended
+// context to actually resume before scheduling — which matters on iOS when the
+// first sound and the unlocking gesture land in the same tick.
+export function beep(freq: number, dur: number, type: OscillatorType = 'sine', gain = 0.18, at = 0): void {
     if (muted) return;
     const ctx = getCtx();
     if (!ctx) return;
-    const t = ctx.currentTime + 0.02 + at;
-    const osc = ctx.createOscillator();
-    const g = ctx.createGain();
-    osc.type = type;
-    osc.frequency.value = freq;
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(gain, t + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    osc.connect(g).connect(ctx.destination);
-    osc.start(t);
-    osc.stop(t + dur + 0.03);
+    const run = () => {
+        const t = ctx.currentTime + 0.02 + at;
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(gain, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        osc.connect(g).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + dur + 0.03);
+    };
+    if (ctx.state === 'suspended') ctx.resume().then(run).catch(() => {}); else run();
 }
 
 // --- Timers ----------------------------------------------------------------
 
-// Sharp countdown tick (5 Alive / Linked / Taboo).
-export function playTick(): void {
-    beep(880, 0.08, 'square', 0.15);
+// Sharp countdown tick (5 Alive / Linked / Taboo). Gain differs slightly per
+// game (5 Alive passes 0.16, Linked 0.14; default matches the rest).
+export function playTick(gain = 0.15): void {
+    beep(880, 0.08, 'square', gain);
 }
 
 // Softer tick for fast cadences (Scramble's final-seconds tick).
@@ -190,7 +199,9 @@ export function playPop(): void {
 
 // --- Haptics -----------------------------------------------------------------
 // navigator.vibrate is Android/Chrome-only; everywhere else this is a no-op.
-// Muted app = silent phone: haptics respect the same switch.
+// Muted app = silent phone: haptics respect the same switch. These are the
+// compact aliases; the semantic set (light/success/error/heavy) lives in
+// haptics.ts and shares the mute switch.
 
 export function vibrate(pattern: number | number[]): void {
     if (muted) return;
