@@ -165,6 +165,10 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.FIVE_ALIVE]:          { vibe: 'Speed',    duration: '2 min',  players: '2+',   tags: ['quick', 'speed', 'recall', 'party', 'classic', 'couples', 'solo'] },
     [GameType.LINKED]:              { vibe: 'Puzzle',   duration: '5 min',  players: '1+',   tags: ['quick', 'words', 'puzzle', 'classic', 'couples', 'solo'] },
     [GameType.JUMBLE]:              { vibe: 'Words',    duration: '2 min',  players: '1+',   tags: ['solo', 'quick', 'words', 'puzzle'] },
+    // Non-game screens — never listed on Home, entries exist only to satisfy
+    // the Record<GameType, …> type.
+    [GameType.GAME_NIGHT]:          { vibe: '',         duration: '',       players: '',     tags: [] },
+    [GameType.STATS]:               { vibe: '',         duration: '',       players: '',     tags: [] },
 };
 
 export const HOME_FILTERS = [
