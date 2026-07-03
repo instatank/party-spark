@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-07-03 (Phase 1 architecture hardening + Phase 2 engagement layer merged). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+> **Last reconciled with code:** 2026-07-03 (Phase 1 architecture hardening + Phase 2 engagement layer merged; Home header button layout updated same day). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 >
 > There is also a `notes/` directory — one *lesson* per file (what was tried, what broke, what fixed it). Architecture facts live here; war stories live there.
 
@@ -89,7 +89,7 @@ This bit us several times. If you add a new accent color, verify it in the compi
 - **Game cards** use tightened vertical padding (`!px-4 !py-2.5`) and the header spacing is compact.
 - **Splash** is 1.5s max and tap-skippable — never make users wait on it.
 - **"Tonight's crew" banner**: when the shared session roster (`sessionService.getTeams()`) is non-empty, Home shows a gold banner listing the names with an X to clear — this is how users discover that names carry across games.
-- **Quick-action row**: two slim tiles above the filter pills — Game Night (violet, shows "live · Next up: X" during an active night) and Daily Scramble (gold, shows streak / done state). Header has a Trophy button (Stats screen) and a mute toggle on the left, mirroring the ThemeToggle on the right.
+- **Quick-action row**: two slim tiles above the filter pills — Game Night (violet, shows "live · Next up: X" during an active night) and Daily Scramble (gold, shows streak / done state). Header buttons are grouped on the right: Trophy (Stats screen) stacked above the mute toggle + ThemeToggle pair.
 
 ## 🔁 Engagement layer (Phase 2, added 2026-07-03)
 
