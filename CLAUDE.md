@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-07-03 (Phase 1 architecture hardening + Phase 2 engagement layer merged; Home header button layout updated same day). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+> **Last reconciled with code:** 2026-07-04 (Phase 1 architecture hardening + Phase 2 engagement layer merged 2026-07-03; Home header buttons revised twice since — trophy now sits in one row with the mute toggle + ThemeToggle, all on the right). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 >
 > There is also a `notes/` directory — one *lesson* per file (what was tried, what broke, what fixed it). Architecture facts live here; war stories live there.
 
