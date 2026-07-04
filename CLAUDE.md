@@ -89,7 +89,7 @@ This bit us several times. If you add a new accent color, verify it in the compi
 - **Game cards** use tightened vertical padding (`!px-4 !py-2.5`) and the header spacing is compact.
 - **Splash** is 1.5s max and tap-skippable — never make users wait on it.
 - **"Tonight's crew" banner**: when the shared session roster (`sessionService.getTeams()`) is non-empty, Home shows a gold banner listing the names with an X to clear — this is how users discover that names carry across games.
-- **Quick-action row**: two slim tiles above the filter pills — Game Night (violet, shows "live · Next up: X" during an active night) and Daily Scramble (gold, shows streak / done state). Header buttons are grouped on the right, one row: Trophy (Stats screen), mute toggle, ThemeToggle.
+- **Quick-action row**: two slim tiles above the filter pills — Game Night (violet, shows "live · Next up: X" during an active night) and Daily Scramble (gold, shows streak / done state). Directly above that row sits a bottom-aligned button strip: Trophy (Stats screen) on the far left over Game Night, mute toggle + ThemeToggle on the far right over Daily Scramble — kept off the title/logo entirely.
 
 ## 🔁 Engagement layer (Phase 2, added 2026-07-03)
 

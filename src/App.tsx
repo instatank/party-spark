@@ -298,24 +298,6 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
   return (
     <div className="flex flex-col gap-2.5 animate-slide-up min-h-[80vh]">
       <header className="pt-1 pb-0 text-center relative">
-        {/* Trophy, volume, and theme toggle in one row on the right */}
-        <div className="absolute top-1 right-0 flex gap-1.5">
-          <button
-            onClick={() => onSelectGame(GameType.STATS)}
-            aria-label="Trophies and stats"
-            className="w-9 h-9 rounded-full bg-surface-alt border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
-          >
-            <Trophy size={16} />
-          </button>
-          <button
-            onClick={() => setMutedUi(toggleMuted())}
-            aria-label={muted ? 'Unmute sounds' : 'Mute sounds'}
-            className="w-9 h-9 rounded-full bg-surface-alt border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
-          >
-            {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-          </button>
-          <ThemeToggle />
-        </div>
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gold mb-1 font-serif flex items-center justify-center gap-2">
           PartySpark <span className="text-2xl sm:text-3xl">✨</span>
         </h1>
@@ -371,6 +353,29 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
           }}
         />
       )}
+
+      {/* Trophy (left, over Game Night) + volume/theme toggle (right, over
+          Daily Scramble) — bottom-aligned just above the quick-action row so
+          they never crowd the title/logo. */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => onSelectGame(GameType.STATS)}
+          aria-label="Trophies and stats"
+          className="w-9 h-9 rounded-full bg-surface-alt border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
+        >
+          <Trophy size={16} />
+        </button>
+        <div className="flex gap-1.5">
+          <button
+            onClick={() => setMutedUi(toggleMuted())}
+            aria-label={muted ? 'Unmute sounds' : 'Mute sounds'}
+            className="w-9 h-9 rounded-full bg-surface-alt border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
+          >
+            {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+          </button>
+          <ThemeToggle />
+        </div>
+      </div>
 
       {/* Game Night + Daily Scramble quick actions — the two engagement
           anchors live above the fold, styled as slim accent tiles. */}
