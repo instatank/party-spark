@@ -301,22 +301,21 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gold mb-1 font-serif flex items-center justify-center gap-2">
           PartySpark <span className="text-2xl sm:text-3xl">✨</span>
         </h1>
-        <p className="text-muted text-sm sm:text-base mb-1">
-          <span className="text-gold font-bold">A</span>lways <span className="text-gold font-bold">I</span>nvited
-        </p>
-
-        {/* Trophy (left, over Game Night) + volume/theme toggle (right, over
-            Daily Scramble) — bottom-aligned right above the quick-action row,
-            kept inside the header so it doesn't add extra flex gap. */}
-        <div className="flex items-center justify-between">
+        <div className="relative mb-1">
+          {/* Trophy tucked in the left corner, volume + theme toggle tucked
+              in the right corner — same row as the tagline, absolutely
+              positioned so they add no extra height. */}
           <button
             onClick={() => onSelectGame(GameType.STATS)}
             aria-label="Trophies and stats"
-            className="w-9 h-9 rounded-full bg-surface-alt border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-surface-alt border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
           >
             <Trophy size={16} />
           </button>
-          <div className="flex gap-1.5">
+          <p className="text-muted text-sm sm:text-base">
+            <span className="text-gold font-bold">A</span>lways <span className="text-gold font-bold">I</span>nvited
+          </p>
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-1.5">
             <button
               onClick={() => setMutedUi(toggleMuted())}
               aria-label={muted ? 'Unmute sounds' : 'Mute sounds'}
