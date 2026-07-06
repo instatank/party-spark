@@ -318,7 +318,13 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
     onSelectGame(gameId);
   };
 
-  // Filter chain: tab → chip → search query.
+  // Crew-size fit: with 2+ names in the roster we know how many are playing,
+  // so games needing more players can be de-prioritised instead of letting
+  // the user discover the mismatch two screens deep.
+  const crewSize = crew.length;
+  const fitsCrew = (g: typeof GAMES[number]) => crewSize < 2 || g.minPlayers <= crewSize;
+
+  // Filter chain: tab → chip → search query → crew-fit ranking.
   // Search matches title, description, vibe, and tags.
   const displayGames = useMemo(() => {
     // When the tabs are hidden, always show the Play Now set (Coming Soon
@@ -330,7 +336,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
           .map(id => GAMES.find(g => g.id === id))
           .filter((g): g is typeof GAMES[number] => Boolean(g));
     const q = query.trim().toLowerCase();
-    return inTab
+    const matched = inTab
       .filter(g => gameMatchesFilter(g.id, filter))
       .filter(g => {
         if (!q) return true;
@@ -343,11 +349,44 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         // "saucy" should pick up TOD because its Spicy deck matches).
         return getSubcategoryMatches(g.id, query).length > 0;
       });
+    // Stable sort: games the current crew can actually play float above
+    // ones that need more people (original ranking preserved within groups).
+    return [...matched].sort((a, b) => Number(fitsCrew(b)) - Number(fitsCrew(a)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, query, filter]);
+  }, [activeTab, query, filter, crewSize]);
+
+  // "Tonight's pick" hero — one confident default above the full list.
+  // Deterministic per day (no reroll on re-render): score every non-gated
+  // game on crew fit + occasion (weekend nights lean crowd, weekdays lean
+  // quick) + familiarity, then rotate through the top 3 by day-of-epoch.
+  // Hidden while the user is filtering/searching — they're deciding
+  // themselves at that point.
+  const heroPick = useMemo(() => {
+    const played = statsStore.getAll().games;
+    const isBigNight = [0, 5, 6].includes(new Date().getDay()); // Fri/Sat/Sun
+    const scored = GAMES
+      .filter(g => !comingSoonGameIds.includes(g.id) && !ADULT_GAME_IDS.includes(g.id))
+      .map(g => {
+        const meta = GAME_RICH_META[g.id];
+        let score = 0;
+        if (crewSize >= 2) score += fitsCrew(g) ? 4 : -4;
+        if (crewSize >= 4 && meta.tags.includes('crowd')) score += 2;
+        if (isBigNight ? meta.tags.includes('crowd') : meta.tags.includes('quick')) score += 2;
+        if (played[g.id]?.plays) score += 1; // a known crowd-pleaser beats a stranger
+        return { g, score };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+    if (scored.length === 0) return null;
+    return scored[Math.floor(Date.now() / 86_400_000) % scored.length].g;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [crewSize]);
 
   return (
-    <div className="flex flex-col gap-2.5 animate-slide-up min-h-[80vh]">
+    <div className="relative flex flex-col gap-2.5 animate-slide-up min-h-[80vh]">
+      {/* Ambient depth orbs — decorative only (see .home-orb in index.css) */}
+      <div className="home-orb home-orb-a" aria-hidden="true" />
+      <div className="home-orb home-orb-b" aria-hidden="true" />
       <header className="pt-1 pb-0 text-center relative">
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gold mb-1 font-serif flex items-center justify-center gap-2">
           PartySpark <span className="text-2xl sm:text-3xl">✨</span>
@@ -579,6 +618,38 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         </div>
       </div>
 
+      {/* Tonight's pick — one smart default so nobody has to scan 12 cards
+          under social pressure. A single hero (never a carousel), gone the
+          moment the user starts filtering or searching. */}
+      {heroPick && filter === 'all' && !query.trim() && (
+        <button
+          onClick={() => handleSelectGame(heroPick.id)}
+          className="game-card group relative overflow-hidden text-left bg-surface border border-gold/40 rounded-2xl px-4 py-3.5 transition-all duration-300 hover:scale-[1.02] active:scale-95"
+          style={{ boxShadow: 'var(--shadow-card)' }}
+        >
+          <div className={`absolute top-0 right-0 w-40 h-40 opacity-25 rounded-full blur-3xl -mr-12 -mt-12 ${heroPick.color}`} />
+          <p className="text-[10px] font-semibold text-gold uppercase tracking-[0.2em] mb-2 relative z-10">
+            ✨ Tonight's pick
+          </p>
+          <div className="flex items-center gap-3 relative z-10">
+            <div className={`p-3.5 rounded-2xl ${heroPick.color} shadow-md text-white`}>
+              {getIcon(heroPick.icon, 28)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xl font-bold text-ink leading-tight">{heroPick.title}</h3>
+              <p className="text-[13px] text-muted leading-snug truncate">{heroPick.description}</p>
+              <p className="text-[11px] text-accent font-medium mt-0.5">
+                {GAME_RICH_META[heroPick.id]?.players} players · {GAME_RICH_META[heroPick.id]?.duration}
+                {GAME_RICH_META[heroPick.id]?.vibe ? ` · ${GAME_RICH_META[heroPick.id].vibe}` : ''}
+              </p>
+            </div>
+            <span className="flex-shrink-0 bg-gold text-slate-900 text-sm font-bold px-4 py-2 rounded-xl group-hover:brightness-110 transition-all">
+              Play
+            </span>
+          </div>
+        </button>
+      )}
+
       <div className="grid gap-2.5 pb-6">
         {displayGames.length === 0 && (
           <div className="text-center text-muted text-sm py-8">
@@ -592,11 +663,14 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
           const subcatHits = query.trim() ? getSubcategoryMatches(game.id, query) : [];
           const visibleHits = subcatHits.slice(0, 2);
           const extra = subcatHits.length - visibleHits.length;
+          // Needs more players than tonight's crew has — still playable
+          // (someone can grab a friend), so it dims rather than disappears.
+          const undersized = !fitsCrew(game);
           return (
             <Card
               key={game.id}
               onClick={() => handleSelectGame(game.id)}
-              className="game-card !px-4 !py-2.5 group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95"
+              className={`game-card !px-4 !py-2.5 group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95 ${undersized ? 'opacity-55' : ''}`}
             >
               {/* Background Gradient Blob */}
               <div className={`absolute top-0 right-0 w-32 h-32 opacity-20 rounded-full blur-3xl -mr-10 -mt-10 ${game.color}`} />
@@ -608,10 +682,16 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
                 <div className="flex-1 w-full overflow-hidden">
                   <div className="flex items-center justify-between mb-0.5 mt-0.5">
                     <h3 className="text-lg font-bold leading-none text-ink">{game.title}</h3>
-                    <span className="bg-accent-soft px-2 py-0.5 rounded text-[10px] font-medium text-accent uppercase tracking-wider shrink-0 ml-2">
-                      {GAME_RICH_META[game.id]?.players || `${game.minPlayers}+`}
-                      {GAME_RICH_META[game.id]?.duration ? ` · ${GAME_RICH_META[game.id].duration}` : ''}
-                    </span>
+                    {undersized ? (
+                      <span className="bg-rose-500/15 px-2 py-0.5 rounded text-[10px] font-medium text-rose-400 uppercase tracking-wider shrink-0 ml-2">
+                        Needs {game.minPlayers}+
+                      </span>
+                    ) : (
+                      <span className="bg-accent-soft px-2 py-0.5 rounded text-[10px] font-medium text-accent uppercase tracking-wider shrink-0 ml-2">
+                        {GAME_RICH_META[game.id]?.players || `${game.minPlayers}+`}
+                        {GAME_RICH_META[game.id]?.duration ? ` · ${GAME_RICH_META[game.id].duration}` : ''}
+                      </span>
+                    )}
                   </div>
                   <p className="text-[13px] text-muted leading-snug truncate whitespace-nowrap overflow-hidden pr-2">
                      {game.description}

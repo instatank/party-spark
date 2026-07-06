@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-07-06 (Home screen v2 on branch `claude/social-games-homepage-design-zxrnem`, not yet merged: Pick For Us dice roll, Recent chips row, players·duration card badges, crew-champion line, footer brand line — see Home screen section). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+> **Last reconciled with code:** 2026-07-06 (Home screen v2 on branch `claude/social-games-homepage-design-zxrnem`, not yet merged: Pick For Us dice roll, Recent chips row, players·duration card badges, crew-champion line, footer brand line, Tonight's-pick hero, crew-size ranking, occasion pills, ambient orbs — see Home screen section). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 >
 > There is also a `notes/` directory — one *lesson* per file (what was tried, what broke, what fixed it). Architecture facts live here; war stories live there.
 
@@ -85,7 +85,10 @@ This bit us several times. If you add a new accent color, verify it in the compi
 ### Home screen (`App.tsx`)
 
 - **Tabs hidden:** the old "Play Now / Coming Soon" tab bar is gated behind a `SHOW_TABS` flag (currently `false`) — the front end shows only the Play Now games. All Coming Soon games + tab logic stay in code; flip `SHOW_TABS = true` to bring them back for testing.
-- **Filter pills** (`HOME_FILTERS` in `constants.tsx`): All / Quick / Solo / Couples / Crowd / Spicy. `quick` matches by short duration; the rest match by tag in `GAME_RICH_META[id].tags`.
+- **Filter pills** (`HOME_FILTERS` in `constants.tsx`): occasion-framed labels (All / Quick filler / Just me / Date night / Big group / Spicy) over stable ids (`all/quick/solo/couples/crowd/spicy`). `quick` matches by short duration; the rest match by tag in `GAME_RICH_META[id].tags`. Rename labels freely; never change the ids (they drive tag matching).
+- **Crew-size ranking**: with 2+ names in the shared roster, games whose `minPlayers` exceeds the crew size sort to the bottom of the list, dim to `opacity-55`, and swap their badge for a rose "Needs N+" — still tappable (someone can grab a friend), never hidden.
+- **"Tonight's pick" hero**: one smart-default card between the filter row and the list — never a carousel. Scores non-adult-gated games on crew fit + occasion (Fri–Sun leans `crowd`, weekdays lean `quick`) + familiarity (played before), rotates through the top 3 by day-of-epoch so it's deterministic per day. Hidden while a filter or search is active.
+- **Ambient orbs**: two slow-drifting blurred gradient blobs (`.home-orb` in `index.css`) sit at `z-index:-1` inside the home root — decorative depth behind the cards. Light mode halves their opacity; `prefers-reduced-motion` pins them still.
 - **Game cards** use tightened vertical padding (`!px-4 !py-2.5`) and the header spacing is compact. The badge on each card shows `players · duration` from `GAME_RICH_META` (falls back to `minPlayers+` when meta is missing).
 - **Splash** is 1.5s max and tap-skippable — never make users wait on it.
 - **"Tonight's crew" banner**: when the shared session roster (`sessionService.getTeams()`) is non-empty, Home shows a gold banner listing the names with an X to clear — this is how users discover that names carry across games. If any crew member has lifetime wins in `statsStore`, the banner crowns the leader ("👑 Priya leads with 4 wins") instead of the generic carry-over hint.

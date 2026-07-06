@@ -187,6 +187,44 @@
   mix-blend-mode: multiply;
 }
 
+/* Ambient gradient orbs behind the Home card stack — the 2026 dark-glass
+   refinement: depth from slow-drifting color blobs, not heavier blur.
+   They sit at z-index -1 inside the home root (which has a transform from
+   animate-slide-up, so the negative z stays within its stacking context —
+   behind the cards, in front of the page bg). Light mode tones them down;
+   reduced-motion pins them still. */
+.home-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  pointer-events: none;
+  z-index: -1;
+}
+.home-orb-a {
+  width: 280px; height: 280px;
+  top: -60px; left: -100px;
+  background: radial-gradient(circle, rgba(139, 92, 224, 0.38), transparent 70%);
+  animation: orbDriftA 19s ease-in-out infinite alternate;
+}
+.home-orb-b {
+  width: 320px; height: 320px;
+  top: 34%; right: -130px;
+  background: radial-gradient(circle, rgba(239, 192, 80, 0.30), transparent 70%);
+  animation: orbDriftB 23s ease-in-out infinite alternate;
+}
+[data-theme="light"] .home-orb { opacity: 0.45; }
+@keyframes orbDriftA {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(60px, 90px) scale(1.15); }
+}
+@keyframes orbDriftB {
+  from { transform: translate(0, 0) scale(1.1); }
+  to   { transform: translate(-70px, -60px) scale(0.95); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-orb { animation: none; }
+}
+
 /* Hide horizontal scrollbar on filter-chip rows that scroll on overflow */
 .no-scrollbar {
   -ms-overflow-style: none;

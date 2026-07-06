@@ -171,12 +171,14 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.STATS]:               { vibe: '',         duration: '',       players: '',     tags: [] },
 };
 
+// Labels are framed as occasions ("how are you playing tonight?") rather
+// than abstract tags — ids stay stable because they drive tag matching.
 export const HOME_FILTERS = [
     { id: 'all',     label: 'All' },
-    { id: 'quick',   label: 'Quick' },
-    { id: 'solo',    label: 'Solo' },
-    { id: 'couples', label: 'Couples' },
-    { id: 'crowd',   label: 'Crowd' },
+    { id: 'quick',   label: 'Quick filler' },
+    { id: 'solo',    label: 'Just me' },
+    { id: 'couples', label: 'Date night' },
+    { id: 'crowd',   label: 'Big group' },
     { id: 'spicy',   label: 'Spicy' },
 ] as const;
 
