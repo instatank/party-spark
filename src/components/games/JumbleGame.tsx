@@ -368,6 +368,9 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             emoji: '🔠',
             heading: `${score} pts`,
             sub: `${found.length} words · ${difficulty === 'hard' ? 'Hard' : 'Easy'}${foundPangram ? ' · pangram!' : ''}`,
+            tagline: 'How many words can you make from 7 letters?',
+            context: 'Longer words score more — a 7-letter pangram is worth 10',
+            challenge: `Can you beat ${score} pts?`,
         });
         setSharing(false);
     };
@@ -384,6 +387,9 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             emoji: '🔠',
             heading: top > 0 ? (tied ? "It's a tie!" : `${detail[0].name} wins!`) : 'All words cancelled!',
             sub: `${detail.length} players · ${difficulty === 'hard' ? 'Hard' : 'Easy'}`,
+            tagline: 'Same 7 letters, same clock — unique words only',
+            context: 'Words found by two players cancel each other out',
+            challenge: 'Grab your crew and settle it',
             rows: detail.map(d => ({ label: d.name, value: `${d.score} pts`, highlight: d.score === top && top > 0 })),
         });
         setSharing(false);
@@ -405,6 +411,9 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                 emoji: '🔠',
                 heading: `${res.score} pts`,
                 sub: `${res.words}/${maxWords} words · ${dayLabel()}${res.pangram ? ' · pangram!' : ''}`,
+                tagline: 'One daily puzzle — same 7 letters for everyone',
+                context: streak > 1 ? `🔥 ${streak}-day streak and counting` : 'One attempt per day, streaks on the line',
+                challenge: `Play today's letters — can you beat ${res.score} pts?`,
             });
         }
         setSharing(false);

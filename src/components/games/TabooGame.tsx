@@ -345,6 +345,9 @@ export const TabooGame: React.FC<Props> = ({ onExit }) => {
                 emoji: '🚫',
                 heading: `${totalCorrect} guessed!`,
                 sub: `${skipped} skipped · ${levelTile?.title ?? currentCategory}`,
+                tagline: 'Make them say it — without the banned words',
+                context: 'Score = words guessed before the buzzer',
+                challenge: `Can your crew beat ${totalCorrect}?`,
                 rows: inTeamMode
                     ? ranked.map(r => ({ label: r.name, value: `${r.score}`, highlight: r.score === winner.score }))
                     : undefined,

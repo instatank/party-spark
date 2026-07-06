@@ -399,6 +399,11 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                     ? (tiedTop ? 'Tie at the top!' : `${winner.name} wins!`)
                     : `${score} acted out!`,
                 sub: `${catLabel} · ${duration}s ${inTeamMode ? 'rounds' : 'round'}`,
+                tagline: 'Act it out — not a single word allowed',
+                context: `Score = cards guessed before the ${duration}s timer`,
+                challenge: inTeamMode
+                    ? (tiedTop ? 'Someone has to break this tie…' : `Think your team can beat ${winner.name}?`)
+                    : `Can your crew beat ${score}?`,
                 rows: inTeamMode
                     ? ranked.map(r => ({ label: r.name, value: `${r.score}`, highlight: r.score === winner.score }))
                     : undefined,

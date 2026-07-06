@@ -157,6 +157,9 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                 emoji: '🔔',
                 heading: tied ? "It's a tie!" : `${top.name} wins!`,
                 sub: `${diffTitle} · ${TOTAL_ROUNDS} rounds`,
+                tagline: 'Name 5 in 5 seconds — beat the bell',
+                context: '1 pt per answer + a bonus for perfect rounds (max 20)',
+                challenge: tied ? 'Someone has to break this tie…' : `Think you can outscore ${top.name}?`,
                 rows: ranked.map(s => ({ label: s.name, value: `${s.total} pts`, highlight: s.total === top.total })),
             });
         } else {
@@ -166,6 +169,9 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
                 emoji: '🔔',
                 heading: `${scores[0]?.total ?? 0} out of 20`,
                 sub: `Just Play · ${diffTitle} · ${TOTAL_ROUNDS} rounds`,
+                tagline: 'Name 5 in 5 seconds — beat the bell',
+                context: '1 pt per answer + a bonus for perfect rounds',
+                challenge: `Can you beat ${scores[0]?.total ?? 0}/20?`,
             });
         }
         setSharing(false);

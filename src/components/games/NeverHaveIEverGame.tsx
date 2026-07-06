@@ -505,10 +505,14 @@ export const NeverHaveIEverGame: React.FC<GameProps> = ({ onExit }) => {
                                         emoji: verdict.emoji,
                                         heading: verdict.line,
                                         sub: '10 cards · ' + (NEVER_HAVE_I_EVER_CATEGORIES.find(c => c.id === category)?.label || 'Custom Vibe'),
+                                        tagline: "Stand up if you've done it — the room decides",
+                                        context: `The room's verdict across ${roundResults.length} cards`,
+                                        challenge: 'How innocent is your crew?',
                                         rows: [
-                                            { label: 'Owned Up', value: String(confessions), highlight: true },
-                                            { label: 'Stayed Clean', value: String(innocent) },
+                                            { label: '🙋 Owned Up', value: String(confessions), highlight: true },
+                                            { label: '😇 Stayed Clean', value: String(innocent) },
                                         ],
+                                        plainRows: true,
                                     });
                                 } finally {
                                     setIsSharing(false);

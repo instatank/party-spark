@@ -197,6 +197,9 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                 emoji: '🔗',
                 heading: tied ? "It's a tie!" : `${top.name} wins!`,
                 sub: `${diffLabel} · ${ROUND_SECONDS}s per player`,
+                tagline: 'Find the one word that links all 3 clues',
+                context: `Each link = one 3-clue puzzle cracked in ${ROUND_SECONDS}s`,
+                challenge: tied ? 'Someone has to break this tie…' : `Think you can out-link ${top.name}?`,
                 rows: ranked.map(s => ({ label: s.name, value: `${s.score} link${s.score === 1 ? '' : 's'}`, highlight: s.score === top.score })),
             });
         } else {
@@ -206,6 +209,8 @@ export const LinkedGame: React.FC<Props> = ({ onExit }) => {
                 emoji: '🔗',
                 heading: `${roundGot} linked`,
                 sub: `Just Play · ${diffLabel}`,
+                tagline: 'Find the one word that links all 3 clues',
+                challenge: `Can your group beat ${roundGot} links?`,
             });
         }
         setSharing(false);
