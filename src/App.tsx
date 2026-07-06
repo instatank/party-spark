@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef, Suspense, lazy } from 'react';
-import { Search, X, Users, Trophy, Volume2, VolumeX, PartyPopper, CalendarCheck2 } from 'lucide-react';
+import { Search, X, Users, Trophy, Volume2, VolumeX, PartyPopper, CalendarCheck2, Sparkles, ChevronRight } from 'lucide-react';
 import { sessionService } from './services/SessionManager';
 import { gameNightService } from './services/gameNightService';
-import { dailyStore } from './services/dailyChallenge';
+import { dailyStore, dayKey } from './services/dailyChallenge';
 import { isMuted, toggleMuted } from './services/audio';
 import { GameType } from './types';
 import { GAMES, getIcon, GAME_RICH_META, HOME_FILTERS, gameMatchesFilter, getSubcategoryMatches, type HomeFilter } from './constants';
@@ -86,6 +86,40 @@ const SplashScreen = ({ onSkip }: { onSkip: () => void }) => (
 // roster). When `false`, the tabs are hidden and only the Play Now games
 // show — but all the Coming Soon games + tab logic stay intact in code.
 const SHOW_TABS = false;
+
+// Coming-soon list. Order here drives display order in the Coming Soon
+// tab (the tab filter preserves it via comingSoonGameIds.map).
+const comingSoonGameIds = [
+  GameType.WOULD_I_LIE_TO_YOU,
+  GameType.ICEBREAKERS,
+  GameType.MINI_MAFIA,
+  GameType.WOULD_YOU_RATHER,
+];
+
+// Adult-gated games — require PIN before entering. Roast Me is also
+// temporarily gated here while AI prompts/output are still being tuned
+// in production. REMOVE Roast from this list once those flows are
+// signed off. (The Create-Your-Vibe custom decks inside MLT/NHIE are
+// no longer PIN-gated — tone chips are the safety layer there.)
+const ADULT_GAME_IDS = [GameType.COMPATIBILITY_TEST, GameType.TRUTH_OR_DRINK, GameType.ROAST];
+
+// Today's Pick — one game spotlighted per day, same for everyone (FNV-1a
+// over the local date, same trick as the Daily Scramble seed). Adult-gated
+// and coming-soon games never get the spotlight: the tile must always be
+// tappable straight into play, with no PIN speed bump.
+const pickOfTheDay = () => {
+  const pool = GAMES.filter(
+    g => !comingSoonGameIds.includes(g.id) && !ADULT_GAME_IDS.includes(g.id),
+  );
+  if (pool.length === 0) return null;
+  const key = dayKey();
+  let h = 0x811c9dc5;
+  for (let i = 0; i < key.length; i++) {
+    h ^= key.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return pool[(h >>> 0) % pool.length];
+};
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -214,22 +248,6 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
     };
   }, [searchOpen]);
 
-  // Coming-soon list. Order here drives display order in the Coming Soon
-  // tab (the filter below preserves it via comingSoonGameIds.map).
-  const comingSoonGameIds = [
-    GameType.WOULD_I_LIE_TO_YOU,
-    GameType.ICEBREAKERS,
-    GameType.MINI_MAFIA,
-    GameType.WOULD_YOU_RATHER,
-  ];
-
-  // Adult-gated games — require PIN before entering. Roast Me is also
-  // temporarily gated here while AI prompts/output are still being tuned
-  // in production. REMOVE Roast from this list once those flows are
-  // signed off. (The Create-Your-Vibe custom decks inside MLT/NHIE are
-  // no longer PIN-gated — tone chips are the safety layer there.)
-  const ADULT_GAME_IDS = [GameType.COMPATIBILITY_TEST, GameType.TRUTH_OR_DRINK, GameType.ROAST];
-
   // Shared session crew (set via any game's TeamRosterRow / player setup).
   // Surfacing it here tells users the one thing they can't otherwise
   // discover: names carry across every game for the rest of the night.
@@ -250,6 +268,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
     : null;
   const dailyPlayed = dailyStore.hasPlayedToday();
   const dailyStreak = dailyStore.getStreak();
+  const todaysPick = useMemo(pickOfTheDay, []);
   const openDaily = () => {
     // Deep link consumed by Scramble on mount — drops straight into Daily.
     try { sessionStorage.setItem('partyspark_open_daily', '1'); } catch { /* ignore */ }
@@ -414,6 +433,32 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
           </div>
         </button>
       </div>
+
+      {/* Today's Pick — one game spotlighted per day. Full-width and warmer
+          than the quick-action tiles: gold border + a soft glow, but static
+          (no animation) so it reads as "featured", not as an ad. */}
+      {todaysPick && (
+        <button
+          onClick={() => handleSelectGame(todaysPick.id)}
+          className="game-card group relative overflow-hidden text-left rounded-xl border border-gold/40 bg-gradient-to-r from-gold/15 via-surface-alt to-surface-alt hover:border-gold/70 hover:from-gold/25 py-3 px-3.5 transition-colors shadow-[0_0_22px_-6px_rgba(239,192,80,0.45)]"
+        >
+          {/* Accent blob echoes the game's own color, top-right like the cards */}
+          <div className={`absolute top-0 right-0 w-24 h-24 opacity-25 rounded-full blur-2xl -mr-6 -mt-6 ${todaysPick.color}`} />
+          <div className="relative z-10 flex items-center gap-3">
+            <div className={`p-2.5 rounded-xl ${todaysPick.color} text-white shadow-sm flex-shrink-0`}>
+              {getIcon(todaysPick.icon, 20)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-gold flex items-center gap-1 mb-0.5">
+                <Sparkles size={11} className="flex-shrink-0" /> Today's Pick
+              </p>
+              <p className="text-base font-bold text-ink leading-tight truncate">{todaysPick.title}</p>
+              <p className="text-[11px] text-muted leading-snug truncate">{todaysPick.description}</p>
+            </div>
+            <ChevronRight size={16} className="text-gold/60 group-hover:text-gold flex-shrink-0 transition-colors" />
+          </div>
+        </button>
+      )}
 
       {/* Tonight's crew — visible whenever a shared roster exists so users
           learn that names entered in one game follow them into the next. */}

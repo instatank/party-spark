@@ -162,6 +162,9 @@ export const GameNightScreen: React.FC<Props> = ({ onExit, onLaunchGame }) => {
             emoji: '👑',
             heading: champ && champ.points > 0 ? `${champ.name} takes the night!` : "That's a wrap!",
             sub: `${playedCount} game${playedCount === 1 ? '' : 's'} · ${s.crew.length} players`,
+            tagline: 'One crew, a playlist of games, one champion',
+            context: '3 pts for topping a game · 1 pt for playing',
+            challenge: 'Round up your crew and take the crown',
             rows: standings.slice(0, 7).map(st => ({
                 label: st.name,
                 value: `${st.points} pts`,

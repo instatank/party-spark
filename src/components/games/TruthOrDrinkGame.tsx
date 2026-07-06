@@ -400,6 +400,9 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                         ? `${winners[0]} told the truth`
                         : 'Tied on truths',
                     sub: `${categoryMeta.title} · ${roundsPlayed} rounds`,
+                    tagline: 'Answer honestly — or take the sip',
+                    context: 'Most truths told takes the night',
+                    challenge: 'Could your table survive these questions?',
                     rows: entries.map(e => ({
                         label: e.name,
                         value: `${e.truths} truths · ${e.drinks} sips`,
@@ -413,6 +416,8 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     emoji: '🥂',
                     heading: `${roundsPlayed} rounds survived`,
                     sub: categoryMeta.title,
+                    tagline: 'Answer honestly — or take the sip',
+                    challenge: `Could you survive ${roundsPlayed} rounds?`,
                 });
             }
         } finally {

@@ -430,6 +430,9 @@ export const FactOrFictionGame: React.FC<{ onExit: () => void }> = ({ onExit }) 
                     sub: inTeamMode
                         ? `${topicName} · ${teams.length} teams`
                         : `${topicName} · Level ${difficulty} reached`,
+                    tagline: 'Spot the fact, dodge the fiction — beat the clock',
+                    context: 'A point for every statement called correctly',
+                    challenge: `Can you beat ${inTeamMode ? winner.score : score} points?`,
                     rows: inTeamMode
                         ? ranked.map(r => ({
                             label: r.name,
