@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef, Suspense, lazy } from 'react';
-import { Search, X, Users, Trophy, Volume2, VolumeX, PartyPopper, CalendarCheck2 } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Search, X, Users, Trophy, Volume2, VolumeX, PartyPopper, CalendarCheck2, Dices, History } from 'lucide-react';
 import { sessionService } from './services/SessionManager';
+import { statsStore } from './services/statsStore';
 import { gameNightService } from './services/gameNightService';
 import { dailyStore } from './services/dailyChallenge';
 import { isMuted, toggleMuted } from './services/audio';
@@ -239,6 +241,16 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
     setCrew([]);
   };
 
+  // Crew-scoped social proof: the current crew member with the most
+  // lifetime wins gets a crown on the banner. Case-insensitive name match
+  // so "priya" in the roster still claims Priya's trophies.
+  const crewChampion = useMemo(() => {
+    if (crew.length === 0) return null;
+    const lower = crew.map(n => n.trim().toLowerCase());
+    const top = statsStore.topPlayers(50).find(p => lower.includes(p.name.trim().toLowerCase()));
+    return top && top.wins > 0 ? top : null;
+  }, [crew]);
+
   // App-wide mute (silences shared-audio sounds AND haptics).
   const [muted, setMutedUi] = useState<boolean>(() => isMuted());
 
@@ -257,6 +269,45 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
   };
   const [showPinGate, setShowPinGate] = useState(false);
   const [pendingGameId, setPendingGameId] = useState<GameType | null>(null);
+
+  // "Jump back in" — the 3 most recently played games, straight from the
+  // lifetime stats store (every scored game stamps lastPlayed on finish).
+  // Empty for brand-new users, so the row simply doesn't render.
+  const recentGames = useMemo(() => {
+    const played = statsStore.getAll().games;
+    return GAMES
+      .filter(g => !comingSoonGameIds.includes(g.id))
+      .map(g => ({ game: g, last: played[g.id]?.lastPlayed ?? 0 }))
+      .filter(e => e.last > 0)
+      .sort((a, b) => b.last - a.last)
+      .slice(0, 3)
+      .map(e => e.game);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // "Pick For Us" — dice roll over whatever the current filter/search shows.
+  // A short slot-machine shuffle builds the reveal, then the sheet offers
+  // Play / Roll again. Launch goes through handleSelectGame so the adult
+  // PIN gate still applies.
+  const [pick, setPick] = useState<GameType | null>(null);
+  const [rolling, setRolling] = useState(false);
+
+  const startRoll = () => {
+    setRolling(true);
+    let ticks = 0;
+    const spin = () => {
+      const pool = displayGames.length > 0 ? displayGames : GAMES.filter(g => !comingSoonGameIds.includes(g.id));
+      setPick(pool[Math.floor(Math.random() * pool.length)].id);
+      ticks += 1;
+      if (ticks < 10) {
+        setTimeout(spin, 60 + ticks * 12); // decelerating slot-machine ticks
+      } else {
+        setRolling(false);
+      }
+    };
+    spin();
+  };
+  const closePick = () => { setPick(null); setRolling(false); };
 
   const handleSelectGame = (gameId: GameType) => {
     if (ADULT_GAME_IDS.includes(gameId) && !isAdultUnlocked()) {
@@ -415,6 +466,28 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         </button>
       </div>
 
+      {/* Jump back in — the last few games this device actually played.
+          One horizontal row of slim chips; invisible until there's history. */}
+      {recentGames.length > 0 && (
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <span className="flex-shrink-0 flex items-center gap-1 text-[11px] font-semibold text-muted uppercase tracking-wider pr-0.5">
+            <History size={12} /> Recent
+          </span>
+          {recentGames.map(game => (
+            <button
+              key={game.id}
+              onClick={() => handleSelectGame(game.id)}
+              className="game-card flex-shrink-0 flex items-center gap-1.5 bg-surface-alt hover:bg-app-tint border border-divider rounded-full pl-1.5 pr-3 py-1 transition-colors"
+            >
+              <span className={`w-5 h-5 rounded-full ${game.color} text-white flex items-center justify-center`}>
+                {getIcon(game.icon, 11)}
+              </span>
+              <span className="text-xs font-semibold text-ink whitespace-nowrap">{game.title}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Tonight's crew — visible whenever a shared roster exists so users
           learn that names entered in one game follow them into the next. */}
       {crew.length > 0 && (
@@ -423,7 +496,11 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
           <p className="flex-1 text-xs text-ink-soft truncate min-w-0">
             <span className="font-bold text-gold">Tonight's crew:</span>{' '}
             {crew.join(', ')}
-            <span className="text-muted"> — names carry into every game</span>
+            {crewChampion ? (
+              <span className="text-muted"> — 👑 {crewChampion.name} leads with {crewChampion.wins} {crewChampion.wins === 1 ? 'win' : 'wins'}</span>
+            ) : (
+              <span className="text-muted"> — names carry into every game</span>
+            )}
           </p>
           <button
             onClick={clearCrew}
@@ -450,6 +527,13 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
             className="flex-shrink-0 h-11 w-11 rounded-xl bg-surface-alt hover:bg-app-tint border border-divider text-ink-soft hover:text-ink transition-colors flex items-center justify-center"
           >
             <Search size={18} />
+          </button>
+          <button
+            onClick={startRoll}
+            aria-label="Can't decide? Pick a game for us"
+            className="flex-shrink-0 h-11 w-11 rounded-xl bg-gold/10 hover:bg-gold/20 border border-gold/40 text-gold transition-colors flex items-center justify-center"
+          >
+            <Dices size={18} />
           </button>
           <div className="flex-1 flex gap-1.5 overflow-x-auto px-1 no-scrollbar items-center h-full">
             {HOME_FILTERS.map(f => {
@@ -525,7 +609,8 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
                   <div className="flex items-center justify-between mb-0.5 mt-0.5">
                     <h3 className="text-lg font-bold leading-none text-ink">{game.title}</h3>
                     <span className="bg-accent-soft px-2 py-0.5 rounded text-[10px] font-medium text-accent uppercase tracking-wider shrink-0 ml-2">
-                      {game.minPlayers}+ Players
+                      {GAME_RICH_META[game.id]?.players || `${game.minPlayers}+`}
+                      {GAME_RICH_META[game.id]?.duration ? ` · ${GAME_RICH_META[game.id].duration}` : ''}
                     </span>
                   </div>
                   <p className="text-[13px] text-muted leading-snug truncate whitespace-nowrap overflow-hidden pr-2">
@@ -543,8 +628,70 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         })}
       </div>
 
+      {/* Pick For Us reveal sheet — bottom sheet so the choice needs one
+          more deliberate tap (also keeps PIN-gated picks from launching
+          unannounced). Roll again re-runs the slot-machine shuffle. */}
+      {pick && (() => {
+        const game = GAMES.find(g => g.id === pick);
+        if (!game) return null;
+        const meta = GAME_RICH_META[game.id];
+        // Portal to <body>: the home root's slide-up animation leaves a
+        // `transform` behind (fill-mode: forwards), which would otherwise
+        // capture this fixed overlay and position it off-screen.
+        return createPortal(
+          <div className="fixed inset-0 z-50 flex items-end justify-center lg:items-center">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closePick} />
+            <div className="relative w-full max-w-md bg-surface border border-divider rounded-t-3xl lg:rounded-3xl p-6 pb-8 animate-slide-up" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <button
+                onClick={closePick}
+                aria-label="Close"
+                className="absolute right-4 top-4 p-1.5 rounded-full text-muted hover:text-ink hover:bg-surface-alt transition-colors"
+              >
+                <X size={18} />
+              </button>
+              <p className="text-[11px] font-semibold text-gold uppercase tracking-[0.2em] text-center mb-4">
+                {rolling ? 'Rolling…' : "Tonight's pick"}
+              </p>
+              <div className="flex flex-col items-center gap-3 mb-6">
+                <div className={`p-4 rounded-2xl ${game.color} text-white shadow-lg ${rolling ? 'animate-pulse' : ''}`}>
+                  {getIcon(game.icon, 32)}
+                </div>
+                <h3 className="text-2xl font-bold text-ink font-serif text-center leading-tight">{game.title}</h3>
+                {!rolling && (
+                  <p className="text-sm text-muted text-center max-w-[260px]">
+                    {game.description}
+                    {meta?.players && (
+                      <span className="block mt-1 text-xs text-accent font-medium">
+                        {meta.players} players · {meta.duration}{meta.vibe ? ` · ${meta.vibe}` : ''}
+                      </span>
+                    )}
+                  </p>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={startRoll}
+                  disabled={rolling}
+                  className="flex-1 py-3 rounded-xl bg-transparent border-2 border-divider text-ink-soft hover:border-ink-soft font-semibold text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  <Dices size={16} /> Roll again
+                </button>
+                <button
+                  onClick={() => { const id = game.id; closePick(); handleSelectGame(id); }}
+                  disabled={rolling}
+                  className="flex-1 py-3 rounded-xl bg-gold text-slate-900 font-bold text-sm hover:brightness-110 transition-all disabled:opacity-50"
+                >
+                  Let's play →
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        );
+      })()}
+
       <footer className="text-center text-xs text-muted mt-auto pb-4">
-        Powered by Google Gemini 3 Suite
+        Crafted for unforgettable game nights ✨
       </footer>
     </div>
   );
