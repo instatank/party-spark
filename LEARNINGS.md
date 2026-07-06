@@ -10,3 +10,11 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: "claude API, (vercel and firebase changes too, especially vercel). all third party dependencies are candidates"
 - Quiz question: You wire a new feature to a model id ending in `-preview` — what happens in a few months, and how do you find out?
 - Internalized: no (streak 1 — teach-back + transfer correct 2026-07-04; needs a correct quiz answer on a separate day to flip to YES)
+
+### 2026-07-06 — Pricing research for the Roast Me cost model: primary source blocked, mirrors disagreed
+- What happened: while budgeting Roast Me v2, Google's official Gemini pricing page returned 403 through the session proxy, and the first third-party "pricing guide" that ranked in search mixed two different models' prices in one paragraph (quoted the cheap Flash-Image $0.039/image figure inside a Gemini 3 Pro Image article whose real price is ~$0.134/image — a 3.4× error). Building the cost plan on that one source would have made image generation look 3× cheaper than it is.
+- Concept: numbers that drive money decisions need two independent sources or one primary source — SEO pricing blogs are often auto-generated and conflate similar products. When the primary source is unreachable, triangulate (a second independent mirror + the provider's announced launch pricing) and write the assumption down next to the number so it can be re-checked.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: A blog post tells you an API costs $0.04 per call and you're about to size a feature around it — what two things do you do before trusting that number?
+- Internalized: no (streak 0 — founder answers pending)

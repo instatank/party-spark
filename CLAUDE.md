@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-07-04 (Phase 1 architecture hardening + Phase 2 engagement layer merged 2026-07-03; Home header buttons revised twice since — trophy now sits in one row with the mute toggle + ThemeToggle, all on the right). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+> **Last reconciled with code:** 2026-07-06 (docs-only session: Roast Me facts below re-verified against code, no drift; added `docs/ROAST_ME_V2_PLAN.md` — the approved-for-planning Roast Me upgrade design, not yet implemented. Prior reconcile 2026-07-04: Phase 1 architecture hardening + Phase 2 engagement layer merged 2026-07-03; Home header buttons revised twice since — trophy now sits in one row with the mute toggle + ThemeToggle, all on the right). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 >
 > There is also a `notes/` directory — one *lesson* per file (what was tried, what broke, what fixed it). Architecture facts live here; war stories live there.
 
@@ -134,7 +134,7 @@ Cross-game retention + sharing systems. All localStorage, **no accounts, ever**;
 |---|---|---|---|---|
 | Charades | `CHARADES` | Describe without forbidden words | Gemini (refills) | Round timer editable via the shared `TimerSetting` chip on SETUP (default 60s, persisted) |
 | Taboo | `TABOO` | Word guessing with banned terms | Local + Gemini fallback | Round timer editable via the shared `TimerSetting` chip on the CATEGORY screen (default 60s, persisted) |
-| Roast Me | `ROAST` | AI roast from uploaded image | Gemini (image + text) | Uses image gen, can't swap to Claude |
+| Roast Me | `ROAST` | AI roast from uploaded image | Gemini (image + text) | Uses image gen, can't swap to Claude for images. v2 upgrade plan (personas, observe-once engine, cost tiers): `docs/ROAST_ME_V2_PLAN.md` — planned, not yet implemented |
 | Imposter | `IMPOSTER` | Find the fake among friends | Gemini | |
 | Would You Rather | `WOULD_YOU_RATHER` | Paired dilemmas | Local static data | |
 | Most Likely To | `MOST_LIKELY_TO` | Vote on friends | **Claude → Gemini fallback** | Has "Create Your Vibe" AI custom deck (not PIN-gated; adult decks still are). Plays in 10-card rounds with a ROUND_END break screen (next 10 / change deck) |
