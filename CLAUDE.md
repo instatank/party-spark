@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-07-04 (Phase 1 architecture hardening + Phase 2 engagement layer merged 2026-07-03; Home header buttons revised twice since — trophy now sits in one row with the mute toggle + ThemeToggle, all on the right). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+> **Last reconciled with code:** 2026-07-06 (Home screen v2 on branch `claude/social-games-homepage-design-zxrnem`, not yet merged: Pick For Us dice roll, Recent chips row, players·duration card badges, crew-champion line, footer brand line — see Home screen section). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 >
 > There is also a `notes/` directory — one *lesson* per file (what was tried, what broke, what fixed it). Architecture facts live here; war stories live there.
 
@@ -86,10 +86,13 @@ This bit us several times. If you add a new accent color, verify it in the compi
 
 - **Tabs hidden:** the old "Play Now / Coming Soon" tab bar is gated behind a `SHOW_TABS` flag (currently `false`) — the front end shows only the Play Now games. All Coming Soon games + tab logic stay in code; flip `SHOW_TABS = true` to bring them back for testing.
 - **Filter pills** (`HOME_FILTERS` in `constants.tsx`): All / Quick / Solo / Couples / Crowd / Spicy. `quick` matches by short duration; the rest match by tag in `GAME_RICH_META[id].tags`.
-- **Game cards** use tightened vertical padding (`!px-4 !py-2.5`) and the header spacing is compact.
+- **Game cards** use tightened vertical padding (`!px-4 !py-2.5`) and the header spacing is compact. The badge on each card shows `players · duration` from `GAME_RICH_META` (falls back to `minPlayers+` when meta is missing).
 - **Splash** is 1.5s max and tap-skippable — never make users wait on it.
-- **"Tonight's crew" banner**: when the shared session roster (`sessionService.getTeams()`) is non-empty, Home shows a gold banner listing the names with an X to clear — this is how users discover that names carry across games.
+- **"Tonight's crew" banner**: when the shared session roster (`sessionService.getTeams()`) is non-empty, Home shows a gold banner listing the names with an X to clear — this is how users discover that names carry across games. If any crew member has lifetime wins in `statsStore`, the banner crowns the leader ("👑 Priya leads with 4 wins") instead of the generic carry-over hint.
 - **Quick-action row**: two slim tiles above the filter pills — Game Night (violet, shows "live · Next up: X" during an active night) and Daily Scramble (gold, shows streak / done state). Header buttons ride the "Always Invited" tagline row itself (absolutely positioned, zero extra height): Trophy (Stats screen) in the left corner, mute toggle + ThemeToggle in the right corner.
+- **"Recent" chips row** (below the quick actions): the last 3 games this device played, from `statsStore` `lastPlayed`. Hidden until there's history.
+- **Pick For Us dice** (gold button beside search): slot-machine roll over the currently filtered/searched games → bottom-sheet reveal with Roll again / Let's play. The sheet is rendered via `createPortal(…, document.body)` — REQUIRED, because the home root's `animate-slide-up` keeps a `transform` (fill-mode `forwards`), which makes it the containing block for `position: fixed` children and would pin the sheet off-screen. Launching from the sheet goes through `handleSelectGame`, so the adult PIN gate still applies.
+- **Footer** reads "Crafted for unforgettable game nights ✨" (the old "Powered by Google Gemini 3 Suite" credit was wrong once Claude took over the custom decks).
 
 ## 🔁 Engagement layer (Phase 2, added 2026-07-03)
 
