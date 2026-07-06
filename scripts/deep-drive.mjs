@@ -39,7 +39,15 @@ async function freshGame(gameTitle, errors) {
   });
   await page.goto(BASE, { waitUntil: 'networkidle2' });
   await page.waitForFunction(() => [...document.querySelectorAll('h3')].some(h => h.textContent.includes('Charades')), { timeout: 15000 });
-  await click(page, gameTitle);
+  // Open via the game card's exact h3 title — a loose text match can hit the
+  // "Daily Scramble" quick tile or the Today's Pick tile before the card.
+  const ok = await page.evaluate(t => {
+    const card = [...document.querySelectorAll('.game-card')]
+      .find(c => [...c.querySelectorAll('h3')].some(h => h.textContent.trim() === t));
+    if (card) { card.click(); return true; }
+    return false;
+  }, gameTitle);
+  if (!ok) throw new Error(`game card not found: "${gameTitle}"`);
   await sleep(1800);
   return page;
 }
