@@ -13,7 +13,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { AI_REQUEST_SCHEMAS, type AIRequestType } from './_lib/schemas.js';
-import { handleCustomMostLikelyTo, handleCustomTruthOrDrink, handleCustomNeverHaveIEver } from './_lib/handlers-custom.js';
+import { handleCustomMostLikelyTo, handleCustomTruthOrDrink, handleCustomNeverHaveIEver, handleRoastTextBatch } from './_lib/handlers-custom.js';
 import {
     handleCharadesWords,
     handleWouldILieToYou,
@@ -30,7 +30,7 @@ import {
 import {
     handleGenerateRoast,
     handleEditImage,
-    handleRoastOrToast,
+    handleRoastObserve,
 } from './_lib/handlers-image.js';
 
 // AIRequestType (the union of accepted request types) is derived from the
@@ -56,7 +56,8 @@ const DISPATCH: Record<AIRequestType, (params: Record<string, unknown>) => Promi
     contextual_lies: (p) => handleContextualLies(p as unknown as Parameters<typeof handleContextualLies>[0]),
     generate_roast: (p) => handleGenerateRoast(p as unknown as Parameters<typeof handleGenerateRoast>[0]),
     edit_image: (p) => handleEditImage(p as unknown as Parameters<typeof handleEditImage>[0]),
-    roast_or_toast: (p) => handleRoastOrToast(p as unknown as Parameters<typeof handleRoastOrToast>[0]),
+    roast_observe: (p) => handleRoastObserve(p as unknown as Parameters<typeof handleRoastObserve>[0]),
+    roast_text_batch: (p) => handleRoastTextBatch(p as unknown as Parameters<typeof handleRoastTextBatch>[0]),
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

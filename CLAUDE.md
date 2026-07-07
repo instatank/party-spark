@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-07-06 (docs-only session: Roast Me facts below re-verified against code, no drift; added `docs/ROAST_ME_V2_PLAN.md` — the approved-for-planning Roast Me upgrade design, not yet implemented. Prior reconcile 2026-07-04: Phase 1 architecture hardening + Phase 2 engagement layer merged 2026-07-03; Home header buttons revised twice since — trophy now sits in one row with the mute toggle + ThemeToggle, all on the right). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+> **Last reconciled with code:** 2026-07-07 (shipped **Roast Central** — Roast Me v2 Phase 1 built as a separate game per founder direction, existing Roast Me untouched; deleted the dead `roast_or_toast` API path. Prior reconciles: 2026-07-06 added `docs/ROAST_ME_V2_PLAN.md`; 2026-07-04 Phase 1 hardening + Phase 2 engagement layer). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 >
 > There is also a `notes/` directory — one *lesson* per file (what was tried, what broke, what fixed it). Architecture facts live here; war stories live there.
 
@@ -134,7 +134,8 @@ Cross-game retention + sharing systems. All localStorage, **no accounts, ever**;
 |---|---|---|---|---|
 | Charades | `CHARADES` | Describe without forbidden words | Gemini (refills) | Round timer editable via the shared `TimerSetting` chip on SETUP (default 60s, persisted) |
 | Taboo | `TABOO` | Word guessing with banned terms | Local + Gemini fallback | Round timer editable via the shared `TimerSetting` chip on the CATEGORY screen (default 60s, persisted) |
-| Roast Me | `ROAST` | AI roast from uploaded image | Gemini (image + text) | Uses image gen, can't swap to Claude for images. v2 upgrade plan (personas, observe-once engine, cost tiers): `docs/ROAST_ME_V2_PLAN.md` — planned, not yet implemented |
+| Roast Me | `ROAST` | AI roast from uploaded image | Gemini (image + text) | Uses image gen, can't swap to Claude for images. Untouched by Roast Central (deliberate — founder wanted v2 built alongside, not on top) |
+| **Roast Central** | `ROAST_CENTRAL` | Persona roast deck from one photo | **Claude → Gemini fallback** (text), Gemini (vision) | Roast Me v2 **Phase 1** of `docs/ROAST_ME_V2_PLAN.md`. Observe-once engine: photo downscaled ≤1024px client-side → one `roast_observe` vision pass (cached in sessionStorage by photo hash) → text-only `roast_text_batch` calls (5 roasts each, ~$0.003). 6 personas × 5 formats × 3 spice (Extra behind the 0438 gate; child detected → forced Hype Man + mild, client AND server). Burn Book (localStorage `roast_central_burnbook`), offline fallback deck (`roast_central_fallback.json`, dynamic-imported), 60-batch/2h session cap. |
 | Imposter | `IMPOSTER` | Find the fake among friends | Gemini | |
 | Would You Rather | `WOULD_YOU_RATHER` | Paired dilemmas | Local static data | |
 | Most Likely To | `MOST_LIKELY_TO` | Vote on friends | **Claude → Gemini fallback** | Has "Create Your Vibe" AI custom deck (not PIN-gated; adult decks still are). Plays in 10-card rounds with a ROUND_END break screen (next 10 / change deck) |
@@ -178,9 +179,10 @@ Browser ─── fetch('/api/ai', {type, ...}) ───► Vercel Serverless F
 | `api/ai.ts` | Dispatcher. Reads `body.type`, routes to the right handler. Validates params with zod before dispatch (invalid → 400 naming the failing field). Returns `{ ok, data }` or `{ ok: false, error }`. |
 | `api/_lib/schemas.ts` | One zod schema per request type (`z.looseObject` — extra keys pass through; only what handlers genuinely require is enforced). `AIRequestType` is derived from this map, so schemas and dispatch can't drift. Adding a handler = add its schema here + dispatch entry in `ai.ts`. |
 | `api/_lib/clients.ts` | Lazy SDK singletons (one GoogleGenAI + one Anthropic per cold start). |
-| `api/_lib/handlers-custom.ts` | Custom MLT + custom TOD. Tries Claude first, falls back to Gemini. |
+| `api/_lib/handlers-custom.ts` | Custom MLT / TOD / NHIE + Roast Central `roast_text_batch`. Tries Claude first, falls back to Gemini. |
 | `api/_lib/handlers-gemini.ts` | Charades, Taboo, NHIE, WILTY, Mafia, WYR, Imposter, MLT, contextual lies. |
-| `api/_lib/handlers-image.ts` | `generate_roast` (image → roast text), `edit_image` (image → caricature), `roast_or_toast`. |
+| `api/_lib/handlers-image.ts` | `generate_roast` (image → roast text), `edit_image` (image → caricature), `roast_observe` (image → observation JSON for Roast Central). |
+| `api/_lib/roast-prompts.ts` | Roast Central prompt library: persona/format/spice/context blocks + `RoastObservations` type. Ids must stay in sync with the client's `PERSONAS`/`FORMATS`/`SPICES` in `RoastCentralGame.tsx`. |
 | `src/services/aiClient.ts` | Single `callAI<T>(type, params)` helper that POSTs to `/api/ai`. |
 | `src/services/geminiService.ts` | **Despite the filename,** this file no longer calls Google directly. It's thin fetch wrappers around `callAI`. Filenames + exports preserved so no component imports break. |
 | `src/services/claudeService.ts` | Same pattern — fetch wrappers. Kept for backwards-compat with imports. |
@@ -281,7 +283,7 @@ Reconciled against code 2026-07-02. Several items from the 2026-04-21 audit were
 
 3. **`npm run lint` fails with ~56 pre-existing errors** (`no-explicit-any` in data-loading code, `react-refresh/only-export-components` in contexts/UI). Lint is therefore excluded from CI. Pay this down, then add `npm run lint` to `.github/workflows/ci.yml`.
 
-4. **A handler param named `type` can never reach `/api/ai` handlers** — the dispatcher strips `type` as its routing key, and the client spread can even overwrite it (breaks the icebreaker "deep" and roast_or_toast "toast" variants over the wire). Details + the fix recipe: `notes/01-api-type-param-collision.md`.
+4. **A handler param named `type` can never reach `/api/ai` handlers** — the dispatcher strips `type` as its routing key, and the client spread can even overwrite it (breaks the icebreaker "deep" variant over the wire; `roast_or_toast` had the same flaw and was deleted 2026-07-07 — it was dead client-side). Details + the fix recipe: `notes/01-api-type-param-collision.md`.
 
 ~~Old items "No code splitting" and "No service worker" removed 2026-07-03: fixed by Phase 1 hardening — every game is `React.lazy`, every data JSON is a dynamic import, and vite-plugin-pwa precaches the shell (see Key files).~~
 

@@ -19,6 +19,14 @@
 // via lazy dynamic imports; this file only consumes the lazy getters.
 import type Anthropic from '@anthropic-ai/sdk';
 import { getGemini, getClaude, isClaudeConfigured } from './clients.js';
+import {
+    buildRoastSystemPrompt,
+    buildRoastUserPrompt,
+    ROAST_PERSONAS,
+    ROAST_SPICE,
+    DEFAULT_SPICE,
+    type RoastObservations,
+} from './roast-prompts.js';
 
 const CLAUDE_MODEL = 'claude-haiku-4-5';
 const GEMINI_MODEL = 'gemini-2.5-flash';
@@ -429,6 +437,86 @@ const generateCustomNHIEGemini = async (groupType: string, customContext: string
         return response.text ? (JSON.parse(response.text) as string[]) : [];
     } catch (err) {
         console.error('[ai/custom_nhie] Gemini error:', err);
+        return [];
+    }
+};
+
+// =============================================================================
+// Roast Central — text roast batches from cached photo observations
+//
+// The photo itself is never sent here: roast_observe (handlers-image.ts) ran
+// once and the client passes its observation JSON back with every batch.
+// Prompt blocks (persona / format / spice / context angles) live in
+// roast-prompts.ts. Claude-first, Gemini fallback, same as the other
+// custom flows.
+// =============================================================================
+
+export interface RoastTextBatchParams {
+    observations: RoastObservations;
+    persona: string;
+    format: string;
+    spice?: string;
+    count?: number;
+}
+
+export const handleRoastTextBatch = async (params: RoastTextBatchParams): Promise<string[]> => {
+    const { observations, count = 5 } = params;
+    let { persona, spice = DEFAULT_SPICE } = params;
+    const { format } = params;
+
+    // Server-side wholesome override: a child in frame means no roast persona
+    // and no heat, whatever the client asked for. (The client enforces this in
+    // the UI too; this is the backstop.)
+    if (observations.hasChild || (observations.contextTags || []).includes('baby')) {
+        persona = 'hype_man';
+        spice = 'mild';
+    }
+    if (!ROAST_PERSONAS[persona]) persona = 'roastmaster';
+    if (!ROAST_SPICE[spice]) spice = DEFAULT_SPICE;
+
+    const boundedCount = Math.max(1, Math.min(10, count));
+
+    if (isClaudeConfigured()) {
+        const viaClaude = await generateRoastBatchClaude(observations, persona, format, spice, boundedCount);
+        if (viaClaude.length > 0) return viaClaude;
+        console.warn('[ai/roast_text_batch] Claude returned empty — falling through to Gemini.');
+    }
+    return generateRoastBatchGemini(observations, persona, format, spice, boundedCount);
+};
+
+const generateRoastBatchClaude = async (observations: RoastObservations, persona: string, format: string, spice: string, count: number): Promise<string[]> => {
+    const claude = await getClaude();
+    if (!claude) return [];
+    try {
+        const message = await claude.messages.create({
+            model: CLAUDE_MODEL,
+            max_tokens: 1024,
+            system: buildRoastSystemPrompt(persona, format, spice),
+            messages: [{ role: 'user', content: buildRoastUserPrompt(observations, count) }],
+        });
+        return parseClaudeJson(message);
+    } catch (err) {
+        console.error('[ai/roast_text_batch] Claude error:', err);
+        return [];
+    }
+};
+
+const generateRoastBatchGemini = async (observations: RoastObservations, persona: string, format: string, spice: string, count: number): Promise<string[]> => {
+    const gemini = await getGemini();
+    if (!gemini) return [];
+    const prompt = `${buildRoastSystemPrompt(persona, format, spice)}\n\n---\n\n${buildRoastUserPrompt(observations, count)}`;
+    try {
+        const response = await gemini.models.generateContent({
+            model: GEMINI_MODEL,
+            contents: prompt,
+            config: {
+                responseMimeType: 'application/json',
+                responseSchema: { type: 'ARRAY', items: { type: 'STRING' } },
+            },
+        });
+        return response.text ? (JSON.parse(response.text) as string[]) : [];
+    } catch (err) {
+        console.error('[ai/roast_text_batch] Gemini error:', err);
         return [];
     }
 };

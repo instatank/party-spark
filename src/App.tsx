@@ -20,6 +20,7 @@ const IcebreakerGame = lazy(() => import('./components/games/IcebreakerGame').th
 const ImposterGame = lazy(() => import('./components/games/ImposterGame').then(m => ({ default: m.ImposterGame })));
 const WouldYouRatherGame = lazy(() => import('./components/games/WouldYouRatherGame').then(m => ({ default: m.WouldYouRatherGame })));
 const RoastGame = lazy(() => import('./components/games/RoastGame'));
+const RoastCentralGame = lazy(() => import('./components/games/RoastCentralGame').then(m => ({ default: m.RoastCentralGame })));
 const MostLikelyToGame = lazy(() => import('./components/games/MostLikelyToGame').then(m => ({ default: m.MostLikelyToGame })));
 const WouldILieToYouGame = lazy(() => import('./components/games/WouldILieToYouGame').then(m => ({ default: m.WouldILieToYouGame })));
 const NeverHaveIEverGame = lazy(() => import('./components/games/NeverHaveIEverGame').then(m => ({ default: m.NeverHaveIEverGame })));
@@ -112,6 +113,8 @@ const App = () => {
     switch (activeGame) {
       case GameType.ROAST:
         return <RoastGame onExit={exitGame} />;
+      case GameType.ROAST_CENTRAL:
+        return <RoastCentralGame onExit={exitGame} />;
       case GameType.IMPOSTER:
         return <ImposterGame onExit={exitGame} />;
       case GameType.CHARADES:

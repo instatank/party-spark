@@ -13,6 +13,14 @@ export const GAMES: GameMeta[] = [
         minPlayers: 1
     },
     {
+        id: GameType.ROAST_CENTRAL,
+        title: "Roast Central",
+        description: "Six AI comics take turns destroying your photo.",
+        icon: "mic",
+        color: "bg-rose-600",
+        minPlayers: 1
+    },
+    {
         id: GameType.FIVE_ALIVE,
         title: "5 Alive",
         description: "Name 5 in 6 seconds — beat the buzzer.",
@@ -150,6 +158,7 @@ export interface GameRichMeta {
 export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.HOME]:                { vibe: '',         duration: '',       players: '',     tags: [] },
     [GameType.ROAST]:               { vibe: 'Wild',     duration: '2 min',  players: 'Solo', tags: ['ai', 'quick', 'solo', 'couples', 'spicy'] },
+    [GameType.ROAST_CENTRAL]:       { vibe: 'Wild',     duration: '5 min',  players: '1+',   tags: ['ai', 'quick', 'solo', 'couples', 'spicy'] },
     [GameType.IMPOSTER]:            { vibe: 'Strategy', duration: '10 min', players: '3–8',  tags: ['social', 'deduction', 'crowd'] },
     [GameType.TABOO]:               { vibe: 'Classic',  duration: '5 min',  players: '4+',   tags: ['teams', 'fast', 'crowd'] },
     [GameType.FACT_OR_FICTION]:     { vibe: 'Trivia',   duration: '5 min',  players: '2+',   tags: ['quick', 'learn', 'couples', 'solo'] },
@@ -202,6 +211,14 @@ export interface SubcatEntry {
 }
 
 export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
+    [GameType.ROAST_CENTRAL]: [
+        { label: 'The Roastmaster', tags: ['roast', 'comedy', 'savage', 'zinger'] },
+        { label: 'Posh Judge',      tags: ['british', 'judge', 'dry', 'posh'] },
+        { label: 'Sweet Grandma',   tags: ['grandma', 'backhanded', 'wholesome'] },
+        { label: 'Bollywood Aunty', tags: ['aunty', 'indian', 'bollywood', 'rishta'] },
+        { label: 'Corporate HR',    tags: ['hr', 'office', 'corporate', 'review'] },
+        { label: 'Hype Man',        tags: ['toast', 'hype', 'compliment', 'wholesome'] },
+    ],
     [GameType.MOST_LIKELY_TO]: [
         { label: 'Family Friendly', tags: ['wholesome', 'pg', 'family', 'clean', 'kids'] },
         { label: 'Fun & Light',     tags: ['fun', 'light', 'casual', 'pg13'] },

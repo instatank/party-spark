@@ -16,7 +16,7 @@ const DEEP = process.argv.includes('--deep');
 // SHOW_TABS=false in App.tsx — pass --tabs when driving a build that has the
 // flag flipped, and the script will click the Coming Soon tab for them.
 const HOME_GAMES = [
-  'Charades', 'Taboo', 'Roast Me', 'Imposter',
+  'Charades', 'Taboo', 'Roast Me', 'Roast Central', 'Imposter',
   'Most Likely To', 'Never Have I Ever', 'Fact or Fiction', 'The Forecast',
   'Truth or Drink', '5 Alive', 'Linked', 'Scramble',
 ];

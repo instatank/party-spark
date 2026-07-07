@@ -1,7 +1,9 @@
 # Roast Me v2 — "Roast Studio" Product & Architecture Plan
 
-> Written 2026-07-06 on branch `claude/roastme-game-enhancement-goabyu`. Planning doc only — no code changes yet.
+> Written 2026-07-06 on branch `claude/roastme-game-enhancement-goabyu`.
 > Goal: turn Roast Me from a one-shot novelty into a standalone-app-quality feature people return to, while making the unit economics commercially sane.
+>
+> **STATUS 2026-07-07 — Phase 1 SHIPPED, as a separate game.** Founder decision: build v2 as a new game, **Roast Central** (`GameType.ROAST_CENTRAL`, `RoastCentralGame.tsx`), leaving the existing Roast Me page untouched. Phase 1 delivered: client downscale, `roast_observe` + sessionStorage cache, `roast_text_batch` (Claude-first) with the persona/format/spice library in `api/_lib/roast-prompts.ts`, roast deck UI + Burn Book, offline fallback deck, kid-detection wholesome override, `roast_or_toast` retired. §7's "migrate/remove `generate_roast`" no longer applies — Roast Me keeps its API path. Phases 2-4 below are next.
 
 ---
 

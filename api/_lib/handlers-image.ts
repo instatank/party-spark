@@ -9,6 +9,7 @@
 // or the user can upgrade the Vercel plan.
 
 import { getGemini } from './clients.js';
+import { ALLOWED_CONTEXT_TAGS, type RoastObservations } from './roast-prompts.js';
 
 const TEXT_MODEL = 'gemini-2.5-flash';
 const IMAGE_MODEL = 'gemini-3-pro-image';
@@ -324,34 +325,62 @@ export const handleEditImage = async (params: { base64Image: string; theme?: str
 };
 
 // =============================================================================
-// Roast or Toast (legacy text-based variant)
+// Roast Central — observation pass (vision in, structured JSON out)
+//
+// Runs ONCE per photo ("look once, riff forever"): extracts everything the
+// text-batch handler needs so subsequent roast generations never re-send the
+// image. The client caches the result by photo hash.
 // =============================================================================
 
-export const handleRoastOrToast = async (params: { image: string; type: 'roast' | 'toast' }): Promise<string> => {
-    const gemini = await getGemini();
-    if (!gemini) return params.type === 'roast' ? "I'm speechless... literally." : 'Cheers to you!';
-    const { image, type } = params;
+const OBSERVE_PROMPT = `You are the eyes for a party roast game. Study this photo and extract observations as JSON for a comedy writer who will never see the image.
 
-    const prompt = type === 'roast'
-        ? 'You are a savage comedian. Roast this person based on their selfie. Be funny, edgy, but keep it friendly enough for a wide audience. Max 2 sentences.'
-        : 'You are a kind, poetic friend. Give a generous, humorous toast to this person. Max 2 sentences.';
+- Be concrete and specific — the writer needs real hooks (a slogan tee, crocs with socks, a suspiciously messy room, a dog looking away). Note only what is actually visible; never guess identities or names.
+- "funnyDetails": 2-5 of the most roastable specific details you can see.
+- "vibe": one short line capturing the overall energy of the photo.
+- "hasChild": true if any person appears to be a minor. If so, keep all descriptions of them neutral and minimal.
+- "contextTags": zero or more of exactly these: ${ALLOWED_CONTEXT_TAGS.join(', ')}. Use 'couple' for exactly two adults posing together, 'group' for three or more people, 'baby' if a baby or toddler is the subject.`;
+
+export const handleRoastObserve = async (params: { base64Image: string }): Promise<RoastObservations | null> => {
+    const gemini = await getGemini();
+    if (!gemini) return null;
 
     try {
         const response = await gemini.models.generateContent({
             model: TEXT_MODEL,
-            contents: [
-                {
-                    role: 'user',
-                    parts: [
-                        { text: prompt },
-                        { inlineData: { data: image.split(',')[1] || image, mimeType: 'image/jpeg' } },
-                    ],
+            contents: {
+                parts: [
+                    { inlineData: { mimeType: 'image/jpeg', data: params.base64Image } },
+                    { text: OBSERVE_PROMPT },
+                ],
+            },
+            config: {
+                responseMimeType: 'application/json',
+                responseSchema: {
+                    type: 'OBJECT',
+                    properties: {
+                        people: { type: 'NUMBER' },
+                        hasChild: { type: 'BOOLEAN' },
+                        pets: { type: 'ARRAY', items: { type: 'STRING' } },
+                        outfit: { type: 'STRING' },
+                        expression: { type: 'STRING' },
+                        setting: { type: 'STRING' },
+                        objects: { type: 'ARRAY', items: { type: 'STRING' } },
+                        vibe: { type: 'STRING' },
+                        funnyDetails: { type: 'ARRAY', items: { type: 'STRING' } },
+                        contextTags: { type: 'ARRAY', items: { type: 'STRING' } },
+                    },
+                    required: ['people', 'hasChild', 'pets', 'outfit', 'expression', 'setting', 'objects', 'vibe', 'funnyDetails', 'contextTags'],
                 },
-            ],
+            },
         });
-        return response.text || (type === 'roast' ? "I'm speechless... literally." : 'Cheers to you!');
+        if (!response.text) return null;
+        const parsed = JSON.parse(response.text) as RoastObservations;
+        // Drop any tags outside the allowed vocabulary so downstream prompt
+        // assembly and the client's child-override check stay predictable.
+        parsed.contextTags = (parsed.contextTags || []).filter(t => ALLOWED_CONTEXT_TAGS.includes(t));
+        return parsed;
     } catch (err) {
-        console.error('[ai/roast_or_toast] error:', err);
-        return type === 'roast' ? "Couldn't roast — API error." : "Couldn't toast — API error.";
+        console.error('[ai/roast_observe] error:', err);
+        return null;
     }
 };

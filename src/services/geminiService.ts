@@ -84,12 +84,40 @@ export const generateMafiaNarrative = async (phase: 'INTRO' | 'NIGHT' | 'DAY'): 
 };
 
 // =============================================================================
-// Roast or Toast (legacy)
+// Roast Central — observation pass + text roast batches
 // =============================================================================
 
-export const generateRoastOrToast = async (image: string, type: 'roast' | 'toast'): Promise<string> => {
-    const data = await callAI<string>('roast_or_toast', { image, type });
-    return data || (type === 'roast' ? "I'm speechless... literally." : 'Cheers to you!');
+// Mirror of the server-side RoastObservations shape (api/_lib/roast-prompts.ts).
+export interface RoastObservations {
+    people: number;
+    hasChild: boolean;
+    pets: string[];
+    outfit: string;
+    expression: string;
+    setting: string;
+    objects: string[];
+    vibe: string;
+    funnyDetails: string[];
+    contextTags: string[];
+}
+
+// One vision call per photo ("look once, riff forever"). Returns null on
+// failure — callers fall back to the bundled offline deck.
+export const observeRoastPhoto = async (base64Image: string): Promise<RoastObservations | null> => {
+    return callAI<RoastObservations | null>('roast_observe', { base64Image });
+};
+
+// Text-only roast batch from cached observations (Claude-first server-side).
+// Returns [] on failure so callers can fall back to the offline deck.
+export const generateRoastBatch = async (
+    observations: RoastObservations,
+    persona: string,
+    format: string,
+    spice: string,
+    count = 5,
+): Promise<string[]> => {
+    const data = await callAI<string[]>('roast_text_batch', { observations, persona, format, spice, count });
+    return data ?? [];
 };
 
 // =============================================================================
