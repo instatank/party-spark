@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-07-07 (shipped **Roast Central** — Roast Me v2 Phase 1 built as a separate game per founder direction, existing Roast Me untouched; deleted the dead `roast_or_toast` API path. Prior reconciles: 2026-07-06 added `docs/ROAST_ME_V2_PLAN.md`; 2026-07-04 Phase 1 hardening + Phase 2 engagement layer). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
+> **Last reconciled with code:** 2026-07-07 (shipped **Roast Central** — Roast Me v2 Phases 1 AND 2 built as a separate game per founder direction, existing Roast Me untouched; deleted the dead `roast_or_toast` API path. Phase 2 added the $0 canvas poster gallery (`src/services/roastCards.ts`) + session recap card. Prior reconciles: 2026-07-06 added `docs/ROAST_ME_V2_PLAN.md`; 2026-07-04 Phase 1 hardening + Phase 2 engagement layer). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 >
 > There is also a `notes/` directory — one *lesson* per file (what was tried, what broke, what fixed it). Architecture facts live here; war stories live there.
 
@@ -135,7 +135,7 @@ Cross-game retention + sharing systems. All localStorage, **no accounts, ever**;
 | Charades | `CHARADES` | Describe without forbidden words | Gemini (refills) | Round timer editable via the shared `TimerSetting` chip on SETUP (default 60s, persisted) |
 | Taboo | `TABOO` | Word guessing with banned terms | Local + Gemini fallback | Round timer editable via the shared `TimerSetting` chip on the CATEGORY screen (default 60s, persisted) |
 | Roast Me | `ROAST` | AI roast from uploaded image | Gemini (image + text) | Uses image gen, can't swap to Claude for images. Untouched by Roast Central (deliberate — founder wanted v2 built alongside, not on top) |
-| **Roast Central** | `ROAST_CENTRAL` | Persona roast deck from one photo | **Claude → Gemini fallback** (text), Gemini (vision) | Roast Me v2 **Phase 1** of `docs/ROAST_ME_V2_PLAN.md`. Observe-once engine: photo downscaled ≤1024px client-side → one `roast_observe` vision pass (cached in sessionStorage by photo hash) → text-only `roast_text_batch` calls (5 roasts each, ~$0.003). 6 personas × 5 formats × 3 spice (Extra behind the 0438 gate; child detected → forced Hype Man + mild, client AND server). Burn Book (localStorage `roast_central_burnbook`), offline fallback deck (`roast_central_fallback.json`, dynamic-imported), 60-batch/2h session cap. |
+| **Roast Central** | `ROAST_CENTRAL` | Persona roast deck from one photo | **Claude → Gemini fallback** (text), Gemini (vision) | Roast Me v2 **Phase 1** of `docs/ROAST_ME_V2_PLAN.md`. Observe-once engine: photo downscaled ≤1024px client-side → one `roast_observe` vision pass (cached in sessionStorage by photo hash) → text-only `roast_text_batch` calls (5 roasts each, ~$0.003). 6 personas × 5 formats × 3 spice (Extra behind the 0438 gate; child detected → forced Hype Man + mild, client AND server). Burn Book (localStorage `roast_central_burnbook`), offline fallback deck (`roast_central_fallback.json`, dynamic-imported), 60-batch/2h session cap. **Phase 2:** "Make it a poster" — 5 canvas templates (WANTED/tabloid/yearbook/trading-card-with-seeded-stats/certificate) in `src/services/roastCards.ts` (composes `shareCard.ts` primitives; $0, offline) + a session recap card via `shareResultCard`. |
 | Imposter | `IMPOSTER` | Find the fake among friends | Gemini | |
 | Would You Rather | `WOULD_YOU_RATHER` | Paired dilemmas | Local static data | |
 | Most Likely To | `MOST_LIKELY_TO` | Vote on friends | **Claude → Gemini fallback** | Has "Create Your Vibe" AI custom deck (not PIN-gated; adult decks still are). Plays in 10-card rounds with a ROUND_END break screen (next 10 / change deck) |
@@ -315,7 +315,8 @@ src/
 │   ├── jumbleEngine.ts              # Scramble runtime: set picker, validation, scoring, missed-words
 │   ├── audio.ts                     # Shared Web Audio synth kit + app-wide mute + compact haptic aliases
 │   ├── haptics.ts                   # hapticLight/Success/Error/Heavy (navigator.vibrate; no-op on iOS; respects the mute switch)
-│   ├── shareCard.ts                 # Canvas share cards + shareText (see Engagement layer)
+│   ├── shareCard.ts                 # Canvas share cards + shareText (see Engagement layer); exports canvas primitives
+│   ├── roastCards.ts                # Roast Central poster templates (photo + roast composited into 5 frames, $0/offline)
 │   ├── gameNightService.ts          # Game Night playlist/leaderboard store
 │   ├── statsStore.ts                # Lifetime plays/bests/wins (localStorage)
 │   ├── dailyChallenge.ts            # Daily Scramble seed + streak store

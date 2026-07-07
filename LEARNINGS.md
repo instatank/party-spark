@@ -18,3 +18,11 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (pending — answer at next wrap)
 - Quiz question: A blog post tells you an API costs $0.04 per call and you're about to size a feature around it — what two things do you do before trusting that number?
 - Internalized: no (streak 0 — founder answers pending)
+
+### 2026-07-07 — Four of five poster templates had invisible layout bugs that only showed up by looking
+- What happened: the Roast Central poster generators (canvas-drawn images) built cleanly, passed the type-checker, and produced files without a single error — but when the rendered images were actually opened and looked at, four of the five had real defects: roast text overlapping the REWARD line, flavor text running off the card's bottom edge, a gold seal stamped on top of the date, and a signature scribble striking through the footer. Two render-inspect-fix rounds later, all five were clean.
+- Concept: code that produces something visual (images, PDFs, share cards, emails, print layouts) cannot be verified by tests or compilers — those only prove it *ran*, not that it *looks right*. The only real test is rendering the output and putting eyes on it, ideally with awkward inputs (longest text, widest photo). Budget a render→look→fix loop into any visual feature; the first render is a draft, never the deliverable.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: your app generates a shareable image and all tests pass — what's still unverified, and what's the only way to verify it?
+- Internalized: no (streak 0 — founder answers pending)

@@ -31,13 +31,18 @@ export interface ShareCardData {
 
 export type ShareOutcome = 'shared' | 'downloaded' | 'aborted' | 'failed';
 
-const W = 1080;
-const H = 1350;
+// Canvas primitives below (dimensions, fonts, roundRect, wrapLines, the
+// share/download plumbing) are exported for other card renderers —
+// roastCards.ts composes its templates from these instead of re-duplicating.
+export const CARD_W = 1080;
+export const CARD_H = 1350;
+const W = CARD_W;
+const H = CARD_H;
 
-const SERIF = "Georgia, 'Playfair Display', 'Times New Roman', serif";
-const SANS = "-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+export const SERIF = "Georgia, 'Playfair Display', 'Times New Roman', serif";
+export const SANS = "-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
-const hexToRgba = (hex: string, alpha: number): string => {
+export const hexToRgba = (hex: string, alpha: number): string => {
     const h = hex.replace('#', '');
     const r = parseInt(h.slice(0, 2), 16);
     const g = parseInt(h.slice(2, 4), 16);
@@ -45,7 +50,7 @@ const hexToRgba = (hex: string, alpha: number): string => {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
+export function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
     ctx.arcTo(x + w, y, x + w, y + h, r);
@@ -57,7 +62,7 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 
 // Wrap `text` to at most `maxLines` lines of width `maxWidth`; the last line
 // gets an ellipsis if it overflows.
-function wrapLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, maxLines: number): string[] {
+export function wrapLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, maxLines: number): string[] {
     const words = text.split(/\s+/).filter(Boolean);
     const lines: string[] = [];
     let line = '';
@@ -223,13 +228,13 @@ export function renderShareCard(data: ShareCardData): HTMLCanvasElement {
 const canvasToBlob = (canvas: HTMLCanvasElement): Promise<Blob | null> =>
     new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
 
-// Render + share (or download when Web Share is unavailable). Never throws.
-export async function shareResultCard(data: ShareCardData): Promise<ShareOutcome> {
+// Share an already-rendered canvas via navigator.share, falling back to a
+// download. Never throws. Exported so other renderers reuse the plumbing.
+export async function shareCanvasImage(canvas: HTMLCanvasElement, filename: string): Promise<ShareOutcome> {
     try {
-        const canvas = renderShareCard(data);
         const blob = await canvasToBlob(canvas);
         if (!blob) return 'failed';
-        const file = new File([blob], 'partyspark_result.png', { type: 'image/png' });
+        const file = new File([blob], `${filename}.png`, { type: 'image/png' });
 
         if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
             try {
@@ -240,20 +245,37 @@ export async function shareResultCard(data: ShareCardData): Promise<ShareOutcome
                 // fall through to download
             }
         }
+        return downloadCanvasImage(canvas, filename, blob);
+    } catch (e) {
+        console.error('Share card failed:', e);
+        return 'failed';
+    }
+}
 
+// Straight-to-download (the explicit "Save" affordance). Never throws.
+export async function downloadCanvasImage(canvas: HTMLCanvasElement, filename: string, preBlob?: Blob): Promise<ShareOutcome> {
+    try {
+        const blob = preBlob ?? await canvasToBlob(canvas);
+        if (!blob) return 'failed';
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `partyspark_${data.gameTitle.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.png`;
+        link.download = `${filename}_${Date.now()}.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         setTimeout(() => URL.revokeObjectURL(url), 5000);
         return 'downloaded';
     } catch (e) {
-        console.error('Share card failed:', e);
+        console.error('Card download failed:', e);
         return 'failed';
     }
+}
+
+// Render + share (or download when Web Share is unavailable). Never throws.
+export async function shareResultCard(data: ShareCardData): Promise<ShareOutcome> {
+    const canvas = renderShareCard(data);
+    return shareCanvasImage(canvas, `partyspark_${data.gameTitle.toLowerCase().replace(/\s+/g, '_')}`);
 }
 
 // Text-only share (spoiler-free emoji grids). Falls back to the clipboard.

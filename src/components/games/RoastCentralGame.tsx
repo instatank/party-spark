@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { Camera, Image as ImageIcon, Heart, Share2, Copy, Trash2, X, ChevronLeft, ChevronRight, Sparkles, Flame, Book, RefreshCcw } from 'lucide-react';
+import { Camera, Image as ImageIcon, Heart, Share2, Copy, Trash2, X, ChevronLeft, ChevronRight, Sparkles, Flame, Book, RefreshCcw, Download } from 'lucide-react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 import { observeRoastPhoto, generateRoastBatch, cleanBase64, type RoastObservations } from '../../services/geminiService';
 import { sessionService } from '../../services/SessionManager';
 import { shouldAutoExpandRules } from '../../services/firstPlay';
 import { unlockAudio, playPop, playDingSoft, hapticTap, hapticSuccess } from '../../services/audio';
+import { renderRoastCard, ROAST_CARD_TEMPLATES, type RoastCardTemplate } from '../../services/roastCards';
+import { shareCanvasImage, downloadCanvasImage, shareResultCard } from '../../services/shareCard';
 
 interface Props {
     onExit: () => void;
@@ -162,6 +164,12 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
     // Burn Book
     const [burnBook, setBurnBook] = useState<BurnBookEntry[]>(readBurnBook);
     const [bookOpen, setBookOpen] = useState(false);
+
+    // Poster flow (Phase 2 canvas share cards)
+    const [posterOpen, setPosterOpen] = useState(false);
+    const [posterUrl, setPosterUrl] = useState<string | null>(null);
+    const [posterBusy, setPosterBusy] = useState<RoastCardTemplate | 'recap' | null>(null);
+    const posterCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
     // Camera overlay
     const [cameraOpen, setCameraOpen] = useState(false);
@@ -392,6 +400,70 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
             console.error('[roast-central] copy failed:', err);
         }
     };
+
+    // --- poster cards (Phase 2 — $0 canvas visuals) -----------------------------
+
+    const openPosterSheet = () => {
+        setPosterOpen(true);
+        setPosterUrl(null);
+        posterCanvasRef.current = null;
+        hapticTap();
+    };
+
+    const makePoster = async (templateId: RoastCardTemplate) => {
+        if (!photo || !current || posterBusy) return;
+        setPosterBusy(templateId);
+        try {
+            const obs = obsRef.current ? await obsRef.current : null;
+            const p = personaById(current.persona);
+            const canvas = await renderRoastCard({
+                template: templateId,
+                photo,
+                roast: current.text,
+                personaLabel: p.label,
+                personaEmoji: p.emoji,
+                observations: obs,
+            });
+            posterCanvasRef.current = canvas;
+            setPosterUrl(canvas.toDataURL('image/jpeg', 0.9));
+            playDingSoft();
+        } catch (err) {
+            console.error('[roast-central] poster render failed:', err);
+        } finally {
+            setPosterBusy(null);
+        }
+    };
+
+    // Session recap rides the house share-card engine directly (navy/gold),
+    // no preview step needed.
+    const shareRecap = async () => {
+        if (posterBusy) return;
+        setPosterBusy('recap');
+        try {
+            const personasUsed = [...new Set(cards.map(c => c.persona))];
+            await shareResultCard({
+                gameTitle: 'Roast Central',
+                accent: '#E15B5B',
+                emoji: '🔥',
+                heading: `Survived ${cards.length} roasts`,
+                sub: `${personasUsed.length} comedian${personasUsed.length === 1 ? '' : 's'} · ${SPICES.find(s => s.id === spice)?.label ?? 'Medium'} heat`,
+                rows: personasUsed.map(id => {
+                    const p = personaById(id);
+                    return {
+                        label: `${p.emoji} ${p.label}`,
+                        value: `${cards.filter(c => c.persona === id).length} burns`,
+                        highlight: id === persona,
+                    };
+                }),
+                footer: 'Roast Central — bring a photo, leave a legend',
+            });
+        } finally {
+            setPosterBusy(null);
+        }
+    };
+
+    const sharePoster = () => { if (posterCanvasRef.current) shareCanvasImage(posterCanvasRef.current, 'roast_central_card'); };
+    const savePoster = () => { if (posterCanvasRef.current) downloadCanvasImage(posterCanvasRef.current, 'roast_central_card'); };
 
     const selectSpice = (id: string, adult: boolean) => {
         if (kidMode) return;
@@ -686,6 +758,12 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
                         : <><Flame size={16} /> 5 MORE</>}
                 </Button>
 
+                {current && (
+                    <Button variant="secondary" fullWidth className="!py-2.5 text-sm flex items-center justify-center gap-1.5" onClick={openPosterSheet}>
+                        <Sparkles size={15} /> Make it a poster
+                    </Button>
+                )}
+
                 <div className="flex gap-2">
                     <Button variant="secondary" className="flex-1 !py-2.5 text-sm flex items-center justify-center gap-1.5" onClick={() => setBookOpen(true)}>
                         <Book size={15} /> Burn Book{burnBook.length ? ` (${burnBook.length})` : ''}
@@ -697,8 +775,86 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
             </div>
 
             {bookOpen && renderBurnBook()}
+            {posterOpen && renderPosterSheet()}
         </div>
     );
+
+    // --- Poster bottom sheet (template picker → preview → share/save) --------------------
+
+    function renderPosterSheet() {
+        return (
+            <div
+                className="fixed inset-0 z-[60] flex items-end backdrop-blur-sm"
+                style={{ background: 'rgba(15, 30, 51, 0.5)' }}
+                onClick={() => setPosterOpen(false)}
+            >
+                <div
+                    className="w-full bg-surface border border-divider rounded-t-[24px] px-5 pt-3 pb-7 max-h-[85%] flex flex-col"
+                    style={{ boxShadow: '0 -16px 40px rgba(15, 30, 51, 0.18)' }}
+                    onClick={e => e.stopPropagation()}
+                >
+                    <div className="w-11 h-[5px] rounded-full bg-divider-soft mx-auto mb-3.5" />
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                            <Sparkles size={16} className="text-gold" />
+                            <span className="font-bold text-ink tracking-wide">{posterUrl ? 'YOUR POSTER' : 'PICK A FRAME'}</span>
+                        </div>
+                        <button onClick={() => setPosterOpen(false)} aria-label="Close poster sheet" className="w-7 h-7 rounded-full bg-surface-alt border border-divider text-muted flex items-center justify-center hover:text-ink">
+                            <X size={14} />
+                        </button>
+                    </div>
+
+                    {posterUrl ? (
+                        <div className="flex-1 overflow-y-auto flex flex-col gap-3">
+                            <img src={posterUrl} alt="Roast poster preview" className="w-full rounded-xl border border-divider" />
+                            <div className="flex gap-2">
+                                <Button className="flex-1 !py-2.5 text-sm flex items-center justify-center gap-1.5" onClick={sharePoster}>
+                                    <Share2 size={15} /> Share
+                                </Button>
+                                <Button variant="secondary" className="flex-1 !py-2.5 text-sm flex items-center justify-center gap-1.5" onClick={savePoster}>
+                                    <Download size={15} /> Save
+                                </Button>
+                                <Button variant="secondary" className="flex-1 !py-2.5 text-sm" onClick={() => { setPosterUrl(null); posterCanvasRef.current = null; }}>
+                                    ← Frames
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex-1 overflow-y-auto">
+                            <div className="text-xs text-muted mb-3">Your photo + this burn, framed. Made on your phone — nothing is uploaded.</div>
+                            <div className="grid grid-cols-2 gap-2">
+                                {ROAST_CARD_TEMPLATES.map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => makePoster(t.id)}
+                                        disabled={posterBusy !== null}
+                                        className="text-left bg-white/5 border border-white/10 rounded-xl px-3 py-3 hover:bg-white/[0.08] hover:border-white/25 transition-colors disabled:opacity-50"
+                                    >
+                                        <div className="text-xl leading-none mb-1.5">{t.emoji}</div>
+                                        <div className="text-sm font-bold text-ink">
+                                            {posterBusy === t.id ? <span className="animate-pulse">Framing…</span> : t.label}
+                                        </div>
+                                        <div className="text-[11px] text-muted truncate">{t.tagline}</div>
+                                    </button>
+                                ))}
+                                <button
+                                    onClick={shareRecap}
+                                    disabled={posterBusy !== null || cards.length === 0}
+                                    className="text-left bg-white/5 border border-white/10 border-l-4 border-l-gold rounded-xl px-3 py-3 hover:bg-white/[0.08] hover:border-t-white/25 hover:border-r-white/25 transition-colors disabled:opacity-50"
+                                >
+                                    <div className="text-xl leading-none mb-1.5">🔥</div>
+                                    <div className="text-sm font-bold text-ink">
+                                        {posterBusy === 'recap' ? <span className="animate-pulse">Building…</span> : 'Session Recap'}
+                                    </div>
+                                    <div className="text-[11px] text-muted truncate">Survived {cards.length} roasts</div>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     // --- Burn Book bottom sheet ---------------------------------------------------------
 
