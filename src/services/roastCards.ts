@@ -540,8 +540,10 @@ const drawCertificate = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, i
 // Facade
 // =============================================================================
 
-export async function renderRoastCard(input: RoastCardInput): Promise<HTMLCanvasElement> {
-    const img = await loadImage(input.photo);
+// Synchronous draw from an already-decoded image. The game pre-decodes the
+// photo once and calls this per card/template so swiping doesn't re-decode or
+// await — the whole draw is a few ms.
+export function renderRoastCardWithImage(img: HTMLImageElement, input: RoastCardInput): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
     canvas.width = W;
     canvas.height = H;
@@ -556,4 +558,10 @@ export async function renderRoastCard(input: RoastCardInput): Promise<HTMLCanvas
         case 'certificate': drawCertificate(ctx, img, input); break;
     }
     return canvas;
+}
+
+// Convenience wrapper that decodes the photo first (for one-off renders).
+export async function renderRoastCard(input: RoastCardInput): Promise<HTMLCanvasElement> {
+    const img = await loadImage(input.photo);
+    return renderRoastCardWithImage(img, input);
 }

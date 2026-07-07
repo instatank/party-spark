@@ -1,12 +1,12 @@
-import React, { useRef, useState } from 'react';
-import { Camera, Image as ImageIcon, Heart, Share2, Copy, Trash2, X, ChevronLeft, ChevronRight, Sparkles, Flame, Book, RefreshCcw, Download } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Camera, Image as ImageIcon, Heart, Share2, Copy, Trash2, X, ChevronLeft, ChevronRight, Sparkles, Flame, Book, RefreshCcw, Download, Dices } from 'lucide-react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 import { observeRoastPhoto, generateRoastBatch, cleanBase64, type RoastObservations } from '../../services/geminiService';
 import { sessionService } from '../../services/SessionManager';
 import { shouldAutoExpandRules } from '../../services/firstPlay';
 import { unlockAudio, playPop, playDingSoft, hapticTap, hapticSuccess } from '../../services/audio';
-import { renderRoastCard, ROAST_CARD_TEMPLATES, type RoastCardTemplate } from '../../services/roastCards';
+import { renderRoastCardWithImage, ROAST_CARD_TEMPLATES, type RoastCardTemplate } from '../../services/roastCards';
 import { shareCanvasImage, downloadCanvasImage, shareResultCard } from '../../services/shareCard';
 
 interface Props {
@@ -14,14 +14,19 @@ interface Props {
 }
 
 // =============================================================================
-// Roast Central — the persona-driven roast deck (Roast Me v2 Phase 1).
+// Roast Central — the persona-driven roast deck (Roast Me v2 Phases 1 + 2).
 //
 // Architecture ("look once, riff forever"): the photo is downscaled client-side
 // to ≤1024px, sent ONCE to /api/ai roast_observe for a structured observation
 // JSON (cached in sessionStorage by photo hash), and every roast batch after
 // that is text-only generation from those observations. If the API is
 // unreachable (offline, quota) the bundled fallback deck takes over — the
-// game never dead-ends. Full design: docs/ROAST_ME_V2_PLAN.md.
+// game never dead-ends.
+//
+// Every roast auto-renders into a designed poster (the player's photo + the
+// burn, composited on canvas — $0, offline) as the DEFAULT visual; a random
+// frame is assigned per card, and the frame strip / dice re-roll it. Full
+// design: docs/ROAST_ME_V2_PLAN.md.
 // =============================================================================
 
 // Personas/formats/spice mirror the server-side library in
@@ -63,7 +68,14 @@ interface RoastCard {
     text: string;
     persona: string;
     offline: boolean;
+    template: RoastCardTemplate; // the poster frame auto-assigned to this card
 }
+
+const TEMPLATE_IDS = ROAST_CARD_TEMPLATES.map(t => t.id);
+const randomTemplate = (exclude?: RoastCardTemplate): RoastCardTemplate => {
+    const pool = TEMPLATE_IDS.filter(id => id !== exclude);
+    return pool[Math.floor(Math.random() * pool.length)] ?? TEMPLATE_IDS[0];
+};
 
 interface BurnBookEntry {
     id: string;
@@ -165,11 +177,16 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
     const [burnBook, setBurnBook] = useState<BurnBookEntry[]>(readBurnBook);
     const [bookOpen, setBookOpen] = useState(false);
 
-    // Poster flow (Phase 2 canvas share cards)
-    const [posterOpen, setPosterOpen] = useState(false);
+    // Poster (Phase 2 — auto-rendered, the default deck visual)
     const [posterUrl, setPosterUrl] = useState<string | null>(null);
-    const [posterBusy, setPosterBusy] = useState<RoastCardTemplate | 'recap' | null>(null);
+    const [posterRendering, setPosterRendering] = useState(false);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [recapBusy, setRecapBusy] = useState(false);
     const posterCanvasRef = useRef<HTMLCanvasElement | null>(null);
+    const posterKeyRef = useRef<string>('');
+    // key `${cardId}:${template}` → rendered {url, canvas}. Navigating back to a
+    // card shows its poster instantly instead of re-drawing.
+    const posterCacheRef = useRef<Map<string, { url: string; canvas: HTMLCanvasElement }>>(new Map());
 
     // Camera overlay
     const [cameraOpen, setCameraOpen] = useState(false);
@@ -180,20 +197,90 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
     // Observation promise for the current photo — kicked off the moment the
     // photo lands so it resolves while the user is still picking a persona.
     const obsRef = useRef<Promise<RoastObservations | null> | null>(null);
+    // Resolved observations, mirrored into state so the poster renderer (sync)
+    // can seed trading-card stats without awaiting.
+    const [obsResolved, setObsResolved] = useState<RoastObservations | null>(null);
+    // Photo decoded once into an <img> so poster draws are synchronous.
+    const imgElRef = useRef<HTMLImageElement | null>(null);
+    const [imgReady, setImgReady] = useState(false);
     // Fallback lines already dealt this session, so REDO never repeats.
     const usedFallbackRef = useRef<Set<string>>(new Set());
     const touchStartX = useRef<number | null>(null);
 
+    const current: RoastCard | undefined = cards[index];
+
+    // Auto-render the poster for the current roast whenever the card, its
+    // frame, the photo, or the resolved observations change. The draw itself is
+    // synchronous (photo decode + observation fetch are already settled via
+    // refs), deferred one frame so the shimmer can paint, and cached by key.
+    useEffect(() => {
+        const card = cards[index];
+        if (!card || !photo || !imgReady || !imgElRef.current) { setPosterUrl(null); return; }
+        const key = `${card.id}:${card.template}`;
+        const cached = posterCacheRef.current.get(key);
+        if (cached) {
+            posterCanvasRef.current = cached.canvas;
+            posterKeyRef.current = key;
+            setPosterUrl(cached.url);
+            return;
+        }
+        setPosterRendering(true);
+        const raf = requestAnimationFrame(() => {
+            try {
+                const p = personaById(card.persona);
+                const canvas = renderRoastCardWithImage(imgElRef.current!, {
+                    template: card.template,
+                    photo,
+                    roast: card.text,
+                    personaLabel: p.label,
+                    personaEmoji: p.emoji,
+                    observations: obsResolved,
+                });
+                const url = canvas.toDataURL('image/jpeg', 0.9);
+                const cache = posterCacheRef.current;
+                if (cache.size >= 30) {
+                    const oldest = cache.keys().next().value;
+                    if (oldest) cache.delete(oldest);
+                }
+                cache.set(key, { url, canvas });
+                posterCanvasRef.current = canvas;
+                posterKeyRef.current = key;
+                setPosterUrl(url);
+            } catch (err) {
+                console.error('[roast-central] poster render failed:', err);
+            } finally {
+                setPosterRendering(false);
+            }
+        });
+        return () => cancelAnimationFrame(raf);
+    }, [cards, index, photo, imgReady, obsResolved]);
+
     // --- photo intake ---------------------------------------------------------
+
+    const resetForNewPhoto = () => {
+        setCards([]);
+        setIndex(0);
+        setKidMode(false);
+        setObsResolved(null);
+        setPosterUrl(null);
+        setImgReady(false);
+        imgElRef.current = null;
+        posterCacheRef.current.clear();
+        posterCanvasRef.current = null;
+        posterKeyRef.current = '';
+    };
 
     const acceptPhoto = async (rawDataUrl: string) => {
         try {
             const scaled = await downscaleDataUrl(rawDataUrl);
             const hash = hashDataUrl(scaled);
+            resetForNewPhoto();
             setPhoto(scaled);
-            setCards([]);
-            setIndex(0);
-            setKidMode(false);
+            // Decode once for synchronous poster draws.
+            const el = new Image();
+            el.onload = () => { imgElRef.current = el; setImgReady(true); };
+            el.onerror = () => console.error('[roast-central] poster image decode failed');
+            el.src = scaled;
             startObservation(scaled, hash);
         } catch (err) {
             console.error('[roast-central] photo processing failed:', err);
@@ -206,7 +293,9 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
         try {
             const cached = sessionStorage.getItem(cacheKey);
             if (cached) {
-                obsRef.current = Promise.resolve(JSON.parse(cached) as RoastObservations);
+                const parsed = JSON.parse(cached) as RoastObservations;
+                obsRef.current = Promise.resolve(parsed);
+                setObsResolved(parsed);
                 return;
             }
         } catch { /* fall through to a fresh call */ }
@@ -214,6 +303,7 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
             if (obs) {
                 try { sessionStorage.setItem(cacheKey, JSON.stringify(obs)); } catch { /* quota */ }
             }
+            setObsResolved(obs);
             return obs;
         });
     };
@@ -311,12 +401,12 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
             }
 
             const stamp = Date.now();
-            const newCards: RoastCard[] = lines.map((text, i) => ({
-                id: `${stamp}-${i}`,
-                text,
-                persona: effPersona,
-                offline,
-            }));
+            let prevTemplate: RoastCardTemplate | undefined;
+            const newCards: RoastCard[] = lines.map((text, i) => {
+                const template = randomTemplate(prevTemplate);
+                prevTemplate = template;
+                return { id: `${stamp}-${i}`, text, persona: effPersona, offline, template };
+            });
             setCards(prev => [...prev, ...newCards]);
             setIndex(startIndex);
             playPop();
@@ -340,8 +430,6 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
     };
 
     // --- deck interactions --------------------------------------------------------
-
-    const current: RoastCard | undefined = cards[index];
 
     const go = (delta: number) => {
         setIndex(i => Math.min(cards.length - 1, Math.max(0, i + delta)));
@@ -401,44 +489,51 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
         }
     };
 
-    // --- poster cards (Phase 2 — $0 canvas visuals) -----------------------------
+    // --- poster (Phase 2 — the default deck visual) -----------------------------
 
-    const openPosterSheet = () => {
-        setPosterOpen(true);
-        setPosterUrl(null);
-        posterCanvasRef.current = null;
+    // Change the current card's frame (frame strip / dice). The auto-render
+    // effect picks the new poster up from the state change.
+    const setCardTemplate = (templateId: RoastCardTemplate) => {
+        const card = cards[index];
+        if (!card || card.template === templateId) return;
+        setCards(prev => prev.map((c, i) => (i === index ? { ...c, template: templateId } : c)));
         hapticTap();
     };
 
-    const makePoster = async (templateId: RoastCardTemplate) => {
-        if (!photo || !current || posterBusy) return;
-        setPosterBusy(templateId);
-        try {
-            const obs = obsRef.current ? await obsRef.current : null;
-            const p = personaById(current.persona);
-            const canvas = await renderRoastCard({
-                template: templateId,
-                photo,
-                roast: current.text,
-                personaLabel: p.label,
-                personaEmoji: p.emoji,
-                observations: obs,
-            });
-            posterCanvasRef.current = canvas;
-            setPosterUrl(canvas.toDataURL('image/jpeg', 0.9));
-            playDingSoft();
-        } catch (err) {
-            console.error('[roast-central] poster render failed:', err);
-        } finally {
-            setPosterBusy(null);
-        }
+    const reshufflePoster = () => {
+        const card = cards[index];
+        if (!card) return;
+        setCards(prev => prev.map((c, i) => (i === index ? { ...c, template: randomTemplate(c.template) } : c)));
+        playDingSoft();
+        hapticTap();
     };
 
-    // Session recap rides the house share-card engine directly (navy/gold),
-    // no preview step needed.
+    // The canvas that matches the currently-displayed poster. Normally the
+    // effect keeps posterCanvasRef in sync; this guards the rare case where a
+    // share fires mid-render by rendering a fresh matching canvas.
+    const currentPosterCanvas = (): HTMLCanvasElement | null => {
+        const card = cards[index];
+        if (!card || !photo || !imgElRef.current) return posterCanvasRef.current;
+        const key = `${card.id}:${card.template}`;
+        if (posterKeyRef.current === key && posterCanvasRef.current) return posterCanvasRef.current;
+        const cached = posterCacheRef.current.get(key);
+        if (cached) return cached.canvas;
+        try {
+            const p = personaById(card.persona);
+            return renderRoastCardWithImage(imgElRef.current, {
+                template: card.template, photo, roast: card.text,
+                personaLabel: p.label, personaEmoji: p.emoji, observations: obsResolved,
+            });
+        } catch { return posterCanvasRef.current; }
+    };
+
+    const sharePoster = () => { const c = currentPosterCanvas(); if (c) shareCanvasImage(c, 'roast_central_card'); };
+    const savePoster = () => { const c = currentPosterCanvas(); if (c) downloadCanvasImage(c, 'roast_central_card'); };
+
+    // Session recap rides the house share-card engine directly (navy/gold).
     const shareRecap = async () => {
-        if (posterBusy) return;
-        setPosterBusy('recap');
+        if (recapBusy || cards.length === 0) return;
+        setRecapBusy(true);
         try {
             const personasUsed = [...new Set(cards.map(c => c.persona))];
             await shareResultCard({
@@ -458,12 +553,9 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
                 footer: 'Roast Central — bring a photo, leave a legend',
             });
         } finally {
-            setPosterBusy(null);
+            setRecapBusy(false);
         }
     };
-
-    const sharePoster = () => { if (posterCanvasRef.current) shareCanvasImage(posterCanvasRef.current, 'roast_central_card'); };
-    const savePoster = () => { if (posterCanvasRef.current) downloadCanvasImage(posterCanvasRef.current, 'roast_central_card'); };
 
     const selectSpice = (id: string, adult: boolean) => {
         if (kidMode) return;
@@ -556,7 +648,7 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
                                 <div className="text-xs text-muted truncate">Analyzed once, roasted forever.</div>
                             </div>
                             <button
-                                onClick={() => { setPhoto(null); obsRef.current = null; setCards([]); setKidMode(false); }}
+                                onClick={() => { setPhoto(null); obsRef.current = null; resetForNewPhoto(); }}
                                 aria-label="Remove photo"
                                 className="p-2 rounded-full bg-surface-alt border border-divider text-muted hover:text-ink"
                             >
@@ -684,73 +776,115 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
                     })}
                 </div>
 
-                {/* The roast card */}
+                {/* Poster hero — the roast, auto-framed. Tap to enlarge. */}
                 <div
-                    className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl px-5 pt-5 pb-4 min-h-[260px] flex flex-col"
-                    style={{ boxShadow: 'var(--shadow-card)' }}
+                    className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/20"
+                    style={{ boxShadow: 'var(--shadow-card)', aspectRatio: '4 / 5' }}
                     onTouchStart={onTouchStart}
                     onTouchEnd={onTouchEnd}
                 >
                     {loadingBatch && cards.length === 0 ? (
-                        <div className="flex-1 flex flex-col items-center justify-center gap-3 py-8">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                             <Sparkles className="text-gold animate-pulse" size={28} />
                             <div className="text-sm text-ink-soft animate-pulse">{LOADING_LINES[loadingLine]}</div>
                         </div>
                     ) : current ? (
                         <>
-                            <div className="flex items-center justify-between mb-3">
-                                <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 ${activePersona.text}`}>
-                                    {activePersona.emoji} {activePersona.label}
-                                </span>
-                                {current.offline && (
-                                    <span className="text-[10px] text-muted border border-divider rounded-full px-2 py-0.5">classic deck · offline</span>
-                                )}
-                            </div>
-                            <p className="flex-1 text-lg leading-snug font-semibold text-ink" style={{ textWrap: 'pretty' }}>
-                                <span className="text-gold font-serif text-2xl mr-1">“</span>
-                                {current.text}
-                                <span className="text-gold font-serif text-2xl ml-1">”</span>
-                            </p>
-                            <div className="flex items-center justify-between mt-4">
-                                <button onClick={() => go(-1)} disabled={index === 0} className="p-2 rounded-full text-muted hover:text-ink disabled:opacity-30" aria-label="Previous roast">
-                                    <ChevronLeft size={20} />
+                            {posterUrl ? (
+                                <button type="button" onClick={() => setLightboxOpen(true)} aria-label="Enlarge poster" className="block w-full h-full">
+                                    <img src={posterUrl} alt={current.text} className="w-full h-full object-cover" />
                                 </button>
-                                <div className="flex items-center gap-3">
-                                    <button
-                                        onClick={() => toggleSave(current)}
-                                        aria-label="Save to Burn Book"
-                                        className={`p-2.5 rounded-full border transition-colors ${isSaved(current) ? 'bg-rose-500/15 border-rose-500/60 text-rose-400' : 'bg-white/5 border-white/10 text-muted hover:text-rose-400'}`}
-                                    >
-                                        <Heart size={18} fill={isSaved(current) ? 'currentColor' : 'none'} />
-                                    </button>
-                                    <button onClick={() => shareText(current.text)} aria-label="Share roast" className="p-2.5 rounded-full bg-white/5 border border-white/10 text-muted hover:text-ink transition-colors">
-                                        <Share2 size={18} />
-                                    </button>
-                                    <button onClick={() => copyText(current.text)} aria-label="Copy roast" className="p-2.5 rounded-full bg-white/5 border border-white/10 text-muted hover:text-ink transition-colors">
-                                        <Copy size={18} />
-                                    </button>
+                            ) : (
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <Sparkles className="text-gold animate-pulse" size={24} />
                                 </div>
-                                <button onClick={() => go(1)} disabled={index >= cards.length - 1} className="p-2 rounded-full text-muted hover:text-ink disabled:opacity-30" aria-label="Next roast">
-                                    <ChevronRight size={20} />
-                                </button>
-                            </div>
+                            )}
+
+                            {/* Nav — tap zones + swipe */}
+                            <button onClick={() => go(-1)} disabled={index === 0} aria-label="Previous roast"
+                                className="absolute left-1.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/45 text-white flex items-center justify-center hover:bg-black/65 transition disabled:opacity-0">
+                                <ChevronLeft size={20} />
+                            </button>
+                            <button onClick={() => go(1)} disabled={index >= cards.length - 1} aria-label="Next roast"
+                                className="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/45 text-white flex items-center justify-center hover:bg-black/65 transition disabled:opacity-0">
+                                <ChevronRight size={20} />
+                            </button>
+
+                            {/* Overlays */}
+                            <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/50 text-white flex items-center gap-1">
+                                {activePersona.emoji} {activePersona.label}
+                            </span>
+                            {current.offline && (
+                                <span className="absolute top-2 right-2 text-[10px] px-2 py-0.5 rounded-full bg-black/50 text-white/90">classic deck</span>
+                            )}
+                            {posterRendering && (
+                                <span className="absolute bottom-2 right-2"><Sparkles className="text-gold animate-pulse" size={16} /></span>
+                            )}
+                            <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] px-2 py-0.5 rounded-full bg-black/50 text-white/90">
+                                {index + 1} / {cards.length}
+                            </span>
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center gap-3 py-8 text-center">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center px-6">
                             <div className="text-4xl">🤕</div>
                             <div className="text-sm text-ink-soft">The panel is speechless. Try another round.</div>
                         </div>
                     )}
-
-                    {copied && (
-                        <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[11px] bg-surface border border-divider text-ink rounded-full px-3 py-1 shadow">
-                            Copied!
-                        </div>
-                    )}
                 </div>
 
-                {/* Progress + more */}
-                <div className="text-center text-xs text-muted">{cards.length ? `${index + 1} / ${cards.length}` : ' '}</div>
+                {/* Frame strip + actions + more */}
+                {/* Frame strip — dice re-roll + pick a specific frame */}
+                {current && (
+                    <div className="flex items-center gap-1.5">
+                        <button onClick={reshufflePoster} title="Shuffle frame" aria-label="Shuffle frame"
+                            className="w-9 h-9 shrink-0 rounded-lg border border-gold/50 bg-gold/10 text-gold flex items-center justify-center hover:bg-gold/20 transition">
+                            <Dices size={16} />
+                        </button>
+                        <div className="flex gap-1.5 overflow-x-auto">
+                            {ROAST_CARD_TEMPLATES.map(t => {
+                                const active = current.template === t.id;
+                                return (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setCardTemplate(t.id)}
+                                        title={t.label}
+                                        className={`w-9 h-9 shrink-0 rounded-lg border text-base flex items-center justify-center transition-all
+                                            ${active ? 'bg-gold/20 border-gold scale-105' : 'bg-white/5 border-white/10 hover:border-white/30'}`}
+                                    >
+                                        {t.emoji}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* Actions — share the poster, save the burn, copy the text */}
+                {current && (
+                    <div className="relative flex items-center justify-center gap-2">
+                        <button onClick={() => toggleSave(current)} aria-label="Save to Burn Book"
+                            className={`p-2.5 rounded-xl border transition-colors ${isSaved(current) ? 'bg-rose-500/15 border-rose-500/60 text-rose-400' : 'bg-white/5 border-white/10 text-muted hover:text-rose-400'}`}>
+                            <Heart size={18} fill={isSaved(current) ? 'currentColor' : 'none'} />
+                        </button>
+                        <button onClick={sharePoster} aria-label="Share poster"
+                            className="flex-1 py-2.5 rounded-xl bg-gold text-slate-900 font-bold text-sm flex items-center justify-center gap-1.5">
+                            <Share2 size={16} /> Share
+                        </button>
+                        <button onClick={() => copyText(current.text)} aria-label="Copy roast text"
+                            className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-muted hover:text-ink transition-colors">
+                            <Copy size={18} />
+                        </button>
+                        <button onClick={savePoster} aria-label="Save poster"
+                            className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-muted hover:text-ink transition-colors">
+                            <Download size={18} />
+                        </button>
+                        {copied && (
+                            <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[11px] bg-surface border border-divider text-ink rounded-full px-3 py-1 shadow">
+                                Copied!
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <Button fullWidth className="!py-3 flex items-center justify-center gap-2" disabled={loadingBatch} onClick={() => fetchBatch(persona)}>
                     {loadingBatch && cards.length > 0
@@ -758,99 +892,52 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
                         : <><Flame size={16} /> 5 MORE</>}
                 </Button>
 
-                {current && (
-                    <Button variant="secondary" fullWidth className="!py-2.5 text-sm flex items-center justify-center gap-1.5" onClick={openPosterSheet}>
-                        <Sparkles size={15} /> Make it a poster
-                    </Button>
-                )}
-
                 <div className="flex gap-2">
                     <Button variant="secondary" className="flex-1 !py-2.5 text-sm flex items-center justify-center gap-1.5" onClick={() => setBookOpen(true)}>
                         <Book size={15} /> Burn Book{burnBook.length ? ` (${burnBook.length})` : ''}
                     </Button>
+                    <Button variant="secondary" className="flex-1 !py-2.5 text-sm flex items-center justify-center gap-1.5" disabled={recapBusy || cards.length === 0} onClick={shareRecap}>
+                        <Flame size={15} /> {recapBusy ? 'Building…' : 'Recap'}
+                    </Button>
                     <Button variant="secondary" className="flex-1 !py-2.5 text-sm flex items-center justify-center gap-1.5" onClick={() => setScreen('SETUP')}>
-                        <RefreshCcw size={15} /> New photo
+                        <RefreshCcw size={15} /> New
                     </Button>
                 </div>
             </div>
 
             {bookOpen && renderBurnBook()}
-            {posterOpen && renderPosterSheet()}
+            {lightboxOpen && current && renderLightbox()}
         </div>
     );
 
-    // --- Poster bottom sheet (template picker → preview → share/save) --------------------
+    // --- Poster lightbox (enlarged view + share/save) -----------------------------------
 
-    function renderPosterSheet() {
+    function renderLightbox() {
         return (
             <div
-                className="fixed inset-0 z-[60] flex items-end backdrop-blur-sm"
-                style={{ background: 'rgba(15, 30, 51, 0.5)' }}
-                onClick={() => setPosterOpen(false)}
+                className="fixed inset-0 z-[70] backdrop-blur-md flex items-center justify-center px-4 py-6"
+                style={{ background: 'rgba(15, 30, 51, 0.92)' }}
+                onClick={() => setLightboxOpen(false)}
             >
-                <div
-                    className="w-full bg-surface border border-divider rounded-t-[24px] px-5 pt-3 pb-7 max-h-[85%] flex flex-col"
-                    style={{ boxShadow: '0 -16px 40px rgba(15, 30, 51, 0.18)' }}
-                    onClick={e => e.stopPropagation()}
+                <button
+                    onClick={(e) => { e.stopPropagation(); setLightboxOpen(false); }}
+                    aria-label="Close enlarged view"
+                    className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/10 border border-white/25 text-white flex items-center justify-center hover:bg-white/20 transition"
                 >
-                    <div className="w-11 h-[5px] rounded-full bg-divider-soft mx-auto mb-3.5" />
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                            <Sparkles size={16} className="text-gold" />
-                            <span className="font-bold text-ink tracking-wide">{posterUrl ? 'YOUR POSTER' : 'PICK A FRAME'}</span>
-                        </div>
-                        <button onClick={() => setPosterOpen(false)} aria-label="Close poster sheet" className="w-7 h-7 rounded-full bg-surface-alt border border-divider text-muted flex items-center justify-center hover:text-ink">
-                            <X size={14} />
-                        </button>
-                    </div>
-
-                    {posterUrl ? (
-                        <div className="flex-1 overflow-y-auto flex flex-col gap-3">
-                            <img src={posterUrl} alt="Roast poster preview" className="w-full rounded-xl border border-divider" />
-                            <div className="flex gap-2">
-                                <Button className="flex-1 !py-2.5 text-sm flex items-center justify-center gap-1.5" onClick={sharePoster}>
-                                    <Share2 size={15} /> Share
-                                </Button>
-                                <Button variant="secondary" className="flex-1 !py-2.5 text-sm flex items-center justify-center gap-1.5" onClick={savePoster}>
-                                    <Download size={15} /> Save
-                                </Button>
-                                <Button variant="secondary" className="flex-1 !py-2.5 text-sm" onClick={() => { setPosterUrl(null); posterCanvasRef.current = null; }}>
-                                    ← Frames
-                                </Button>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex-1 overflow-y-auto">
-                            <div className="text-xs text-muted mb-3">Your photo + this burn, framed. Made on your phone — nothing is uploaded.</div>
-                            <div className="grid grid-cols-2 gap-2">
-                                {ROAST_CARD_TEMPLATES.map(t => (
-                                    <button
-                                        key={t.id}
-                                        onClick={() => makePoster(t.id)}
-                                        disabled={posterBusy !== null}
-                                        className="text-left bg-white/5 border border-white/10 rounded-xl px-3 py-3 hover:bg-white/[0.08] hover:border-white/25 transition-colors disabled:opacity-50"
-                                    >
-                                        <div className="text-xl leading-none mb-1.5">{t.emoji}</div>
-                                        <div className="text-sm font-bold text-ink">
-                                            {posterBusy === t.id ? <span className="animate-pulse">Framing…</span> : t.label}
-                                        </div>
-                                        <div className="text-[11px] text-muted truncate">{t.tagline}</div>
-                                    </button>
-                                ))}
-                                <button
-                                    onClick={shareRecap}
-                                    disabled={posterBusy !== null || cards.length === 0}
-                                    className="text-left bg-white/5 border border-white/10 border-l-4 border-l-gold rounded-xl px-3 py-3 hover:bg-white/[0.08] hover:border-t-white/25 hover:border-r-white/25 transition-colors disabled:opacity-50"
-                                >
-                                    <div className="text-xl leading-none mb-1.5">🔥</div>
-                                    <div className="text-sm font-bold text-ink">
-                                        {posterBusy === 'recap' ? <span className="animate-pulse">Building…</span> : 'Session Recap'}
-                                    </div>
-                                    <div className="text-[11px] text-muted truncate">Survived {cards.length} roasts</div>
-                                </button>
-                            </div>
-                        </div>
+                    <X size={18} />
+                </button>
+                <div className="w-full max-w-sm flex flex-col gap-3 max-h-full" onClick={e => e.stopPropagation()}>
+                    {posterUrl && (
+                        <img src={posterUrl} alt="Roast poster" className="w-full max-h-[74vh] object-contain rounded-xl border border-white/20" />
                     )}
+                    <div className="flex gap-2">
+                        <Button className="flex-1 !py-2.5 text-sm flex items-center justify-center gap-1.5" onClick={sharePoster}>
+                            <Share2 size={15} /> Share
+                        </Button>
+                        <Button variant="secondary" className="flex-1 !py-2.5 text-sm flex items-center justify-center gap-1.5" onClick={savePoster}>
+                            <Download size={15} /> Save
+                        </Button>
+                    </div>
                 </div>
             </div>
         );
