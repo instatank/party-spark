@@ -138,6 +138,44 @@ These are instant, work offline, and are *more* shareable than AI images because
 
 Later candidates (explicitly not now): Daily Roast (shared daily prompt, streak à la Daily Scramble), Roast Royale bracket, "roast my screenshot" mode.
 
+### 5a. Phase 3 implementation handoff (START HERE for a fresh session — Phases 1+2 are already shipped)
+
+> Everything below already exists in the codebase after Phases 1+2. Roast Battle is **assembly of shipped parts**, not new AI plumbing. Read this section + the named files and you don't need the prior build conversations.
+
+**Building blocks that already exist — reuse, do not rebuild:**
+- `src/components/games/RoastCentralGame.tsx` — the solo game. Copy its proven helpers rather than reinventing: `downscaleDataUrl` (≤1024px), camera capture, `startObservation` + sessionStorage cache, `sampleFallback` (offline deck), `personaById`, `randomTemplate`, the `PERSONAS`/`FORMATS`/`SPICES` arrays (ids mirror the server). Consider extracting these into a shared `roastShared.ts` if Battle lives in its own component.
+- `src/services/geminiService.ts` — `observeRoastPhoto(base64) → RoastObservations | null` and `generateRoastBatch(observations, persona, format, spice, count) → string[]` (Claude-first server-side, `[]` on failure). One observe + one batch per player.
+- `src/services/roastCards.ts` — `renderRoastCardWithImage(imgEl, input)` (sync draw) + `ROAST_CARD_TEMPLATES`. Use for each player's reveal poster.
+- `src/services/shareCard.ts` — `shareResultCard({gameTitle, accent, emoji, heading, sub, rows, footer})` for the battle recap; `shareCanvasImage`/`downloadCanvasImage` for per-player posters.
+- `src/data/roast_central_fallback.json` — per-persona offline lines; battle must degrade to these so it never dead-ends.
+- `src/components/ui/TeamRosterRow.tsx` + `sessionService` (`getTeams()`) — collect 2–8 player names, persists across games (shared roster; Truth or Drink / 5 Alive already use this exact pattern — copy their usage).
+- `src/components/ui/EndScreen.tsx` — `import EndScreen` (default export). Props: `{ title, onBack, onHome, entries: {name, score, expand?}[], accent: 'emerald'|'indigo'|'theme', heading?, winnerText? }`. Sorts descending internally; renders winner tint + 🏆 + tie line. Votes = score.
+- `src/services/gameNightService.ts` — `sessionService`-style singleton; `reportResult(gameId: string, entries: {name: string, score: number}[])` (no-op when no night active). Call from the battle end screen.
+- `src/services/audio.ts` — `unlockAudio`, `playPop`, `playDingSoft`, `playBell`, `playBuzzer`, `hapticTap`, `hapticSuccess` for the pass-and-reveal beats.
+- `src/components/ui/PinGate.tsx` — `isAdultUnlocked()` / `PinGateModal` for the Extra-spice gate (PIN `0438`).
+
+**The flow (pass-and-play):**
+1. **Mode select** on Roast Central's SETUP: add a "Solo / Battle" toggle (or a Battle tile). Battle = 2–8 players.
+2. **Roster** via `TeamRosterRow` → then **one shared persona + format + spice** for the whole battle (fairness; host picks or "Surprise me"). Extra spice → `PinGateModal`.
+3. **Capture round** — pass the phone; each named player uploads/snaps a face (reuse the solo intake). Downscale + decode each; kick off `observeRoastPhoto` per player as they're added so vision overlaps input.
+4. **Generate** — for each player: one `generateRoastBatch(obs, persona, format, spice, 5)`, keep the strongest 1 (or show the deck). Fall back to `sampleFallback` when the API returns `[]`.
+5. **Reveal** — pass-and-play, one player at a time: their roast rendered as a poster (`renderRoastCardWithImage`, random frame) with `playPop`/`hapticSuccess`.
+6. **Vote** — after all reveals, pass the phone; each player votes the hardest burn, **cannot vote self** (disable own row). Tally.
+7. **Result** — `EndScreen` with `entries = players.map(p => ({name, score: votes}))`, `accent: 'indigo'`. Then `reportResult('ROAST_CENTRAL', entries)` for Game Night + a `shareResultCard` recap ("Winner: X — N votes").
+
+**Cost/caps:** ~$0.02/player (observe + batch, no image gen). A 6-player battle ≈ $0.12. The solo `MAX_BATCHES_PER_SESSION` cap (60/2h in the component) already covers battle volume, but count each player's batch against it.
+
+**Gotchas carried over from Phases 1+2 (don't relearn these):**
+- **Per-player images:** the solo path decodes ONE photo into `imgElRef`. Battle needs N decoded `<img>` elements (one per player) to draw posters — hold an array/map keyed by player, not a single ref.
+- **U+00A0 edit trap:** an earlier edit round silently failed exact-match because a literal non-breaking space (`\xa0`) was hiding in the JSX. If an `Edit` won't match a line you can see, check for nbsp (`sed -n 'Np' file | python3 -c "import sys;print([hex(ord(c)) for c in sys.stdin.read() if ord(c)>127])"`) and splice via Python.
+- **Tailwind v4 JIT:** accent classes must be complete static strings — use the `ACCENT` static-map pattern (see `EndScreen.tsx` / `RoastCentralGame.tsx`), never template literals. Verify new colors land in `dist/assets/index-*.css`.
+- **Canvas output isn't test-verifiable:** render each reveal/recap and LOOK at it (dump to PNG via a headless drive, read the image). Tests only prove it ran.
+- **Game Night excludes adult-gated games** from its auto-playlist. If Battle can run Extra spice, either keep Battle out of the hub playlist or force ≤ medium when launched from the hub (mirror how Truth or Drink is handled).
+- **Every screen needs `ScreenHeader`** with working `onBack`/`onHome` (house rule #4).
+- **No new AI types needed** — `roast_observe` + `roast_text_batch` already cover Battle. Only client work.
+
+**Verify like Phases 1+2:** `npm run build` + `npm test`; `node scripts/drive-games.mjs` (13/13 clean — Battle must not regress the solo open); a focused headless drive of the battle flow (roster → capture 2 faces → reveal → vote → EndScreen) against `vite preview` on the offline fallback path; `/ship` gates before push. Branch: `claude/roastme-game-enhancement-goabyu` (or a fresh branch if that PR merged — see the merged-PR rule).
+
 ---
 
 ## 6. Prompting architecture & safety (the part that makes it commercial-grade)
