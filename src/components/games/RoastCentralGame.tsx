@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Camera, Image as ImageIcon, Heart, Share2, Copy, Trash2, X, ChevronLeft, ChevronRight, Sparkles, Flame, Book, RefreshCcw, Download, Dices, Swords } from 'lucide-react';
+import { Camera, Image as ImageIcon, Heart, Share2, Copy, Trash2, X, ChevronLeft, ChevronRight, Sparkles, Flame, Book, RefreshCcw, Download, Dices, Swords, Wand2 } from 'lucide-react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 import { observeRoastPhoto, generateRoastBatch, cleanBase64, type RoastObservations } from '../../services/geminiService';
@@ -14,6 +14,7 @@ import {
     downscaleDataUrl, fileToDataUrl, hashDataUrl, loadFallbackDeck,
 } from './roastShared';
 import { RoastBattleGame } from './RoastBattleGame';
+import { ToonStudio } from './roast/ToonStudio';
 
 interface Props {
     onExit: () => void;
@@ -104,6 +105,9 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
     // Burn Book
     const [burnBook, setBurnBook] = useState<BurnBookEntry[]>(readBurnBook);
     const [bookOpen, setBookOpen] = useState(false);
+
+    // Toon Studio (Phase 4 — the rationed caricature tier)
+    const [toonOpen, setToonOpen] = useState(false);
 
     // Poster (Phase 2 — auto-rendered, the default deck visual)
     const [posterUrl, setPosterUrl] = useState<string | null>(null);
@@ -813,12 +817,16 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
                     </div>
                 )}
 
-                {/* Actions — share the poster, save the burn, copy the text */}
+                {/* Actions — toonify (rationed), share the poster, save the burn, copy */}
                 {current && (
                     <div className="relative flex items-center justify-center gap-2">
                         <button onClick={() => toggleSave(current)} aria-label="Save to Burn Book"
                             className={`p-2.5 rounded-xl border transition-colors ${isSaved(current) ? 'bg-rose-500/15 border-rose-500/60 text-rose-400' : 'bg-white/5 border-white/10 text-muted hover:text-rose-400'}`}>
                             <Heart size={18} fill={isSaved(current) ? 'currentColor' : 'none'} />
+                        </button>
+                        <button onClick={() => { setToonOpen(true); hapticTap(); }} aria-label="Open Toon Studio" title="Toon Studio — AI caricature"
+                            className="p-2.5 rounded-xl border border-gold/50 bg-gold/10 text-gold hover:bg-gold/20 transition-colors">
+                            <Wand2 size={18} />
                         </button>
                         <button onClick={sharePoster} aria-label="Share poster"
                             className="flex-1 py-2.5 rounded-xl bg-gold text-slate-900 font-bold text-sm flex items-center justify-center gap-1.5">
@@ -861,6 +869,7 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
 
             {bookOpen && renderBurnBook()}
             {lightboxOpen && current && renderLightbox()}
+            <ToonStudio open={toonOpen} onClose={() => setToonOpen(false)} photo={photo} allStyles={!kidMode} />
         </div>
     );
 

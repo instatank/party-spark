@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Camera, Image as ImageIcon, X, Flame, Swords, Sparkles, Share2, Users, Dices, RefreshCcw, Crown } from 'lucide-react';
+import { Camera, Image as ImageIcon, X, Flame, Swords, Sparkles, Share2, Users, Dices, RefreshCcw, Crown, Wand2 } from 'lucide-react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import EndScreen from '../ui/EndScreen';
@@ -17,6 +17,7 @@ import {
     MAX_BATCHES_PER_SESSION, BATCH_SIZE, randomTemplate,
     downscaleDataUrl, fileToDataUrl, hashDataUrl, loadFallbackDeck,
 } from './roastShared';
+import { ToonStudio } from './roast/ToonStudio';
 
 // =============================================================================
 // Roast Battle — Roast Me v2 Phase 3 (the party layer).
@@ -51,6 +52,7 @@ interface BattlePlayer {
     offline: boolean;
     posterUrl: string | null;    // rendered poster dataURL (reveal + vote thumb)
     votes: number;
+    kid: boolean;                // child detected → Toon Studio stays kid-safe
 }
 
 const MAX_PLAYERS = 8;
@@ -105,6 +107,9 @@ export const RoastBattleGame: React.FC<Props> = ({ onExit, onBackToStudio }) => 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [sharing, setSharing] = useState(false);
+    // Toon Studio for the winner (Phase 4) — the battle prize spends one of the
+    // day's rationed caricatures.
+    const [toonOpen, setToonOpen] = useState(false);
 
     // --- generation (fires once when entering GENERATING) ---------------------
 
@@ -127,7 +132,8 @@ export const RoastBattleGame: React.FC<Props> = ({ onExit, onBackToStudio }) => 
                 // server enforces this too; here it keeps the UI honest.
                 let effPersona = persona;
                 let effSpice = spice;
-                if (obs && (obs.hasChild || (obs.contextTags || []).includes('baby'))) {
+                const kid = !!(obs && (obs.hasChild || (obs.contextTags || []).includes('baby')));
+                if (kid) {
                     effPersona = 'hype_man';
                     effSpice = 'mild';
                 }
@@ -168,7 +174,7 @@ export const RoastBattleGame: React.FC<Props> = ({ onExit, onBackToStudio }) => 
                     }
                 }
 
-                snap[i] = { ...p, roast, offline, posterUrl, persona: effPersona };
+                snap[i] = { ...p, roast, offline, posterUrl, persona: effPersona, kid };
                 setPlayers([...snap]);
             }
             clearInterval(lineTimer);
@@ -319,6 +325,7 @@ export const RoastBattleGame: React.FC<Props> = ({ onExit, onBackToStudio }) => 
             offline: false,
             posterUrl: null,
             votes: 0,
+            kid: false,
         })));
         setActiveIdx(0);
         setHandoff(true);
@@ -777,36 +784,55 @@ export const RoastBattleGame: React.FC<Props> = ({ onExit, onBackToStudio }) => 
     if (phase === 'RESULT') {
         const w = winner();
         return (
-            <EndScreen
-                title="Roast Battle"
-                onBack={() => setPhase('SETUP')}
-                onHome={onExit}
-                accent="indigo"
-                entries={players.map(p => ({ name: p.name, score: p.votes }))}
-                winnerText={top => `takes the crown with ${top.score} vote${top.score === 1 ? '' : 's'}.`}
-                footerExtra={(
-                    <div className="flex flex-col gap-2 w-full">
-                        <button
-                            onClick={shareRecap}
-                            disabled={sharing}
-                            className="w-full py-3 px-6 bg-transparent border-2 border-indigo-500/60 text-indigo-400 hover:bg-indigo-500/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
-                        >
-                            <Share2 size={18} /> Share Result
-                        </button>
-                        {w && posterCanvasRef.current.size > 0 && (
+            <>
+                <EndScreen
+                    title="Roast Battle"
+                    onBack={() => setPhase('SETUP')}
+                    onHome={onExit}
+                    accent="indigo"
+                    entries={players.map(p => ({ name: p.name, score: p.votes }))}
+                    winnerText={top => `takes the crown with ${top.score} vote${top.score === 1 ? '' : 's'}.`}
+                    footerExtra={(
+                        <div className="flex flex-col gap-2 w-full">
                             <button
-                                onClick={shareWinnerPoster}
-                                className="w-full py-2.5 px-6 bg-transparent border border-gold/50 text-gold hover:bg-gold/10 rounded-xl font-semibold text-sm transition-colors active:scale-95 flex items-center justify-center gap-2"
+                                onClick={shareRecap}
+                                disabled={sharing}
+                                className="w-full py-3 px-6 bg-transparent border-2 border-indigo-500/60 text-indigo-400 hover:bg-indigo-500/10 rounded-xl font-bold transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
                             >
-                                <Crown size={16} /> Share {w.name}'s poster
+                                <Share2 size={18} /> Share Result
                             </button>
-                        )}
-                    </div>
+                            {w && posterCanvasRef.current.size > 0 && (
+                                <button
+                                    onClick={shareWinnerPoster}
+                                    className="w-full py-2.5 px-6 bg-transparent border border-gold/50 text-gold hover:bg-gold/10 rounded-xl font-semibold text-sm transition-colors active:scale-95 flex items-center justify-center gap-2"
+                                >
+                                    <Crown size={16} /> Share {w.name}'s poster
+                                </button>
+                            )}
+                            {w && w.photo && (
+                                <button
+                                    onClick={() => { setToonOpen(true); hapticTap(); }}
+                                    className="w-full py-2.5 px-6 bg-gold/10 border border-gold/50 text-gold hover:bg-gold/20 rounded-xl font-semibold text-sm transition-colors active:scale-95 flex items-center justify-center gap-2"
+                                >
+                                    <Wand2 size={16} /> Trophy toon for {w.name}
+                                </button>
+                            )}
+                        </div>
+                    )}
+                    onPlayAgain={handlePlayAgain}
+                    playAgainLabel="Battle Again"
+                    onExit={onExit}
+                />
+                {w && (
+                    <ToonStudio
+                        open={toonOpen}
+                        onClose={() => setToonOpen(false)}
+                        photo={w.photo}
+                        allStyles={!w.kid}
+                        heading={`${w.name.toUpperCase()}'S TROPHY TOON`}
+                    />
                 )}
-                onPlayAgain={handlePlayAgain}
-                playAgainLabel="Battle Again"
-                onExit={onExit}
-            />
+            </>
         );
     }
 

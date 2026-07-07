@@ -88,7 +88,9 @@ export const AI_REQUEST_SCHEMAS = {
     }),
     edit_image: z.looseObject({
         base64Image: z.string(),
-        theme: z.string().optional(),   // theme takes precedence over prompt
+        style: z.string().optional(),   // Toon Studio style key (Phase 4) — beats theme/prompt
+        tier: z.enum(['flash', 'pro']).optional(), // model override; styles carry their own default
+        theme: z.string().optional(),   // legacy Roast Me theme — takes precedence over prompt
         team: z.string().optional(),
         variant: z.string().optional(),
         prompt: z.string().optional(),  // fallback when no theme is given

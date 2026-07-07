@@ -106,3 +106,48 @@ export const hashDataUrl = (s: string): string => {
 let fallbackPromise: Promise<Record<string, string[]>> | null = null;
 export const loadFallbackDeck = (): Promise<Record<string, string[]>> =>
     (fallbackPromise ??= import('../../data/roast_central_fallback.json').then(m => m.default as Record<string, string[]>));
+
+// --- Toon Studio (Phase 4) -----------------------------------------------------
+// Style ids mirror the server's TOON_STYLES in api/_lib/handlers-image.ts —
+// ids must stay in sync. `tier` here is display-only ("✨ takes longer");
+// the server owns the actual model routing. `kidSafe: false` styles are hidden
+// when a child was detected in the photo.
+
+export const TOON_STYLES: { id: string; label: string; emoji: string; tagline: string; tier: 'flash' | 'pro'; kidSafe: boolean }[] = [
+    { id: 'toon',         label: 'Caricature',   emoji: '✏️', tagline: 'Street-artist classic',  tier: 'flash', kidSafe: true },
+    { id: 'anime',        label: 'Anime',        emoji: '🌸', tagline: '90s protagonist you',    tier: 'flash', kidSafe: true },
+    { id: 'zombie',       label: 'Zombie',       emoji: '🧟', tagline: 'Undead. Still you.',     tier: 'flash', kidSafe: false },
+    { id: 'retro',        label: '80s Glam',     emoji: '📼', tagline: 'Mall-portrait royalty',  tier: 'flash', kidSafe: true },
+    { id: 'noir',         label: 'Film Noir',    emoji: '🕵️', tagline: 'Shadows & fedora',       tier: 'flash', kidSafe: true },
+    { id: 'royal',        label: 'Royal Oil',    emoji: '👑', tagline: 'Museum-piece you',       tier: 'flash', kidSafe: true },
+    { id: 'tabloid_cover', label: 'Tabloid Cover', emoji: '📰', tagline: 'Front-page scandal',   tier: 'pro',   kidSafe: false },
+    { id: 'movie_poster',  label: 'Movie Poster', emoji: '🎬', tagline: 'Title & tagline in-shot', tier: 'pro', kidSafe: true },
+];
+
+// Daily caricature allowance (Phase 4 rationing — image gen is the one paid
+// call users could hammer; text batches stay generous because they're ~free).
+// localStorage {date, used}; a failed generation is refunded so an API outage
+// never eats the day's allowance.
+export const DAILY_TOON_LIMIT = 3;
+const TOON_KEY = 'roast_central_toons';
+
+const toonDayKey = (): string => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const readToonState = (): { date: string; used: number } => {
+    try {
+        const raw = JSON.parse(localStorage.getItem(TOON_KEY) || 'null') as { date: string; used: number } | null;
+        if (raw && raw.date === toonDayKey() && typeof raw.used === 'number') return raw;
+    } catch { /* corrupt/blocked — treat as fresh */ }
+    return { date: toonDayKey(), used: 0 };
+};
+
+const writeToonState = (used: number): void => {
+    try { localStorage.setItem(TOON_KEY, JSON.stringify({ date: toonDayKey(), used: Math.max(0, used) })); } catch { /* ignore */ }
+};
+
+export const toonsLeftToday = (): number => Math.max(0, DAILY_TOON_LIMIT - readToonState().used);
+export const spendToon = (): void => writeToonState(readToonState().used + 1);
+export const refundToon = (): void => writeToonState(readToonState().used - 1);

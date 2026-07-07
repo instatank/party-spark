@@ -12,7 +12,14 @@ import { getGemini } from './clients.js';
 import { ALLOWED_CONTEXT_TAGS, type RoastObservations } from './roast-prompts.js';
 
 const TEXT_MODEL = 'gemini-2.5-flash';
+// Pro tier — highest fidelity + in-image text rendering. ~$0.134/image and
+// 15-30s (may hit the Vercel Hobby 10s ceiling). Reserved for the 2 "premium"
+// styles + the legacy Roast Me themes (which stay on it untouched).
 const IMAGE_MODEL = 'gemini-3-pro-image';
+// Flash tier — the DEFAULT for Roast Central's Toon Studio (Phase 4).
+// ~$0.039/image, generates in a few seconds (safe on Hobby's 10s limit).
+// Stable id, not -preview (see the model-retirement lesson in CLAUDE.md).
+const IMAGE_MODEL_FLASH = 'gemini-2.5-flash-image';
 
 // Team metadata for the WORLDCUP theme — keeps the jersey + flag specifics in
 // one place so both the caricature and the roast prompt stay in sync.
@@ -170,6 +177,59 @@ Re-render the photo as a vivid, photorealistic shot of them inside the stadium c
     }
 };
 
+// =============================================================================
+// Toon Studio style library (Roast Me v2 Phase 4 — Roast Central's T2 tier)
+//
+// Each style is picked BY THE USER before generating (no wasted surprises) and
+// carries its own model tier: 'flash' (default, cheap+fast) or 'pro' (premium —
+// styles that genuinely need Pro's in-image text rendering). Ids must stay in
+// sync with the client's TOON_STYLES in src/components/games/roastShared.ts.
+// The legacy Roast Me themes above are untouched and stay on the pro model.
+// =============================================================================
+
+// The strong identity-preservation block (extracted from the battle-tested
+// rock/worldcup themes). Prepended to every photoreal-adjacent style; the
+// heavily stylised ones (toon/anime/zombie) get the compact clause instead,
+// since "keep the same skin tone" fights a cel-shade or undead re-render.
+const IDENTITY_LOCK = `IDENTITY LOCK — TOP PRIORITY: You must preserve the EXACT facial identity of the person in the uploaded photo. Do not generate a new face. Do not idealise, beautify, slim, or "improve" their features. Keep the same face shape, jaw line, nose, eyes, eye spacing, eyebrows, lips, ears, hairline, skin tone, facial hair, and any visible distinguishing marks (moles, scars, freckles, glasses if present). A friend looking at the result must say "that's clearly them" — not "that looks like a version of them". If you cannot preserve the face exactly, prefer to keep the original face untouched and only re-render the outfit, hair, and background around it.`;
+
+const IDENTITY_CLAUSE = `CRITICAL: keep the person's facial identity clearly recognizable — same face shape, features, and proportions — so a friend instantly says "that's them".`;
+
+const TOON_STYLES: Record<string, { tier: 'flash' | 'pro'; prompt: string }> = {
+    toon: {
+        tier: 'flash',
+        prompt: `${IDENTITY_CLAUSE} Transform this person into a funny hand-drawn street-artist caricature — exaggerated features played for laughs (a slightly bigger nose, wilder hair, a goofier grin), bold confident linework, warm marker-style coloring, a lightly sketched fun background. Classic boardwalk caricature energy.`,
+    },
+    zombie: {
+        tier: 'flash',
+        prompt: `${IDENTITY_CLAUSE} Re-render the person as an undead zombie — pale mottled skin, sunken glowing eyes, tattered clothes, a lurching pose — in a moody foggy graveyard at night. Horror-movie poster lighting, but keep it fun and theatrical rather than gory.`,
+    },
+    anime: {
+        tier: 'flash',
+        prompt: `${IDENTITY_CLAUSE} Re-render this person as a 90s anime protagonist — vibrant cel-shaded coloring, large expressive eyes that still read as THEIR eyes, dynamic hair with highlights, a determined pose, speed-lines and a dramatic sunset city skyline behind them.`,
+    },
+    retro: {
+        tier: 'flash',
+        prompt: `${IDENTITY_LOCK}\n\nRe-render the photo as an over-the-top 1980s glamour-mall studio portrait — big permed or feathered hair, bold neon windbreaker or power-shoulder blazer, laser-grid synthwave backdrop, soft-focus glow, a hint of airbrush. Played completely straight, which is what makes it funny.`,
+    },
+    noir: {
+        tier: 'flash',
+        prompt: `${IDENTITY_LOCK}\n\nRe-render the photo as a black-and-white 1940s film-noir still — dramatic chiaroscuro shadows, venetian-blind light slicing across the scene, cigarette-smoke haze, trench coat and fedora, a rain-streaked window behind them. Moody, grainy, cinematic.`,
+    },
+    royal: {
+        tier: 'flash',
+        prompt: `${IDENTITY_LOCK}\n\nRe-render the photo as a grand 18th-century royal oil painting — ornate gilded frame edge visible, lavish velvet-and-brocade royal attire, a powdered wig or jeweled crown, one hand resting imperiously on a globe or scepter, a stormy romantic landscape behind them. Museum-piece brushwork, completely deadpan.`,
+    },
+    tabloid_cover: {
+        tier: 'pro',
+        prompt: `${IDENTITY_LOCK}\n\nEdit this photo into a full scandalous supermarket-tabloid FRONT COVER — the person mid-scandal with a guilty caught-by-paparazzi expression, harsh camera-flash lighting. Render real magazine cover text INTO the image: a trashy masthead name at the top, one screaming all-caps headline about them, and 2-3 smaller absurd teaser headlines down the side, in classic tabloid yellow/pink block type on a cheap printed-paper texture.`,
+    },
+    movie_poster: {
+        tier: 'pro',
+        prompt: `${IDENTITY_LOCK}\n\nTransform this photo into a polished blockbuster MOVIE POSTER starring this person — gritty cinematic color grade, dramatic rim lighting, an epic composited background that suits their vibe. Render real poster text INTO the image: an invented bold movie title that suits their look, a hilariously mundane tagline above it, a release date, and a fine-print billing block strip along the bottom, all in authentic movie-poster typography.`,
+    },
+};
+
 // Roast caption system prompt per theme
 const getRoastSystemPrompt = (theme: string, team?: string, variant?: string): string => {
     const randomVibe = (options: string[]) => ` ${options[Math.floor(Math.random() * options.length)]}`;
@@ -285,19 +345,26 @@ export const handleGenerateRoast = async (params: { base64Image: string; theme?:
 // Caricature image edit (image in → image out)
 // =============================================================================
 
-export const handleEditImage = async (params: { base64Image: string; theme?: string; team?: string; variant?: string; prompt?: string }): Promise<string | null> => {
+export const handleEditImage = async (params: { base64Image: string; style?: string; tier?: 'flash' | 'pro'; theme?: string; team?: string; variant?: string; prompt?: string }): Promise<string | null> => {
     const gemini = await getGemini();
     if (!gemini) return null;
-    const { base64Image, theme, team, variant, prompt } = params;
+    const { base64Image, style, tier, theme, team, variant, prompt } = params;
 
-    // Allow either an explicit prompt or a theme key. Theme takes precedence if
-    // both are given (themes drive the existing UI flow). `team` only matters
+    // Resolution order (Phase 4): a `style` key hits the Toon Studio library
+    // and runs on that style's tier ('flash' default, 'pro' for the premium
+    // styles; an explicit `tier` param overrides). The legacy paths — `theme`
+    // key or raw `prompt` — are byte-identical to before and stay on the pro
+    // model, so classic Roast Me's behavior is unchanged. `team` only matters
     // for the worldcup theme; `variant` only for the rock theme.
-    const effectivePrompt = theme ? getCaricaturePrompt(theme, team, variant) : (prompt || getCaricaturePrompt('animate'));
+    const styleEntry = style ? TOON_STYLES[style] : undefined;
+    const effectivePrompt = styleEntry
+        ? styleEntry.prompt
+        : theme ? getCaricaturePrompt(theme, team, variant) : (prompt || getCaricaturePrompt('animate'));
+    const effectiveTier = tier ?? styleEntry?.tier ?? 'pro';
 
     try {
         const response = await gemini.models.generateContent({
-            model: IMAGE_MODEL,
+            model: effectiveTier === 'flash' ? IMAGE_MODEL_FLASH : IMAGE_MODEL,
             contents: {
                 parts: [
                     { inlineData: { mimeType: 'image/jpeg', data: base64Image } },

@@ -276,6 +276,17 @@ export const editImage = async (base64Image: string, themeOrPrompt: string, team
 };
 
 /**
+ * Toon Studio (Roast Me v2 Phase 4) — generate a caricature from a style key.
+ * The server owns the prompt AND the model tier per style (flash default, pro
+ * for premium styles), so the client only names the style. Returns a dataURL
+ * image or null on failure — callers must degrade gracefully (refund the
+ * allowance, show a friendly message; never dead-end).
+ */
+export const generateToonImage = async (base64Image: string, style: string): Promise<string | null> => {
+    return callAI<string | null>('edit_image', { base64Image, style });
+};
+
+/**
  * Helper still used client-side by some components to produce an image prompt.
  * Keeping it exported so existing call sites don't break; the server also has
  * a copy of this same mapping for when theme keys are passed through editImage.
