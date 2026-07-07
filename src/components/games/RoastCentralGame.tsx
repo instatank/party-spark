@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Camera, Image as ImageIcon, Heart, Share2, Copy, Trash2, X, ChevronLeft, ChevronRight, Sparkles, Flame, Book, RefreshCcw, Download, Dices } from 'lucide-react';
+import { Camera, Image as ImageIcon, Heart, Share2, Copy, Trash2, X, ChevronLeft, ChevronRight, Sparkles, Flame, Book, RefreshCcw, Download, Dices, Swords } from 'lucide-react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 import { observeRoastPhoto, generateRoastBatch, cleanBase64, type RoastObservations } from '../../services/geminiService';
@@ -8,6 +8,12 @@ import { shouldAutoExpandRules } from '../../services/firstPlay';
 import { unlockAudio, playPop, playDingSoft, hapticTap, hapticSuccess } from '../../services/audio';
 import { renderRoastCardWithImage, ROAST_CARD_TEMPLATES, type RoastCardTemplate } from '../../services/roastCards';
 import { shareCanvasImage, downloadCanvasImage, shareResultCard } from '../../services/shareCard';
+import {
+    PERSONAS, FORMATS, SPICES, personaById,
+    MAX_BATCHES_PER_SESSION, BATCH_SIZE, randomTemplate,
+    downscaleDataUrl, fileToDataUrl, hashDataUrl, loadFallbackDeck,
+} from './roastShared';
+import { RoastBattleGame } from './RoastBattleGame';
 
 interface Props {
     onExit: () => void;
@@ -29,38 +35,9 @@ interface Props {
 // design: docs/ROAST_ME_V2_PLAN.md.
 // =============================================================================
 
-// Personas/formats/spice mirror the server-side library in
-// api/_lib/roast-prompts.ts — ids must stay in sync.
-// Accent classes are STATIC strings (Tailwind v4 JIT — no template literals).
-const PERSONAS: { id: string; label: string; emoji: string; tagline: string; text: string; borderL: string }[] = [
-    { id: 'roastmaster',     label: 'The Roastmaster', emoji: '🎤', tagline: 'Comedy-club savage',      text: 'text-red-400',     borderL: 'border-l-red-500' },
-    { id: 'posh_judge',      label: 'Posh Judge',      emoji: '🧐', tagline: 'Dry. Devastating.',       text: 'text-indigo-400',  borderL: 'border-l-indigo-500' },
-    { id: 'grandma',         label: 'Sweet Grandma',   emoji: '🍪', tagline: 'Love with a knife in it', text: 'text-amber-400',   borderL: 'border-l-amber-500' },
-    { id: 'bollywood_aunty', label: 'Bollywood Aunty', emoji: '💅', tagline: 'Society will talk',       text: 'text-pink-400',    borderL: 'border-l-pink-500' },
-    { id: 'hr_rep',          label: 'Corporate HR',    emoji: '📎', tagline: 'Your vibe: under review', text: 'text-cyan-400',    borderL: 'border-l-cyan-500' },
-    { id: 'hype_man',        label: 'Hype Man',        emoji: '📣', tagline: 'Zero roast. Pure gas.',   text: 'text-emerald-400', borderL: 'border-l-emerald-500' },
-];
-
-const FORMATS: { id: string; label: string; emoji: string }[] = [
-    { id: 'zinger',         label: 'Zingers',   emoji: '⚡' },
-    { id: 'tabloid',        label: 'Tabloid',   emoji: '📰' },
-    { id: 'yearbook',       label: 'Yearbook',  emoji: '🎓' },
-    { id: 'dating_profile', label: 'Swipe',     emoji: '💘' },
-    { id: 'award',          label: 'Awards',    emoji: '🏆' },
-];
-
-const SPICES: { id: string; label: string; emoji: string; adult: boolean }[] = [
-    { id: 'mild',   label: 'Mild',   emoji: '🥛', adult: false },
-    { id: 'medium', label: 'Medium', emoji: '🌶️', adult: false },
-    { id: 'extra',  label: 'Extra',  emoji: '🔥', adult: true },
-];
-
-const personaById = (id: string) => PERSONAS.find(p => p.id === id) ?? PERSONAS[0];
-
-// Client-side batch cap per 2h session window (SessionManager) — text batches
-// are cheap (~$0.003) but unbounded loops shouldn't be free.
-const MAX_BATCHES_PER_SESSION = 60;
-const BATCH_SIZE = 5;
+// Persona/format/spice library, the session batch cap, and BATCH_SIZE now live
+// in ./roastShared (shared with Roast Battle so both speak the same ids as the
+// server). Only Roast-Central-specific state stays local.
 const BURN_BOOK_KEY = 'roast_central_burnbook';
 
 interface RoastCard {
@@ -71,12 +48,6 @@ interface RoastCard {
     template: RoastCardTemplate; // the poster frame auto-assigned to this card
 }
 
-const TEMPLATE_IDS = ROAST_CARD_TEMPLATES.map(t => t.id);
-const randomTemplate = (exclude?: RoastCardTemplate): RoastCardTemplate => {
-    const pool = TEMPLATE_IDS.filter(id => id !== exclude);
-    return pool[Math.floor(Math.random() * pool.length)] ?? TEMPLATE_IDS[0];
-};
-
 interface BurnBookEntry {
     id: string;
     text: string;
@@ -84,55 +55,8 @@ interface BurnBookEntry {
     savedAt: number;
 }
 
-// --- photo utilities ---------------------------------------------------------
-
-// Downscale + re-encode to JPEG. Caps the long edge at 1024px: cuts a phone
-// photo from ~4-6MB base64 to ~150-250KB (vision cost + Vercel's 4.5MB body
-// cap both care), with no visible quality loss at chat-app sizes.
-const downscaleDataUrl = (dataUrl: string, maxDim = 1024, quality = 0.85): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-            const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-            const w = Math.max(1, Math.round(img.width * scale));
-            const h = Math.max(1, Math.round(img.height * scale));
-            const canvas = document.createElement('canvas');
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) { reject(new Error('canvas 2d unavailable')); return; }
-            ctx.drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', quality));
-        };
-        img.onerror = () => reject(new Error('image decode failed'));
-        img.src = dataUrl;
-    });
-
-const fileToDataUrl = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.onerror = () => reject(new Error('file read failed'));
-        reader.readAsDataURL(file);
-    });
-
-// Fast sampled FNV-1a over the base64 — only used as a sessionStorage cache
-// key for observations, so collisions are harmless.
-const hashDataUrl = (s: string): string => {
-    let h = 2166136261;
-    const step = Math.max(1, Math.floor(s.length / 2048));
-    for (let i = 0; i < s.length; i += step) {
-        h ^= s.charCodeAt(i);
-        h = Math.imul(h, 16777619);
-    }
-    return (h >>> 0).toString(36) + '-' + s.length.toString(36);
-};
-
-// --- offline fallback deck (dynamic import — stays out of the main chunk) ----
-
-let fallbackPromise: Promise<Record<string, string[]>> | null = null;
-const loadFallbackDeck = (): Promise<Record<string, string[]>> =>
-    (fallbackPromise ??= import('../../data/roast_central_fallback.json').then(m => m.default as Record<string, string[]>));
+// Photo utilities (downscale/read/hash) + the offline fallback deck loader now
+// live in ./roastShared (imported above).
 
 // --- burn book (localStorage) -------------------------------------------------
 
@@ -155,6 +79,10 @@ const LOADING_LINES = [
 ];
 
 export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
+    // Solo deck (this component) vs Battle party mode (Phase 3, RoastBattleGame).
+    // The toggle lives on the SETUP screen; Battle renders as its own component
+    // once picked so its pass-and-play flow stays fully self-contained.
+    const [mode, setMode] = useState<'solo' | 'battle'>('solo');
     const [screen, setScreen] = useState<'SETUP' | 'DECK'>('SETUP');
 
     // Setup choices
@@ -567,6 +495,13 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
         hapticTap();
     };
 
+    // --- Battle mode (Phase 3) — its own self-contained pass-and-play flow ----------
+    // Placed after every hook so React's hook order is stable regardless of mode.
+
+    if (mode === 'battle') {
+        return <RoastBattleGame onExit={onExit} onBackToStudio={() => setMode('solo')} />;
+    }
+
     // --- camera overlay -------------------------------------------------------------
 
     if (cameraOpen) {
@@ -602,7 +537,26 @@ export const RoastCentralGame: React.FC<Props> = ({ onExit }) => {
                 )}
 
                 <div className="flex flex-col gap-4 max-w-[380px] mx-auto w-full pb-6">
-                    <p className="text-sm text-ink-soft -mt-2">
+                    {/* Solo vs Battle — pick the party mode up front */}
+                    <div className="grid grid-cols-2 gap-2 -mt-1">
+                        <button
+                            onClick={() => hapticTap()}
+                            className="rounded-xl border border-gold bg-gold/15 py-2.5 px-3 text-left cursor-default"
+                            aria-pressed="true"
+                        >
+                            <div className="flex items-center gap-1.5 text-sm font-bold text-ink"><Flame size={15} className="text-gold" /> Solo</div>
+                            <div className="text-[11px] text-muted mt-0.5 truncate">One photo, endless burns</div>
+                        </button>
+                        <button
+                            onClick={() => { setMode('battle'); hapticTap(); }}
+                            className="rounded-xl border border-white/10 bg-white/5 py-2.5 px-3 text-left hover:bg-white/[0.08] hover:border-white/25 transition-colors"
+                        >
+                            <div className="flex items-center gap-1.5 text-sm font-bold text-ink-soft"><Swords size={15} className="text-indigo-400" /> Battle</div>
+                            <div className="text-[11px] text-muted mt-0.5 truncate">2–8 players · vote the hardest burn</div>
+                        </button>
+                    </div>
+
+                    <p className="text-sm text-ink-soft">
                         Drop a photo. Six AI comics take turns destroying it — five fresh burns at a time, as many rounds as you can take.
                     </p>
 

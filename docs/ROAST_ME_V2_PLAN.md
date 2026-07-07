@@ -3,7 +3,7 @@
 > Written 2026-07-06 on branch `claude/roastme-game-enhancement-goabyu`.
 > Goal: turn Roast Me from a one-shot novelty into a standalone-app-quality feature people return to, while making the unit economics commercially sane.
 >
-> **STATUS 2026-07-07 — Phases 1 + 2 SHIPPED, as a separate game.** Founder decision: build v2 as a new game, **Roast Central** (`GameType.ROAST_CENTRAL`, `RoastCentralGame.tsx`), leaving the existing Roast Me page untouched. Phase 1 delivered: client downscale, `roast_observe` + sessionStorage cache, `roast_text_batch` (Claude-first) with the persona/format/spice library in `api/_lib/roast-prompts.ts`, roast deck UI + Burn Book, offline fallback deck, kid-detection wholesome override, `roast_or_toast` retired. §7's "migrate/remove `generate_roast`" no longer applies — Roast Me keeps its API path. Phase 2 delivered: 5 canvas poster templates (`src/services/roastCards.ts` — WANTED, tabloid, yearbook, trading card with observation-seeded stats, certificate) + session recap via the shared `shareCard.ts` engine (whose primitives are now exported). Movie-poster frame was cut (canvas cinematic grading wasn't hitting the quality bar). **Per founder direction, the poster is now the DEFAULT deck visual** — every roast auto-renders into a random frame (no "Make it a poster" gate); a dice + frame strip change it, tap to enlarge. Phases 3-4 below are next.
+> **STATUS 2026-07-07 — Phases 1 + 2 + 3 SHIPPED, as a separate game.** Founder decision: build v2 as a new game, **Roast Central** (`GameType.ROAST_CENTRAL`, `RoastCentralGame.tsx`), leaving the existing Roast Me page untouched. **Phase 3 (Roast Battle)** shipped as a Solo/Battle toggle on Roast Central's SETUP → its own `RoastBattleGame.tsx` (pass-and-play: roster → capture → one roast+poster per player → reveal → vote-not-self → `EndScreen` → Game Night + share recap). The persona/format/spice library plus the photo/fallback/frame helpers were extracted out of `RoastCentralGame.tsx` into a shared **`src/components/games/roastShared.ts`** used by both games. No new AI plumbing — Battle rides `roast_observe` + `roast_text_batch` exactly as the solo deck does and degrades to the bundled fallback deck offline. Only **Phase 4** (premium image tier) remains. Phase 1 delivered: client downscale, `roast_observe` + sessionStorage cache, `roast_text_batch` (Claude-first) with the persona/format/spice library in `api/_lib/roast-prompts.ts`, roast deck UI + Burn Book, offline fallback deck, kid-detection wholesome override, `roast_or_toast` retired. §7's "migrate/remove `generate_roast`" no longer applies — Roast Me keeps its API path. Phase 2 delivered: 5 canvas poster templates (`src/services/roastCards.ts` — WANTED, tabloid, yearbook, trading card with observation-seeded stats, certificate) + session recap via the shared `shareCard.ts` engine (whose primitives are now exported). Movie-poster frame was cut (canvas cinematic grading wasn't hitting the quality bar). **Per founder direction, the poster is now the DEFAULT deck visual** — every roast auto-renders into a random frame (no "Make it a poster" gate); a dice + frame strip change it, tap to enlarge. Phase 4 below is next.
 
 ---
 
@@ -138,9 +138,11 @@ These are instant, work offline, and are *more* shareable than AI images because
 
 Later candidates (explicitly not now): Daily Roast (shared daily prompt, streak à la Daily Scramble), Roast Royale bracket, "roast my screenshot" mode.
 
-### 5a. Phase 3 implementation handoff (START HERE for a fresh session — Phases 1+2 are already shipped)
+### 5a. Phase 3 implementation handoff — ✅ SHIPPED 2026-07-07 (kept as the build record)
 
-> Everything below already exists in the codebase after Phases 1+2. Roast Battle is **assembly of shipped parts**, not new AI plumbing. Read this section + the named files and you don't need the prior build conversations.
+> **Done.** Roast Battle shipped exactly as scoped below: `src/components/games/RoastBattleGame.tsx` (pass-and-play state machine) + the shared `src/components/games/roastShared.ts` extracted from the solo deck; wired via a Solo/Battle toggle on Roast Central's SETUP. Reveal posters use the async `renderRoastCard` (decodes each player's photo internally — which sidestepped the per-player decoded-`<img>` gotcha below entirely). Verified: `npm run build` + `npm test` + `check:api` green, `drive-games.mjs` 13/13 (solo unregressed), and a focused `scripts/drive-roast-battle.mjs` drove roster → capture 2 → reveal → vote → EndScreen clean on the offline fallback path with a visual poster/leaderboard check. The section below is preserved as the build record.
+>
+> Everything below already existed in the codebase after Phases 1+2. Roast Battle was **assembly of shipped parts**, not new AI plumbing.
 
 **Building blocks that already exist — reuse, do not rebuild:**
 - `src/components/games/RoastCentralGame.tsx` — the solo game. Copy its proven helpers rather than reinventing: `downscaleDataUrl` (≤1024px), camera capture, `startObservation` + sessionStorage cache, `sampleFallback` (offline deck), `personaById`, `randomTemplate`, the `PERSONAS`/`FORMATS`/`SPICES` arrays (ids mirror the server). Consider extracting these into a shared `roastShared.ts` if Battle lives in its own component.
@@ -217,9 +219,9 @@ Note on structured output: `messages.parse()` / `output_config.format` gives sch
 
 | Phase | Ships | Size | Cost impact |
 |---|---|---|---|
-| **1 — Engine** | Client downscale · observation pass + cache · `roast_text_batch` (Claude→Gemini) · persona/format/spice prompt library (start: 6 personas, 5 formats) · swipe-deck UI + MORE + Burn Book · safety rails · offline fallback deck · retire `roast_or_toast` | **L** | Kills the per-roast cost; multiplies content variety |
-| **2 — Shareables** | 4–6 canvas templates · trading-card stats · share/save wiring · "roasted N times" session recap card | **M** | $0 visuals become the default share |
-| **3 — Party** | Roast Battle (roster, votes, EndScreen, Game Night, audio/haptics) | **M** | New session driver, ~$0.02/player |
+| **1 — Engine** ✅ | Client downscale · observation pass + cache · `roast_text_batch` (Claude→Gemini) · persona/format/spice prompt library (start: 6 personas, 5 formats) · swipe-deck UI + MORE + Burn Book · safety rails · offline fallback deck · retire `roast_or_toast` | **L** | Kills the per-roast cost; multiplies content variety |
+| **2 — Shareables** ✅ | 4–6 canvas templates · trading-card stats · share/save wiring · "roasted N times" session recap card | **M** | $0 visuals become the default share |
+| **3 — Party** ✅ | Roast Battle (roster, votes, EndScreen, Game Night, audio/haptics) | **M** | New session driver, ~$0.02/player |
 | **4 — Premium image** | Style gallery w/ baked thumbnails · Flash-Image default + Pro premium tier · rationing + server-side limits · reveal animation | **M** | Image spend drops ~70% and becomes bounded |
 
 Phase 1 is the load-bearing one: every later phase builds on observations + the prompt library. Each phase is independently shippable behind the existing game route.
