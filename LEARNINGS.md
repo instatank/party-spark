@@ -26,3 +26,11 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (pending — answer at next wrap)
 - Quiz question: your app generates a shareable image and all tests pass — what's still unverified, and what's the only way to verify it?
 - Internalized: no (streak 0 — founder answers pending)
+
+### 2026-07-07 — The handoff said "already shipped" — but on a different branch than the one I was assigned
+- What happened: the task said to read `docs/ROAST_ME_V2_PLAN.md` and reuse the "already-shipped" Phase 1+2 roast code. But that plan doc and all the Phase 1+2 code (RoastCentralGame, roastCards, the roast API handlers) did not exist on my assigned branch (`…-goabyu-k5kfr9`) — they lived on a sibling branch (`…-goabyu`, no suffix). My assigned branch actually held an unrelated, already-merged feature ("Today's Pick", PR #91). Diagnosing this took real time: grepping git history across every branch to find where the foundation actually was. Two smaller versions of the same trap rode along — the handoff's list of `EndScreen` props omitted two the real component requires (`onPlayAgain`/`onExit`), and a local `origin/…-k5kfr9` remote-tracking ref pointed at a commit even though no such branch existed on the remote (it nearly tricked me into an unnecessary force-push). Each was caught by checking the actual code/refs instead of trusting the handoff's description.
+- Concept: a handoff describes what a *previous* session believed and did — it's a claim, not ground truth, and the ground can differ (wrong branch, moved files, stale refs, incomplete API signatures). Before building on "it already exists," verify WHERE it exists and WHAT its real shape is against the live code on the branch you're actually on. Trust the handoff for intent and history; trust the repository for facts. One line — "which branch / which commit" — in a handoff would have saved the whole hunt.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: a handoff says "reuse function X that shipped last session" and X isn't where the note implies — before assuming the note is wrong, what do you check, and what do you trust the handoff for vs. the repo for?
+- Internalized: no (streak 0 — founder answers pending)
