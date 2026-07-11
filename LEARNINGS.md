@@ -26,3 +26,11 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (pending — answer at next wrap)
 - Quiz question: A regression test finds its button by checking the text "contains Scramble" — what kind of UI change breaks it, and what should it match instead?
 - Internalized: no
+
+### 2026-07-11 — Date-seeded Today's Pick tile broke the home smoke test — on a different game than it shipped with
+- What happened: the CI smoke test asserted game titles with exact single-match queries (`getByText`). The Today's Pick tile duplicates ONE game's title on Home, and the seeded pick rotates daily — so the suite passed on the day the tile shipped (2026-07-06) and turned red five days later when the rotation landed on Taboo, with zero code change in between. (Same family as the 2026-07-06 drive-selector card, but the new twist is the *time* dimension, not the selector.)
+- Concept: date-seeded UI makes tests time-dependent — "passes today" proves nothing about tomorrow. Any test that touches a screen with seeded/rotating content must be written to hold on EVERY date (tolerate duplicates with `getAllByText`, or pin the date in the test) — and the day a seeded feature ships is precisely the day its tests are least likely to catch the rotation.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: The home screen spotlights a different game every day and the smoke test passed all week — why can it still go red on Friday with no code change, and what makes the test date-proof?
+- Internalized: no
