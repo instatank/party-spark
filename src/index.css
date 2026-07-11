@@ -71,6 +71,10 @@
   --animate-roast-stamp: roastStampPulse 1.6s ease-in-out infinite;
   --animate-roast-dot: roastDotPulse 1s ease-in-out infinite;
 
+  /* Intimate Drinking → The Slow Burn — soft flame flicker on the act
+     intro / wildfire flame icons and the featured mode tile. */
+  --animate-ember: emberPulse 2.4s ease-in-out infinite;
+
   @keyframes slideUp {
     0% { transform: translateY(20px); opacity: 0; }
     100% { transform: translateY(0); opacity: 1; }
@@ -92,6 +96,11 @@
   @keyframes roastDotPulse {
     0%, 80%, 100% { transform: translateY(0); opacity: 0.45; }
     40%           { transform: translateY(-6px); opacity: 1; }
+  }
+
+  @keyframes emberPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.6; transform: scale(0.94); }
   }
 }
 

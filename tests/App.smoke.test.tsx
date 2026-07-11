@@ -53,10 +53,12 @@ describe('App smoke test', () => {
       vi.advanceTimersByTime(5000);
     });
 
-    // Home menu now shows real titles from the GAMES roster.
-    expect(screen.getByText(charades)).toBeInTheDocument();
-    expect(screen.getByText(taboo)).toBeInTheDocument();
-    expect(screen.getByText(nhie)).toBeInTheDocument();
+    // Home menu now shows real titles from the GAMES roster. Use *AllBy*:
+    // the date-seeded Today's Pick tile duplicates one game's title on Home,
+    // and which game that is changes every day.
+    expect(screen.getAllByText(charades).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(taboo).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(nhie).length).toBeGreaterThan(0);
 
     // Sanity: a healthy roster of game cards rendered (Play Now set).
     const cards = document.querySelectorAll('.game-card');
