@@ -1,3 +1,5 @@
+Before any work in this repo: run git fetch && git status. If behind origin/main, pull and npm install before proceeding. Report if diverged.
+
 # PartySpark — Developer Context & Guidelines
 
 > **Last reconciled with code:** 2026-07-11 (Intimate Drinking gained "The Slow Burn" — a featured three-act date-night dice mode with per-act tables, heat meter, Wildfire doubles, intermission rituals and a finale card; `emberPulse` keyframe added to `@theme`). If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
