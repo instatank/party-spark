@@ -12,7 +12,7 @@
 | Thing | Value |
 |---|---|
 | Production branch | `main` (auto-deploys to Vercel) |
-| Working branch this session | `claude/resume-partyspark-w3qJq` |
+| Working branch this session | `claude/great-brown-yzwf9d` (Spin the Bottle) |
 | Latest production commit | last shipped via PR #32 ("Roast Me #1") — `main` at `f5f6ed7` (or later, check `git log origin/main`) |
 | Open PRs | none — everything is merged |
 | Uncommitted local changes | only ever in the working branch; commit and push when done |
@@ -31,7 +31,7 @@ Home order (from `GAMES` array in `src/constants.tsx`):
 4. **Fact or Fiction** — 6 categories: Animal Kingdom (50) / Science (50) / General Knowledge (50) / Sports (50) / History (50) / FIFA World Cup Football (81). Difficulty cascades down one level at a time when the current level runs out.
 5. **Charades** — 7 categories: Hollywood (200) / Bollywood (200) / Mix (441) / Family Mix (61) / Everyday Actions (20) / Around the House (20) / The Zoo (21).
 6. **Taboo** — Easy (298) / Medium (167) / Hard (75).
-7. **Truth or Drink** — 5 decks (215 cards) + Create-Your-Vibe. Adult-gated.
+7. **Truth or Drink** — 5 decks (215 cards) + Create-Your-Vibe. Adult-gated. Also hosts two sub-screens off the deck picker: **Intimate Drinking** (adult dice game, its own PIN `2525`, shipped 2026-07-11 — this doc had missed it) and **Spin the Bottle** (ungated test screen for the shared `SpinTheBottle` decider, 2026-08-16 — not yet wired into any game's turn logic).
 8. **Linked** — word puzzle. Easy (78) / Hard (36). Pass-and-Play (60s, Skip and Got-It both flash the answer) + Just Play.
 9. **Never Have I Ever** — 5 decks (220).
 10. **The Forecast** (Compatibility Test) — 3 modes (friends / couples / bunny), 30 Qs each. Adult-gated.
