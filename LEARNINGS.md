@@ -34,3 +34,19 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (pending — answer at next wrap)
 - Quiz question: The home screen spotlights a different game every day and the smoke test passed all week — why can it still go red on Friday with no code change, and what makes the test date-proof?
 - Internalized: no
+
+### 2026-08-16 — Rebuilt a browser-drive script from scratch and got it wrong three times, while a working one sat in `scripts/`
+- What happened: to verify the new Spin the Bottle landed where it pointed, I wrote a fresh headless-browser script. It failed three times in a row: it imported Playwright (this repo uses puppeteer), it clicked game titles as `button` elements (Home cards aren't buttons — the title is `.game-card h3`), and it waited on fixed `setTimeout`s for the splash instead of the screen actually rendering. Every one of those three problems was already solved, correctly, in `scripts/drive-games.mjs` — the repo's own regression driver, ~20 lines I could have copied.
+- Concept: before writing a new tool, check whether the repo already contains one that solved the same problem — the existing one encodes fixes for environment quirks you haven't hit yet and will otherwise rediscover one failure at a time. This is the same "reuse the shared module" rule CLAUDE.md applies to game code (useCountdown, audio.ts, EndScreen), applied to the dev-tooling layer, which is exactly where it's easiest to forget because the script feels throwaway.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: You need a one-off script to poke at the running app. What should you look at before you write the first line, and why is "it's throwaway" the wrong reason to skip that?
+- Internalized: no
+
+### 2026-08-16 — The automated check said the arrow was correct while the screenshot showed it pointing past the name
+- What happened: I wrote a geometric assertion for the bottle spinner — read the rotation off the DOM, compute the angle, compare it with the highlighted seat's position. It reported `MATCH=true` on every spin. Then I looked at the screenshot: the sight-line ray ran from the bottle out to the rim, which put its arrowhead *past* the name chip rather than at it. Numerically dead-on; visually it read as pointing at whatever was behind the winner.
+- Concept: an assertion proves the property you thought to encode, not that the interface communicates. Geometry, contrast, spacing and overlap can each be provably "right" and still read wrong to a human, because what the user reads is the relationship between elements, not any single measured value. On anything visual, a passing check licenses you to *look* — it doesn't replace looking.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: Your test confirms the pointer's angle matches the winner's angle to within a degree, and it passes every run. Name a way the screen can still show the wrong thing to a player at the table.
+- Internalized: no

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Flame, ChevronRight, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2, Dices, Lock, Share2 } from 'lucide-react';
+import { Sparkles, Flame, ChevronRight, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2, Dices, Lock, Share2, Wine } from 'lucide-react';
 import { generateCustomTruthOrDrink } from '../../services/geminiService';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService, shuffle } from '../../services/SessionManager';
@@ -12,6 +12,7 @@ import { shouldAutoExpandRules } from '../../services/firstPlay';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import { PinGateModal, isUnlocked } from '../ui/PinGate';
 import { IntimateDiceGame } from './IntimateDiceGame';
+import SpinTheBottle from '../ui/SpinTheBottle';
 import { GameType } from '../../types';
 
 // The question decks are lazy-loaded so they code-split out of this game's
@@ -26,10 +27,15 @@ type GameState =
     | 'LOADING'
     | 'PROMPT'
     | 'INTIMATE'
+    | 'BOTTLE'
     | 'END';
 
 const INTIMATE_KEY = 'partyspark_intimate_unlocked';
 const INTIMATE_PIN = '2525';
+
+// Amber — deliberately outside the six deck hues so the bottle tile reads as
+// a utility, not another question deck.
+const BOTTLE_ACCENT = '#F59E0B';
 
 const GROUP_TYPES = [
     { id: 'friends', label: '🍻 Friends', description: 'Your crew' },
@@ -196,6 +202,7 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
     };
     const [gameState, setGameState] = useState<GameState>('CATEGORY_SELECT');
     const [showIntimateGate, setShowIntimateGate] = useState(false);
+    const [bottleMode, setBottleMode] = useState<'single' | 'pair'>('single');
     // Auto-expand the rules on this device's very first Truth or Drink open.
     const [showHowToPlay, setShowHowToPlay] = useState(() => shouldAutoExpandRules('tod'));
     const [isSharing, setIsSharing] = useState(false);
@@ -510,6 +517,30 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                             );
                         })}
 
+                        {/* Spin the Bottle — the shared "who goes next?" decider,
+                            parked here as a test page while we decide which games
+                            it gets baked into. No gate: it's just a picker. */}
+                        <button
+                            onClick={() => setGameState('BOTTLE')}
+                            className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
+                        >
+                            <div className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden">
+                                <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]" style={{ background: BOTTLE_ACCENT }} />
+                                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]" style={{ background: BOTTLE_ACCENT }} />
+                                <div className="flex items-center gap-3">
+                                    <span className="flex-shrink-0" style={{ color: BOTTLE_ACCENT }}><Wine size={16} /></span>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-base font-bold text-ink leading-tight flex items-center gap-1.5">
+                                            <span className="truncate">Spin the Bottle</span>
+                                            <span className="text-sm flex-shrink-0">🍾</span>
+                                        </h3>
+                                        <p className="text-xs text-muted leading-snug truncate">Let the bottle pick whose turn it is.</p>
+                                    </div>
+                                    <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
+                                </div>
+                            </div>
+                        </button>
+
                         {/* Intimate Drinking — adult dice sub-game, gated by its
                             own PIN (2525), separate from the app's adult gate. */}
                         <button
@@ -551,6 +582,54 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
 
     if (gameState === 'INTIMATE') {
         return <IntimateDiceGame onExit={() => setGameState('CATEGORY_SELECT')} />;
+    }
+
+    // BOTTLE — test bed for the shared Spin the Bottle decider. Standalone for
+    // now (it picks a name and stops); the component already exposes onPick /
+    // ctaLabel for the games we choose to wire it into.
+    if (gameState === 'BOTTLE') {
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Spin the Bottle" onBack={() => setGameState('CATEGORY_SELECT')} onHome={onExit} />
+                <div className="flex-1 overflow-y-auto pb-8">
+                    <div className="text-center mb-3 -mt-3">
+                        <p className="text-3xl mb-1.5 leading-none">🍾</p>
+                        <p className="text-muted text-sm">Who's up next? The bottle decides.</p>
+                    </div>
+
+                    {/* Same shared roster as the deck screen — names typed here
+                        carry into every other game this session. */}
+                    <TeamRosterRow teams={players} onTeamsChange={setPlayers} noun="Player" max={12} />
+
+                    {/* Single vs pair — pair does two spins (who asks → who answers),
+                        which is how the bottle actually gets used at a table. */}
+                    <div className="flex gap-1.5 justify-center mb-4">
+                        {([
+                            { id: 'single' as const, label: "Whose turn" },
+                            { id: 'pair' as const, label: 'Who asks whom' },
+                        ]).map(m => (
+                            <button
+                                key={m.id}
+                                onClick={() => setBottleMode(m.id)}
+                                className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 border"
+                                style={bottleMode === m.id
+                                    ? { borderColor: BOTTLE_ACCENT, color: BOTTLE_ACCENT, background: `${BOTTLE_ACCENT}22` }
+                                    : { borderColor: 'var(--c-border)', color: 'var(--c-muted)', background: 'var(--c-surface-alt)' }}
+                            >
+                                {m.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    <SpinTheBottle
+                        key={bottleMode}
+                        names={trimmedPlayers}
+                        accent={BOTTLE_ACCENT}
+                        mode={bottleMode}
+                    />
+                </div>
+            </div>
+        );
     }
 
     // CUSTOM_SETUP — Describe your group for AI generation. Mirrors MLT's
