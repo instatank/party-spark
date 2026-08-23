@@ -45,8 +45,32 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 
 ### 2026-08-16 — The automated check said the arrow was correct while the screenshot showed it pointing past the name
 - What happened: I wrote a geometric assertion for the bottle spinner — read the rotation off the DOM, compute the angle, compare it with the highlighted seat's position. It reported `MATCH=true` on every spin. Then I looked at the screenshot: the sight-line ray ran from the bottle out to the rim, which put its arrowhead *past* the name chip rather than at it. Numerically dead-on; visually it read as pointing at whatever was behind the winner.
-- Concept: an assertion proves the property you thought to encode, not that the interface communicates. Geometry, contrast, spacing and overlap can each be provably "right" and still read wrong to a human, because what the user reads is the relationship between elements, not any single measured value. On anything visual, a passing check licenses you to *look* — it doesn't replace looking.
+- Concept: an assertion proves the property you thought to encode, not that the interface communicates. Geometry, contrast, spacing and overlap can each be provably "right" and still read wrong to a human, because what the user reads is the relationship between elements, not any single measured value. On anything visual, a passing check licenses you to *look* — it doesn't replace looking. Note: this concept paid out on 2026-08-23 — The Tell's drive script passed every assertion with zero console errors, and the screenshot review is the only thing that caught a decorative element rendering as a grey disc. The card predicted the failure class; that's the ladder working.
 - In my words: (pending — answer at next wrap)
 - Where else: (pending — answer at next wrap)
 - Quiz question: Your test confirms the pointer's angle matches the winner's angle to within a degree, and it passes every run. Name a way the screen can still show the wrong thing to a player at the table.
+- Internalized: no
+
+### 2026-08-23 — A decorative "glow" was really a clipped circle, and it only looked right on tall cards
+- What happened: premium cards in this app get a soft colour wash in one corner. The pattern everyone copy-pastes is an oversized circle pushed off the card edge and hidden by `overflow-hidden` — on the big hero cards you only ever see its soft middle, so it reads as a glow. I reused it on the new game's shorter tiles, where the circle is nearly as tall as the card, so its hard edge landed *inside* the card. The result was a flat grey disc that looked like a rendering bug. Every automated check passed; the screenshot is what caught it.
+- Concept: if a visual effect depends on being clipped to look right, it is only correct at the size you happened to test it at — the pattern silently encodes an assumption about its container. Prefer an effect that fades out on its own (here, a radial gradient to `transparent`, positioned with `inset-0`), so there is no edge to expose and no per-card offsets to retune. This is the visual equivalent of a magic number: the `-70px` offset was never a rule, just a value that worked once.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: A card decoration looks great everywhere you've used it, and you drop it onto a new, much shorter card. What's the specific thing that can now go wrong, and what kind of effect wouldn't have that problem?
+- Internalized: no
+
+### 2026-08-23 — Thirteen tests "failed" on text the app was rendering perfectly
+- What happened: the new game's drive script asserted that the screen said "Round 3 of 12". It reported thirteen failures across the run. The app was correct — the copy is styled with Tailwind's `uppercase`, and the browser property the test read (`innerText`) returns text *after* CSS text-transform, so it was handing back "ROUND 3 OF 12". The test was comparing against source truth while reading rendered truth.
+- Concept: a UI test reads what the browser *renders*, not what you *wrote* — and CSS can change the rendered text (case, injected `::before`/`::after` content, ellipsis truncation) without touching the markup. When an assertion fails on something you can plainly see is right on screen, suspect the reading, not the app: compare case-insensitively, or assert against a value the styling can't rewrite.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: Your test says the screen doesn't contain "Next round", but you're looking at a button that clearly reads "NEXT ROUND". What's going on, and what's the fix?
+- Internalized: no
+
+### 2026-08-23 — The app's own "are you sure you want to leave?" guard blocked its test from moving on
+- What happened: mid-play screens deliberately set a browser `beforeunload` prompt so a player can't lose a game by closing the tab. The drive script tried to navigate back to the home page while a game was in progress; the guard fired, the headless browser sat on the native dialog, and the run died on a 30-second navigation timeout with an error that said nothing about exit guards.
+- Concept: safety features that interrupt the *user* also interrupt *automation*, and they surface as timeouts rather than as "a dialog is blocking you". The durable fix is to reorder the test so it leaves from a screen with no guard (here: finish the game, then use the end screen's own exit), rather than to teach the test to punch through the guard — a test that routinely dismisses safety prompts stops being able to notice when one appears that shouldn't.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: Your automated run hangs and then times out on a navigation, with no useful error. The app has an "unsaved changes / are you sure?" prompt. What's likely happening, and why is "auto-dismiss every dialog" the wrong fix?
 - Internalized: no

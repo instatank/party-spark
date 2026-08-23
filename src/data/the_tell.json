@@ -1,0 +1,340 @@
+{
+  "sips": {
+    "tiers": [
+      {
+        "name": "Loosening Up",
+        "sub": "Nobody's drunk yet. That's the problem.",
+        "bust": "Bottled it — drink 2 and hand the phone over.",
+        "missions": [
+          {
+            "t": "Trying to make me laugh",
+            "b": "Get a real laugh out of them. Not the polite one — the ugly one, the one they'd be mortified to hear played back.",
+            "w": "They drink 2 — and they owe you that laugh on demand for the rest of the night.",
+            "l": "Drink 2. You're not as funny as you think."
+          },
+          {
+            "t": "Trying to make me say your name",
+            "b": "Get them to say your name out loud. You are not allowed to say theirs — not once.",
+            "w": "They drink 2, then say your name one more time, slower.",
+            "l": "Drink 2, and say their name like you mean it."
+          },
+          {
+            "t": "Trying to get me to touch you first",
+            "b": "Get them to make physical contact with you — any contact at all — without you touching them first.",
+            "w": "They drink 2 and leave that hand exactly where it is.",
+            "l": "Drink 2. Hands to yourself for the next round."
+          },
+          {
+            "t": "Fishing for a compliment",
+            "b": "Get them to compliment you on something specific. Fishing is allowed. Begging is not.",
+            "w": "They drink 2 and give you a second compliment — filthier than the first.",
+            "l": "Drink 2 and compliment them instead."
+          },
+          {
+            "t": "Trying to make me look away first",
+            "b": "Hold eye contact and make them break it first. You may not mention that you're doing it.",
+            "w": "They drink 2 — eyes on you the whole time.",
+            "l": "Drink 2 and blink as much as you like."
+          },
+          {
+            "t": "Copying everything I do",
+            "b": "Mirror them. Every gesture, every shift, every sip — half a beat behind, and subtle enough to miss.",
+            "w": "They drink 2, then copy your next move exactly.",
+            "l": "Drink 2, you absolute parrot."
+          },
+          {
+            "t": "Trying to make me swear",
+            "b": "Get a swear word out of them. You can't swear yourself — one slip and you've lost it.",
+            "w": "They drink 2 for the potty mouth.",
+            "l": "Drink 2, you sweet innocent thing."
+          },
+          {
+            "t": "Slipping a lie into the conversation",
+            "b": "Work one completely invented detail into the conversation and get them to accept it without blinking.",
+            "w": "They drink 2, and the lie is canon for the rest of the night.",
+            "l": "Drink 2 and confess the lie."
+          }
+        ]
+      },
+      {
+        "name": "Two Drinks In",
+        "sub": "The filter's slipping. Good.",
+        "bust": "Bottled it — drink 3 and lose a layer.",
+        "missions": [
+          {
+            "t": "Trying to make me blush",
+            "b": "Say the thing that turns them red. Not shocking — specific. You know exactly which memory does it.",
+            "w": "They drink 3 while you watch.",
+            "l": "Drink 3. Turns out they're shameless."
+          },
+          {
+            "t": "Trying to get me out of something I'm wearing",
+            "b": "Get one item off them without ever asking them to remove it. Socks count. Barely.",
+            "w": "They drink 3, and it stays off.",
+            "l": "Drink 3 and lose something yourself."
+          },
+          {
+            "t": "Trying to get me to confess something",
+            "b": "Get them to tell you something they have genuinely never told you before.",
+            "w": "They drink 3. You get one follow-up question, and they have to answer it.",
+            "l": "Drink 3 and confess something of your own instead."
+          },
+          {
+            "t": "Trying to make me kiss you",
+            "b": "Get them to kiss you. They have to move first — you can lean, linger and cheat, but you cannot close the gap.",
+            "w": "They drink 3. Then do it again properly, and let them.",
+            "l": "Drink 3. So close."
+          },
+          {
+            "t": "Trying to make me lose my train of thought",
+            "b": "Get them talking about something they care about — then derail them so completely they forget the sentence.",
+            "w": "They drink 3 and try to finish it anyway.",
+            "l": "Drink 3. Their focus is annoyingly good."
+          },
+          {
+            "t": "Trying to get me to say I love you",
+            "b": "Get them to say it first, unprompted. You may not say it yourself.",
+            "w": "They drink 3. Say it back, obviously.",
+            "l": "Drink 3 and say it first, out loud, no mumbling."
+          },
+          {
+            "t": "Trying to make me nervous",
+            "b": "Build a little tension. Get them fidgeting, laughing at the wrong moment, or asking \"what?\" twice.",
+            "w": "They drink 3 and admit what got to them.",
+            "l": "Drink 3. Ice cold, apparently."
+          },
+          {
+            "t": "Trying to get me to dare you",
+            "b": "Get them to dare you to do something. It has to be their idea, in their words.",
+            "w": "They drink 3 — and now you do the dare anyway, in front of them.",
+            "l": "Drink 3 and take a dare from them instead."
+          }
+        ]
+      },
+      {
+        "name": "No Filter",
+        "sub": "Whatever you've been saving — say it now.",
+        "bust": "Bottled it — drink 4 and lose an item.",
+        "missions": [
+          {
+            "t": "Trying to make me say something filthy",
+            "b": "Get an unmistakably dirty sentence out of their mouth. Innuendo doesn't count. Explicit or nothing.",
+            "w": "They drink 4, then repeat it slower.",
+            "l": "Drink 4 and say something filthy yourself."
+          },
+          {
+            "t": "Trying to make me beg",
+            "b": "Get them to ask you for something twice. The second one has to sound like begging.",
+            "w": "They drink 4. Make them wait a little longer anyway.",
+            "l": "Drink 4. You're the one begging now."
+          },
+          {
+            "t": "Trying to get me half undressed",
+            "b": "By the buzzer they should be wearing meaningfully less. You may not ask, order, or undress them yourself.",
+            "w": "They drink 4. Whatever came off is not going back on.",
+            "l": "Drink 4 and lose two items to make up for it."
+          },
+          {
+            "t": "Trying to make me lose it completely",
+            "b": "Break them. Giggling, snorting, tears, total collapse. No tickling — you have to earn it.",
+            "w": "They drink 4, once they can breathe again.",
+            "l": "Drink 4 in the silence you've created."
+          },
+          {
+            "t": "Trying to get a fantasy out of me",
+            "b": "Get them to describe something they want. Actual detail — not \"you know, stuff\".",
+            "w": "They drink 4, and one detail of it happens before the night is over.",
+            "l": "Drink 4 and tell them one of yours."
+          },
+          {
+            "t": "Trying to make me touch you somewhere specific",
+            "b": "Pick one spot — right now, in your head. Get their hands there without saying a word about it.",
+            "w": "They drink 4 and stay there for a full minute.",
+            "l": "Drink 4 and tell them where you wanted it."
+          },
+          {
+            "t": "Trying to make me finish my drink",
+            "b": "Empty their glass. Toasts, dares, distraction, sabotage. You cannot tell them to drink.",
+            "w": "They finish whatever's left, then pour another.",
+            "l": "Drink 4. They're pacing themselves better than you."
+          },
+          {
+            "t": "Trying to get me to take you to bed",
+            "b": "Get them to suggest ending the game. It has to come from them, out loud, in plain words.",
+            "w": "They drink 4 — and the game ends when you say it does.",
+            "l": "Drink 4. The round continues."
+          }
+        ]
+      }
+    ]
+  },
+  "skin": {
+    "tiers": [
+      {
+        "name": "Bare Minimum",
+        "sub": "Clothes on. For now.",
+        "bust": "Bottled it — lose one item.",
+        "missions": [
+          {
+            "t": "Hunting for where I'm ticklish",
+            "b": "Find a spot that makes them squirm — and don't be obvious about looking for it.",
+            "w": "They lose one item, and you get to use that spot whenever you like tonight.",
+            "l": "Lose one item, and let them find yours."
+          },
+          {
+            "t": "Trying to make me sigh",
+            "b": "Earn one audible sigh. Not a laugh, not a word — that sound.",
+            "w": "They lose one item.",
+            "l": "Lose one item. Silence is expensive."
+          },
+          {
+            "t": "Trying to get me to close my eyes",
+            "b": "Get their eyes shut, and keep them shut, without ever asking.",
+            "w": "They lose one item and keep their eyes closed through the next round.",
+            "l": "Lose one item. Eyes open, then."
+          },
+          {
+            "t": "Trying to get me to ask you to keep going",
+            "b": "Start something good. Slow right down. Get them to ask for more, out loud.",
+            "w": "They lose one item — and then you keep going.",
+            "l": "Lose one item, and ask them nicely instead."
+          },
+          {
+            "t": "Trying to get me out of something",
+            "b": "One item off them by the buzzer. You may not ask, and you may not use both hands.",
+            "w": "It stays off, and they lose one more.",
+            "l": "Lose two items yourself."
+          },
+          {
+            "t": "Trying to make me hold my breath",
+            "b": "Do something that makes them stop breathing for a second. You'll know it when it lands.",
+            "w": "They lose one item.",
+            "l": "Lose one item and breathe easy."
+          },
+          {
+            "t": "Trying to make me pull you closer",
+            "b": "Stay just out of reach until they close the distance themselves. Hands, hips, anything — they move first.",
+            "w": "They lose one item, then pull you closer again.",
+            "l": "Lose one item and close the gap yourself."
+          },
+          {
+            "t": "Trying to make me shiver",
+            "b": "Breath, fingertips, ice, anything slow or cold. One visible shiver.",
+            "w": "They lose one item.",
+            "l": "Lose one item. Warm-blooded, that one."
+          }
+        ]
+      },
+      {
+        "name": "Hands On",
+        "sub": "Whatever's left is negotiable.",
+        "bust": "Bottled it — lose an item, and give them sixty seconds using no hands.",
+        "missions": [
+          {
+            "t": "Trying to make me make a sound",
+            "b": "One real sound out of them. Not a word, not a laugh. You know the one.",
+            "w": "They lose an item, and do it again — louder.",
+            "l": "Lose an item and stay quiet about it."
+          },
+          {
+            "t": "Hunting for a spot I didn't know I had",
+            "b": "Find somewhere on them neither of you has ever paid attention to. Then prove it works.",
+            "w": "They lose an item, and you get sixty more seconds right there.",
+            "l": "Lose an item. Fully mapped already, apparently."
+          },
+          {
+            "t": "Trying to make me grab your hair",
+            "b": "Get their hands into your hair. Not placed there — grabbed.",
+            "w": "They lose an item, and they don't let go.",
+            "l": "Lose an item, and put their hand where you wanted it."
+          },
+          {
+            "t": "Trying to make me stop you",
+            "b": "Push it far enough that they have to say wait, slow down, or not yet.",
+            "w": "They lose an item. Then carry on exactly where you left off.",
+            "l": "Lose an item. They never flinched."
+          },
+          {
+            "t": "Trying to get me to say please",
+            "b": "Whatever they want next, make them use the word.",
+            "w": "They lose an item, and say it once more.",
+            "l": "Lose an item. Please."
+          },
+          {
+            "t": "Trying to get me on top of you",
+            "b": "End the round with them over you — without asking, pulling, or announcing it.",
+            "w": "They lose an item and stay right there.",
+            "l": "Lose an item and get on top yourself."
+          },
+          {
+            "t": "Trying to make me kiss you somewhere new",
+            "b": "Get their mouth somewhere it hasn't been tonight. Guide them with everything except words.",
+            "w": "They lose an item and go back for longer.",
+            "l": "Lose an item, and show them where you meant."
+          },
+          {
+            "t": "Trying to make me lose track of my hands",
+            "b": "Get them distracted enough that their hands end up somewhere they didn't decide on.",
+            "w": "They lose an item, and their hands stay exactly where they landed.",
+            "l": "Lose an item. Impressive self-control."
+          }
+        ]
+      },
+      {
+        "name": "Point of No Return",
+        "sub": "The game is nearly over. Make it count.",
+        "bust": "Bottled it — everything comes off, and they own the next sixty seconds.",
+        "missions": [
+          {
+            "t": "Trying to make me beg",
+            "b": "Get them asking. Then get them asking again. Don't give in while the clock is still running.",
+            "w": "Everything they're still wearing comes off. Then, finally, give them what they asked for.",
+            "l": "Strip to nothing, and beg them instead."
+          },
+          {
+            "t": "Trying to take me to the edge",
+            "b": "Get them as close as you can without going over. Read them properly — the clock is not the point.",
+            "w": "They're yours. No rules at all for the next five minutes.",
+            "l": "They take over, and you don't get a say in what happens next."
+          },
+          {
+            "t": "Trying to make me say your name",
+            "b": "Get your name out of their mouth the way you want to hear it. Not conversationally.",
+            "w": "They lose everything that's left, and say it once more, slower.",
+            "l": "Say theirs — loudly — then do whatever they ask."
+          },
+          {
+            "t": "Trying to make me give up control",
+            "b": "Get them to hand it over. \"Do what you want\", \"you decide\", or the wordless version.",
+            "w": "You're in charge until the game ends. They move only when told.",
+            "l": "They're in charge. Same rules, other way round."
+          },
+          {
+            "t": "Trying to get me to say exactly what I want",
+            "b": "No hints, no maybes. Get them to say the actual sentence, in the actual words.",
+            "w": "They lose everything that's left — and you do exactly what they said.",
+            "l": "Tell them yours instead. In full, with the lights on."
+          },
+          {
+            "t": "Trying to make me tear something off you",
+            "b": "Get them to undress you impatiently. No calm folding. You may not lift a finger to help.",
+            "w": "Whatever's left of theirs goes too, and they don't get to be gentle about it.",
+            "l": "Undress yourself while they watch. Slowly."
+          },
+          {
+            "t": "Trying to make me forget this game exists",
+            "b": "Make them stop thinking about the phone, the clock and the rules entirely.",
+            "w": "Game over — you've won the night. Put the phone down and don't pick it up again.",
+            "l": "They were counting the seconds. Do better."
+          },
+          {
+            "t": "Trying to make me finish what you started",
+            "b": "Start something you have no intention of finishing yourself. Hand it over at the buzzer.",
+            "w": "They finish it. All of it. You just have to lie there.",
+            "l": "You finish it — and they'll be watching."
+          }
+        ]
+      }
+    ]
+  }
+}
