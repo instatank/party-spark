@@ -252,7 +252,7 @@ The basic / env-var-switched mode was simplified out once advanced was validated
 - **Local build:** `npm run build` (runs `tsc -b && vite build`)
 - **Tests:** `npm test` → vitest render smoke test (`tests/App.smoke.test.tsx`: splash → home menu through the real module graph; jsdom, fetch/matchMedia stubbed in `tests/setup.ts`). Config in `vitest.config.ts` (deliberately separate from `vite.config.ts`).
 - **CI:** `.github/workflows/ci.yml` — on push to `main` + PRs: `npm ci`, `npm run build`, `npm test`. **Lint is NOT in CI** — `npm run lint` currently fails with ~56 pre-existing errors (mostly `no-explicit-any` and `react-refresh/only-export-components`); add it back once that debt is paid.
-- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens all 16 games headless, fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) and `scripts/drive-the-tell.mjs` (plays a full 12-round game of The Tell and asserts every outcome branch) against `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code.
+- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens the 12 Play Now games headless — all 16 with `--tabs` — and fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) and `scripts/drive-the-tell.mjs` (plays a full 12-round game of The Tell and asserts every outcome branch) against `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code.
 - **Deployment target:** Vercel, auto-triggered by `git push`
 - **Preview URL format:** `party-spark-git-{branch-slug}-{scope}.vercel.app` (has "Deployment Protection" enabled — you'll see a 401 on manifest.json that can be ignored)
 - **Production URL:** set by the user's Vercel project config (deployed from `main`)
@@ -333,7 +333,7 @@ tests/App.smoke.test.tsx             # vitest render smoke test (run by CI)
 .github/workflows/ci.yml             # CI: npm ci, build, test (lint excluded — see Known Issues)
 notes/                               # One lesson per file (what broke + fix); see notes/README.md
 scripts/build-jumble-sets.mjs        # DEV-only generator → src/data/jumble_sets.json (needs cached dicts under scripts/.cache/)
-scripts/drive-games.mjs              # DEV-only headless-browser drive: opens all 16 games, fails on console errors
+scripts/drive-games.mjs              # DEV-only headless-browser drive: opens the 12 Play Now games (16 with --tabs), fails on console errors
 scripts/deep-drive.mjs               # DEV-only deep flows for the 6 timer games (countdown/expiry/scoring)
 scripts/drive-the-tell.mjs           # DEV-only full 12-round drive of The Tell (both guess branches, bust, swap, Double Down, PIN gate)
 ```
