@@ -74,3 +74,11 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (pending — answer at next wrap)
 - Quiz question: Your automated run hangs and then times out on a navigation, with no useful error. The app has an "unsaved changes / are you sure?" prompt. What's likely happening, and why is "auto-dismiss every dialog" the wrong fix?
 - Internalized: no
+
+### 2026-08-24 — Called the work shipped when it had only reached a branch, so nobody could play it
+- What happened: I built The Tell, ran every gate green, pushed to the working branch, and reported it as done — including "verified" and "shipped". It wasn't on the production app. Branch pushes only ever produce a Vercel *preview*; production deploys from `main`, which still sat at the previous release. The founder found out by opening the live app and not seeing the game, and had to come back and ask. The fix was thirty seconds of work (open PR, merge) — the cost was entirely in the false "done".
+- Concept: "done" is defined by the place the user actually looks, not by the last step in your own workflow. A push, a green build and a passing test suite are all evidence *about* the work; none of them is delivery. The trap here is that each local checkpoint felt terminal — the branch instruction says push when complete, so "complete" quietly got redefined as "pushed". The check that would have caught it is the one I skipped: go to the URL a user would use and confirm the change is visible there. Worth noting the SOP already said this in plain words (`/ship`: "merge to `main` deploys production") — reading the right instruction is not the same as letting it define your finish line.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: Every test passes, the build is green and you've pushed. Name the one check still missing before you can honestly say a feature is live — and why "the CI is green" doesn't cover it.
+- Internalized: no
