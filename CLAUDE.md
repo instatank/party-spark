@@ -4,6 +4,15 @@
 >
 > There is also a `notes/` directory — one *lesson* per file (what was tried, what broke, what fixed it). Architecture facts live here; war stories live there.
 
+## Working environment (read before giving instructions)
+
+This repo is built entirely in Claude Code cloud sessions — there is no local checkout, no local terminal, and no local dev environment for the founder. **Never hand him `cd` / `git clone` / `npm install` / `./script.sh` steps to run on his machine** — anything that must execute runs in the agent's own container, or in the deployed app.
+
+- **Egress is allowlisted.** A host can fail with "Host not in allowlist" — that means blocked, not down. Say so and propose another route.
+- **No secrets store here** (Anthropic's own docs say not to put API keys in Claude Code cloud env vars). Secrets live in Vercel's env vars — never ask the founder to paste one into chat or a local file.
+- **Blocked host or needs real credentials?** Build it as a route in the deployed app and hand over a URL to open — not a script to run.
+- **Steps the founder performs are browser/dashboard steps** — name the site, the menu, the button.
+
 ## Shared playbook (cross-project — read at session start)
 
 The single source of truth for global working rules, transferable lessons, and the ship / sync / deploy / verify SOPs is the **`playbook/` folder of `instatank/time-tracker`** (`PLAYBOOK.md` first). Read `/home/user/time-tracker/playbook/PLAYBOOK.md` if that repo is cloned locally; otherwise fetch it via GitHub `get_file_contents` on `instatank/time-tracker`, path `playbook/PLAYBOOK.md`. Before ending a session that shipped commits, run the **`/wrap`** skill (a Stop hook nudges once if forgotten) — it reconciles this file's "Last reconciled with code" line against reality, appends friction cards to `LEARNINGS.md`, and asks the founder the learning questions from `playbook/LEARNING_METHOD.md`. Pre-push ritual = the **`/ship`** skill.
