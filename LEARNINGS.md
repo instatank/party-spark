@@ -82,3 +82,11 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (pending — answer at next wrap)
 - Quiz question: Every test passes, the build is green and you've pushed. Name the one check still missing before you can honestly say a feature is live — and why "the CI is green" doesn't cover it.
 - Internalized: no
+
+### 2026-08-30 — The rule that made the game work was only enforced in one place, so a new feature quietly broke it
+- What happened: Nerve is a game of chicken — you climb a ladder of dares and whoever refuses a rung first loses. The whole thing only works if the ladder always gets worse as you climb; a mild dare after a filthy one makes folding look ridiculous. The code that *built* each ladder got that right. Then I added a "swap this rung" button, and it grabbed any unused dare from the deck — so swapping near the bottom could drop a near-the-top dare underneath milder ones, and the ladder started going down. Nothing crashed. The build was green, the test suite was green. The round just silently stopped making sense.
+- Concept: a rule that only holds where a thing is first *created* isn't really being enforced — every later piece of code that edits that thing is another place the rule has to hold, and that code usually gets written later, by someone thinking about a different feature. Two things saved it, both worth copying: (1) **store the thing the rule is about** — the ladder held loose dare objects, so at the moment of editing there was no way to even ask "is this one higher or lower?"; switching to store positions made the fix obvious; (2) **test the rule, not the feature** — "swapping changes the dare" passes happily on the broken version. "Every dare shown is higher than the one before it" is what caught it. And because the ladders are randomly drawn, one green run proved almost nothing — it took running the check six times for the broken case to show up.
+- In my words: (parked at founder's request — 2026-08-30)
+- Where else: (parked at founder's request — 2026-08-30)
+- Quiz question: A rule is guaranteed by the function that creates something. Why is that not enough, and what kind of test catches the gap — versus the kind that misses it?
+- Internalized: no

@@ -18,7 +18,7 @@ const DEEP = process.argv.includes('--deep');
 const HOME_GAMES = [
   'Charades', 'Taboo', 'Roast Me', 'Imposter',
   'Most Likely To', 'Never Have I Ever', 'Fact or Fiction', 'The Forecast',
-  'Truth or Drink', '5 Alive', 'Linked', 'Scramble',
+  'Truth or Drink', '5 Alive', 'Linked', 'Scramble', 'House Rules',
 ];
 const COMING_SOON_GAMES = ['Would I Lie To You', 'Icebreakers', 'The Traitors', 'Would You Rather'];
 const WITH_TABS = process.argv.includes('--tabs');
