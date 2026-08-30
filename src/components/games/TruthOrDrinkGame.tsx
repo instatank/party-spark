@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Flame, ChevronRight, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2, Dices, Lock, Share2, Wine, VenetianMask } from 'lucide-react';
+import { Sparkles, Flame, ChevronRight, Shuffle, GlassWater, MessageCircleHeart, DoorClosed, HeartCrack, Waves, Zap, Wand2, Dices, Lock, Share2, Wine, VenetianMask, ArrowBigUp } from 'lucide-react';
 import { generateCustomTruthOrDrink } from '../../services/geminiService';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService, shuffle } from '../../services/SessionManager';
@@ -13,6 +13,7 @@ import TeamRosterRow from '../ui/TeamRosterRow';
 import { PinGateModal, isUnlocked } from '../ui/PinGate';
 import { IntimateDiceGame } from './IntimateDiceGame';
 import { TheTellGame } from './TheTellGame';
+import { NerveGame } from './NerveGame';
 import SpinTheBottle from '../ui/SpinTheBottle';
 import { GameType } from '../../types';
 
@@ -29,6 +30,7 @@ type GameState =
     | 'PROMPT'
     | 'INTIMATE'
     | 'TELL'
+    | 'NERVE'
     | 'BOTTLE'
     | 'END';
 
@@ -41,6 +43,9 @@ const BOTTLE_ACCENT = '#F59E0B';
 
 // The Tell's accent bar IS its two decks: amber (Sips) → pink (After Dark).
 const TELL_GRADIENT = 'linear-gradient(90deg, #FBBF24, #DB2777)';
+
+// Nerve runs cool on purpose — every other tile down here is warm.
+const NERVE_GRADIENT = 'linear-gradient(90deg, #06B6D4, #8B5CF6)';
 
 const GROUP_TYPES = [
     { id: 'friends', label: '🍻 Friends', description: 'Your crew' },
@@ -546,6 +551,30 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                             </div>
                         </button>
 
+                        {/* Nerve — two-player chicken up a ladder of dares. Owns
+                            all of its own screens (decks, PIN for After Dark);
+                            only the entry point lives here. */}
+                        <button
+                            onClick={() => setGameState('NERVE')}
+                            className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
+                        >
+                            <div className="relative bg-surface-alt backdrop-blur-sm border hover:bg-app-tint rounded-xl py-3.5 px-4 transition-colors overflow-hidden"
+                                style={{ borderColor: 'rgba(139, 92, 246, 0.45)', boxShadow: '0 0 22px rgba(139, 92, 246, 0.14)' }}>
+                                <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]" style={{ background: NERVE_GRADIENT }} />
+                                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]" style={{ background: NERVE_GRADIENT }} />
+                                <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(95% 75% at 100% 0%, rgba(139, 92, 246, 0.20), transparent 62%)' }} />
+                                <div className="flex items-center gap-3 relative">
+                                    <span className="flex-shrink-0" style={{ color: '#8B5CF6' }}><ArrowBigUp size={18} /></span>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[9.5px] font-bold uppercase tracking-[0.18em] mb-0.5" style={{ color: theme === 'light' ? '#0E7490' : '#06B6D4' }}>New · just for two</p>
+                                        <h3 className="text-base font-bold text-ink leading-tight">Nerve</h3>
+                                        <p className="text-xs text-muted leading-snug truncate">One ladder. Who blinks first?</p>
+                                    </div>
+                                    <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
+                                </div>
+                            </div>
+                        </button>
+
                         {/* Spin the Bottle — the shared "who goes next?" decider,
                             parked here as a test page while we decide which games
                             it gets baked into. No gate: it's just a picker. */}
@@ -615,6 +644,10 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
 
     if (gameState === 'TELL') {
         return <TheTellGame onExit={() => setGameState('CATEGORY_SELECT')} />;
+    }
+
+    if (gameState === 'NERVE') {
+        return <NerveGame onExit={() => setGameState('CATEGORY_SELECT')} />;
     }
 
     // BOTTLE — test bed for the shared Spin the Bottle decider. Standalone for

@@ -1,0 +1,106 @@
+{
+  "sips": {
+    "tiers": [
+      {
+        "name": "Warm",
+        "sub": "Nobody's folding yet.",
+        "rules": "Take turns. Do the rung or fold — folding ends the round and you pay for it. Clear the whole ladder and you win outright.",
+        "top": "Drink 4 — you made them climb the whole thing.",
+        "rungs": [
+          { "t": "Two sips, then tell them something true you've never said", "d": "Small is fine. True isn't optional.", "f": "Folding on the first rung? Drink 3 and sit with that." },
+          { "t": "Give them a compliment you've never said out loud", "d": "Specific. Not \"you're nice\".", "f": "Drink 3, and they compliment themselves instead — at length." },
+          { "t": "Let them ask you one question. Answer it honestly.", "d": "Any question. No passing.", "f": "Drink 4. They ask it anyway, and you answer anyway." },
+          { "t": "Kiss them somewhere that isn't their mouth", "d": "Choose well. You only get one.", "f": "Drink 4, and they pick the spot you were too shy for." },
+          { "t": "Take off one item of clothing", "d": "Shoes count. Once.", "f": "Drink 5 and lose it anyway — their choice which." },
+          { "t": "Sit on their lap for the rest of the round", "d": "Facing them.", "f": "Drink 5 and they sit on yours instead." },
+          { "t": "Name the exact moment tonight you first wanted them", "d": "Time, place, what they were doing.", "f": "Drink 6. They guess out loud until they get it right." },
+          { "t": "Kiss them properly. Sixty seconds. No hands.", "d": "Count it out loud if you need to.", "f": "Drink 6 and hand them the phone — they write your next dare." }
+        ]
+      },
+      {
+        "name": "Bold",
+        "sub": "Now it costs something.",
+        "rules": "Same ladder, higher up. Fold and it's over — and the forfeit is printed on the rung you wouldn't take.",
+        "top": "Drink 5. They out-nerved you completely.",
+        "rungs": [
+          { "t": "Drink from their glass while they hold it", "d": "Eyes up the whole time.", "f": "Drink 4, and they pour you a bigger one." },
+          { "t": "Whisper the filthiest thing you've thought today", "d": "In their ear. A full sentence.", "f": "Drink 4. They whisper theirs — and now you owe them it." },
+          { "t": "Let them take one photo of you. Their pose, their call.", "d": "You don't get to see it first.", "f": "Drink 5, and delete one of theirs that you like." },
+          { "t": "Lose another item — and let them pick which", "d": "No negotiating.", "f": "Drink 5 and lose two of your own choosing." },
+          { "t": "Sixty seconds on their neck. They stay perfectly still.", "d": "They may not touch you back.", "f": "Drink 6 and stay still while they do it to you." },
+          { "t": "Let them tie your hands with something in this room", "d": "Belt, scarf, sleeve — their pick.", "f": "Drink 6, and they tie you anyway, for twice as long." },
+          { "t": "Say out loud, in detail, what you want to happen next", "d": "No shortcuts. Actual words.", "f": "Drink 7. They describe it instead, and you get no vote." },
+          { "t": "Two minutes. Their hands anywhere. You don't move.", "d": "First sound you make, you drink.", "f": "Drink 7 and give them the two minutes regardless." }
+        ]
+      },
+      {
+        "name": "Reckless",
+        "sub": "Last ladder. No excuses left.",
+        "rules": "Final round. Whoever folds here loses the night, not just the round.",
+        "top": "Drink 6, and the rest of the night runs on their terms.",
+        "rungs": [
+          { "t": "Finish whatever's in your glass", "d": "All of it. Now.", "f": "Pour a fresh one and finish that instead." },
+          { "t": "Down to your underwear", "d": "Everything else goes.", "f": "Drink 5, and they undress you to the same place." },
+          { "t": "Hand them your phone. They read the last five things you searched.", "d": "No scrolling first.", "f": "Drink 6 and answer any three questions they ask about it." },
+          { "t": "Beg them for something. Out loud. Convincingly.", "d": "They decide whether it was convincing.", "f": "Drink 6 — and they give it to you anyway, which is worse." },
+          { "t": "Do the thing they asked for once and never got", "d": "You know exactly the one.", "f": "Drink 7. It's happening later tonight regardless." },
+          { "t": "Two minutes. Their mouth, wherever they choose.", "d": "You may not touch them.", "f": "Drink 7, give them the two minutes, and receive nothing back." },
+          { "t": "Tell them your filthiest fantasy — all of it, no editing", "d": "Start to finish.", "f": "Drink 8. They tell you theirs, and you perform the opening scene." },
+          { "t": "Nothing left on. Stand there while they look.", "d": "Thirty seconds. Don't cover anything.", "f": "Drink 8, put the phone down — they're in charge from here." }
+        ]
+      }
+    ]
+  },
+  "skin": {
+    "tiers": [
+      {
+        "name": "Close",
+        "sub": "Hands where I can see them.",
+        "rules": "Take turns. Do the rung or fold — folding ends the round and you pay for it. Clear the whole ladder and you win outright.",
+        "top": "Lose an item — you made them climb the whole thing.",
+        "rungs": [
+          { "t": "Sixty seconds of kissing. Mouths only.", "d": "Hands stay down.", "f": "Lose an item, and let them kiss you anyway." },
+          { "t": "Trace their whole body with one fingertip", "d": "Over clothes. Unhurried.", "f": "Lose an item and lie still while they do it to you." },
+          { "t": "Take one of their items off using only your mouth", "d": "No hands. Work it out.", "f": "Lose two of your own." },
+          { "t": "Kiss them somewhere you've never kissed them", "d": "Somewhere actually new.", "f": "Lose an item, and let them find a new spot on you." },
+          { "t": "Sixty seconds on their neck. They may not move.", "d": "Any sound they make costs them an item.", "f": "Lose an item and hold still for the same treatment." },
+          { "t": "Get on top of them — and don't touch them", "d": "As close as you can without contact. One minute.", "f": "Lose an item. They get on top instead." },
+          { "t": "Undress them to their underwear", "d": "Slowly. Their hands stay behind their back.", "f": "You go down to yours instead." },
+          { "t": "Skin to skin, full length, nobody moves", "d": "Two minutes. Whoever moves first loses the round.", "f": "Strip to nothing, and they hold you there anyway." }
+        ]
+      },
+      {
+        "name": "Closer",
+        "sub": "Fewer clothes. Fewer rules.",
+        "rules": "Same ladder, higher up. Fold and it's over — and the forfeit is printed on the rung you wouldn't take.",
+        "top": "Everything you're still wearing comes off. They earned it.",
+        "rungs": [
+          { "t": "Their hands behind their back. Two minutes, your mouth.", "d": "Anywhere above the waist.", "f": "Lose everything but one item." },
+          { "t": "Let them blindfold you and touch you anywhere", "d": "Ninety seconds. You don't get to ask what's coming.", "f": "Blindfold them and do it instead — they set how long." },
+          { "t": "Take them to the edge of something, then stop", "d": "Read them. Stop before they want you to.", "f": "Lose everything you're still wearing." },
+          { "t": "Two minutes. Your mouth, below the waist.", "d": "They choose exactly where.", "f": "Nothing left on — and they take the two minutes on you." },
+          { "t": "Say exactly what you want them to do to you", "d": "The whole sentence. Out loud.", "f": "They decide instead, and you don't get told first." },
+          { "t": "Hand them total control for three minutes", "d": "You move only when told. No questions.", "f": "You take control — but they set one rule you have to obey." },
+          { "t": "Make them make a sound. Ninety seconds.", "d": "They're allowed to resist.", "f": "Lie back. Ninety seconds on you, and you may not resist." },
+          { "t": "Do the thing you've been thinking about since this started", "d": "You know what it is. Do it.", "f": "Tell them what it was, then let them do it to you instead." }
+        ]
+      },
+      {
+        "name": "All In",
+        "sub": "Nothing left to hold back.",
+        "rules": "Final round. Whoever folds here loses the night, not just the round.",
+        "top": "They cleared it. The rest of the night is theirs to call.",
+        "rungs": [
+          { "t": "Nothing left on. Both of you.", "d": "Now.", "f": "They undress you, and you don't get to help." },
+          { "t": "Take them right to the edge. Don't let them over.", "d": "Twice, if you can manage it.", "f": "They take you there instead — and stop." },
+          { "t": "Ask for exactly what you want. Beg if you have to.", "d": "They decide whether you've earned it.", "f": "You get nothing until you do — and they name the price." },
+          { "t": "Five minutes of anything they name", "d": "No limits, no negotiating.", "f": "Give them ten instead, and they get to name it twice." },
+          { "t": "Do the thing they've asked for that you've never done", "d": "The one you both remember.", "f": "It happens tonight anyway. They pick when." },
+          { "t": "They're in charge until the game ends", "d": "Hand it over. Completely.", "f": "You're in charge — and they'll make you regret not taking it." },
+          { "t": "Finish what you started. All of it.", "d": "Don't stop.", "f": "They finish it. You lie there and take it." },
+          { "t": "Put the phone down and don't pick it up again", "d": "Game over. You know what happens now.", "f": "Fold on the last rung and they own the rest of the night — every call is theirs." }
+        ]
+      }
+    ]
+  }
+}
