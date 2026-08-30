@@ -1,6 +1,6 @@
 import { GameType, type GameMeta } from './types';
 
-import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2, Shuffle } from 'lucide-react';
+import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2, Shuffle, Gavel } from 'lucide-react';
 
 export const GAMES: GameMeta[] = [
     // --- Play Now (ranked) ---
@@ -85,6 +85,14 @@ export const GAMES: GameMeta[] = [
         minPlayers: 3
     },
     {
+        id: GameType.HOUSE_RULES,
+        title: "House Rules",
+        description: "The laws stack. Nobody gets out clean.",
+        icon: "gavel",
+        color: "bg-amber-600",
+        minPlayers: 3
+    },
+    {
         id: GameType.COMPATIBILITY_TEST,
         title: "The Forecast",
         description: "How well do you really know each other?",
@@ -165,6 +173,7 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.FIVE_ALIVE]:          { vibe: 'Speed',    duration: '2 min',  players: '2+',   tags: ['quick', 'speed', 'recall', 'party', 'classic', 'couples', 'solo'] },
     [GameType.LINKED]:              { vibe: 'Puzzle',   duration: '5 min',  players: '1+',   tags: ['quick', 'words', 'puzzle', 'classic', 'couples', 'solo'] },
     [GameType.JUMBLE]:              { vibe: 'Words',    duration: '2 min',  players: '1+',   tags: ['solo', 'quick', 'words', 'puzzle'] },
+    [GameType.HOUSE_RULES]:         { vibe: 'Chaos',    duration: '30 min', players: '3-8',  tags: ['crowd', 'party', 'classic', 'drinks'] },
     // Non-game screens — never listed on Home, entries exist only to satisfy
     // the Record<GameType, …> type.
     [GameType.GAME_NIGHT]:          { vibe: '',         duration: '',       players: '',     tags: [] },
@@ -301,6 +310,7 @@ export const getIcon = (name: string, size: number = 24) => {
         case 'timer': return <Timer size={size} />;
         case 'link': return <Link2 size={size} />;
         case 'shuffle': return <Shuffle size={size} />;
+        case 'gavel': return <Gavel size={size} />;
         default: return <Sparkles size={size} />;
     }
 };

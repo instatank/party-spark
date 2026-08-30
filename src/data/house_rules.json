@@ -1,0 +1,56 @@
+{
+  "lastCallNote": "This is the final law. Every law above it is still in force. The next slip-up closes the session.",
+  "tiers": [
+    {
+      "name": "Opening Statutes",
+      "sub": "Gentle. Enjoy it.",
+      "sips": 2,
+      "laws": [
+        { "t": "The word \"drink\" is dead.", "d": "Nobody may say drink, drank, drunk or shot. Point at your glass like an adult." },
+        { "t": "No first names.", "d": "Everyone gets addressed by a nickname, a title, or an elaborate description. Real names are contraband." },
+        { "t": "{maker} is now The Honourable Judge.", "d": "Address them by the full title, every single time. \"Hey\" is not a title." },
+        { "t": "Drink with your wrong hand.", "d": "Left-handers included. Every sip, for the rest of the session." },
+        { "t": "Fingers may not point.", "d": "Elbows, chins and feet only. Indicate things with dignity." },
+        { "t": "Every sip needs a toast.", "d": "Name someone at the table and say why, before the glass reaches your lips. No reason may be used twice." },
+        { "t": "No direct questions.", "d": "You may fish, imply and insinuate. You may not simply ask." },
+        { "t": "Phones face down on the table.", "d": "Lifting one for any reason that isn't this game is a violation." },
+        { "t": "Nobody may cross their arms or legs.", "d": "Open posture, all session. {maker} rules on borderline cases." },
+        { "t": "No swearing.", "d": "Not one. The bar is lower than you think, and so are you." }
+      ]
+    },
+    {
+      "name": "Amendments",
+      "sub": "Now they start stacking.",
+      "sips": 3,
+      "laws": [
+        { "t": "Speak only in the third person.", "d": "\"She would like another one.\" Every sentence, all session." },
+        { "t": "A Cup Bearer is appointed.", "d": "{maker} names one player now. Nobody may pour their own — only the Cup Bearer pours, and they drink if they refuse." },
+        { "t": "Every sentence ends with \"allegedly\".", "d": "Every single one. Allegedly." },
+        { "t": "You must stand to drink.", "d": "Fully upright, then sit back down. Every time." },
+        { "t": "\"Yes\" and \"no\" are banned.", "d": "Find another way. Nodding now counts as speech." },
+        { "t": "Hands on the table whenever anyone laughs.", "d": "Last hand down drinks. This will happen far more than you expect." },
+        { "t": "The table has an accent.", "d": "{maker} picks one right now. Everybody speaks in it until further notice." },
+        { "t": "Compliments are mandatory.", "d": "Before you speak, compliment whoever spoke last. Specific, and never repeated." },
+        { "t": "The glass may not touch the table.", "d": "Hold it, balance it, or hand it to someone. The table is lava." },
+        { "t": "Nobody may name this game.", "d": "Or refer to the laws as laws, or the session as a game. Improvise." }
+      ]
+    },
+    {
+      "name": "Emergency Powers",
+      "sub": "Nobody is getting out clean.",
+      "sips": 4,
+      "laws": [
+        { "t": "Eye contact is illegal.", "d": "Foreheads, chins, ceilings. Any two people caught meeting eyes — both drink." },
+        { "t": "Everyone swaps names.", "d": "{maker} reassigns every player someone else's name, right now. You are that person and you answer to it." },
+        { "t": "No sentence may begin with \"I\".", "d": "The self is cancelled." },
+        { "t": "The full book is read before every new law.", "d": "Out loud, in order, by whoever is about to make the next one. Miss a law, drink." },
+        { "t": "Everyone mirrors {maker}.", "d": "Whatever The Judge does with their hands, the table copies. They will abuse this immediately." },
+        { "t": "No toast may be refused.", "d": "Toasted at, you toast back — and neither of you may reuse a reason from tonight." },
+        { "t": "Truth clause.", "d": "Any question put to you gets an honest answer. You may buy out twice, ever, by drinking." },
+        { "t": "Nobody may laugh.", "d": "At anything. Good luck." },
+        { "t": "Volume is a crime.", "d": "Any player may call \"loudest\" once per law. The table votes, and the loudest voice drinks." },
+        { "t": "Double jeopardy.", "d": "Every law above this one now costs double. Nothing has been repealed. Nothing ever is." }
+      ]
+    }
+  ]
+}
