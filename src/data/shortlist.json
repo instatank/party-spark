@@ -1,0 +1,119 @@
+{
+  "boards": [
+    {
+      "id": "creatures",
+      "name": "The Creature Line-up",
+      "tagline": "Sixteen animals. One of them did it.",
+      "emoji": "🦊",
+      "cases": [
+        "Something ate the entire picnic.",
+        "The bins were turned over in the night.",
+        "There are muddy prints across the clean kitchen floor.",
+        "The birdseed has vanished. All of it.",
+        "Someone was seen fleeing the greenhouse."
+      ],
+      "attrs": [
+        { "k": "group", "kind": "cat", "phrase": { "mammal": "a mammal", "bird": "a bird", "reptile": "a reptile", "bug": "a bug", "fish": "a fish" } },
+        { "k": "legs", "kind": "num", "more": "has more than {n} legs", "fewer": "has fewer than {n} legs", "exact": "has exactly {n} legs", "zero": "has no legs at all" },
+        { "k": "flies", "kind": "bool", "yes": "can fly", "no": "cannot fly" },
+        { "k": "water", "kind": "bool", "yes": "lives in the water", "no": "does not live in the water" },
+        { "k": "size", "kind": "cat", "phrase": { "small": "smaller than a cat", "medium": "about the size of a dog", "large": "bigger than a person" } },
+        { "k": "diet", "kind": "cat", "phrase": { "meat": "a meat eater", "plants": "a plant eater", "both": "happy to eat anything" } }
+      ],
+      "items": [
+        { "e": "🦊", "w": "Fox",       "a": { "group": "mammal",  "legs": 4, "flies": false, "water": false, "size": "medium", "diet": "both" } },
+        { "e": "🦁", "w": "Lion",      "a": { "group": "mammal",  "legs": 4, "flies": false, "water": false, "size": "large",  "diet": "meat" } },
+        { "e": "🐘", "w": "Elephant",  "a": { "group": "mammal",  "legs": 4, "flies": false, "water": false, "size": "large",  "diet": "plants" } },
+        { "e": "🐭", "w": "Mouse",     "a": { "group": "mammal",  "legs": 4, "flies": false, "water": false, "size": "small",  "diet": "both" } },
+        { "e": "🐬", "w": "Dolphin",   "a": { "group": "mammal",  "legs": 0, "flies": false, "water": true,  "size": "large",  "diet": "meat" } },
+        { "e": "🦅", "w": "Eagle",     "a": { "group": "bird",    "legs": 2, "flies": true,  "water": false, "size": "medium", "diet": "meat" } },
+        { "e": "🦉", "w": "Owl",       "a": { "group": "bird",    "legs": 2, "flies": true,  "water": false, "size": "medium", "diet": "meat" } },
+        { "e": "🐧", "w": "Penguin",   "a": { "group": "bird",    "legs": 2, "flies": false, "water": true,  "size": "medium", "diet": "meat" } },
+        { "e": "🐊", "w": "Crocodile", "a": { "group": "reptile", "legs": 4, "flies": false, "water": true,  "size": "large",  "diet": "meat" } },
+        { "e": "🐍", "w": "Snake",     "a": { "group": "reptile", "legs": 0, "flies": false, "water": false, "size": "medium", "diet": "meat" } },
+        { "e": "🐢", "w": "Tortoise",  "a": { "group": "reptile", "legs": 4, "flies": false, "water": false, "size": "medium", "diet": "plants" } },
+        { "e": "🦎", "w": "Lizard",    "a": { "group": "reptile", "legs": 4, "flies": false, "water": false, "size": "small",  "diet": "meat" } },
+        { "e": "🐝", "w": "Bee",       "a": { "group": "bug",     "legs": 6, "flies": true,  "water": false, "size": "small",  "diet": "plants" } },
+        { "e": "🦋", "w": "Butterfly", "a": { "group": "bug",     "legs": 6, "flies": true,  "water": false, "size": "small",  "diet": "plants" } },
+        { "e": "🕷️", "w": "Spider",    "a": { "group": "bug",     "legs": 8, "flies": false, "water": false, "size": "small",  "diet": "meat" } },
+        { "e": "🦈", "w": "Shark",     "a": { "group": "fish",    "legs": 0, "flies": false, "water": true,  "size": "large",  "diet": "meat" } }
+      ]
+    },
+    {
+      "id": "objects",
+      "name": "The Usual Objects",
+      "tagline": "Sixteen things from around the house.",
+      "emoji": "🧰",
+      "cases": [
+        "Something in this house has been quietly ruining everything.",
+        "One of these was left where somebody trod on it.",
+        "Whatever it was, it blew the fuse at midnight.",
+        "The neighbours have complained about the noise.",
+        "It was found in the garden. Nobody will say why."
+      ],
+      "attrs": [
+        { "k": "room", "kind": "cat", "phrase": { "kitchen": "kept in the kitchen", "bathroom": "kept in the bathroom", "bedroom": "kept in the bedroom", "garage": "kept in the garage" } },
+        { "k": "power", "kind": "bool", "yes": "runs on electricity", "no": "does not run on electricity" },
+        { "k": "material", "kind": "cat", "phrase": { "metal": "mostly metal", "plastic": "mostly plastic", "fabric": "mostly fabric", "glass": "mostly glass", "wood": "mostly wood" } },
+        { "k": "handheld", "kind": "bool", "yes": "fits in one hand", "no": "is too big for one hand" },
+        { "k": "wet", "kind": "bool", "yes": "gets used with water", "no": "never goes near water" }
+      ],
+      "items": [
+        { "e": "🫖", "w": "Kettle",     "a": { "room": "kitchen",  "power": true,  "material": "metal",   "handheld": false, "wet": true } },
+        { "e": "🍞", "w": "Toaster",    "a": { "room": "kitchen",  "power": true,  "material": "metal",   "handheld": false, "wet": false } },
+        { "e": "🥄", "w": "Spoon",      "a": { "room": "kitchen",  "power": false, "material": "metal",   "handheld": true,  "wet": false } },
+        { "e": "🥤", "w": "Cup",        "a": { "room": "kitchen",  "power": false, "material": "glass",   "handheld": true,  "wet": true } },
+        { "e": "🪞", "w": "Mirror",     "a": { "room": "bathroom", "power": false, "material": "glass",   "handheld": false, "wet": false } },
+        { "e": "🪥", "w": "Toothbrush", "a": { "room": "bathroom", "power": false, "material": "plastic", "handheld": true,  "wet": true } },
+        { "e": "🧼", "w": "Soap",       "a": { "room": "bathroom", "power": false, "material": "plastic", "handheld": true,  "wet": true } },
+        { "e": "🛁", "w": "Bathtub",    "a": { "room": "bathroom", "power": false, "material": "plastic", "handheld": false, "wet": true } },
+        { "e": "🛏️", "w": "Pillow",     "a": { "room": "bedroom",  "power": false, "material": "fabric",  "handheld": false, "wet": false } },
+        { "e": "🧦", "w": "Socks",      "a": { "room": "bedroom",  "power": false, "material": "fabric",  "handheld": true,  "wet": false } },
+        { "e": "💡", "w": "Lamp",       "a": { "room": "bedroom",  "power": true,  "material": "glass",   "handheld": false, "wet": false } },
+        { "e": "⏰", "w": "Clock",      "a": { "room": "bedroom",  "power": true,  "material": "plastic", "handheld": false, "wet": false } },
+        { "e": "🔨", "w": "Hammer",     "a": { "room": "garage",   "power": false, "material": "metal",   "handheld": true,  "wet": false } },
+        { "e": "🪜", "w": "Ladder",     "a": { "room": "garage",   "power": false, "material": "metal",   "handheld": false, "wet": false } },
+        { "e": "🔦", "w": "Torch",      "a": { "room": "garage",   "power": true,  "material": "plastic", "handheld": true,  "wet": false } },
+        { "e": "🧹", "w": "Broom",      "a": { "room": "garage",   "power": false, "material": "wood",    "handheld": false, "wet": false } }
+      ]
+    },
+    {
+      "id": "menu",
+      "name": "On the Menu",
+      "tagline": "Sixteen things you could eat right now.",
+      "emoji": "🍕",
+      "cases": [
+        "Someone finished it and put the empty packet back.",
+        "This is what they ate before the incident.",
+        "It has been requested at every birthday for nine years.",
+        "One of these was left out overnight. It did not survive.",
+        "The whole order arrived wrong, and this was the culprit."
+      ],
+      "attrs": [
+        { "k": "course", "kind": "cat", "phrase": { "main": "a proper meal", "dessert": "a pudding", "snack": "a snack", "drink": "a drink" } },
+        { "k": "hot", "kind": "bool", "yes": "is served hot", "no": "is not served hot" },
+        { "k": "sweet", "kind": "bool", "yes": "tastes sweet", "no": "does not taste sweet" },
+        { "k": "dairy", "kind": "bool", "yes": "contains dairy", "no": "contains no dairy" },
+        { "k": "cutlery", "kind": "bool", "yes": "needs a fork or a spoon", "no": "can be eaten with your hands" }
+      ],
+      "items": [
+        { "e": "🍕", "w": "Pizza",     "a": { "course": "main",    "hot": true,  "sweet": false, "dairy": true,  "cutlery": false } },
+        { "e": "🍔", "w": "Burger",    "a": { "course": "main",    "hot": true,  "sweet": false, "dairy": true,  "cutlery": false } },
+        { "e": "🍜", "w": "Noodles",   "a": { "course": "main",    "hot": true,  "sweet": false, "dairy": false, "cutlery": true } },
+        { "e": "🍛", "w": "Curry",     "a": { "course": "main",    "hot": true,  "sweet": false, "dairy": false, "cutlery": true } },
+        { "e": "🥗", "w": "Salad",     "a": { "course": "main",    "hot": false, "sweet": false, "dairy": false, "cutlery": true } },
+        { "e": "🥪", "w": "Sandwich",  "a": { "course": "main",    "hot": false, "sweet": false, "dairy": true,  "cutlery": false } },
+        { "e": "🍦", "w": "Ice cream", "a": { "course": "dessert", "hot": false, "sweet": true,  "dairy": true,  "cutlery": false } },
+        { "e": "🍫", "w": "Chocolate", "a": { "course": "dessert", "hot": false, "sweet": true,  "dairy": true,  "cutlery": false } },
+        { "e": "🥞", "w": "Pancakes",  "a": { "course": "dessert", "hot": true,  "sweet": true,  "dairy": true,  "cutlery": true } },
+        { "e": "🍩", "w": "Doughnut",  "a": { "course": "snack",   "hot": false, "sweet": true,  "dairy": true,  "cutlery": false } },
+        { "e": "🍿", "w": "Popcorn",   "a": { "course": "snack",   "hot": true,  "sweet": false, "dairy": false, "cutlery": false } },
+        { "e": "🧀", "w": "Cheese",    "a": { "course": "snack",   "hot": false, "sweet": false, "dairy": true,  "cutlery": false } },
+        { "e": "🥨", "w": "Pretzel",   "a": { "course": "snack",   "hot": false, "sweet": false, "dairy": false, "cutlery": false } },
+        { "e": "🥛", "w": "Milkshake", "a": { "course": "drink",   "hot": false, "sweet": true,  "dairy": true,  "cutlery": false } },
+        { "e": "🍋", "w": "Lemonade",  "a": { "course": "drink",   "hot": false, "sweet": true,  "dairy": false, "cutlery": false } },
+        { "e": "☕", "w": "Tea",       "a": { "course": "drink",   "hot": true,  "sweet": false, "dairy": false, "cutlery": false } }
+      ]
+    }
+  ]
+}
