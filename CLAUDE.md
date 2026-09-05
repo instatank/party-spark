@@ -354,7 +354,7 @@ tests/App.smoke.test.tsx             # vitest render smoke test (run by CI)
 .github/workflows/ci.yml             # CI: npm ci, build, test (lint excluded — see Known Issues)
 notes/                               # One lesson per file (what broke + fix); see notes/README.md
 scripts/build-jumble-sets.mjs        # DEV-only generator → src/data/jumble_sets.json (needs cached dicts under scripts/.cache/)
-scripts/drive-games.mjs              # DEV-only headless-browser drive: opens the 13 Play Now games (17 with --tabs), fails on console errors
+scripts/drive-games.mjs              # DEV-only headless-browser drive: opens the 15 Play Now games (19 with --tabs), fails on console errors
 scripts/deep-drive.mjs               # DEV-only deep flows for the 6 timer games (countdown/expiry/scoring)
 scripts/drive-the-tell.mjs           # DEV-only full 12-round drive of The Tell (both guess branches, bust, swap, Double Down, PIN gate)
 scripts/drive-nerve.mjs              # DEV-only best-of-3 drive of Nerve (fold + full-clear endings, ladder-order invariant, swap, PIN gate)

@@ -44,6 +44,7 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Internalized: no
 
 ### 2026-08-16 — The automated check said the arrow was correct while the screenshot showed it pointing past the name
+- **Predicted again 2026-09-05:** every test passed on Ballpark's pack picker while the tiles were invisible in light mode. Third session running where the only defect that shipped past the tests was caught by looking at a screenshot.
 - What happened: I wrote a geometric assertion for the bottle spinner — read the rotation off the DOM, compute the angle, compare it with the highlighted seat's position. It reported `MATCH=true` on every spin. Then I looked at the screenshot: the sight-line ray ran from the bottle out to the rim, which put its arrowhead *past* the name chip rather than at it. Numerically dead-on; visually it read as pointing at whatever was behind the winner.
 - Concept: an assertion proves the property you thought to encode, not that the interface communicates. Geometry, contrast, spacing and overlap can each be provably "right" and still read wrong to a human, because what the user reads is the relationship between elements, not any single measured value. On anything visual, a passing check licenses you to *look* — it doesn't replace looking. Note: this concept paid out on 2026-08-23 — The Tell's drive script passed every assertion with zero console errors, and the screenshot review is the only thing that caught a decorative element rendering as a grey disc. The card predicted the failure class; that's the ladder working.
 - In my words: (pending — answer at next wrap)
@@ -60,6 +61,7 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Internalized: no
 
 ### 2026-08-23 — Thirteen tests "failed" on text the app was rendering perfectly
+- **Predicted again 2026-09-05:** the same trap cost 23 phantom failures on Echo's new test script. Recognising a written-down lesson after the fact is not the same as applying it, which is what the 2026-09-05 card is about.
 - What happened: the new game's drive script asserted that the screen said "Round 3 of 12". It reported thirteen failures across the run. The app was correct — the copy is styled with Tailwind's `uppercase`, and the browser property the test read (`innerText`) returns text *after* CSS text-transform, so it was handing back "ROUND 3 OF 12". The test was comparing against source truth while reading rendered truth.
 - Concept: a UI test reads what the browser *renders*, not what you *wrote* — and CSS can change the rendered text (case, injected `::before`/`::after` content, ellipsis truncation) without touching the markup. When an assertion fails on something you can plainly see is right on screen, suspect the reading, not the app: compare case-insensitively, or assert against a value the styling can't rewrite.
 - In my words: (pending — answer at next wrap)
