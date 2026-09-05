@@ -116,3 +116,11 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (pending — answer at next wrap)
 - Quiz question: A generator passes every correctness check you wrote and every case it produces is valid — yet the game it feeds is boring. What kind of test did you leave out, and why can no single-case check ever find it?
 - Internalized: no
+
+### 2026-09-05 — The game ended the round by itself, and the robot kept pressing buttons
+- What happened: Target ends your turn the moment you hit the number exactly — there's no reason to make you confirm, nothing beats exact. The automated test plays a full solution into the app one tap at a time. Usually the target arrives on the last tap and all is well, but sometimes a middle step already lands on it (you need 300, and halfway through you make 300). The app correctly ended the turn and moved on; the test carried on tapping at a screen that no longer had any buttons, and died with "no operator +" — an error that points nowhere near the actual cause. It failed about one run in four, and the three green runs before it were exactly the kind of thing that gets shrugged off as flaky.
+- Concept: an automated test that clicks through your app is a second person using it at the same time, and it wrongly assumes nothing happens unless it makes it happen. Any screen that can move on *by itself* — a timer running out, a win firing, an animation finishing — will eventually do so mid-sequence. The fix is two habits: check you're still on the screen you think you're on before each step of a multi-step interaction, and wait for the thing you actually need rather than guessing at a delay. The same test was also reading the answer mid-animation because it waited 600ms instead of waiting for the button to unlock — producing a "solution" that genuinely didn't add up, which looked like a bug in the maths and wasn't.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: Your automated test failed one run in four with an error that made no sense, and passed the other three. What kind of cause should you suspect first, and what makes waiting on a timer instead of a condition so dangerous in a test?
+- Internalized: no

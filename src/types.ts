@@ -27,6 +27,7 @@ export enum GameType {
     BALLPARK = 'BALLPARK',
     ECHO = 'ECHO',
     SHORTLIST = 'SHORTLIST',
+    TARGET = 'TARGET',
     // Non-game screens routed through the same switch:
     GAME_NIGHT = 'GAME_NIGHT',   // crew playlist flow (setup / hub / recap)
     STATS = 'STATS'              // lifetime trophies & stats

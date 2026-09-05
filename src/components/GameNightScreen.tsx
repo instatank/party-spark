@@ -46,6 +46,7 @@ const ELIGIBLE_GAME_IDS: GameType[] = [
     GameType.BALLPARK,
     GameType.ECHO,
     GameType.SHORTLIST,
+    GameType.TARGET,
 ];
 
 const ELIGIBLE_GAMES = ELIGIBLE_GAME_IDS
