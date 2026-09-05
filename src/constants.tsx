@@ -1,6 +1,6 @@
 import { GameType, type GameMeta } from './types';
 
-import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2, Shuffle, Gavel, Target, Layers, Fingerprint } from 'lucide-react';
+import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2, Shuffle, Gavel, Target, Layers, Fingerprint, Calculator } from 'lucide-react';
 
 export const GAMES: GameMeta[] = [
     // --- Play Now (ranked) ---
@@ -117,6 +117,14 @@ export const GAMES: GameMeta[] = [
         minPlayers: 2
     },
     {
+        id: GameType.TARGET,
+        title: "Target",
+        description: "Six numbers, one target. Go.",
+        icon: "calculator",
+        color: "bg-violet-600",
+        minPlayers: 1
+    },
+    {
         id: GameType.COMPATIBILITY_TEST,
         title: "The Forecast",
         description: "How well do you really know each other?",
@@ -198,6 +206,7 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.LINKED]:              { vibe: 'Puzzle',   duration: '5 min',  players: '1+',   tags: ['quick', 'words', 'puzzle', 'classic', 'couples', 'solo'] },
     [GameType.JUMBLE]:              { vibe: 'Words',    duration: '2 min',  players: '1+',   tags: ['solo', 'quick', 'words', 'puzzle'] },
     [GameType.HOUSE_RULES]:         { vibe: 'Chaos',    duration: '30 min', players: '3-8',  tags: ['crowd', 'party', 'classic', 'drinks'] },
+    [GameType.TARGET]:              { vibe: 'Numbers',  duration: '10 min', players: '1–6',  tags: ['solo', 'quick', 'brain', 'puzzle', 'couples', 'crowd', 'maths'] },
     [GameType.SHORTLIST]:           { vibe: 'Deduce',   duration: '15 min', players: '2–8',  tags: ['crowd', 'couples', 'solo', 'brain', 'puzzle', 'deduction', 'co-op'] },
     [GameType.ECHO]:                { vibe: 'Recall',   duration: '10 min', players: '2–6',  tags: ['crowd', 'couples', 'memory', 'brain', 'puzzle', 'classic'] },
     [GameType.BALLPARK]:            { vibe: 'Nerve',    duration: '5 min',  players: '1–6',  tags: ['quick', 'solo', 'couples', 'crowd', 'puzzle', 'brain', 'trivia'] },
@@ -294,6 +303,10 @@ export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
         { label: 'Easy', tags: ['easy', 'casual', 'family', 'quick'] },
         { label: 'Hard', tags: ['hard', 'challenging', 'specialist'] },
     ],
+    [GameType.TARGET]: [
+        { label: 'Classic', tags: ['classic', 'easy', 'casual', 'numbers', 'maths'] },
+        { label: 'Tough',   tags: ['tough', 'hard', 'challenging', 'numbers', 'maths'] },
+    ],
     [GameType.SHORTLIST]: [
         { label: 'The Creature Line-up', tags: ['animals', 'creatures', 'zoo', 'wildlife'] },
         { label: 'The Usual Objects',    tags: ['objects', 'household', 'things', 'home'] },
@@ -357,6 +370,7 @@ export const getIcon = (name: string, size: number = 24) => {
         case 'target': return <Target size={size} />;
         case 'layers': return <Layers size={size} />;
         case 'fingerprint': return <Fingerprint size={size} />;
+        case 'calculator': return <Calculator size={size} />;
         default: return <Sparkles size={size} />;
     }
 };

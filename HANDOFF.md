@@ -12,8 +12,8 @@
 | Thing | Value |
 |---|---|
 | Production branch | `main` (auto-deploys to Vercel) |
-| Working branch this session | `claude/partyspark-three-games-yytqxz` (Ballpark, Echo, Shortlist) |
-| Latest production commit | PR #100, "Shortlist" (2026-09-05) — the third of three new brain games. Always confirm with `git log origin/main`. |
+| Working branch this session | `claude/partyspark-three-games-yytqxz` (Ballpark, Echo, Shortlist, Target) |
+| Latest production commit | PR #101, "Target" (2026-09-05) — the fourth new brain game. Always confirm with `git log origin/main`. |
 | Open PRs | none — everything is merged |
 | Uncommitted local changes | only ever in the working branch; commit and push when done |
 
@@ -41,8 +41,9 @@ indicative, not authoritative; the JSON in `src/data/` is the source of truth.
 12. **Ballpark** (2026-09-05) — 1–6 players, solo-capable. Estimation by bracket: commit a low and a high, priced by ratio, with a calibration read at the end. 120 questions over 3 packs.
 13. **Echo** (2026-09-05) — 2–6 players. Recite a growing chain from a 16-tile board, then choose the next item to break the next player. 4 boards x 16 items.
 14. **Shortlist** (2026-09-05) — 2–8 players, **cooperative**: the table against the app. It hides one of sixteen suspects and feeds truthful clues; closing early pays more. 3 boards x 16 suspects, clues generated from attributes rather than authored.
-15. **The Forecast** (Compatibility Test) — 3 modes (friends / couples / bunny), 30 Qs each. Adult-gated.
-16. **Imposter** — pass-and-play deduction.
+15. **Target** (2026-09-05) — 1–6 players, solo-capable. Six numbers, one three-digit target, + − × ÷. The app solves every puzzle too and shows the way in at the buzzer. No content file at all — puzzles are generated and solved at deal time.
+16. **The Forecast** (Compatibility Test) — 3 modes (friends / couples / bunny), 30 Qs each. Adult-gated.
+17. **Imposter** — pass-and-play deduction.
 
 ### Coming Soon tab (in `comingSoonGameIds` in `App.tsx`)
 WILTY, Icebreakers, Mini Mafia (The Traitors), Would You Rather. Order in that tab is driven by `comingSoonGameIds.map()`, not by their position in `GAMES`.
