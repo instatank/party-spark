@@ -1,0 +1,104 @@
+{
+  "themes": [
+    {
+      "id": "market",
+      "name": "The Market",
+      "tagline": "I went to the market and I bought…",
+      "emoji": "🛒",
+      "verb": "bought",
+      "items": [
+        { "e": "🍋", "w": "Lemon" },
+        { "e": "🍈", "w": "Melon" },
+        { "e": "🐟", "w": "Fish" },
+        { "e": "🦐", "w": "Prawns" },
+        { "e": "🥖", "w": "Baguette" },
+        { "e": "🍞", "w": "Bread" },
+        { "e": "🥔", "w": "Potato" },
+        { "e": "🍠", "w": "Sweet potato" },
+        { "e": "🧀", "w": "Cheese" },
+        { "e": "🥛", "w": "Milk" },
+        { "e": "🍅", "w": "Tomato" },
+        { "e": "🌶️", "w": "Chilli" },
+        { "e": "🥚", "w": "Eggs" },
+        { "e": "🍯", "w": "Honey" },
+        { "e": "☕", "w": "Coffee" },
+        { "e": "🍵", "w": "Tea" }
+      ]
+    },
+    {
+      "id": "suitcase",
+      "name": "The Suitcase",
+      "tagline": "I packed my suitcase and in it I put…",
+      "emoji": "🧳",
+      "verb": "packed",
+      "items": [
+        { "e": "🛂", "w": "Passport" },
+        { "e": "🎫", "w": "Ticket" },
+        { "e": "🕶️", "w": "Sunglasses" },
+        { "e": "👓", "w": "Reading glasses" },
+        { "e": "🩴", "w": "Flip-flops" },
+        { "e": "👟", "w": "Trainers" },
+        { "e": "🧴", "w": "Sunscreen" },
+        { "e": "🧼", "w": "Soap" },
+        { "e": "📷", "w": "Camera" },
+        { "e": "🔌", "w": "Charger" },
+        { "e": "🧦", "w": "Socks" },
+        { "e": "🧢", "w": "Cap" },
+        { "e": "☂️", "w": "Umbrella" },
+        { "e": "🧥", "w": "Coat" },
+        { "e": "🗺️", "w": "Map" },
+        { "e": "📖", "w": "Novel" }
+      ]
+    },
+    {
+      "id": "zoo",
+      "name": "The Zoo",
+      "tagline": "I went to the zoo and I saw…",
+      "emoji": "🦁",
+      "verb": "saw",
+      "items": [
+        { "e": "🦁", "w": "Lion" },
+        { "e": "🐯", "w": "Tiger" },
+        { "e": "🐒", "w": "Monkey" },
+        { "e": "🦍", "w": "Gorilla" },
+        { "e": "🐊", "w": "Crocodile" },
+        { "e": "🦎", "w": "Lizard" },
+        { "e": "🐧", "w": "Penguin" },
+        { "e": "🦩", "w": "Flamingo" },
+        { "e": "🐘", "w": "Elephant" },
+        { "e": "🦏", "w": "Rhino" },
+        { "e": "🦒", "w": "Giraffe" },
+        { "e": "🦓", "w": "Zebra" },
+        { "e": "🐍", "w": "Snake" },
+        { "e": "🕷️", "w": "Spider" },
+        { "e": "🦉", "w": "Owl" },
+        { "e": "🦅", "w": "Eagle" }
+      ]
+    },
+    {
+      "id": "party",
+      "name": "The Party Bag",
+      "tagline": "I threw a party and I bought…",
+      "emoji": "🎉",
+      "verb": "bought",
+      "items": [
+        { "e": "🎈", "w": "Balloons" },
+        { "e": "🎊", "w": "Confetti" },
+        { "e": "🎂", "w": "Cake" },
+        { "e": "🧁", "w": "Cupcakes" },
+        { "e": "🕯️", "w": "Candles" },
+        { "e": "✨", "w": "Sparklers" },
+        { "e": "🎁", "w": "Present" },
+        { "e": "🃏", "w": "Cards" },
+        { "e": "🍕", "w": "Pizza" },
+        { "e": "🍟", "w": "Chips" },
+        { "e": "🥤", "w": "Fizzy drink" },
+        { "e": "🧃", "w": "Juice" },
+        { "e": "🎸", "w": "Guitar" },
+        { "e": "🥁", "w": "Drum" },
+        { "e": "📸", "w": "Photos" },
+        { "e": "🔦", "w": "Torch" }
+      ]
+    }
+  ]
+}

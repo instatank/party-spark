@@ -25,6 +25,7 @@ export enum GameType {
     JUMBLE = 'JUMBLE',
     HOUSE_RULES = 'HOUSE_RULES',
     BALLPARK = 'BALLPARK',
+    ECHO = 'ECHO',
     // Non-game screens routed through the same switch:
     GAME_NIGHT = 'GAME_NIGHT',   // crew playlist flow (setup / hub / recap)
     STATS = 'STATS'              // lifetime trophies & stats
