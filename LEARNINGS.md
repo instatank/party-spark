@@ -90,3 +90,19 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (parked at founder's request — 2026-08-30)
 - Quiz question: A rule is guaranteed by the function that creates something. Why is that not enough, and what kind of test catches the gap — versus the kind that misses it?
 - Internalized: no
+
+### 2026-09-05 — The house style guide was written before light mode existed, so following it correctly produced a broken screen
+- What happened: Ballpark's pack-picker copied the tile recipe out of `CLAUDE.md` exactly as written — a very faint white fill with a very faint white border, which is what gives every other picker in the app that frosted-glass look on the dark navy background. It looks great. Then I switched the app to light mode and took a screenshot: the tiles were gone. Not broken, not misaligned — invisible. A 5%-white panel on a near-white page is nothing at all, so what was left was three chunks of floating text with a coloured bar beside each one. Every test passed. The tiles had rendered perfectly, in exactly the colour they were asked for.
+- Concept: the style guide had been written when the app only had a dark theme, so "faint white" was a safe shorthand for "slightly lighter than the background". Once a light theme existed, that shorthand became a lie in half the app — but the guide still read like a rule, so copying it faithfully was the fastest way to spread the bug to every new screen. The app already had the right tool: named colours like "surface" and "border" that automatically mean the right thing in either theme. The rule of thumb is that any hardcoded white-or-black transparency in a background or border is a theme bug nobody has noticed yet. The process half matters just as much: no automated check can catch this, because nothing is wrong — the only thing that catches it is opening the screen in both themes and looking. That pass has now caught a real defect on two consecutive games.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: A written style rule in this repo produced a screen that was invisible in one theme, and every test still passed. What made the rule wrong, and what is the only check that could have caught it?
+- Internalized: no
+
+### 2026-09-05 — Twenty-three tests "failed" on text the app was rendering perfectly. Again.
+- What happened: Echo's new test script reported 23 failures in its first run. Every one was the script's fault, and both causes were already written down. Half were the trap `notes/04` records: the browser hands back text *after* the styling has been applied, so a label styled to display in capitals comes back as "CHAIN HELD — +5 POINTS" while the script was looking for "+5 points". The other half were mine: I assumed the little chain tags rendered as "🍋 Lemon" with a space, so I stripped everything up to the first space — but there is no space in the markup, so I was stripping the whole thing and comparing empty strings to empty strings.
+- Concept: a recorded lesson only pays off if it's applied *before* the first run, not recognised afterwards. The cheap defence is to build the guard into the tool rather than remember it at each use — the fix here was one shared helper that compares text case-insensitively, used everywhere from the start, so the trap can't be re-entered one assertion at a time. The second half is a different rule with the same shape: don't guess how the page is built, read one real value out of it and check your assumption before writing twenty checks on top of it.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: You already wrote down a testing trap weeks ago and then walked straight into it again. What changes that — remembering harder, or something you build into the tool?
+- Internalized: no
