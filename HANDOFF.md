@@ -12,8 +12,8 @@
 | Thing | Value |
 |---|---|
 | Production branch | `main` (auto-deploys to Vercel) |
-| Working branch this session | `claude/partyspark-three-games-yytqxz` (Ballpark + Echo) |
-| Latest production commit | `586d2e5` — PR #98, "Two new brain games: Ballpark (estimation) and Echo (memory chain)" (2026-09-05). Always confirm with `git log origin/main`. |
+| Working branch this session | `claude/partyspark-three-games-yytqxz` (Ballpark, Echo, Shortlist) |
+| Latest production commit | PR #100, "Shortlist" (2026-09-05) — the third of three new brain games. Always confirm with `git log origin/main`. |
 | Open PRs | none — everything is merged |
 | Uncommitted local changes | only ever in the working branch; commit and push when done |
 
@@ -40,8 +40,9 @@ indicative, not authoritative; the JSON in `src/data/` is the source of truth.
 11. **House Rules** (2026-08-30) — 3–8 player group drinking game; nine laws accumulate over three tiers and the Book of Laws is the hub. 30 laws in `src/data/house_rules.json`.
 12. **Ballpark** (2026-09-05) — 1–6 players, solo-capable. Estimation by bracket: commit a low and a high, priced by ratio, with a calibration read at the end. 120 questions over 3 packs.
 13. **Echo** (2026-09-05) — 2–6 players. Recite a growing chain from a 16-tile board, then choose the next item to break the next player. 4 boards x 16 items.
-14. **The Forecast** (Compatibility Test) — 3 modes (friends / couples / bunny), 30 Qs each. Adult-gated.
-15. **Imposter** — pass-and-play deduction.
+14. **Shortlist** (2026-09-05) — 2–8 players, **cooperative**: the table against the app. It hides one of sixteen suspects and feeds truthful clues; closing early pays more. 3 boards x 16 suspects, clues generated from attributes rather than authored.
+15. **The Forecast** (Compatibility Test) — 3 modes (friends / couples / bunny), 30 Qs each. Adult-gated.
+16. **Imposter** — pass-and-play deduction.
 
 ### Coming Soon tab (in `comingSoonGameIds` in `App.tsx`)
 WILTY, Icebreakers, Mini Mafia (The Traitors), Would You Rather. Order in that tab is driven by `comingSoonGameIds.map()`, not by their position in `GAMES`.

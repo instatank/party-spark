@@ -108,3 +108,11 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (pending — answer at next wrap)
 - Quiz question: You already wrote down a testing trap weeks ago and then walked straight into it again. What changes that — remembering harder, or something you build into the tool?
 - Internalized: no
+
+### 2026-09-05 — The card dealer was perfectly fair and dealt the same hand every time
+- What happened: Shortlist's app-side "case generator" picks a hidden suspect and writes the clues that narrow sixteen down to one. I checked it hard: nine thousand generated cases, every clue true, every case solvable, no case where you'd have to guess. All green, twice over. Then I noticed the test's own summary line said the five cases took 4, 4, 4, 4 and 4 clues. The rule I'd given it — cut the suspects in half each time — mathematically always takes exactly four steps to get from sixteen to one. So every case was the same length, every case paid the same points, and the one real decision in the game ("do we guess now or pay for another clue?") had quietly stopped being a decision at all.
+- Concept: the checks I'd written all asked "is this case fair?" — and every case was. None asked "are the cases different from each other?" Those are two separate questions, and only the first one is obvious to test. Anything that generates content — puzzles, questions, hands, levels — needs both: rules about what it must never do, and rules about the spread of what it actually produces. The fix was to give each case a target length picked from a range rather than one fixed rule, and then to write the missing test in one line: across thousands of cases, at least three different lengths must appear, and the shortest and longest must actually reach the ends of the range. That line would have caught it on the very first run.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: A generator passes every correctness check you wrote and every case it produces is valid — yet the game it feeds is boring. What kind of test did you leave out, and why can no single-case check ever find it?
+- Internalized: no
