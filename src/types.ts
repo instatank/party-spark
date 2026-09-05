@@ -28,6 +28,7 @@ export enum GameType {
     ECHO = 'ECHO',
     SHORTLIST = 'SHORTLIST',
     TARGET = 'TARGET',
+    THE_LINE = 'THE_LINE',
     // Non-game screens routed through the same switch:
     GAME_NIGHT = 'GAME_NIGHT',   // crew playlist flow (setup / hub / recap)
     STATS = 'STATS'              // lifetime trophies & stats

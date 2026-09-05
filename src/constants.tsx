@@ -1,6 +1,6 @@
 import { GameType, type GameMeta } from './types';
 
-import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2, Shuffle, Gavel, Target, Layers, Fingerprint, Calculator } from 'lucide-react';
+import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2, Shuffle, Gavel, Target, Layers, Fingerprint, Calculator, ArrowUpNarrowWide } from 'lucide-react';
 
 export const GAMES: GameMeta[] = [
     // --- Play Now (ranked) ---
@@ -125,6 +125,14 @@ export const GAMES: GameMeta[] = [
         minPlayers: 1
     },
     {
+        id: GameType.THE_LINE,
+        title: "The Line",
+        description: "Never say the number. Say where it goes.",
+        icon: "sequence",
+        color: "bg-blue-600",
+        minPlayers: 1
+    },
+    {
         id: GameType.COMPATIBILITY_TEST,
         title: "The Forecast",
         description: "How well do you really know each other?",
@@ -210,6 +218,7 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.SHORTLIST]:           { vibe: 'Deduce',   duration: '15 min', players: '2–8',  tags: ['crowd', 'couples', 'solo', 'brain', 'puzzle', 'deduction', 'co-op'] },
     [GameType.ECHO]:                { vibe: 'Recall',   duration: '10 min', players: '2–6',  tags: ['crowd', 'couples', 'memory', 'brain', 'puzzle', 'classic'] },
     [GameType.BALLPARK]:            { vibe: 'Nerve',    duration: '5 min',  players: '1–6',  tags: ['quick', 'solo', 'couples', 'crowd', 'puzzle', 'brain', 'trivia'] },
+    [GameType.THE_LINE]:            { vibe: 'Order',    duration: '15 min', players: '1–8',  tags: ['solo', 'couples', 'crowd', 'brain', 'puzzle', 'trivia', 'learn'] },
     // Non-game screens — never listed on Home, entries exist only to satisfy
     // the Record<GameType, …> type.
     [GameType.GAME_NIGHT]:          { vibe: '',         duration: '',       players: '',     tags: [] },
@@ -307,6 +316,12 @@ export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
         { label: 'Classic', tags: ['classic', 'easy', 'casual', 'numbers', 'maths'] },
         { label: 'Tough',   tags: ['tough', 'hard', 'challenging', 'numbers', 'maths'] },
     ],
+    [GameType.THE_LINE]: [
+        { label: 'How Tall',     tags: ['tall', 'height', 'mountains', 'buildings', 'metres'] },
+        { label: 'How Fast',     tags: ['fast', 'speed', 'animals', 'vehicles', 'records'] },
+        { label: 'How Long Ago', tags: ['history', 'year', 'invention', 'dates', 'old'] },
+        { label: 'How Heavy',    tags: ['heavy', 'weight', 'mass', 'animals', 'kilograms'] },
+    ],
     [GameType.SHORTLIST]: [
         { label: 'The Creature Line-up', tags: ['animals', 'creatures', 'zoo', 'wildlife'] },
         { label: 'The Usual Objects',    tags: ['objects', 'household', 'things', 'home'] },
@@ -371,6 +386,7 @@ export const getIcon = (name: string, size: number = 24) => {
         case 'layers': return <Layers size={size} />;
         case 'fingerprint': return <Fingerprint size={size} />;
         case 'calculator': return <Calculator size={size} />;
+        case 'sequence': return <ArrowUpNarrowWide size={size} />;
         default: return <Sparkles size={size} />;
     }
 };
