@@ -24,6 +24,7 @@ const MostLikelyToGame = lazy(() => import('./components/games/MostLikelyToGame'
 const WouldILieToYouGame = lazy(() => import('./components/games/WouldILieToYouGame').then(m => ({ default: m.WouldILieToYouGame })));
 const NeverHaveIEverGame = lazy(() => import('./components/games/NeverHaveIEverGame').then(m => ({ default: m.NeverHaveIEverGame })));
 const HouseRulesGame = lazy(() => import('./components/games/HouseRulesGame').then(m => ({ default: m.HouseRulesGame })));
+const BallparkGame = lazy(() => import('./components/games/BallparkGame').then(m => ({ default: m.BallparkGame })));
 const MiniMafiaGame = lazy(() => import('./components/games/MiniMafiaGame').then(m => ({ default: m.MiniMafiaGame })));
 const FactOrFictionGame = lazy(() => import('./components/games/FactOrFictionGame').then(m => ({ default: m.FactOrFictionGame })));
 const CompatibilityTestGame = lazy(() => import('./components/games/CompatibilityTestGame').then(m => ({ default: m.CompatibilityTestGame })));
@@ -163,6 +164,8 @@ const App = () => {
         return <NeverHaveIEverGame onExit={exitGame} />;
       case GameType.HOUSE_RULES:
         return <HouseRulesGame onExit={exitGame} />;
+      case GameType.BALLPARK:
+        return <BallparkGame onExit={exitGame} />;
       case GameType.MINI_MAFIA:
         return <MiniMafiaGame onExit={exitGame} />;
       case GameType.ICEBREAKERS:

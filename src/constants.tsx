@@ -1,6 +1,6 @@
 import { GameType, type GameMeta } from './types';
 
-import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2, Shuffle, Gavel } from 'lucide-react';
+import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2, Shuffle, Gavel, Target } from 'lucide-react';
 
 export const GAMES: GameMeta[] = [
     // --- Play Now (ranked) ---
@@ -93,6 +93,14 @@ export const GAMES: GameMeta[] = [
         minPlayers: 3
     },
     {
+        id: GameType.BALLPARK,
+        title: "Ballpark",
+        description: "Don't guess the number. Bracket it.",
+        icon: "target",
+        color: "bg-lime-600",
+        minPlayers: 1
+    },
+    {
         id: GameType.COMPATIBILITY_TEST,
         title: "The Forecast",
         description: "How well do you really know each other?",
@@ -174,6 +182,7 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.LINKED]:              { vibe: 'Puzzle',   duration: '5 min',  players: '1+',   tags: ['quick', 'words', 'puzzle', 'classic', 'couples', 'solo'] },
     [GameType.JUMBLE]:              { vibe: 'Words',    duration: '2 min',  players: '1+',   tags: ['solo', 'quick', 'words', 'puzzle'] },
     [GameType.HOUSE_RULES]:         { vibe: 'Chaos',    duration: '30 min', players: '3-8',  tags: ['crowd', 'party', 'classic', 'drinks'] },
+    [GameType.BALLPARK]:            { vibe: 'Nerve',    duration: '5 min',  players: '1–6',  tags: ['quick', 'solo', 'couples', 'crowd', 'puzzle', 'brain', 'trivia'] },
     // Non-game screens — never listed on Home, entries exist only to satisfy
     // the Record<GameType, …> type.
     [GameType.GAME_NIGHT]:          { vibe: '',         duration: '',       players: '',     tags: [] },
@@ -267,6 +276,11 @@ export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
         { label: 'Easy', tags: ['easy', 'casual', 'family', 'quick'] },
         { label: 'Hard', tags: ['hard', 'challenging', 'specialist'] },
     ],
+    [GameType.BALLPARK]: [
+        { label: 'Mixed Bag',       tags: ['mixed', 'general', 'trivia', 'culture', 'sport', 'records'] },
+        { label: 'Planet & Cosmos', tags: ['space', 'planet', 'cosmos', 'geography', 'ocean', 'nature', 'science'] },
+        { label: 'Body & Beasts',   tags: ['body', 'animals', 'beasts', 'human', 'biology', 'nature'] },
+    ],
     [GameType.LINKED]: [
         { label: 'Easy',      tags: ['easy', 'casual', 'family', 'words'] },
         { label: 'Hard',      tags: ['hard', 'challenging', 'words'] },
@@ -311,6 +325,7 @@ export const getIcon = (name: string, size: number = 24) => {
         case 'link': return <Link2 size={size} />;
         case 'shuffle': return <Shuffle size={size} />;
         case 'gavel': return <Gavel size={size} />;
+        case 'target': return <Target size={size} />;
         default: return <Sparkles size={size} />;
     }
 };

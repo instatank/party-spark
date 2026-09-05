@@ -42,6 +42,8 @@ const ELIGIBLE_GAME_IDS: GameType[] = [
     GameType.FIVE_ALIVE,
     GameType.LINKED,
     GameType.JUMBLE,
+    GameType.HOUSE_RULES,
+    GameType.BALLPARK,
 ];
 
 const ELIGIBLE_GAMES = ELIGIBLE_GAME_IDS
