@@ -42,7 +42,7 @@ const LAWS_PER_TIER = 3;
 const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 8;
 const MARK_HIT_POINTS = 2;
-const STATS_ID = 'house_rules';
+const STATS_ID = 'HOUSE_RULES';   // must match GameType so the Trophies screen can name it
 
 const ACCENT = '#D97706';         // amber-600 — reads as gavel/whisky in both themes
 const ACCENT_SOFT = '#D9770622';
