@@ -12,8 +12,8 @@
 | Thing | Value |
 |---|---|
 | Production branch | `main` (auto-deploys to Vercel) |
-| Working branch this session | `claude/great-brown-yzwf9d` (Spin the Bottle) |
-| Latest production commit | last shipped via PR #32 ("Roast Me #1") — `main` at `f5f6ed7` (or later, check `git log origin/main`) |
+| Working branch this session | `claude/partyspark-three-games-yytqxz` (Ballpark + Echo) |
+| Latest production commit | `586d2e5` — PR #98, "Two new brain games: Ballpark (estimation) and Echo (memory chain)" (2026-09-05). Always confirm with `git log origin/main`. |
 | Open PRs | none — everything is merged |
 | Uncommitted local changes | only ever in the working branch; commit and push when done |
 
@@ -23,19 +23,25 @@ Everything below is **already live in production** unless explicitly noted.
 
 ## 🎮 Current game roster — Play Now (in display order)
 
-Home order (from `GAMES` array in `src/constants.tsx`):
+Home order (from `GAMES` array in `src/constants.tsx`). Dataset counts below were
+last audited 2026-08-16 except where a later entry says otherwise — treat them as
+indicative, not authoritative; the JSON in `src/data/` is the source of truth.
 
-1. **Roast Me** — AI image roast. 6 themes: Animate / Tabloid / Movie / Rock Star / Mughal / FIFA 2026. Rock and FIFA have sub-variants (rock = punk vs classic, FIFA = team picker). Client picks `variant`/`team` and sends to BOTH the image and the caption call so they stay coherent. All prompts include the IDENTITY-LOCK preamble.
-2. **Most Likely To** — 6 decks + Create-Your-Vibe AI. ~400 cards.
-3. **5 Alive** — speed recall. 3 levels: Easy (300) / Hard (300) / Spicy (151, PIN-gated 18+). 5 rounds: name 5/4/3/2/1 in 6/5/4/3/2 seconds. Synthesised bell at the end of each round. Per-turn scoring + recap screen.
-4. **Fact or Fiction** — 6 categories: Animal Kingdom (50) / Science (50) / General Knowledge (50) / Sports (50) / History (50) / FIFA World Cup Football (81). Difficulty cascades down one level at a time when the current level runs out.
-5. **Charades** — 7 categories: Hollywood (200) / Bollywood (200) / Mix (441) / Family Mix (61) / Everyday Actions (20) / Around the House (20) / The Zoo (21).
-6. **Taboo** — Easy (298) / Medium (167) / Hard (75).
-7. **Truth or Drink** — 5 decks (215 cards) + Create-Your-Vibe. Adult-gated. Also hosts two sub-screens off the deck picker: **Intimate Drinking** (adult dice game, its own PIN `2525`, shipped 2026-07-11 — this doc had missed it) and **Spin the Bottle** (ungated test screen for the shared `SpinTheBottle` decider, 2026-08-16 — not yet wired into any game's turn logic).
-8. **Linked** — word puzzle. Easy (78) / Hard (36). Pass-and-Play (60s, Skip and Got-It both flash the answer) + Just Play.
-9. **Never Have I Ever** — 5 decks (220).
-10. **The Forecast** (Compatibility Test) — 3 modes (friends / couples / bunny), 30 Qs each. Adult-gated.
-11. **Imposter** — pass-and-play deduction.
+1. **Roast Me** — AI image roast. 6 themes: Animate / Tabloid / Movie / Rock Star / Mughal / FIFA 2026. Rock and FIFA have sub-variants (rock = punk vs classic, FIFA = team picker). Client picks `variant`/`team` and sends to BOTH the image and the caption call so they stay coherent. All prompts include the IDENTITY-LOCK preamble. Adult-gated while prompts are tuned.
+2. **5 Alive** — speed recall. 3 levels: Easy (300) / Hard (300) / Spicy (151, PIN-gated 18+). 5 rounds: name 5/4/3/2/1 in 6/5/4/3/2 seconds. Synthesised bell at the end of each round. Per-turn scoring + recap screen.
+3. **Fact or Fiction** — 6 categories: Animal Kingdom (50) / Science (50) / General Knowledge (50) / Sports (50) / History (50) / FIFA World Cup Football (81). Difficulty cascades down one level at a time when the current level runs out.
+4. **Scramble** (internally `JUMBLE`) — solo + pass-and-play word finder. 300 easy + 250 hard 7-letter sets baked by `scripts/build-jumble-sets.mjs`. Also powers the Daily Scramble tile on Home.
+5. **Taboo** — Easy (298) / Medium (167) / Hard (75).
+6. **Charades** — 7 categories: Hollywood (200) / Bollywood (200) / Mix (441) / Family Mix (61) / Everyday Actions (20) / Around the House (20) / The Zoo (21).
+7. **Most Likely To** — 6 decks + Create-Your-Vibe AI. ~400 cards.
+8. **Truth or Drink** — 5 decks (215 cards) + Create-Your-Vibe. Adult-gated. Also hosts four sub-screens off the deck picker: **Intimate Drinking** (adult dice game, its own PIN `2525`, 2026-07-11), **The Tell** (two-player secret-mission deduction, 2026-08-23), **Nerve** (two-player chicken up a ladder of dares, 2026-08-30) and **Spin the Bottle** (ungated test screen for the shared `SpinTheBottle` decider, 2026-08-16 — still not wired into any game's turn logic).
+9. **Linked** — word puzzle. Easy (78) / Hard (36). Pass-and-Play (60s, Skip and Got-It both flash the answer) + Just Play.
+10. **Never Have I Ever** — 5 decks (220).
+11. **House Rules** (2026-08-30) — 3–8 player group drinking game; nine laws accumulate over three tiers and the Book of Laws is the hub. 30 laws in `src/data/house_rules.json`.
+12. **Ballpark** (2026-09-05) — 1–6 players, solo-capable. Estimation by bracket: commit a low and a high, priced by ratio, with a calibration read at the end. 120 questions over 3 packs.
+13. **Echo** (2026-09-05) — 2–6 players. Recite a growing chain from a 16-tile board, then choose the next item to break the next player. 4 boards x 16 items.
+14. **The Forecast** (Compatibility Test) — 3 modes (friends / couples / bunny), 30 Qs each. Adult-gated.
+15. **Imposter** — pass-and-play deduction.
 
 ### Coming Soon tab (in `comingSoonGameIds` in `App.tsx`)
 WILTY, Icebreakers, Mini Mafia (The Traitors), Would You Rather. Order in that tab is driven by `comingSoonGameIds.map()`, not by their position in `GAMES`.
