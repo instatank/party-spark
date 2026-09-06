@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-09-06 (**Multiplayer rooms** shipped — `api/room.ts` + `api/_lib/roomStore.ts` + `src/services/roomService.ts` + `src/services/seededRandom.ts` + `src/components/ui/RoomPanel.tsx`, the app's FIRST server-side state and first feature that does not work offline. Two games are wired: **Scramble head-to-head** (`versus` mode) and **Ballpark live** (blind simultaneous brackets). Guarded in CI by `tests/roomSync.test.ts` (THE ROOM INVARIANT) and out of CI by two *two-browser* drives, `scripts/drive-versus.mjs` and `scripts/drive-ballpark-live.mjs`, plus `scripts/serve-with-api.mjs` because `vite preview` does not run `/api/*`. **Requires a Redis store provisioned on Vercel** — see Multiplayer below. Previously: **The Line** shipped as a top-level Home game — `TheLineGame.tsx` + `src/services/lineEngine.ts` + `src/data/the_line.json`, held by `tests/lineEngine.test.ts`.)
+> **Last reconciled with code:** 2026-09-06 (**Multiplayer rooms** shipped — `api/room.ts` + `api/_lib/roomStore.ts` + `src/services/roomService.ts` + `src/services/seededRandom.ts` + `src/components/ui/RoomPanel.tsx`, the app's FIRST server-side state and first feature that does not work offline. **Four games are wired**: Scramble head-to-head, Ballpark live (blind simultaneous brackets), Target live (same six numbers, same clock) and The Line live (turn-based via a replayed move log — the only one where hands are genuinely private). Guarded in CI by `tests/roomSync.test.ts` (THE ROOM INVARIANT) and out of CI by four *two-browser* drives plus `scripts/serve-with-api.mjs`, because `vite preview` does not run `/api/*`. **Requires a Redis store provisioned on Vercel** — see Multiplayer below.)
 >
 If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 >
@@ -194,8 +194,51 @@ round gate.
   watched somebody think. Session dedupe is deliberately **skipped** in live
   play: it reads this device's localStorage, so two phones would filter
   different questions out of the pack and deal different games from one seed.
+- **Target → Race on separate phones**. Five rounds; `dealPuzzle` runs its own
+  search from the shared seed on each device, so every phone independently
+  arrives at the same six numbers, target *and* solution. The live ticker
+  publishes **distance, never the number** — "Priya is 2 away" is pressure, the
+  number would hand over part of the answer. An exact hit ends a turn early, so
+  the reveal gate is load-bearing: the solution stays hidden until everyone is
+  done.
+- **The Line → Play on separate phones**. The only game where separate phones do
+  something pass-and-play physically cannot: **your hand stays yours**. See the
+  turn-based pattern below — it is the one wired game that needs more than a
+  seed.
 
-### Wiring a third game
+### Turn-based games: replay a move log (The Line)
+
+Three of the four wired games are simultaneous — everyone acts at once and only
+results are exchanged. The Line is turn-based, so the board depends on what
+people **did**, not only on what was dealt, and a seed alone is not enough.
+
+It still needs no authoritative server. The deal is deterministic, `placeCard`
+is a pure function, and turns rotate strictly, so:
+
+- each move is published as **(global turn number → cardIdx, gap)**;
+- only the player whose turn it is writes turn N (still one writer per key);
+- every device merges the move maps into one turn-indexed log and replays it.
+
+Two properties fall out for free, and are worth copying for any future
+turn-based game:
+
+- **Whose turn it is is derived**, not announced: `turnCount % players`. Nothing
+  broadcasts it and no two devices can disagree about it.
+- **The ending is derived too.** `winnerSeat()` is a property of the replayed
+  board, so every phone reaches it alone. This is the one game with no "host
+  finished but nobody told the guests" bug to have — a failure both Ballpark and
+  Target needed explicit `phase: 'END'` handling for.
+
+The replay **must refuse to move the board backwards** past what the device has
+already applied, or a move made optimistically under the player's thumb gets
+yanked back out by a poll that has not seen it yet.
+
+Hand privacy is **UI-level, not cryptographic** — every device can compute every
+hand from the deterministic deal. That matches the rest of the room layer
+(scoring is already client-authoritative among friends) and is stated in the
+code rather than implied. Don't market it as secrecy.
+
+### Wiring another game
 
 1. Add a stage/mode for the room, render `<RoomPanel>` from it.
 2. On `onStart(session, room)`, derive content from `room.meta.seed` (+
@@ -206,7 +249,12 @@ round gate.
    reacts to the change arriving on a poll. **Two devices advancing
    independently is how a room ends up on two different questions.**
 5. Ending is a ROOM event, not a local one, and leaving must free the seat —
-   both were real bugs (notes/11).
+   both were real bugs (notes/11). Turn-based games get both for free from the
+   replayed log; simultaneous ones must signal `phase: 'END'` explicitly.
+6. **Put the room screen ABOVE any `if (!state) return null` guard.** The lobby
+   runs before anything is dealt, so a room stage below that guard renders a
+   silent blank page — React returning null looks exactly like a component that
+   meant to. This bit both Target and The Line (notes/12).
 
 ### Constraints
 
@@ -387,7 +435,7 @@ The basic / env-var-switched mode was simplified out once advanced was validated
 - **Local build:** `npm run build` (runs `tsc -b && vite build`)
 - **Tests:** `npm test` → vitest render smoke test (`tests/App.smoke.test.tsx`: splash → home menu through the real module graph; jsdom, fetch/matchMedia stubbed in `tests/setup.ts`) + the Shortlist, Target and The Line engine invariants + THE ROOM INVARIANT (`tests/roomSync.test.ts`). Config in `vitest.config.ts` (deliberately separate from `vite.config.ts`).
 - **CI:** `.github/workflows/ci.yml` — on push to `main` + PRs: `npm ci`, `npm run build`, `npm test`. **Lint is NOT in CI** — `npm run lint` currently fails with 62 pre-existing errors (mostly `no-explicit-any` and `react-refresh/only-export-components`); add it back once that debt is paid.
-- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens the 18 Play Now games headless — all 22 with `--tabs` — and fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) and `scripts/drive-the-tell.mjs` (plays a full 12-round game of The Tell and asserts every outcome branch) and `scripts/drive-nerve.mjs` (plays a best-of-3 of Nerve and asserts the ladder-escalation invariant) and `scripts/drive-house-rules.mjs` (plays a 9-law session and checks the app's scoring against an independently-computed tally) and `scripts/drive-ballpark.mjs` (a 3-player and a solo game, every expected score recomputed from the JSON) and `scripts/drive-echo.mjs` (asserts the chain-growth invariant at every replay) and `scripts/drive-shortlist.mjs` (re-derives every clue's meaning from the JSON rather than trusting the screen) and `scripts/drive-target.mjs` (re-solves every dealt board itself and replays the app's printed solution back through the UI) and `scripts/drive-the-line.mjs` (checks the rendered line rises by the JSON's values on every single turn, that the piles partition, and that no hand card leaks its number) and the two **two-browser** multiplayer drives `scripts/drive-versus.mjs` + `scripts/drive-ballpark-live.mjs` (which need `node scripts/serve-with-api.mjs 4173` instead of `vite preview`, since preview does not run `/api/*`) against — the last three draw randomised content, so run them a few times — `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code.
+- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens the 18 Play Now games headless — all 22 with `--tabs` — and fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) and `scripts/drive-the-tell.mjs` (plays a full 12-round game of The Tell and asserts every outcome branch) and `scripts/drive-nerve.mjs` (plays a best-of-3 of Nerve and asserts the ladder-escalation invariant) and `scripts/drive-house-rules.mjs` (plays a 9-law session and checks the app's scoring against an independently-computed tally) and `scripts/drive-ballpark.mjs` (a 3-player and a solo game, every expected score recomputed from the JSON) and `scripts/drive-echo.mjs` (asserts the chain-growth invariant at every replay) and `scripts/drive-shortlist.mjs` (re-derives every clue's meaning from the JSON rather than trusting the screen) and `scripts/drive-target.mjs` (re-solves every dealt board itself and replays the app's printed solution back through the UI) and `scripts/drive-the-line.mjs` (checks the rendered line rises by the JSON's values on every single turn, that the piles partition, and that no hand card leaks its number) and the four **two-browser** multiplayer drives `scripts/drive-versus.mjs` + `scripts/drive-ballpark-live.mjs` + `scripts/drive-target-live.mjs` + `scripts/drive-the-line-live.mjs` (which all need `node scripts/serve-with-api.mjs 4173` instead of `vite preview`, since preview does not run `/api/*`) against — the last three draw randomised content, so run them a few times — `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code.
 - **Deployment target:** Vercel, auto-triggered by `git push`
 - **Preview URL format:** `party-spark-git-{branch-slug}-{scope}.vercel.app` (has "Deployment Protection" enabled — you'll see a 401 on manifest.json that can be ignored)
 - **Production URL:** set by the user's Vercel project config (deployed from `main`)
@@ -419,7 +467,7 @@ Reconciled against code 2026-07-02. Several items from the 2026-04-21 audit were
 
 2. **NHIE has no Claude fallback yet.** `generateNeverHaveIEver` is Gemini-only. Same quota vulnerability TOD/MLT had before the port.
 
-3. **Multiplayer needs a Redis store provisioned on Vercel.** Until then `/api/room` falls back to an in-process Map, which cannot work across serverless instances — two phones in "the same" room never see each other, and the lobby shows an amber warning saying so. Browser steps in the Multiplayer section above. Also: only Scramble and Ballpark are wired; Target and The Line are the obvious next two (both already take an injectable `rnd`).
+3. **Multiplayer needs a Redis store provisioned on Vercel.** Until then `/api/room` falls back to an in-process Map, which cannot work across serverless instances — two phones in "the same" room never see each other, and the lobby shows an amber warning saying so. Browser steps in the Multiplayer section above. Four games are wired (Scramble, Ballpark, Target, The Line); Echo is the natural next one — it is turn-based, so it follows The Line's move-log pattern rather than the seed-only one.
 
 4. **`npm run lint` fails with 62 pre-existing errors** (`no-explicit-any` in data-loading code, `react-refresh/only-export-components` in contexts/UI). Lint is therefore excluded from CI. Pay this down, then add `npm run lint` to `.github/workflows/ci.yml`.
 
