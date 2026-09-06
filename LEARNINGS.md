@@ -140,3 +140,11 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (pending — answer at next wrap)
 - Quiz question: A "pin the footer to the bottom" layout looks fine on twenty screens. What kind of screen finally proves it was never working, and why would clicking tests still pass?
 - Internalized: no
+
+### 2026-09-06 — The test looked for a button labelled "NEW" and the button was labelled "NEW6"
+- What happened: the six newest games moved behind a NEW tab on the home screen, so every browser drive that opens one of them now has to click that tab first. I taught the drives to find it by its text — "starts with the word new". The tab's actual text is `NEW` followed by a little count badge reading `6`, and the browser hands both back glued together as "NEW6", so "starts with the word new" never matched: the word never ends. Nine scripts, all wrong the same way. A two-minute headless run came back with six games flatly "did not open", which reads like the feature is broken rather than the test. Then I lost a second full run to a different self-inflicted wound: I fixed the code but drove the *previous* build, because the drives play the compiled folder on disk, not the source.
+- Concept: this is the July 6th "Scramble" card again from the other end. That one said stop matching on resemblance; this one says the replacement can't be a cleverer text pattern either, because visible text is decoration — copy changes, a badge appears, a designer wraps it in caps — and every one of those is a legitimate change that must not break the test suite. The durable fix is to put a stable hook in the app itself (here `aria-label="New games"`, which the screen reader wanted anyway) and have the tests aim at that: one thing to change if the label ever moves, instead of nine. The second lesson is smaller and purely mechanical: when the test drives a build artefact rather than source, "did I rebuild?" is part of the test, and a red run whose first suspect isn't the code should send you to check what you actually ran.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: A test finds a button by its visible text. Name two ordinary, correct UI changes that would break it while the app still works perfectly — and what should the test aim at instead?
+- Internalized: no

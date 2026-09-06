@@ -18,14 +18,18 @@ const DEEP = process.argv.includes('--deep');
 const HOME_GAMES = [
   'Charades', 'Taboo', 'Roast Me', 'Imposter',
   'Most Likely To', 'Never Have I Ever', 'Fact or Fiction', 'The Forecast',
-  'Truth or Drink', '5 Alive', 'Linked', 'Scramble', 'House Rules',
-  'Ballpark', 'Echo', 'Shortlist', 'Target', 'The Line',
+  'Truth or Drink', '5 Alive', 'Linked', 'Scramble',
 ];
+// Behind the home screen's NEW tab (NEW_GAME_IDS in App.tsx) — one extra
+// click before the card exists in the DOM.
+const NEW_GAMES = ['The Line', 'Target', 'Shortlist', 'Echo', 'Ballpark', 'House Rules'];
 const COMING_SOON_GAMES = ['Would I Lie To You', 'Icebreakers', 'The Traitors', 'Would You Rather'];
 const WITH_TABS = process.argv.includes('--tabs');
-const GAMES = WITH_TABS
-  ? [...HOME_GAMES.map(t => ({ t, tab: false })), ...COMING_SOON_GAMES.map(t => ({ t, tab: true }))]
-  : HOME_GAMES.map(t => ({ t, tab: false }));
+const GAMES = [
+  ...HOME_GAMES.map(t => ({ t, tab: null })),
+  ...NEW_GAMES.map(t => ({ t, tab: 'new' })),
+  ...(WITH_TABS ? COMING_SOON_GAMES.map(t => ({ t, tab: 'comingSoon' })) : []),
+];
 
 // External resources (Google Fonts) are unreachable from this sandbox — their
 // failures are environmental, not app bugs. localhost failures always count.
@@ -77,13 +81,25 @@ const clickByText = async (page, selector, text) => {
   if (!ok) throw new Error(`clickByText failed: ${selector} "${text}"`);
 };
 
+// The NEW tab is matched by aria-label — its visible label is an icon +
+// "NEW" + a count badge.
+const clickNewTab = async (page) => {
+  const ok = await page.evaluate(() => {
+    const el = document.querySelector('button[aria-label="New games"]');
+    if (el) { el.click(); return true; }
+    return false;
+  });
+  if (!ok) throw new Error('clickNewTab failed: no NEW tab on home');
+};
+
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 for (const { t: title, tab } of GAMES) {
   const { page, errors } = await freshPage();
   try {
     await toHome(page);
-    if (tab) { await clickByText(page, 'button', 'Coming Soon'); await sleep(400); }
+    if (tab === 'comingSoon') { await clickByText(page, 'button', 'Coming Soon'); await sleep(400); }
+    if (tab === 'new') { await clickNewTab(page); await sleep(400); }
     // open the game card (h3 title inside .game-card)
     await clickByText(page, '.game-card h3', title);
     await sleep(2000); // lazy chunk load + first screen render
