@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Shuffle, Delete, Plus, ArrowRight, User, Users, Check, X, CalendarDays, Share2, Image as ImageIcon } from 'lucide-react';
+import { Shuffle, Delete, Plus, ArrowRight, User, Users, Check, X, CalendarDays, Share2, Image as ImageIcon, Swords } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
 import {
@@ -16,11 +16,21 @@ import { dayLabel, dailySetIndex, dailyStore, buildDailyShareText, type DailyRes
 import { shouldAutoExpandRules } from '../../services/firstPlay';
 import { useCountdown } from '../../hooks/useCountdown';
 import { hapticSuccess, hapticError, hapticHeavy } from '../../services/haptics';
+import RoomPanel from '../ui/RoomPanel';
+import { useRoom, msUntil, stateForRound, leaveRoom, type Room, type RoomSession } from '../../services/roomService';
+import { mulberry32, roundSeed } from '../../services/seededRandom';
 
 interface Props { onExit: () => void; }
 
-type GameMode = 'solo' | 'multi' | 'daily';
-type GameState = 'MODE_SELECT' | 'DIFFICULTY_SELECT' | 'SETUP' | 'READY' | 'PASS_TO_NEXT' | 'TIMER_ACTIVE' | 'END' | 'DAILY_RESULT';
+type GameMode = 'solo' | 'multi' | 'daily' | 'versus';
+type GameState = 'MODE_SELECT' | 'DIFFICULTY_SELECT' | 'SETUP' | 'ROOM' | 'READY' | 'PASS_TO_NEXT' | 'TIMER_ACTIVE' | 'END' | 'DAILY_RESULT';
+
+// Head-to-head scores RAW, unlike Pass and Play's unique-word rule. The live
+// ticker showing your opponent's score is the whole point of the mode, and a
+// number that silently reprices itself at the buzzer (because you both found
+// CRANE) would make that ticker a lie for 60 seconds. Shared words are still
+// surfaced on the end screen — as a stat, not as scoring.
+const VERSUS_ACCENT = '#38BDF8';   // sky — distinct from solo teal / daily gold
 
 interface FoundWord { word: string; points: number; pangram: boolean }
 interface PlayerResult { name: string; words: string[] }
@@ -112,6 +122,12 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const [playerIndex, setPlayerIndex] = useState(0);
     const [results, setResults] = useState<PlayerResult[]>([]);
 
+    // Head-to-head state. `session` is null until a room actually starts, which
+    // is also what stops this component and RoomPanel from both polling.
+    const [session, setSession] = useState<RoomSession | null>(null);
+    const [versusMs, setVersusMs] = useState(0);   // ms left when THIS phone started
+    const room = useRoom(session, ['PLAY']);
+
     const answerIndex = useRef<Set<string>>(new Set());
     const foundSet = useRef<Set<string>>(new Set());
     const seenSets = useRef<Set<string>>(new Set());      // session dedupe
@@ -143,9 +159,13 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     }, []);
 
     // ---- timer (shared RAF countdown) ----
+    // In head-to-head the countdown is seeded with the time left until the
+    // room's shared deadline AT THE MOMENT THIS PHONE STARTED — not with the
+    // round length. A phone that entered a second late starts at 59s, not 60,
+    // so both buzzers land on the same instant however staggered the starts.
     const { remainingMs } = useCountdown({
         running: gameState === 'TIMER_ACTIVE',
-        durationMs: totalSeconds * 1000,
+        durationMs: mode === 'versus' ? versusMs : totalSeconds * 1000,
         restartKey: playerIndex,
         onSecond: (s) => { if (s <= 3 && s >= 1) playTickSoft(); },
         onExpire: () => { playBuzzEnd(); hapticHeavy(); endRound(); },
@@ -225,6 +245,62 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         setGameState('TIMER_ACTIVE');
     };
 
+    // Every player's head-to-head standing, newest poll. Reads through
+    // stateForRound so a payload left over from a previous round can never be
+    // mistaken for an answer to this one.
+    interface VersusRow { id: string; name: string; score: number; words: string[]; done: boolean; me: boolean }
+    const versusRows = (): VersusRow[] => {
+        const r = room.room;
+        if (!r) return [];
+        return r.players
+            .map(p => {
+                const st = stateForRound(p, r.meta.round);
+                return {
+                    id: p.id,
+                    name: p.name,
+                    score: Number(st.score ?? 0),
+                    words: Array.isArray(st.words) ? (st.words as string[]) : [],
+                    done: Boolean(st.done),
+                    me: p.id === session?.playerId,
+                };
+            })
+            .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+    };
+
+    // Head-to-head. Nothing about the puzzle travels over the network: both
+    // phones hold the same pack already, so the room's seed picks the same
+    // index out of it on every device. The wire carries a 4-byte integer.
+    const startVersus = async (s: RoomSession, r: Room) => {
+        unlockAudio();
+        const pack = packRef.current ?? await loadJumblePack();
+        packRef.current = pack;
+        const diff = (r.meta.config.difficulty as JumbleDifficulty) ?? 'easy';
+        const rnd = mulberry32(roundSeed(r.meta.seed, r.meta.round));
+        const chosen = setAtIndex(pack, diff, Math.floor(rnd() * poolSize(pack, diff)));
+        setDifficulty(diff);
+        applySet(chosen);
+        resetTurnState();
+        setVersusMs(msUntil(r.meta.deadlineAt));
+        versusRoundRef.current = r.meta.round;
+        setSession(s);
+        setMode('versus');
+        setGameState('TIMER_ACTIVE');
+    };
+
+    // A guest sitting on the end screen has no other way to learn that the host
+    // dealt again — there is no "go" message, only the round number changing on
+    // a poll. Both host and guest take this same path into round N+1, so they
+    // cannot end up on different rounds.
+    const versusRoundRef = useRef(0);
+    useEffect(() => {
+        if (mode !== 'versus' || !session) return;
+        const r = room.room;
+        if (!r || r.meta.phase !== 'PLAY' || r.meta.round === versusRoundRef.current) return;
+        versusRoundRef.current = r.meta.round;
+        void startVersus(session, r);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [room.room, mode, session]);
+
     // Multiplayer: one shared set + timer for everyone. Pick the set once, then
     // loop players through PASS_TO_NEXT → TIMER_ACTIVE.
     const beginMultiGame = async () => {
@@ -252,6 +328,17 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     const playAgain = () => { if (mode === 'multi') beginMultiGame(); else if (mode === 'solo') startSolo(); };
 
     const endRound = () => {
+        if (mode === 'versus') {
+            const words = [...foundSet.current];
+            const finalScore = words.reduce((sum, w) => sum + scoreForWord(w), 0);
+            setScore(finalScore);
+            // Post the final tally before showing the end screen. The opponent's
+            // screen is waiting on exactly this flag to stop saying "still
+            // playing", so it is the one patch worth not batching.
+            if (session) void room.patch({ score: finalScore, words, done: true });
+            setGameState('END');
+            return;
+        }
         if (mode === 'multi') {
             const entry: PlayerResult = {
                 name: (players[playerIndex] || '').trim() || `Player ${playerIndex + 1}`,
@@ -291,7 +378,18 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         if (recordedRef.current) return;
         recordedRef.current = true;
         statsStore.recordPlay('JUMBLE');
-        if (mode === 'multi') {
+        if (mode === 'versus') {
+            // Only record once every phone has reported in, otherwise a fast
+            // finisher would bank a "win" against an opponent still typing.
+            const rows = versusRows();
+            if (rows.length && rows.every(r => r.done)) {
+                const top = rows[0].score;
+                if (top > 0) statsStore.recordWins('JUMBLE', rows.filter(r => r.score === top).map(r => r.name));
+                gameNightService.reportResult('JUMBLE', rows.map(r => ({ name: r.name, score: r.score })));
+            } else {
+                recordedRef.current = false;   // try again on the next poll
+            }
+        } else if (mode === 'multi') {
             const { detail } = computeMultiDetail(results);
             const top = detail[0]?.score ?? 0;
             if (top > 0) statsStore.recordWins('JUMBLE', detail.filter(d => d.score === top).map(d => d.name));
@@ -303,7 +401,8 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
         } else {
             statsStore.recordBest('JUMBLE', score, `${score} pts · ${difficulty === 'hard' ? 'Hard' : 'Easy'}`);
         }
-    }, [gameState, mode, results, score, found, difficulty]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gameState, mode, results, score, found, difficulty, room.room]);
 
     // Player-setup field handlers (multiplayer SETUP screen).
     const addPlayer = () => { if (players.length < MAX_PLAYERS) setPlayers([...players, '']); };
@@ -323,6 +422,13 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             foundSet.current.add(res.word);
             setFound(prev => [{ word: res.word, points: res.points, pangram: res.isPangram }, ...prev]);
             setScore(s => s + res.points);
+            // Head-to-head: push the running total so the opponent's ticker
+            // moves. Derived from the ref rather than the score state, which
+            // has not applied yet at this point in the handler.
+            if (mode === 'versus' && session) {
+                const running = [...foundSet.current].reduce((sum, w) => sum + scoreForWord(w), 0);
+                void room.patch({ score: running, words: [...foundSet.current] });
+            }
             if (res.isPangram) {
                 playPangram();
                 hapticHeavy();
@@ -448,7 +554,8 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                             <p><strong className="text-teal-500">2. WORDS:</strong> 4+ letters only. Longer words score more — a 7-letter word (a <strong className="text-ink">pangram</strong>) is the jackpot.</p>
                             <p><strong className="text-amber-500">3. HARD MODE:</strong> every word must include the highlighted <strong style={{ color: CENTER }}>center letter</strong>. Easy uses any of the 7.</p>
                             <p><strong className="text-violet-500">4. PLAY:</strong> Go <strong className="text-ink">Solo</strong> to beat your best, or <strong className="text-ink">Pass and Play</strong> — everyone gets the same letters and the most <em>unique</em> words wins (shared words cancel).</p>
-                            <p><strong className="text-gold">5. DAILY:</strong> one shared puzzle a day — the same letters for everyone, one attempt, 60 seconds. Keep the streak alive.</p>
+                            <p><strong className="text-sky-500">5. HEAD-TO-HEAD:</strong> two phones, one room code. Same letters, same clock, and you watch each other's score climb live. Highest total wins — everything counts, nothing cancels.</p>
+                            <p><strong className="text-gold">6. DAILY:</strong> one shared puzzle a day — the same letters for everyone, one attempt, 60 seconds. Keep the streak alive.</p>
                         </div>
                     )}
                 </div>
@@ -467,6 +574,9 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                             onClick={() => { setMode('solo'); setGameState('DIFFICULTY_SELECT'); }} disabled={loading} />
                         <ModeTile Icon={Users} title="Pass and Play" tagline="Same letters — most unique words wins." color="#8B5CF6"
                             onClick={() => { setMode('multi'); setGameState('DIFFICULTY_SELECT'); }} disabled={loading} />
+                        <ModeTile Icon={Swords} title="Head-to-head" tagline="Two phones, same letters, same clock." color={VERSUS_ACCENT}
+                            badge="Needs internet"
+                            onClick={() => { setMode('versus'); setGameState('DIFFICULTY_SELECT'); }} disabled={loading} />
                     </div>
                     {loading && <p className="text-center text-xs text-muted mt-4">Loading puzzles…</p>}
                 </div>
@@ -480,14 +590,19 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Pick a Level" onBack={() => setGameState('MODE_SELECT')} onHome={onExit} />
                 <div className="flex justify-center mb-4">
-                    <TimerSetting duration={duration} onPick={onPickTimer} accent={ACCENT} />
+                    <TimerSetting duration={duration} onPick={onPickTimer} accent={mode === 'versus' ? VERSUS_ACCENT : ACCENT} />
                 </div>
+                {mode === 'versus' && (
+                    <p className="text-center text-xs text-muted mb-3 max-w-[300px] mx-auto">
+                        These are your settings if you start the room. Join someone else's and theirs win.
+                    </p>
+                )}
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {DIFFICULTY_TILES.map(t => {
                             const Icon = t.Icon;
                             return (
-                                <button key={t.id} onClick={() => { setDifficulty(t.id); setGameState(mode === 'multi' ? 'SETUP' : 'READY'); }}
+                                <button key={t.id} onClick={() => { setDifficulty(t.id); setGameState(mode === 'multi' ? 'SETUP' : mode === 'versus' ? 'ROOM' : 'READY'); }}
                                     className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer">
                                     <div className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden">
                                         <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]" style={{ background: t.color }} />
@@ -505,6 +620,28 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
                             );
                         })}
                     </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ---- ROOM (head-to-head lobby) ----
+    if (gameState === 'ROOM') {
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Head-to-head" onBack={() => setGameState('DIFFICULTY_SELECT')} onHome={onExit} />
+                <div className="flex-1 overflow-y-auto pb-8 px-2">
+                    <RoomPanel
+                        game="JUMBLE"
+                        title="Same letters, live"
+                        blurb="One of you starts a room and reads out the code. Everyone plays the same 7 letters on the same clock, on their own phone."
+                        accent="gold"
+                        config={{ difficulty, durationSecs: duration }}
+                        startDurationMs={duration * 1000}
+                        minPlayers={2}
+                        onStart={(s, r) => { void startVersus(s, r); }}
+                        onCancel={() => setGameState('DIFFICULTY_SELECT')}
+                    />
                 </div>
             </div>
         );
@@ -657,6 +794,120 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
     }
 
     // ---- END (multiplayer leaderboard — unique-word scoring) ----
+    // ---- END (head-to-head) ----
+    if (gameState === 'END' && mode === 'versus') {
+        const rows = versusRows();
+        const mine = rows.find(r => r.me);
+        const waiting = rows.filter(r => !r.done);
+        const settled = rows.length > 0 && waiting.length === 0;
+        const top = rows[0]?.score ?? 0;
+        const winners = rows.filter(r => r.score === top && top > 0);
+        // Words more than one player found. Not scoring — head-to-head counts
+        // everything — but it is the most-argued-about fact of the round.
+        const shared = (() => {
+            const seen = new Map<string, number>();
+            rows.forEach(r => new Set(r.words).forEach(w => seen.set(w, (seen.get(w) ?? 0) + 1)));
+            return [...seen.entries()].filter(([, n]) => n > 1).map(([w]) => w).sort(byLenThenAlpha);
+        })();
+        // eslint-disable-next-line react-hooks/refs
+        const summary = set ? summarizeMisses(set, foundSet.current) : null;
+
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title={settled ? 'Result' : 'Time!'} onBack={() => { if (session) void leaveRoom(session.code, session.playerId); setSession(null); setGameState('MODE_SELECT'); }} onHome={onExit} />
+                <div className="flex-1 overflow-y-auto pb-8 px-2">
+                    <div className="text-center mb-5">
+                        {settled ? (
+                            <>
+                                <p className="text-3xl mb-1">{winners.some(w => w.me) ? '🏆' : '🔠'}</p>
+                                <h2 className="text-xl font-serif font-bold text-ink">
+                                    {top === 0 ? 'Nobody scored.'
+                                        : winners.length > 1 ? "It's a dead heat."
+                                        : winners[0].me ? 'You win.' : `${winners[0].name} wins.`}
+                                </h2>
+                            </>
+                        ) : (
+                            <>
+                                <p className="text-3xl mb-1">⏳</p>
+                                <h2 className="text-xl font-serif font-bold text-ink">Your round is done</h2>
+                                <p className="text-sm text-muted mt-1">
+                                    Still playing: {waiting.map(w => w.name).join(', ')}
+                                </p>
+                            </>
+                        )}
+                    </div>
+
+                    <div className="grid gap-2 max-w-[340px] mx-auto w-full mb-6">
+                        {rows.map(r => {
+                            const isWinner = settled && top > 0 && r.score === top;
+                            return (
+                                <div key={r.id}
+                                    className={`flex items-center gap-3 rounded-xl py-3 px-4 border ${isWinner ? 'bg-sky-500/10 border-sky-500/50' : 'bg-surface border-divider'}`}>
+                                    <span className="text-ink font-bold flex-1 truncate">
+                                        {r.name}{r.me && <span className="text-muted font-normal"> (you)</span>}
+                                    </span>
+                                    {!r.done && <span className="text-[11px] text-muted">playing…</span>}
+                                    <span className="text-xs text-muted tabular-nums">{r.words.length}w</span>
+                                    <span className="text-2xl font-black tabular-nums" style={{ color: VERSUS_ACCENT }}>{r.score}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {settled && shared.length > 0 && (
+                        <Section title={`You both found (${shared.length})`}>
+                            <div className="flex flex-wrap gap-1.5">
+                                {shared.slice(0, 30).map(w => (
+                                    <span key={w} className="text-xs font-semibold px-2 py-1 rounded-md text-ink-soft bg-surface-alt border border-divider">{w}</span>
+                                ))}
+                            </div>
+                        </Section>
+                    )}
+
+                    {mine && mine.words.length > 0 && (
+                        <Section title={`Your words (${mine.words.length})`}>
+                            <div className="flex flex-wrap gap-1.5">
+                                {found.map(f => (
+                                    <span key={f.word} className={`text-xs font-bold px-2 py-1 rounded-md ${f.pangram ? 'text-white' : 'text-ink bg-surface-alt border border-divider'}`}
+                                        style={f.pangram ? { background: CENTER } : undefined}>
+                                        {f.word} <span className="opacity-60">+{f.points}</span>
+                                    </span>
+                                ))}
+                            </div>
+                        </Section>
+                    )}
+
+                    {settled && summary && summary.topMisses.length > 0 && (
+                        <Section title={`Nobody found (${summary.topMisses.filter(w => !rows.some(r => r.words.includes(w))).length})`}>
+                            <div className="flex flex-wrap gap-1.5">
+                                {summary.topMisses.filter(w => !rows.some(r => r.words.includes(w))).slice(0, 30).map(w => (
+                                    <span key={w} className="text-xs font-semibold px-2 py-1 rounded-md text-ink-soft bg-surface-alt border border-divider">
+                                        {w} <span className="opacity-50">+{scoreForWord(w)}</span>
+                                    </span>
+                                ))}
+                            </div>
+                        </Section>
+                    )}
+
+                    <div className="max-w-[340px] mx-auto w-full mt-6 flex flex-col gap-3">
+                        {room.isHost && settled && (
+                            <Button fullWidth onClick={() => { void room.host({ phase: 'PLAY', round: (room.room?.meta.round ?? 1) + 1, durationMs: duration * 1000 }); }}>
+                                New letters, same room
+                            </Button>
+                        )}
+                        {!room.isHost && settled && (
+                            <p className="text-center text-xs text-muted">The host can deal a fresh round.</p>
+                        )}
+                        <button onClick={() => { if (session) void leaveRoom(session.code, session.playerId); setSession(null); setGameState('MODE_SELECT'); }}
+                            className="w-full py-3 rounded-xl font-bold text-sm text-muted hover:text-ink border border-divider transition-colors">
+                            Leave room
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     if (gameState === 'END' && mode === 'multi') {
         // A word scores for a player only if no one else found it (Boggle rule).
         const { detail, counts } = computeMultiDetail(results);
@@ -934,6 +1185,25 @@ export const JumbleGame: React.FC<Props> = ({ onExit }) => {
             <ScreenHeader title="Scramble" onBack={onExit} onHome={onExit} confirmOnExit />
 
             <div className="px-2 flex-1 flex flex-col min-h-0">
+                {/* Head-to-head: the opponents' live scores. This strip IS the
+                    mode — without it two people are just playing solo in the
+                    same room. Roughly a second behind, which is invisible for a
+                    number whose job is to apply pressure, not to be audited. */}
+                {mode === 'versus' && (
+                    <div className="flex items-center gap-2 mb-1.5 mt-1 overflow-x-auto">
+                        {versusRows().filter(r => !r.me).map(r => (
+                            <div key={r.id}
+                                className="flex items-center gap-2 bg-surface-alt border border-divider rounded-lg px-2.5 py-1.5 shrink-0">
+                                <span className="text-[11px] font-semibold text-ink-soft truncate max-w-[90px]">{r.name}</span>
+                                <span className="text-sm font-black tabular-nums" style={{ color: VERSUS_ACCENT }}>{r.score}</span>
+                            </div>
+                        ))}
+                        {room.offline && (
+                            <span className="text-[11px] text-rose-500 shrink-0">reconnecting…</span>
+                        )}
+                    </div>
+                )}
+
                 {/* Themed stage card — PartySpark play-card family (Taboo / TOD /
                     NHIE): surface card, accent blob, header pill, italic footer. */}
                 <div

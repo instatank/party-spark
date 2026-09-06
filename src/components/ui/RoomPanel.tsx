@@ -29,6 +29,12 @@ interface RoomPanelProps {
     /** Host's chosen settings, stashed on the room so guests inherit them. */
     config?: Record<string, unknown>;
     minPlayers?: number;
+    /** Round length the host is starting. Sent as a DURATION so the server
+     *  stamps the deadline — see the clock-skew note in roomService.ts. */
+    startDurationMs?: number;
+    /** Extra controls for the host only (difficulty pickers, timer chips).
+     *  Guests inherit the host's config and so must not see them. */
+    hostControls?: React.ReactNode;
     /** Fires once the host starts — the room has left LOBBY. */
     onStart: (session: RoomSession, room: Room) => void;
     onCancel: () => void;
@@ -47,7 +53,8 @@ const ACCENT: Record<RoomAccent, { text: string; ring: string; chip: string; bar
 const NAME_KEY = 'partyspark_room_name';
 
 const RoomPanel: React.FC<RoomPanelProps> = ({
-    game, title, blurb, accent, config = {}, minPlayers = 2, onStart, onCancel,
+    game, title, blurb, accent, config = {}, minPlayers = 2,
+    startDurationMs, hostControls, onStart, onCancel,
 }) => {
     const a = ACCENT[accent];
     const [session, setSession] = useState<RoomSession | null>(null);
@@ -118,7 +125,7 @@ const RoomPanel: React.FC<RoomPanelProps> = ({
     const doStart = async () => {
         if (!room || room.players.length < minPlayers) return;
         hapticLight();
-        await host({ phase: 'PLAY', round: 1 });
+        await host({ phase: 'PLAY', round: 1, durationMs: startDurationMs ?? null });
     };
 
     const copyCode = async () => {
@@ -189,6 +196,8 @@ const RoomPanel: React.FC<RoomPanelProps> = ({
                     </p>
                 )}
                 {error && !offline && <p className="text-xs text-muted mb-4">{error}</p>}
+
+                {isHost && hostControls && <div className="mb-4">{hostControls}</div>}
 
                 {isHost ? (
                     <Button fullWidth onClick={doStart} disabled={!enough}>
