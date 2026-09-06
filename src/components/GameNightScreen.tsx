@@ -47,6 +47,7 @@ const ELIGIBLE_GAME_IDS: GameType[] = [
     GameType.ECHO,
     GameType.SHORTLIST,
     GameType.TARGET,
+    GameType.THE_LINE,
 ];
 
 const ELIGIBLE_GAMES = ELIGIBLE_GAME_IDS
