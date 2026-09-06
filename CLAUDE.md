@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-09-06 (**The Line** shipped as a top-level Home game — `TheLineGame.tsx` + `src/services/lineEngine.ts` + `src/data/the_line.json`, the roster's sequencing gap and its first game where a player never states a number at all, only a position. The engine holds THE LINE INVARIANT on the result of *every* mutation and is guarded in CI by `tests/lineEngine.test.ts`, which also pins the *distribution* (notes/07) — correct gaps must spread across the line, no fixed gap may be right more than a third of the time, and the starter must vary and never come from the deck's extremes. Also added `scripts/drive-the-line.mjs`, the `sequence` key to `getIcon`, `blue` as the game's accent, The Line to `scripts/drive-games.mjs` and to Game Night's eligible list, and the `lineFlip` / `lineGap` keyframes to `index.css`.)
+> **Last reconciled with code:** 2026-09-06 (**Multiplayer rooms** shipped — `api/room.ts` + `api/_lib/roomStore.ts` + `src/services/roomService.ts` + `src/services/seededRandom.ts` + `src/components/ui/RoomPanel.tsx`, the app's FIRST server-side state and first feature that does not work offline. Two games are wired: **Scramble head-to-head** (`versus` mode) and **Ballpark live** (blind simultaneous brackets). Guarded in CI by `tests/roomSync.test.ts` (THE ROOM INVARIANT) and out of CI by two *two-browser* drives, `scripts/drive-versus.mjs` and `scripts/drive-ballpark-live.mjs`, plus `scripts/serve-with-api.mjs` because `vite preview` does not run `/api/*`. **Requires a Redis store provisioned on Vercel** — see Multiplayer below. Previously: **The Line** shipped as a top-level Home game — `TheLineGame.tsx` + `src/services/lineEngine.ts` + `src/data/the_line.json`, held by `tests/lineEngine.test.ts`.)
 >
 If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 >
@@ -43,6 +43,7 @@ You are the lead developer and architect of **PartySpark**, a premium, AI-powere
 - `src/services/haptics.ts` — `hapticLight` / `hapticSuccess` / `hapticError` / `hapticHeavy` on `navigator.vibrate` (feature-checked; iOS Safari never supports it — Android/Chrome only). Wired at the same moments as sounds.
 - `src/components/ui/EndScreen.tsx` — the ranked-leaderboard end screen (winner tint + trophy, tie line, optional expandable row detail, Play Again/exit footer). Used by 5 Alive, Linked, Charades, Taboo. Fact or Fiction / Scramble / Truth or Drink end screens are structurally different and intentionally NOT on it — don't force them without a design pass.
 - `src/components/ui/TimerSetting.tsx` + `TeamRosterRow.tsx` — as before (see Design System).
+- `src/components/ui/RoomPanel.tsx` — the shared multiplayer front door: create or join a room by 4-digit code, then a lobby until the host starts. Owns the room lifecycle and **no game state**, which is what keeps wiring the next game cheap. Used by Scramble (head-to-head) and Ballpark (live). See the Multiplayer section.
 - `src/components/ui/SpinTheBottle.tsx` — the shared "who goes next?" decider. Circular table of name chips + a rotating bottle whose neck ends in an arrowhead; a sight-line ray fades in on landing so the target is unambiguous. **The winner is picked first (uniform random), then the rotation is solved backwards** to land inside that seat's sector with jitter — so the result can never disagree with where the arrow points. rAF ease-out over `spinMs` (default 5000), transform written straight to the DOM node (zero re-renders during the spin); wheel ticks fire on each seat-boundary crossing so the click cadence decelerates for free. Honours `prefers-reduced-motion` (1.2s, one turn). Props: `names`, `accent`, `mode` (`'single'` | `'pair'` — pair does two spins, who-asks → who-answers), `spinMs`, `onPick`, `ctaLabel`/`onCta`. Owns no game state and no storage. Fewer than 2 names falls back to an internal numbered-seat stepper (2–12) so it's testable without a roster.
 
   **Status: built, not yet baked in.** It currently lives only as a test screen inside Truth or Drink (`gameState === 'BOTTLE'`, tile on the category screen, amber `#F59E0B`). Wiring it into a game means calling it from that game's turn-advance path and seeding `turnIndex` from `onPick` — no changes to this component should be needed.
@@ -119,6 +120,114 @@ Cross-game retention + sharing systems. All localStorage, **no accounts, ever**;
 | **Daily Scramble** | `src/services/dailyChallenge.ts` + Daily mode in `JumbleGame` | Same date-seeded easy set for everyone (FNV hash of local date), 60s, one attempt/day, streak with ONE freeze/ISO-week, spoiler-free emoji-grid share. Home tile deep-links via sessionStorage `partyspark_open_daily`. |
 | **Lifetime stats** | `src/services/statsStore.ts` + `src/components/StatsScreen.tsx` (route `GameType.STATS`, trophy button on Home) | Plays / bests / wins-per-player-name across all scored games; backfills `jumble_best_*`. Two-tap reset. |
 | **First-play rules** | `src/services/firstPlay.ts` | Each game's How-To-Play auto-expands on first open (`useState(() => shouldAutoExpandRules('key'))`), collapsed forever after. |
+
+## 🔗 Multiplayer rooms (added 2026-09-06)
+
+Two or more phones playing the same game at the same time, joined by a 4-digit
+room code. **This is the only part of the app that needs a connection** — every
+other game stays fully offline, so multiplayer is always an opt-in branch off a
+game's setup screen and never sits on the default path.
+
+### The core idea: a shared seed, not a shared screen
+
+Room state is NOT a replica of anyone's UI. Two phones exchange a **seed** and a
+**per-player results inbox**, nothing else:
+
+- **Content never crosses the wire.** Every engine already accepts an injectable
+  `rnd: () => number` (`dealGame`, `dealPuzzle`, `buildCase`) or an index
+  (`setAtIndex`), because Daily Scramble and the invariant tests needed
+  determinism. `src/services/seededRandom.ts` (`mulberry32`, `seededShuffle`,
+  `roundSeed`) turns that into "both phones deal the identical puzzle from one
+  32-bit integer".
+- **Timers sync on a server-stamped DEADLINE, never a "go" message.** The client
+  asks for a duration; `api/room.ts` decides when it lands. Each client counts
+  down using a measured clock offset (`serverNow()` / `msUntil()` in
+  `roomService.ts`). A phone that hears about the round a second late, on a
+  device whose clock is minutes wrong, still buzzes at the same instant. **Never
+  accept an absolute deadline from a client** — that reintroduces exactly the
+  skew this design removes.
+
+### Key layout — one writer per key
+
+Room state is split so no two writers ever touch the same key:
+
+```
+room:{code}:meta          host only  (phase, round, seed, deadlineAt, config)
+room:{code}:members       Redis SET of player ids (SADD/SREM are atomic)
+room:{code}:p:{playerId}  that player only  (name + their state blob)
+```
+
+A single-document room would need read-modify-write, and two phones posting a
+score in the same tick would silently clobber one another. Partitioning by
+writer makes the lost update **unrepresentable** rather than merely unlikely —
+no locks, no WATCH/MULTI, no Lua. Don't "simplify" this back into one document.
+
+A new round does **not** clear anyone's state (the host would have to write keys
+it doesn't own). Instead every player doc carries `stateRound`; readers use
+`stateForRound(player, round)` and stale payloads are ignored. Cumulative fields
+(e.g. Ballpark's `total`) are read off `player.state` directly, outside the
+round gate.
+
+### Files
+
+| File | Purpose |
+|---|---|
+| `src/services/seededRandom.ts` | `mulberry32` / `seededShuffle` / `roundSeed` / `newSeed`. Not cryptographic — reproducible, not unguessable. |
+| `api/_lib/roomStore.ts` | Upstash Redis over REST, 3h TTL refreshed on every write. In-process `Map` fallback for `vercel dev` — `isPersistent()` reports which, and the lobby surfaces it. |
+| `api/_lib/roomSchemas.ts` | zod per action. Routes on **`action`**, not `type`, to sidestep the notes/01 dispatcher collision entirely. |
+| `api/room.ts` | `create` / `join` / `poll` / `patch` / `host` / `leave`. Every response carries the server's `now`. Host-only guard on `host`. |
+| `src/services/roomService.ts` | Transport + clock offset + `useRoom()` hook. **The whole network boundary** — swapping polling for websockets means reimplementing this file only. |
+| `src/components/ui/RoomPanel.tsx` | Shared create/join + lobby. Owns the room lifecycle, never game state — which is what keeps wiring the next game cheap. Props: `game`, `config`, `startDurationMs`, `hostControls`, `onStart`, `onCancel`. |
+
+### Wired games
+
+- **Scramble → Head-to-head** (`mode: 'versus'`). Same seven letters from the
+  seed, deadline-synced clock, opponent's score ticking live, shared end screen.
+  Scores **RAW**, unlike Pass and Play's unique-word rule — the live ticker is
+  the whole mode, and a number that silently repriced itself at the buzzer would
+  make it a lie for the whole round. Shared words appear on the end screen as a
+  stat, not as scoring.
+- **Ballpark → Play live on separate phones**. Everyone brackets **blind and
+  simultaneously**; the reveal waits for the entire room before the truth drops
+  onto the number line. This is what the signature screen was drawn for —
+  pass-and-play's HANDOFF means everyone after the first player has already
+  watched somebody think. Session dedupe is deliberately **skipped** in live
+  play: it reads this device's localStorage, so two phones would filter
+  different questions out of the pack and deal different games from one seed.
+
+### Wiring a third game
+
+1. Add a stage/mode for the room, render `<RoomPanel>` from it.
+2. On `onStart(session, room)`, derive content from `room.meta.seed` (+
+   `roundSeed` for multi-round) — never from `Math.random`, never from anything
+   in localStorage.
+3. `patch()` this player's result; read others via `stateForRound`.
+4. Only the host calls `host({ round })` / `host({ phase })`; everyone else
+   reacts to the change arriving on a poll. **Two devices advancing
+   independently is how a room ends up on two different questions.**
+5. Ending is a ROOM event, not a local one, and leaving must free the seat —
+   both were real bugs (notes/11).
+
+### Constraints
+
+- **Scoring is client-authoritative** and always will be. Anti-cheat among
+  friends in a room costs more than it protects. Nothing in `api/room.ts` is a
+  security boundary.
+- **No accounts, ever** (unchanged). A room holds a nickname and a score, and
+  everything expires on a 3h TTL, so there is no cleanup job to forget.
+- Multiplayer must **fail gracefully back to solo**. Never put it on a path a
+  player has to cross to reach an offline game.
+
+### ⚠️ Requires provisioning (browser step)
+
+Without a Redis store the server falls back to an in-process `Map`, which cannot
+work across serverless instances — two phones "in the same room" never see each
+other. The lobby shows an amber warning when this is the case. To fix, in the
+Vercel dashboard: **party-spark → Storage → Create Database → Upstash for Redis
+→ Connect**, then redeploy. The integration injects `UPSTASH_REDIS_REST_URL` +
+`UPSTASH_REDIS_REST_TOKEN` (the store also accepts the older `KV_REST_API_*`
+names). Free tier is far more than enough — a 2-player, 5-minute game is roughly
+600 requests.
 
 ## 🚫 Explicit Constraints & "Do Not Touch" Rules
 
@@ -276,9 +385,9 @@ The basic / env-var-switched mode was simplified out once advanced was validated
 
 - **Local dev:** `vercel dev` (runs both Vite AND serverless functions). Or `npm run dev` if you're only touching client UI.
 - **Local build:** `npm run build` (runs `tsc -b && vite build`)
-- **Tests:** `npm test` → vitest render smoke test + the Shortlist, Target and The Line engine invariants (`tests/App.smoke.test.tsx`: splash → home menu through the real module graph; jsdom, fetch/matchMedia stubbed in `tests/setup.ts`). Config in `vitest.config.ts` (deliberately separate from `vite.config.ts`).
+- **Tests:** `npm test` → vitest render smoke test (`tests/App.smoke.test.tsx`: splash → home menu through the real module graph; jsdom, fetch/matchMedia stubbed in `tests/setup.ts`) + the Shortlist, Target and The Line engine invariants + THE ROOM INVARIANT (`tests/roomSync.test.ts`). Config in `vitest.config.ts` (deliberately separate from `vite.config.ts`).
 - **CI:** `.github/workflows/ci.yml` — on push to `main` + PRs: `npm ci`, `npm run build`, `npm test`. **Lint is NOT in CI** — `npm run lint` currently fails with 62 pre-existing errors (mostly `no-explicit-any` and `react-refresh/only-export-components`); add it back once that debt is paid.
-- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens the 18 Play Now games headless — all 22 with `--tabs` — and fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) and `scripts/drive-the-tell.mjs` (plays a full 12-round game of The Tell and asserts every outcome branch) and `scripts/drive-nerve.mjs` (plays a best-of-3 of Nerve and asserts the ladder-escalation invariant) and `scripts/drive-house-rules.mjs` (plays a 9-law session and checks the app's scoring against an independently-computed tally) and `scripts/drive-ballpark.mjs` (a 3-player and a solo game, every expected score recomputed from the JSON) and `scripts/drive-echo.mjs` (asserts the chain-growth invariant at every replay) and `scripts/drive-shortlist.mjs` (re-derives every clue's meaning from the JSON rather than trusting the screen) and `scripts/drive-target.mjs` (re-solves every dealt board itself and replays the app's printed solution back through the UI) and `scripts/drive-the-line.mjs` (checks the rendered line rises by the JSON's values on every single turn, that the piles partition, and that no hand card leaks its number) against — the last three draw randomised content, so run them a few times — `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code.
+- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens the 18 Play Now games headless — all 22 with `--tabs` — and fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) and `scripts/drive-the-tell.mjs` (plays a full 12-round game of The Tell and asserts every outcome branch) and `scripts/drive-nerve.mjs` (plays a best-of-3 of Nerve and asserts the ladder-escalation invariant) and `scripts/drive-house-rules.mjs` (plays a 9-law session and checks the app's scoring against an independently-computed tally) and `scripts/drive-ballpark.mjs` (a 3-player and a solo game, every expected score recomputed from the JSON) and `scripts/drive-echo.mjs` (asserts the chain-growth invariant at every replay) and `scripts/drive-shortlist.mjs` (re-derives every clue's meaning from the JSON rather than trusting the screen) and `scripts/drive-target.mjs` (re-solves every dealt board itself and replays the app's printed solution back through the UI) and `scripts/drive-the-line.mjs` (checks the rendered line rises by the JSON's values on every single turn, that the piles partition, and that no hand card leaks its number) and the two **two-browser** multiplayer drives `scripts/drive-versus.mjs` + `scripts/drive-ballpark-live.mjs` (which need `node scripts/serve-with-api.mjs 4173` instead of `vite preview`, since preview does not run `/api/*`) against — the last three draw randomised content, so run them a few times — `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code.
 - **Deployment target:** Vercel, auto-triggered by `git push`
 - **Preview URL format:** `party-spark-git-{branch-slug}-{scope}.vercel.app` (has "Deployment Protection" enabled — you'll see a 401 on manifest.json that can be ignored)
 - **Production URL:** set by the user's Vercel project config (deployed from `main`)
@@ -310,9 +419,11 @@ Reconciled against code 2026-07-02. Several items from the 2026-04-21 audit were
 
 2. **NHIE has no Claude fallback yet.** `generateNeverHaveIEver` is Gemini-only. Same quota vulnerability TOD/MLT had before the port.
 
-3. **`npm run lint` fails with 62 pre-existing errors** (`no-explicit-any` in data-loading code, `react-refresh/only-export-components` in contexts/UI). Lint is therefore excluded from CI. Pay this down, then add `npm run lint` to `.github/workflows/ci.yml`.
+3. **Multiplayer needs a Redis store provisioned on Vercel.** Until then `/api/room` falls back to an in-process Map, which cannot work across serverless instances — two phones in "the same" room never see each other, and the lobby shows an amber warning saying so. Browser steps in the Multiplayer section above. Also: only Scramble and Ballpark are wired; Target and The Line are the obvious next two (both already take an injectable `rnd`).
 
-4. **A handler param named `type` can never reach `/api/ai` handlers** — the dispatcher strips `type` as its routing key, and the client spread can even overwrite it (breaks the icebreaker "deep" and roast_or_toast "toast" variants over the wire). Details + the fix recipe: `notes/01-api-type-param-collision.md`.
+4. **`npm run lint` fails with 62 pre-existing errors** (`no-explicit-any` in data-loading code, `react-refresh/only-export-components` in contexts/UI). Lint is therefore excluded from CI. Pay this down, then add `npm run lint` to `.github/workflows/ci.yml`.
+
+5. **A handler param named `type` can never reach `/api/ai` handlers** — the dispatcher strips `type` as its routing key, and the client spread can even overwrite it (breaks the icebreaker "deep" and roast_or_toast "toast" variants over the wire). Details + the fix recipe: `notes/01-api-type-param-collision.md`.
 
 ~~Old items "No code splitting" and "No service worker" removed 2026-07-03: fixed by Phase 1 hardening — every game is `React.lazy`, every data JSON is a dynamic import, and vite-plugin-pwa precaches the shell (see Key files).~~
 
@@ -332,7 +443,8 @@ src/
 │   │   ├── TeamRosterRow.tsx        # Shared optional player/team-names row (gold pill, persists)
 │   │   ├── TimerSetting.tsx         # Shared editable round-timer chip (Scramble/Charades/Taboo)
 │   │   ├── EndScreen.tsx            # Shared ranked-leaderboard end screen (5 Alive/Linked/Charades/Taboo)
-│   │   └── SpinTheBottle.tsx        # Shared "who goes next?" bottle spinner (test screen inside Truth or Drink)
+│   │   ├── SpinTheBottle.tsx        # Shared "who goes next?" bottle spinner (test screen inside Truth or Drink)
+│   │   └── RoomPanel.tsx            # Shared multiplayer create/join + lobby (Scramble versus, Ballpark live)
 │   └── games/                       # One file per game (incl. JumbleGame = "Scramble", IntimateDiceGame, TheTellGame, NerveGame, HouseRulesGame, BallparkGame, EchoGame, ShortlistGame, TargetGame, TheLineGame)
 ├── contexts/
 │   └── ContentContext.tsx           # AI content prefetch cache
@@ -346,6 +458,8 @@ src/
 │   ├── shortlistEngine.ts           # Shortlist runtime: generates each case's clue chain + holds the case invariant
 │   ├── targetEngine.ts              # Target runtime: deals a guaranteed-solvable puzzle AND solves it (shared legality rules)
 │   ├── lineEngine.ts                # The Line runtime: deals, judges a placement, and holds THE LINE INVARIANT on every mutation
+│   ├── seededRandom.ts              # mulberry32 / seededShuffle / roundSeed — same seed ⇒ same content on every device
+│   ├── roomService.ts               # Multiplayer transport + clock offset + useRoom() — the ENTIRE network boundary
 │   ├── audio.ts                     # Shared Web Audio synth kit + app-wide mute + compact haptic aliases
 │   ├── haptics.ts                   # hapticLight/Success/Error/Heavy (navigator.vibrate; no-op on iOS; respects the mute switch)
 │   ├── shareCard.ts                 # Canvas share cards + shareText (see Engagement layer)
@@ -358,10 +472,14 @@ src/
 └── index.css                        # Tailwind v4 @theme (custom props + keyframes only)
 
 api/_lib/schemas.ts                  # zod schema per /api/ai request type (see AI Services)
+api/_lib/roomSchemas.ts              # zod schema per /api/room action (routes on `action`, not `type`)
+api/_lib/roomStore.ts                # Room storage: Upstash Redis REST + in-process dev fallback; one writer per key
+api/room.ts                          # Multiplayer rooms — the app's only stateful endpoint
 tests/App.smoke.test.tsx             # vitest render smoke test (run by CI)
 tests/shortlistEngine.test.ts        # vitest: Shortlist's case invariant over 9,000 generated cases (run by CI)
 tests/targetEngine.test.ts           # vitest: Target's deal invariant — every dealt puzzle solvable, every printed solution valid (run by CI)
 tests/lineEngine.test.ts             # vitest: The Line's ordering + partition invariant over hundreds of full games, plus its gap distribution (run by CI)
+tests/roomSync.test.ts               # vitest: THE ROOM INVARIANT — same seed + round ⇒ byte-identical content on every device (run by CI)
 .github/workflows/ci.yml             # CI: npm ci, build, test (lint excluded — see Known Issues)
 notes/                               # One lesson per file (what broke + fix); see notes/README.md
 scripts/build-jumble-sets.mjs        # DEV-only generator → src/data/jumble_sets.json (needs cached dicts under scripts/.cache/)
