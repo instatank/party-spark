@@ -266,6 +266,23 @@ code rather than implied. Don't market it as secrecy.
 - Multiplayer must **fail gracefully back to solo**. Never put it on a path a
   player has to cross to reach an offline game.
 
+### Verifying it actually works
+
+Two browser-openable diagnostics, because the local drives **cannot** cover
+this: `scripts/serve-with-api.mjs` has no Upstash credentials, so every
+two-browser drive exercises the in-process `Map`. The Redis path (REST
+pipeline, `SADD`/`SMEMBERS`, `EXPIRE`, TTL refresh) only ever runs on a real
+deployment.
+
+| URL | Answers |
+|---|---|
+| `/api/health` | `roomStore: "redis" \| "memory"` — is a store wired to *this deployment*? Env vars are per-deployment, so a build made before the store was connected still says `memory`. |
+| `/api/room?action=selftest` | Does the store actually work? Round-trips a document with a TTL, checks the expiry is armed, adds and reads a member set, then cleans up. Writes only to a `selftest:` key namespace, so it can never touch a live room. |
+
+Run the self test after provisioning, after changing store plans, and on any
+deployment where multiplayer misbehaves — "two phones can't see each other" and
+"the store is misconfigured" look identical from inside the game.
+
 ### ⚠️ Requires provisioning (browser step)
 
 Without a Redis store the server falls back to an in-process `Map`, which cannot

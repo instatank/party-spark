@@ -200,6 +200,73 @@ export async function writePlayer(code: string, player: RoomPlayer): Promise<voi
     if (typeof meta === 'string') memSet(metaKey(code), meta);
 }
 
+// --- self test ---------------------------------------------------------------
+// Round-trips the ACTUAL configured backend and reports what happened.
+//
+// This exists because of a real gap: the two-browser drives all run against
+// `serve-with-api.mjs`, which has no Upstash credentials and therefore
+// exercises the in-process Map every time. Every multiplayer guarantee was
+// verified on a backend that production never uses. The Redis path — the REST
+// pipeline, SADD/SMEMBERS, EXPIRE, the TTL refresh — could be wrong in ways
+// nothing local would catch, and the symptom would be "the game is broken"
+// rather than "the store is misconfigured".
+//
+// Deliberately uses its own key namespace, NOT a room code: a self test must
+// never be able to collide with, or clobber, somebody's live game.
+export interface SelfTestResult {
+    backend: 'redis' | 'memory';
+    ok: boolean;
+    steps: { step: string; ok: boolean; detail?: string }[];
+    ms: number;
+}
+
+export async function selfTest(): Promise<SelfTestResult> {
+    const started = Date.now();
+    const backend: 'redis' | 'memory' = isPersistent() ? 'redis' : 'memory';
+    const steps: SelfTestResult['steps'] = [];
+    const key = `selftest:${Math.random().toString(36).slice(2, 10)}`;
+    const setKey = `${key}:members`;
+    const payload = JSON.stringify({ hello: 'world', at: started });
+
+    const record = (step: string, ok: boolean, detail?: string) => {
+        steps.push(detail === undefined ? { step, ok } : { step, ok, detail });
+        return ok;
+    };
+
+    try {
+        if (backend === 'redis') {
+            // A string with a TTL, read back verbatim. This is the shape every
+            // meta and player document uses.
+            await pipeline([['SET', key, payload, 'EX', 60]]);
+            const [got] = await pipeline([['GET', key]]);
+            const back = typeof got === 'object' && got !== null ? JSON.stringify(got) : String(got ?? '');
+            record('write + read a document', back === payload, back === payload ? undefined : `got ${back.slice(0, 80)}`);
+
+            // The TTL must actually be set — without it the store fills up
+            // forever, which is the failure that takes a month to notice.
+            const [ttl] = await pipeline([['TTL', key]]);
+            record('expiry is armed', Number(ttl) > 0 && Number(ttl) <= 60, `ttl=${ttl}`);
+
+            // The member set: SADD/SMEMBERS is how a room learns who is in it.
+            await pipeline([['SADD', setKey, 'p1'], ['SADD', setKey, 'p2'], ['EXPIRE', setKey, 60]]);
+            const [members] = await pipeline([['SMEMBERS', setKey]]);
+            const list = Array.isArray(members) ? members.map(String).sort() : [];
+            record('member set add + read', list.join(',') === 'p1,p2', `members=[${list.join(', ')}]`);
+
+            await pipeline([['DEL', key], ['DEL', setKey]]);
+            const [gone] = await pipeline([['EXISTS', key]]);
+            record('cleanup', Number(gone) === 0);
+        } else {
+            record('backend is the in-process Map', false,
+                'No Redis configured. This works for one serverless instance only, so two phones will NOT find each other in production.');
+        }
+    } catch (err) {
+        record('store reachable', false, err instanceof Error ? err.message : String(err));
+    }
+
+    return { backend, ok: steps.every(s => s.ok), steps, ms: Date.now() - started };
+}
+
 export async function removePlayer(code: string, playerId: string): Promise<void> {
     if (isPersistent()) {
         await pipeline([

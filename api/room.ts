@@ -20,7 +20,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { ROOM_REQUEST_SCHEMAS, type RoomAction } from './_lib/roomSchemas.js';
 import {
-    readRoom, roomExists, writeMeta, writePlayer, removePlayer, isPersistent,
+    readRoom, roomExists, writeMeta, writePlayer, removePlayer, isPersistent, selfTest,
     type Room, type RoomMeta, type RoomPlayer,
 } from './_lib/roomStore.js';
 
@@ -170,6 +170,12 @@ const HANDLERS: Record<RoomAction, (p: Record<string, unknown>) => Promise<unkno
         return shape({ meta, players: room.players });
     },
 
+    // Diagnostic: round-trip the real store and report. Writes only to its own
+    // key namespace, so it can never touch a live room.
+    async selftest() {
+        return selfTest();
+    },
+
     async leave(p) {
         const { code, playerId } = p as { code: string; playerId: string };
         await removePlayer(code, playerId);
@@ -195,8 +201,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!dispatcher) {
         return res.status(400).json({ ok: false, error: `Unknown action: ${action}` });
     }
-    if (req.method === 'GET' && action !== 'poll') {
-        return res.status(405).json({ ok: false, error: 'Only poll may be sent as GET.' });
+    if (req.method === 'GET' && action !== 'poll' && action !== 'selftest') {
+        return res.status(405).json({ ok: false, error: 'Only poll and selftest may be sent as GET.' });
     }
 
     const parsed = ROOM_REQUEST_SCHEMAS[action as RoomAction].safeParse(params);

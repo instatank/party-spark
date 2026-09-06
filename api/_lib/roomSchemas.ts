@@ -58,6 +58,9 @@ export const ROOM_REQUEST_SCHEMAS = {
         durationMs: z.number().int().min(0).max(30 * 60 * 1000).nullable().optional(),
         resetPlayerState: z.boolean().optional(),
     }),
+    // No params. A GET-able diagnostic you can open in a browser — see the
+    // selfTest note in roomStore.ts for why it exists.
+    selftest: z.looseObject({}),
     leave: z.looseObject({
         code: ROOM_CODE,
         playerId: z.string().min(1),
