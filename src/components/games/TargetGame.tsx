@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import {
-    Calculator, ChevronRight, ChevronDown, ArrowRight, Share2, ScrollText, Undo2, Flag, Check,
+    Calculator, ChevronRight, ChevronDown, ArrowRight, Share2, ScrollText, Undo2, Flag, Check, Swords,
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService } from '../../services/SessionManager';
@@ -15,6 +15,9 @@ import { useCountdown } from '../../hooks/useCountdown';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import TimerSetting, { loadTimerPref, saveTimerPref } from '../ui/TimerSetting';
 import EndScreen from '../ui/EndScreen';
+import RoomPanel from '../ui/RoomPanel';
+import { useRoom, msUntil, stateForRound, leaveRoom, type Room, type RoomSession } from '../../services/roomService';
+import { mulberry32, roundSeed } from '../../services/seededRandom';
 import { GameType } from '../../types';
 import {
     dealPuzzle, applyOp, scoreFor, stepText, ROUNDS,
@@ -39,7 +42,11 @@ import {
 
 interface Props { onExit: () => void; }
 
-type Stage = 'SETUP' | 'HANDOFF' | 'PLAY' | 'REVEAL' | 'END';
+// LOCKED is the live-only stage between "your turn is over" and "everyone's
+// turn is over". With a shared clock most players land there at the same
+// instant, but an exact hit ends a turn early — so someone always has to wait,
+// and the solution must not appear until nobody can still be racing for it.
+type Stage = 'SETUP' | 'ROOM' | 'HANDOFF' | 'PLAY' | 'LOCKED' | 'REVEAL' | 'END';
 
 const MAX_PLAYERS = 6;
 const STATS_ID = 'TARGET';
@@ -74,6 +81,12 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
     const BAD = light ? '#BE123C' : '#FB7185';
 
     const [stage, setStage] = useState<Stage>('SETUP');
+    // Live (separate phones). Null until a room actually starts, which is also
+    // what keeps this component and RoomPanel from both polling.
+    const [session, setSession] = useState<RoomSession | null>(null);
+    const room = useRoom(session, ['PLAY']);
+    const live = session !== null;
+    const [liveMs, setLiveMs] = useState(0);   // ms left when THIS phone started
     // Seeded from the shared session roster so names carry in from other games.
     const [players, setPlayers] = useState<string[]>(() => sessionService.getTeams());
     const [showRules, setShowRules] = useState(() => shouldAutoExpandRules('target'));
@@ -95,14 +108,32 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
     const [shareMsg, setShareMsg] = useState('');
 
     const named = players.map(p => p.trim()).filter(Boolean).slice(0, MAX_PLAYERS);
-    const roster = named.length >= 2 ? named : [named[0] || SOLO_NAME];
-    const solo = roster.length === 1;
+    // In live play the roster IS the room, ordered by join time so every phone
+    // indexes the same player at the same position.
+    const liveRoster = room.room?.players.map(p => p.name) ?? [];
+    const roster = live
+        ? (liveRoster.length ? liveRoster : [SOLO_NAME])
+        : (named.length >= 2 ? named : [named[0] || SOLO_NAME]);
+    const solo = !live && roster.length === 1;
+    const mySeat = live && room.room && session
+        ? room.room.players.findIndex(p => p.id === session.playerId)
+        : 0;
     const target = puzzle?.target ?? 0;
     const dist = best === null ? null : Math.abs(best - target);
 
-    const totals = roster.map((_, pi) =>
+    const localTotals = roster.map((_, pi) =>
         rounds.reduce((sum, r) => sum + (r.turns[pi] ? scoreFor(r.turns[pi].best, r.puzzle.target) : 0), 0),
     );
+    // Each phone reports its OWN running total, because that phone is the only
+    // one guaranteed to hold that player's full history — so a late joiner's
+    // row reads right instead of silently short. One source per player, and the
+    // end screen, the stats write and the share card all read it through here.
+    const totals = live && room.room
+        ? room.room.players.map((p, i) => {
+            const reported = Number(p.state.total);
+            return Number.isFinite(reported) ? reported : (localTotals[i] ?? 0);
+        })
+        : localTotals;
 
     // ---- turn lifecycle -----------------------------------------------------
     const startTurn = (p: Puzzle) => {
@@ -117,15 +148,36 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
     };
 
     const finishTurn = (exact: boolean) => {
+        const seat = live ? mySeat : turn;
         setRounds(rs => {
             const next = rs.map(r => ({ ...r, turns: [...r.turns] }));
             while (next.length <= round) {
                 next.push({ puzzle: puzzle!, turns: roster.map(() => ({ best: null, steps: [], exact: false })) });
             }
             next[round].puzzle = puzzle!;
-            next[round].turns[turn] = { best, steps, exact };
+            next[round].turns[seat] = { best, steps, exact };
             return next;
         });
+
+        if (live) {
+            // Post the finished turn and wait for the room. `steps` rides along
+            // so everyone's working can be shown on the reveal — it is the only
+            // part of a turn another player cannot re-derive from the seed.
+            const prior = rounds.reduce((sum, r, ri) => {
+                if (ri >= round) return sum;
+                const t = r.turns[seat];
+                return sum + (t ? scoreFor(t.best, r.puzzle.target) : 0);
+            }, 0);
+            const gained = puzzle ? scoreFor(best, puzzle.target) : 0;
+            void room.patch({
+                best, exact, done: true,
+                steps: steps.map(st => stepText(st)),
+                total: prior + gained,
+            });
+            setStage('LOCKED');
+            return;
+        }
+
         if (turn + 1 < roster.length) {
             setTurn(turn + 1);
             setStage('HANDOFF');
@@ -140,10 +192,13 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
     const finishRef = useRef(finishTurn);
     finishRef.current = finishTurn;
 
+    // Live rounds count down to the time left until the room's shared deadline
+    // AT THE MOMENT THIS PHONE STARTED, not to the round length — so a phone
+    // that entered late buzzes with everyone else rather than a second after.
     const { secondsLeft } = useCountdown({
         running: stage === 'PLAY',
-        durationMs: secs * 1000,
-        restartKey: `${round}-${turn}`,
+        durationMs: live ? liveMs : secs * 1000,
+        restartKey: live ? `live-${round}` : `${round}-${turn}`,
         onSecond: s => { if (s > 0 && s <= 5) playTick(0.12); },
         onExpire: () => { hapticHeavy(); playBuzzer(); finishRef.current(false); },
     });
@@ -172,7 +227,13 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
         setSteps(s => [...s, step]);
         setSel(null);
         setOp(null);
-        if (best === null || Math.abs(r - target) < Math.abs(best - target)) setBest(r);
+        if (best === null || Math.abs(r - target) < Math.abs(best - target)) {
+            setBest(r);
+            // Live: publish how CLOSE you are, never the number itself. Distance
+            // is the pressure — "Priya is 2 away" — while the number would hand
+            // over part of the answer to a player still searching.
+            if (live && session) void room.patch({ dist: Math.abs(r - target) });
+        }
 
         if (r === target) {
             hapticSuccess(); playPangram();
@@ -195,6 +256,97 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
         setOp(null);
     };
 
+    // Everyone's turn for the round now in play, straight off the room. Read
+    // through stateForRound so a turn left over from the previous round can
+    // never be mistaken for an answer to this one.
+    const liveTurns = () => {
+        const r = room.room;
+        if (!r) return [];
+        return r.players.map(p => {
+            const st = stateForRound(p, r.meta.round);
+            return {
+                id: p.id,
+                name: p.name,
+                best: st.best === null || st.best === undefined ? null : Number(st.best),
+                exact: Boolean(st.exact),
+                done: Boolean(st.done),
+                dist: Number.isFinite(Number(st.dist)) ? Number(st.dist) : null,
+                steps: Array.isArray(st.steps) ? (st.steps as string[]) : [],
+                me: p.id === session?.playerId,
+            };
+        });
+    };
+
+    // Live start / re-deal. The puzzle is generated from the seed, never sent:
+    // dealPuzzle already accepts an injectable rnd, so every phone runs the
+    // same search and lands on the same six numbers, target AND solution.
+    const startLive = (s: RoomSession, r: Room) => {
+        const diff = (r.meta.config.difficulty as Difficulty) ?? 'classic';
+        const rIdx = Math.max(0, r.meta.round - 1);
+        const p = dealPuzzle(diff, mulberry32(roundSeed(r.meta.seed, rIdx)));
+        hapticLight(); playReveal();
+        setDifficulty(diff);
+        setPuzzle(p);
+        setRound(rIdx);
+        setTurn(0);
+        setShareMsg('');
+        setLiveMs(msUntil(r.meta.deadlineAt));
+        liveRoundRef.current = r.meta.round;
+        setSession(s);
+        startTurn(p);
+    };
+
+    // Guests learn the round advanced from the round number changing on a poll —
+    // there is no push. Host and guest take the identical path in, so they
+    // cannot end up on different puzzles.
+    const liveRoundRef = useRef(0);
+    useEffect(() => {
+        if (!live) return;
+        const r = room.room;
+        if (!r || r.meta.phase !== 'PLAY' || r.meta.round === liveRoundRef.current) return;
+        if (session) startLive(session, r);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [room.room, live, session]);
+
+    // The reveal waits for the whole room. An exact hit ends a turn early, so
+    // without this the fast player would be shown the solution while everyone
+    // else is still hunting for it.
+    useEffect(() => {
+        if (!live || stage !== 'LOCKED') return;
+        const turns = liveTurns();
+        if (turns.length === 0 || turns.some(t => !t.done)) return;
+        setRounds(rs => {
+            const next = rs.map(rr => ({ ...rr, turns: [...rr.turns] }));
+            while (next.length <= round) {
+                next.push({ puzzle: puzzle!, turns: roster.map(() => ({ best: null, steps: [], exact: false })) });
+            }
+            next[round].puzzle = puzzle!;
+            turns.forEach((t, i) => { next[round].turns[i] = { best: t.best, steps: [], exact: t.exact }; });
+            return next;
+        });
+        setRevealStep(0);
+        setStage('REVEAL');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [room.room, live, stage]);
+
+    // The room ending is the guests' cue to score up. finish() stays local to
+    // each device on purpose — every phone records its own stats — so this is a
+    // signal to run it, not a result being handed over.
+    useEffect(() => {
+        if (!live || stage === 'END' || stage === 'SETUP' || stage === 'ROOM') return;
+        if (room.room?.meta.phase !== 'END') return;
+        finish();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [room.room, live, stage]);
+
+    // Backing out of a live game must free the seat — the reveal waits for
+    // everyone, so a ghost player who never finishes hangs the round.
+    const exitLive = () => {
+        if (session) void leaveRoom(session.code, session.playerId);
+        setSession(null);
+        setStage('SETUP');
+    };
+
     // ---- flow ----------------------------------------------------------------
     const start = (d: Difficulty) => {
         hapticLight(); playReveal();
@@ -210,7 +362,18 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
 
     const nextRound = () => {
         hapticLight();
-        if (round + 1 >= ROUNDS) { finish(); return; }
+        if (round + 1 >= ROUNDS) {
+            // The host finishing is a ROOM event, not a local one. Without this
+            // the host lands on the leaderboard and every guest sits on the last
+            // reveal waiting for a round that never comes.
+            if (live && room.isHost) void room.host({ phase: 'END' });
+            finish();
+            return;
+        }
+        if (live) {
+            if (room.isHost) void room.host({ round: round + 2, durationMs: secs * 1000 });
+            return;
+        }
         const p = dealPuzzle(difficulty);
         setPuzzle(p);
         setRound(round + 1);
@@ -294,6 +457,22 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
                     <p className="max-w-[340px] mx-auto w-full text-[10px] font-bold uppercase tracking-[0.18em] text-muted mb-2 px-1">
                         Pick your numbers
                     </p>
+                    <div className="max-w-[340px] mx-auto w-full mb-5">
+                        <button
+                            onClick={() => { hapticLight(); setStage('ROOM'); }}
+                            className="group relative w-full text-left bg-surface-alt backdrop-blur-sm border border-divider border-l-4 border-b-2 border-l-sky-500 border-b-sky-500 hover:bg-app-tint rounded-xl py-3 px-4 transition-colors overflow-hidden"
+                        >
+                            <div className="flex items-center gap-3 relative z-10">
+                                <Swords size={16} className="text-sky-500 flex-shrink-0" />
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-[15px] font-bold text-ink leading-snug">Race on separate phones</p>
+                                    <p className="text-[11px] text-muted leading-snug">Same six numbers, same clock. Needs internet.</p>
+                                </div>
+                                <ChevronRight size={16} className="text-gray-500 group-hover:text-ink flex-shrink-0" />
+                            </div>
+                        </button>
+                    </div>
+
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {DIFFS.map(d => (
                             <button
@@ -338,9 +517,81 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
+    // ---------------- ROOM (live lobby) ----------------
+    if (stage === 'ROOM') {
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Race live" onBack={() => setStage('SETUP')} onHome={onExit} />
+                <div className="flex-1 overflow-y-auto pb-8 px-2">
+                    <RoomPanel
+                        game={GameType.TARGET}
+                        title="Same numbers, same clock"
+                        blurb="Five rounds. Everyone gets the identical six numbers and target at the same moment, and races the same countdown on their own phone."
+                        accent="violet"
+                        config={{ difficulty }}
+                        startDurationMs={secs * 1000}
+                        minPlayers={2}
+                        hostControls={
+                            <div className="space-y-3">
+                                <div>
+                                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted mb-2">Difficulty</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {(['classic', 'tough'] as Difficulty[]).map(d => (
+                                            <button key={d} onClick={() => { hapticLight(); setDifficulty(d); }}
+                                                className={`rounded-lg py-2 px-3 border text-sm font-semibold capitalize transition-colors ${difficulty === d ? 'bg-violet-400/10 border-violet-400/50 text-ink' : 'bg-surface-alt border-divider text-ink-soft hover:bg-app-tint'}`}>
+                                                {d}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="flex justify-center">
+                                    <TimerSetting duration={secs} accent={ACCENT} onPick={v => { setSecs(v); saveTimerPref(TIMER_KEY, v); }} />
+                                </div>
+                            </div>
+                        }
+                        onStart={(s, r) => startLive(s, r)}
+                        onCancel={() => setStage('SETUP')}
+                    />
+                </div>
+            </div>
+        );
+    }
+
     if (!puzzle) return null;
 
-    // ---------------- HANDOFF ----------------
+    // ---------------- LOCKED (turn over, waiting on the room) ----------------
+    if (stage === 'LOCKED' && puzzle) {
+        const turns = liveTurns();
+        const waiting = turns.filter(t => !t.done);
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title={`Round ${round + 1} of ${ROUNDS}`} onBack={exitLive} onHome={onExit} confirmOnExit />
+                <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-muted mb-2">Your best</p>
+                    <p className="font-serif font-black text-[46px] leading-none text-ink tabular-nums">{best ?? '—'}</p>
+                    <p className="text-sm mt-2" style={{ color: ACCENT }}>
+                        {best === null ? 'Nothing landed' : dist === 0 ? 'Exact.' : `${dist} away from ${target}`}
+                    </p>
+                    <div className="mt-8">
+                        {waiting.length > 0 ? (
+                            <>
+                                <p className="text-sm text-muted">
+                                    Waiting on <span className="text-ink font-semibold">{waiting.map(t => t.name).join(', ')}</span>
+                                </p>
+                                <p className="text-[11px] text-muted mt-2 max-w-[280px]">
+                                    The solution stays hidden until nobody is still hunting for it.
+                                </p>
+                            </>
+                        ) : (
+                            <p className="text-sm text-muted">Everyone's in…</p>
+                        )}
+                    </div>
+                    {room.offline && <p className="text-xs text-rose-500 mt-4">Lost the connection. Retrying…</p>}
+                </div>
+            </div>
+        );
+    }
+
     if (stage === 'HANDOFF') {
         return (
             <div className="h-full flex flex-col animate-fade-in">
@@ -369,12 +620,29 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
 
     // ---------------- PLAY (the board) ----------------
     if (stage === 'PLAY') {
-        const pct = Math.max(0, Math.min(100, (secondsLeft / secs) * 100));
+        const pct = Math.max(0, Math.min(100, (secondsLeft / (live ? Math.max(1, Math.round(liveMs / 1000)) : secs)) * 100));
         const low = secondsLeft <= 5;
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title={solo ? `Round ${round + 1} of ${ROUNDS}` : roster[turn]} onBack={() => setStage('SETUP')} onHome={onExit} confirmOnExit />
+                <ScreenHeader
+                    title={live ? `Round ${round + 1} of ${ROUNDS}` : solo ? `Round ${round + 1} of ${ROUNDS}` : roster[turn]}
+                    onBack={live ? exitLive : () => setStage('SETUP')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 overflow-y-auto px-2 pb-4">
+                    {/* Live: how close everyone ELSE is. Distance only — the
+                        number itself would hand over part of the answer. */}
+                    {live && (
+                        <div className="max-w-[340px] mx-auto w-full flex items-center gap-2 mb-2 overflow-x-auto">
+                            {liveTurns().filter(t => !t.me).map(t => (
+                                <div key={t.id} className="flex items-center gap-2 bg-surface-alt border border-divider rounded-lg px-2.5 py-1.5 shrink-0">
+                                    <span className="text-[11px] font-semibold text-ink-soft truncate max-w-[90px]">{t.name}</span>
+                                    <span className="text-sm font-black tabular-nums" style={{ color: t.exact ? GOOD : ACCENT }}>
+                                        {t.done && t.exact ? 'exact' : t.dist === null ? '—' : `${t.dist} away`}
+                                    </span>
+                                </div>
+                            ))}
+                            {room.offline && <span className="text-[11px] text-rose-500 shrink-0">reconnecting…</span>}
+                        </div>
+                    )}
                     <div className="max-w-[340px] mx-auto w-full">
                         <div className="flex items-end justify-between mb-1">
                             <div>
@@ -477,7 +745,7 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
         const last = round + 1 >= ROUNDS;
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title={`Round ${round + 1}`} onBack={() => setStage('SETUP')} onHome={onExit} confirmOnExit />
+                <ScreenHeader title={`Round ${round + 1}`} onBack={live ? exitLive : () => setStage('SETUP')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 overflow-y-auto px-2 pb-8">
                     <div className="text-center mb-4">
                         <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-muted">The target was</p>
@@ -525,9 +793,13 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
                         </div>
                     </div>
 
+                    {live && !room.isHost && round + 1 < ROUNDS ? (
+                        <p className="text-center text-sm text-muted mt-6">Waiting for the host to deal the next round…</p>
+                    ) : (
                     <Button onClick={nextRound} disabled={revealStep < puzzle.solution.length} fullWidth className="h-14 text-lg mt-6 max-w-[340px] mx-auto w-full">
                         {last ? 'Final scores' : `Round ${round + 2}`} <ArrowRight className="inline ml-2" size={20} />
                     </Button>
+                    )}
                 </div>
             </div>
         );
@@ -551,13 +823,13 @@ export const TargetGame: React.FC<Props> = ({ onExit }) => {
     return (
         <EndScreen
             title="Target"
-            onBack={() => setStage('SETUP')}
+            onBack={exitLive}
             onHome={onExit}
             entries={entries}
             accent="theme"
             winnerText={top => (solo ? `scored ${top.score} point${top.score === 1 ? '' : 's'}.` : `got closest — ${top.score} points.`)}
             playAgainLabel="New numbers"
-            onPlayAgain={() => setStage('SETUP')}
+            onPlayAgain={exitLive}
             exitLabel="Back to Home"
             onExit={onExit}
             footerExtra={
