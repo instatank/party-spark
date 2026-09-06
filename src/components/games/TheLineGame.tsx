@@ -208,7 +208,7 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                                         <p className="text-[15px] font-bold text-ink leading-snug truncate">{d.name}</p>
                                         <p className="text-[11px] text-muted leading-snug truncate">{d.tagline}</p>
                                     </div>
-                                    <span className="text-[10px] font-bold text-muted tabular-nums flex-shrink-0">{d.cards.length}</span>
+                                    <span className="text-[10px] font-bold text-muted tabular-nums flex-shrink-0">{d.cards.length} cards</span>
                                     <ChevronRight size={16} className="text-gray-500 group-hover:text-ink flex-shrink-0" />
                                 </div>
                             </button>
@@ -306,24 +306,41 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
             </div>
         );
 
+        // A gap says what CLAIM you would be making by tapping it — "under 96 m",
+        // "452 m – 979 m", "over 6,190 m". Printing the selected card's name in
+        // every gap instead (the first version) repeated it four times over and
+        // told the player nothing they did not already know.
+        const gapRange = (g: number): string => {
+            const above = g > 0 ? formatValue(cards[state.order[g - 1]].value, deck.units) : null;
+            const below = g < state.order.length ? formatValue(cards[state.order[g]].value, deck.units) : null;
+            if (!above) return `under ${below}`;
+            if (!below) return `over ${above}`;
+            return `${above} – ${below}`;
+        };
+
         const gap = (g: number) => (
             <button
                 key={`gap-${g}`}
                 onClick={() => { hapticLight(); playPop(); commit(g); }}
                 data-line-gap={g}
-                aria-label={`Place here, position ${g + 1}`}
+                aria-label={`Place ${selCard?.label} here — ${gapRange(g)}`}
                 className="animate-line-gap w-full rounded-lg border-2 border-dashed py-1.5 flex items-center justify-center gap-1.5 transition-colors active:scale-95"
                 style={{ borderColor: ACCENT + '99', background: ACCENT + '10' }}
             >
                 <Plus size={13} style={{ color: ACCENT }} />
-                <span className="text-[11px] font-bold truncate max-w-[220px]" style={{ color: ACCENT }}>
-                    {selCard?.label}
+                <span className="text-[11px] font-bold tabular-nums truncate max-w-[240px]" style={{ color: ACCENT }}>
+                    {gapRange(g)}
                 </span>
             </button>
         );
 
         return (
-            <div className="h-full flex flex-col animate-fade-in" data-line-stage="PLAY">
+            // `h-full` cannot resolve here — App's shell is `min-h-screen`, not
+            // a definite height — so `flex-1` on the line silently collapsed and
+            // the hand sat wherever the line ended. On a long line that pushed a
+            // player's own cards below the fold every turn. An explicit viewport
+            // height makes the line the part that scrolls and pins the hand.
+            <div className="flex flex-col animate-fade-in h-[calc(100dvh-2rem)] md:h-[calc(100dvh-3rem)]" data-line-stage="PLAY">
                 <ScreenHeader
                     title={solo ? 'The Line' : roster[seat]}
                     onBack={() => setStage('SETUP')}
@@ -350,14 +367,28 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                 </div>
 
                 {/* THE LINE */}
-                <div className="flex-1 overflow-y-auto px-2">
-                    <div className="max-w-[340px] mx-auto w-full relative pb-2">
+                <div className="flex-1 min-h-0 overflow-y-auto px-2">
+                    <div className="max-w-[340px] mx-auto w-full relative pb-2 min-h-full flex flex-col">
                         <p className="text-[10px] text-muted text-center mb-1.5">{deck.axis}</p>
-                        {/* the rail — a gradient so the direction of travel is never in doubt */}
+                        {/* The rail — a gradient, so the direction of travel is never in
+                            doubt. It runs the FULL height of the region rather than
+                            stopping at the last card: early on there is a lot of space
+                            between a two-card line and the hand, and a rail that carries
+                            on into it reads as a line still being built instead of a
+                            layout that ran out. It fades at the tail so it never looks
+                            like an edge. */}
                         <div
-                            className="absolute left-[3px] top-6 bottom-2 w-[2px] rounded-full pointer-events-none"
-                            style={{ background: `linear-gradient(to bottom, ${ACCENT}22, ${ACCENT}CC)` }}
+                            className="absolute left-[3px] top-6 bottom-0 w-[2px] rounded-full pointer-events-none"
+                            style={{ background: `linear-gradient(to bottom, ${ACCENT}22, ${ACCENT}CC 62%, ${ACCENT}00)` }}
                         />
+                        {/* Spacers, not `justify-center`: they centre a short line so the
+                            starter sits mid-screen — it comes from the middle third of the
+                            deck, so cards genuinely go both above and below it, and pinning
+                            it to the top implies otherwise. When the line outgrows the
+                            region they collapse to nothing and it scrolls from the top.
+                            `justify-content: center` would clip the smallest cards out of
+                            reach instead. */}
+                        <div className="flex-1 min-h-2" />
                         <div className="grid gap-1.5 pl-3">
                             {state.order.map((idx, i) => (
                                 <React.Fragment key={cards[idx].id}>
@@ -390,11 +421,12 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                                 </div>
                             )}
                         </div>
+                        <div className="flex-1 min-h-2" />
                     </div>
                 </div>
 
                 {/* HAND / VERDICT */}
-                <div className="px-2 pt-2 pb-5 max-w-[340px] mx-auto w-full">
+                <div className="flex-shrink-0 px-2 pt-2 pb-5 max-w-[340px] mx-auto w-full">
                     {move ? (
                         <div data-line-verdict={move.correct ? 'correct' : 'wrong'}
                             className="rounded-2xl border px-4 py-3.5 animate-slide-up relative overflow-hidden"
@@ -437,7 +469,9 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                     ) : (
                         <>
                             <p className="text-center text-[11px] text-muted mb-2">
-                                {sel === null ? 'Pick a card from your hand.' : 'Now tap the gap where it belongs.'}
+                                {sel === null
+                                    ? 'Pick a card from your hand.'
+                                    : <>Where does <span className="font-bold" style={{ color: ACCENT }}>{selCard?.label}</span> go?</>}
                             </p>
                             <div className="grid grid-cols-2 gap-2">
                                 {hand.map(idx => {
@@ -483,6 +517,11 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
         }));
 
     return (
+        // `contents` keeps the wrapper out of layout entirely while still
+        // giving the stage machine an observable END — the drive should be
+        // able to ask the app what screen it is on, not infer it from what
+        // happens to be rendered.
+        <div className="contents" data-line-stage="END">
         <EndScreen
             title="The Line"
             onBack={() => setStage('SETUP')}
@@ -523,6 +562,7 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                 </div>
             }
         />
+        </div>
     );
 };
 
