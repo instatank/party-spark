@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import {
-    Target, ChevronRight, ChevronDown, ArrowRight, Share2, ScrollText, Crosshair, Gauge,
+    Target, ChevronRight, ChevronDown, ArrowRight, Share2, ScrollText, Crosshair, Gauge, Users,
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService, shuffle } from '../../services/SessionManager';
@@ -13,6 +13,9 @@ import { statsStore } from '../../services/statsStore';
 import { gameNightService } from '../../services/gameNightService';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import EndScreen from '../ui/EndScreen';
+import RoomPanel from '../ui/RoomPanel';
+import { useRoom, stateForRound, leaveRoom, type Room, type RoomSession } from '../../services/roomService';
+import { mulberry32, seededShuffle } from '../../services/seededRandom';
 import { GameType } from '../../types';
 
 // "Ballpark" — an estimation game where you never state a number, you state a
@@ -32,7 +35,13 @@ import { GameType } from '../../types';
 
 interface Props { onExit: () => void; }
 
-type Stage = 'SETUP' | 'HANDOFF' | 'BRACKET' | 'REVEAL' | 'END';
+// LIVE is the mode this game was really designed for. Pass-and-play forces a
+// HANDOFF screen between every bracket, which means everyone but the first
+// player has already watched someone else think about the question. On separate
+// phones the brackets are committed blind and simultaneously, and only then do
+// they all drop onto the number line together — which is what that screen was
+// drawn for. ROOM is the lobby; LOCKED is "you've committed, waiting on them".
+type Stage = 'SETUP' | 'ROOM' | 'HANDOFF' | 'BRACKET' | 'LOCKED' | 'REVEAL' | 'END';
 
 interface Question { id: string; q: string; a: number; u: string; note: string; }
 interface Pack { id: string; name: string; tagline: string; emoji: string; questions: Question[]; }
@@ -212,11 +221,35 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
     const [revealed, setRevealed] = useState(false);
     const [shareMsg, setShareMsg] = useState('');
 
+    // Live (separate phones). `session` is null until a room starts, which is
+    // also what keeps this component and RoomPanel from both polling.
+    const [session, setSession] = useState<RoomSession | null>(null);
+    const room = useRoom(session, ['PLAY']);
+    const live = session !== null;
+
+    // Backing out of a live game must free the seat. A ghost player never
+    // brackets, and the reveal waits for everyone — so leaving without this
+    // would hang the round for everyone still playing.
+    const exitLive = () => {
+        if (session) void leaveRoom(session.code, session.playerId);
+        setSession(null);
+        setStage('SETUP');
+    };
+
     const named = players.map(p => p.trim()).filter(Boolean).slice(0, MAX_PLAYERS);
     // One unnamed player is the solo game — Ballpark should be tappable
     // straight into play without typing anything.
-    const roster = named.length >= 2 ? named : [named[0] || SOLO_NAME];
-    const solo = roster.length === 1;
+    // In live play the roster IS the room, ordered by join time so every phone
+    // indexes the same player at the same position — the number line's colours
+    // and the guesses matrix both key off that index.
+    const liveRoster = room.room?.players.map(p => p.name) ?? [];
+    const roster = live
+        ? (liveRoster.length ? liveRoster : [SOLO_NAME])
+        : (named.length >= 2 ? named : [named[0] || SOLO_NAME]);
+    const solo = !live && roster.length === 1;
+    const mySeat = live && room.room && session
+        ? room.room.players.findIndex(p => p.id === session.playerId)
+        : 0;
 
     const question = questions[qIdx];
     const pack = data.packs.find(p => p.id === packId) ?? data.packs[0];
@@ -237,12 +270,24 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
         lastTier.current = label;
     }, [liveTier, low, high]);
 
-    const scoresByPlayer = roster.map((_, pi) =>
+    // Locally-derived totals are complete for anyone present the whole game.
+    // In live play prefer each player's OWN reported total where it exists —
+    // that phone is the only one guaranteed to hold their full history, so a
+    // late joiner's row reads right instead of silently short. One source of
+    // truth per player, and the end screen, the stats write and the share card
+    // all read it through here so they cannot disagree.
+    const localScores = roster.map((_, pi) =>
         guesses.reduce((sum, row, qi) => {
             const g = row?.[pi];
             return sum + (g && questions[qi] ? scoreFor(g.low, g.high, questions[qi].a) : 0);
         }, 0),
     );
+    const scoresByPlayer = live && room.room
+        ? room.room.players.map((p, i) => {
+            const reported = Number(p.state.total);
+            return Number.isFinite(reported) ? reported : (localScores[i] ?? 0);
+        })
+        : localScores;
 
     const start = (chosenPackId: string) => {
         const chosen = data.packs.find(p => p.id === chosenPackId) ?? data.packs[0];
@@ -264,9 +309,53 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
         setStage(solo ? 'BRACKET' : 'HANDOFF');
     };
 
+    // Live start. Session dedupe is deliberately NOT applied here: it reads
+    // this device's localStorage, so two phones would filter different
+    // questions out of the pack and deal different games from the same seed.
+    // The seed is the only thing allowed to decide what gets dealt.
+    const startLive = (s: RoomSession, r: Room) => {
+        const chosenId = (r.meta.config.packId as string) ?? data.packs[0].id;
+        const chosen = data.packs.find(p => p.id === chosenId) ?? data.packs[0];
+        const drawn = seededShuffle(chosen.questions, mulberry32(r.meta.seed)).slice(0, QUESTIONS_PER_GAME);
+        hapticLight(); playReveal();
+        setPackId(chosen.id);
+        setQuestions(drawn);
+        setGuesses(drawn.map(() => r.players.map(() => null)));
+        setQIdx(Math.max(0, r.meta.round - 1));
+        setTurn(0);
+        setLowStr(''); setHighStr('');
+        setRevealed(false);
+        setShareMsg('');
+        setSession(s);
+        setStage('BRACKET');
+    };
+
     const lockBracket = () => {
         if (!validBracket) return;
         hapticLight(); playDing();
+
+        if (live) {
+            // Post the bracket and wait. Every phone scores its OWN answers, so
+            // `total` is always computed by the one device that has the full
+            // history for that player — which is what keeps the leaderboard
+            // right for someone who joined late or refreshed mid-game.
+            const gained = question ? scoreFor(low, high, question.a) : 0;
+            const prior = guesses.reduce((sum, row, qi) => {
+                if (qi >= qIdx) return sum;
+                const g = row?.[mySeat];
+                return sum + (g && questions[qi] ? scoreFor(g.low, g.high, questions[qi].a) : 0);
+            }, 0);
+            setGuesses(g => {
+                const next = g.map(row => [...row]);
+                next[qIdx][mySeat] = { low, high };
+                return next;
+            });
+            void room.patch({ low, high, total: prior + gained });
+            setLowStr(''); setHighStr('');
+            setStage('LOCKED');
+            return;
+        }
+
         setGuesses(g => {
             const next = g.map(row => [...row]);
             next[qIdx][turn] = { low, high };
@@ -282,6 +371,65 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
         }
     };
 
+    // Everyone's bracket for the question now in play, straight off the room.
+    // Read through stateForRound so a bracket left over from the previous
+    // question can never be mistaken for an answer to this one — without that
+    // stamp, a slow phone's stale payload would reveal the round early.
+    const liveBrackets = (): (Guess | null)[] => {
+        const r = room.room;
+        if (!r) return [];
+        return r.players.map(p => {
+            const st = stateForRound(p, r.meta.round);
+            const l = Number(st.low), h = Number(st.high);
+            return Number.isFinite(l) && Number.isFinite(h) && l > 0 ? { low: l, high: h } : null;
+        });
+    };
+
+    // The reveal waits for the whole room. Committing blind is the entire
+    // point of playing this on separate phones, so the truth may not drop
+    // until nobody can still be influenced by seeing it.
+    useEffect(() => {
+        if (!live || stage !== 'LOCKED') return;
+        const r = room.room;
+        if (!r) return;
+        const brackets = liveBrackets();
+        if (brackets.length === 0 || brackets.some(b => b === null)) return;
+        setGuesses(g => {
+            const next = g.map(row => [...row]);
+            const target = Math.max(0, r.meta.round - 1);
+            if (next[target]) next[target] = brackets;
+            return next;
+        });
+        setRevealed(false);
+        setStage('REVEAL');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [room.room, live, stage]);
+
+    // The room ending is the guests' cue to score up. finish() is local to each
+    // device on purpose — every phone records its own stats — so this is a
+    // signal to run it, not a result being handed over.
+    useEffect(() => {
+        if (!live || stage === 'END' || stage === 'SETUP' || stage === 'ROOM') return;
+        if (room.room?.meta.phase !== 'END') return;
+        finish();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [room.room, live, stage]);
+
+    // Guests learn the question advanced from the round number changing on a
+    // poll — there is no push. Host and guest take the identical path in.
+    useEffect(() => {
+        if (!live) return;
+        const r = room.room;
+        if (!r || r.meta.phase !== 'PLAY') return;
+        const target = Math.max(0, r.meta.round - 1);
+        if (target === qIdx || target >= questions.length) return;
+        setQIdx(target);
+        setLowStr(''); setHighStr('');
+        setRevealed(false);
+        setStage('BRACKET');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [room.room, live, qIdx, questions.length]);
+
     // The pin drop is the moment — give the brackets a beat on screen first.
     useEffect(() => {
         if (stage !== 'REVEAL' || !question) return;
@@ -295,7 +443,21 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
 
     const nextQuestion = () => {
         hapticLight();
-        if (qIdx + 1 >= questions.length) { finish(); return; }
+        if (qIdx + 1 >= questions.length) {
+            // The host finishing is a ROOM event, not a local one. Without this
+            // the host lands on the calibration read and every other phone sits
+            // on the last reveal forever, waiting for a round that never comes.
+            if (live && room.isHost) void room.host({ phase: 'END' });
+            finish();
+            return;
+        }
+        if (live) {
+            // Only the host moves the room on; every other phone follows the
+            // round number. Two devices advancing independently is how a room
+            // ends up on two different questions.
+            void room.host({ round: qIdx + 2 });
+            return;
+        }
         setQIdx(qIdx + 1);
         setTurn(0);
         setLowStr(''); setHighStr('');
@@ -306,12 +468,7 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
     const finish = () => {
         hapticHeavy();
         statsStore.recordPlay(STATS_ID);
-        const totals = roster.map((_, pi) =>
-            guesses.reduce((sum, row, qi) => {
-                const g = row?.[pi];
-                return sum + (g && questions[qi] ? scoreFor(g.low, g.high, questions[qi].a) : 0);
-            }, 0),
-        );
+        const totals = scoresByPlayer;
         const top = Math.max(...totals, 0);
         if (solo) {
             statsStore.recordBest(STATS_ID, totals[0], `${totals[0]} pts`);
@@ -365,6 +522,22 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
                         </p>
                     </div>
 
+                    <div className="max-w-[340px] mx-auto w-full mb-5">
+                        <button
+                            onClick={() => { hapticLight(); setStage('ROOM'); }}
+                            className="group relative w-full text-left bg-surface-alt backdrop-blur-sm border border-divider border-l-4 border-b-2 border-l-sky-500 border-b-sky-500 hover:bg-app-tint rounded-xl py-3 px-4 transition-colors overflow-hidden"
+                        >
+                            <div className="flex items-center gap-3 relative z-10">
+                                <Users size={16} className="text-sky-500 flex-shrink-0" />
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-[15px] font-bold text-ink leading-snug">Play live on separate phones</p>
+                                    <p className="text-[11px] text-muted leading-snug">Everyone brackets at once, blind. Needs internet.</p>
+                                </div>
+                                <ChevronRight size={16} className="text-gray-500 group-hover:text-ink flex-shrink-0" />
+                            </div>
+                        </button>
+                    </div>
+
                     <p className="max-w-[340px] mx-auto w-full text-[10px] font-bold uppercase tracking-[0.18em] text-muted mb-2 px-1">
                         Pick a pack
                     </p>
@@ -412,6 +585,75 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
     }
 
     // ---------------- HANDOFF ----------------
+    // ---------------- ROOM (live lobby) ----------------
+    if (stage === 'ROOM') {
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Play live" onBack={() => setStage('SETUP')} onHome={onExit} />
+                <div className="flex-1 overflow-y-auto pb-8 px-2">
+                    <RoomPanel
+                        game={GameType.BALLPARK}
+                        title="Everyone at once"
+                        blurb="Same eight questions, each on your own phone. Nobody sees anybody's bracket until every bracket is in — then they all drop onto the line together."
+                        accent="lime"
+                        config={{ packId }}
+                        minPlayers={2}
+                        hostControls={
+                            <div>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted mb-2">Pack</p>
+                                <div className="grid gap-2">
+                                    {data.packs.map(p => (
+                                        <button key={p.id} onClick={() => { hapticLight(); setPackId(p.id); }}
+                                            className={`text-left rounded-lg py-2 px-3 border transition-colors ${packId === p.id ? 'bg-lime-500/10 border-lime-500/50' : 'bg-surface-alt border-divider hover:bg-app-tint'}`}>
+                                            <span className="text-sm text-ink font-semibold">{p.emoji} {p.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        }
+                        onStart={(s, r) => startLive(s, r)}
+                        onCancel={() => setStage('SETUP')}
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    // ---------------- LOCKED (committed, waiting on the room) ----------------
+    if (stage === 'LOCKED' && question) {
+        const brackets = liveBrackets();
+        const waiting = (room.room?.players ?? []).filter((_, i) => !brackets[i]);
+        const mine = guesses[qIdx]?.[mySeat] ?? null;
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title={`Question ${qIdx + 1} of ${questions.length}`} onBack={onExit} onHome={onExit} confirmOnExit />
+                <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+                    <p className="text-sm text-ink-soft mb-6 max-w-[300px]">{question.q}</p>
+                    <div className="rounded-2xl border-2 px-6 py-5 mb-6" style={{ borderColor: ACCENT }}>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted mb-1">Your bracket, locked</p>
+                        <p className="text-2xl font-black tabular-nums text-ink">
+                            {mine ? `${fmt(mine.low)} – ${fmt(mine.high)}` : '—'}
+                        </p>
+                        <p className="text-[11px] text-muted mt-1">{question.u}</p>
+                    </div>
+                    {waiting.length > 0 ? (
+                        <>
+                            <p className="text-sm text-muted">
+                                Waiting on <span className="text-ink font-semibold">{waiting.map(p => p.name).join(', ')}</span>
+                            </p>
+                            <p className="text-[11px] text-muted mt-2 max-w-[280px]">
+                                Nobody sees a thing until everyone's in. That's the point.
+                            </p>
+                        </>
+                    ) : (
+                        <p className="text-sm text-muted">Everyone's in…</p>
+                    )}
+                    {room.offline && <p className="text-xs text-rose-500 mt-4">Lost the connection. Retrying…</p>}
+                </div>
+            </div>
+        );
+    }
+
     if (stage === 'HANDOFF' && question) {
         return (
             <div className="h-full flex flex-col animate-fade-in">
@@ -448,9 +690,13 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
 
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title={`Question ${qIdx + 1} of ${questions.length}`} onBack={() => setStage('SETUP')} onHome={onExit} confirmOnExit />
+                <ScreenHeader title={`Question ${qIdx + 1} of ${questions.length}`} onBack={live ? exitLive : () => setStage('SETUP')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 overflow-y-auto px-2 pb-8">
-                    {!solo && (
+                    {live ? (
+                        <p className="text-center text-[10px] font-bold uppercase tracking-[0.25em] mb-2" style={{ color: ACCENT }}>
+                            Everyone brackets now · {roster.length} playing
+                        </p>
+                    ) : !solo && (
                         <p className="text-center text-[10px] font-bold uppercase tracking-[0.25em] mb-2" style={{ color: ACCENT }}>
                             {roster[turn]}'s bracket
                         </p>
@@ -528,7 +774,7 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
 
         return (
             <div className="h-full flex flex-col animate-fade-in">
-                <ScreenHeader title="The answer" onBack={() => setStage('SETUP')} onHome={onExit} confirmOnExit />
+                <ScreenHeader title="The answer" onBack={exitLive} onHome={onExit} confirmOnExit />
                 <div className="flex-1 overflow-y-auto px-2 pb-8">
                     <div className="w-full max-w-[360px] mx-auto bg-surface border rounded-[22px] px-6 py-6 text-center relative overflow-hidden animate-slide-up" style={{ boxShadow: 'var(--shadow-card)', borderColor: ACCENT + '66' }}>
                         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(95% 75% at 100% 0%, ${ACCENT}2E, transparent 62%)` }} />
@@ -548,9 +794,15 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
                             : 'Nobody caught it. The truth was outside every bracket.'}
                     </p>
 
-                    <Button onClick={nextQuestion} fullWidth className="h-14 text-lg mt-5 max-w-[340px] mx-auto w-full">
-                        {last ? 'See the calibration read' : `Question ${qIdx + 2}`} <ArrowRight className="inline ml-2" size={20} />
-                    </Button>
+                    {live && !room.isHost && !last ? (
+                        <p className="text-center text-sm text-muted mt-6">
+                            Waiting for the host to call the next question…
+                        </p>
+                    ) : (
+                        <Button onClick={nextQuestion} fullWidth className="h-14 text-lg mt-5 max-w-[340px] mx-auto w-full">
+                            {last ? 'See the calibration read' : `Question ${qIdx + 2}`} <ArrowRight className="inline ml-2" size={20} />
+                        </Button>
+                    )}
                 </div>
             </div>
         );
@@ -577,13 +829,13 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
     return (
         <EndScreen
             title="Ballpark"
-            onBack={() => setStage('SETUP')}
+            onBack={exitLive}
             onHome={onExit}
             entries={entries}
             accent="theme"
             winnerText={top => { const pt = `${top.score} point${top.score === 1 ? '' : 's'}`; return solo ? `scored ${pt}.` : `called it closest — ${pt}.`; }}
             playAgainLabel="New questions"
-            onPlayAgain={() => setStage('SETUP')}
+            onPlayAgain={exitLive}
             exitLabel="Back to Home"
             onExit={onExit}
             footerExtra={
