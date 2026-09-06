@@ -104,6 +104,19 @@ const text = () => page.evaluate(() => document.body.innerText);
 // innerText comes back AFTER css text-transform, so anything styled uppercase
 // arrives in caps (notes/04). Every text assertion here is case-insensitive.
 const has = (t, needle) => t.toLowerCase().includes(String(needle).toLowerCase());
+// Home parks the newest games behind a NEW tab, so their card is not in the
+// DOM until that tab is clicked. Matched by aria-label — the visible label is
+// an icon + "NEW" + a count badge.
+const clickNewTab = async () => {
+  const ok = await page.evaluate(() => {
+    const el = document.querySelector('button[aria-label="New games"]');
+    if (el) { el.click(); return true; }
+    return false;
+  });
+  if (!ok) throw new Error('NEW tab not found on home');
+  await new Promise(r => setTimeout(r, 300));
+};
+
 const clickText = async (t, sel = 'button') => {
   const ok = await page.evaluate(({ sel, t }) => {
     const el = [...document.querySelectorAll(sel)].find(e => e.textContent.trim().toLowerCase().includes(t.toLowerCase()));
@@ -145,6 +158,7 @@ console.log(`\nShortlist — deep drive (${BOARD_LABEL})\n`);
 
 await page.goto(BASE, { waitUntil: 'networkidle2' });
 await page.waitForFunction(() => [...document.querySelectorAll('h3')].some(h => h.textContent.includes('Charades')), { timeout: 15000 });
+await clickNewTab();
 await clickText('Shortlist', '.game-card h3');
 await sleep(1500);
 

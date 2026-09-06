@@ -102,6 +102,20 @@ const comingSoonGameIds = [
   GameType.WOULD_YOU_RATHER,
 ];
 
+// The newest games. They live under their own "NEW" tab on Home rather
+// than in the main Play Now list — six extra cards on the front page is
+// what tips it from "a menu" into "a wall". Order here drives display
+// order inside the tab (newest first). Move an id out of this list once
+// it stops being new and it rejoins the main list automatically.
+const NEW_GAME_IDS = [
+  GameType.THE_LINE,
+  GameType.TARGET,
+  GameType.SHORTLIST,
+  GameType.ECHO,
+  GameType.BALLPARK,
+  GameType.HOUSE_RULES,
+];
+
 // Adult-gated games — require PIN before entering. Roast Me is also
 // temporarily gated here while AI prompts/output are still being tuned
 // in production. REMOVE Roast from this list once those flows are
@@ -223,6 +237,8 @@ const App = () => {
 
 const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelectGame }) => {
   const [activeTab, setActiveTab] = useState<'active' | 'comingSoon'>('active');
+  // Splits the Play Now roster into the main list and the NEW tab.
+  const [newTab, setNewTab] = useState<'main' | 'new'>('main');
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<HomeFilter>('all');
 
@@ -316,7 +332,17 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
           .map(id => GAMES.find(g => g.id === id))
           .filter((g): g is typeof GAMES[number] => Boolean(g));
     const q = query.trim().toLowerCase();
-    return inTab
+    // Main / NEW split, Play Now only. A search deliberately ignores the
+    // split and looks across both — a game the user typed the name of must
+    // never come back "no games match" because it sits on the other tab.
+    const inNewSplit = effectiveTab !== 'active' || q
+      ? inTab
+      : newTab === 'new'
+        ? NEW_GAME_IDS
+            .map(id => inTab.find(g => g.id === id))
+            .filter((g): g is typeof GAMES[number] => Boolean(g))
+        : inTab.filter(g => !NEW_GAME_IDS.includes(g.id));
+    return inNewSplit
       .filter(g => gameMatchesFilter(g.id, filter))
       .filter(g => {
         if (!q) return true;
@@ -330,7 +356,7 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
         return getSubcategoryMatches(g.id, query).length > 0;
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, query, filter]);
+  }, [activeTab, newTab, query, filter]);
 
   return (
     <div className="flex flex-col gap-2.5 animate-slide-up min-h-[80vh]">
@@ -494,6 +520,43 @@ const HomeMenu: React.FC<{ onSelectGame: (id: GameType) => void }> = ({ onSelect
             className="flex-shrink-0 p-1 rounded-full text-muted hover:text-ink transition-colors"
           >
             <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* Games / NEW tabs. The newest games are parked behind their own tab
+          so the front page stays a short list rather than a wall of cards.
+          Hidden while a search is running — search spans both tabs, so an
+          active-tab underline would be lying about what's on screen. */}
+      {!query.trim() && (
+        <div className="grid grid-cols-2 border-b border-divider">
+          <button
+            onClick={() => setNewTab('main')}
+            aria-label="All games"
+            className={`text-center pb-2 pt-1 px-2 text-sm font-semibold transition-colors relative ${
+              newTab === 'main' ? 'text-ink' : 'text-muted hover:text-ink-soft'
+            }`}
+          >
+            Games
+            {newTab === 'main' && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gold rounded-t-sm" />
+            )}
+          </button>
+          <button
+            onClick={() => setNewTab('new')}
+            aria-label="New games"
+            className={`text-center pb-2 pt-1 px-2 text-sm font-semibold transition-colors relative flex items-center justify-center gap-1.5 ${
+              newTab === 'new' ? 'text-ink' : 'text-muted hover:text-ink-soft'
+            }`}
+          >
+            <Sparkles size={14} className={newTab === 'new' ? 'text-gold' : ''} />
+            NEW
+            <span className="bg-accent-soft text-accent text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+              {NEW_GAME_IDS.length}
+            </span>
+            {newTab === 'new' && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gold rounded-t-sm" />
+            )}
           </button>
         </div>
       )}
