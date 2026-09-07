@@ -13,15 +13,29 @@ const MODEL = 'gemini-2.5-flash';
 // Charades
 // =============================================================================
 
+// What each deck is actually asking for. The prompt used to hardcode "Movie
+// Titles" for every category, so once the local family pool ran dry (it was
+// only 61 items against a 30-card batch) Family Mix was quietly handed films.
+const CHARADES_BRIEF: Record<string, string> = {
+    hollywood_movies: 'popular Hollywood film titles',
+    bollywood_movies: 'popular Hindi-cinema (Bollywood) film titles',
+    mix_movies:       'popular film titles from world cinema — Hollywood, Bollywood and beyond',
+    family_mix:       'short family-friendly charades prompts a child could act out and guess — everyday actions, household objects and animals doing something (e.g. "Flipping a pancake", "Toaster", "Penguin waddling"). No films, no celebrities',
+    everyday_actions: 'short everyday actions to mime (e.g. "Changing a lightbulb")',
+    around_the_house: 'household objects and appliances to mime (e.g. "Vacuum Cleaner")',
+    the_zoo:          'animals doing something distinctive (e.g. "Flamingo standing on one leg")',
+};
+
 export const handleCharadesWords = async (params: { category: string; count?: number }): Promise<string[]> => {
     const gemini = await getGemini();
     if (!gemini) return [];
     const { category, count = 20 } = params;
 
     try {
-        const prompt = `Generate a list of ${count} popular and recognizable Movie Titles for a game of Charades.
-The category is: ${category}.
-Return ONLY the movie titles separated by commas. No numbering. No years.`;
+        const brief = CHARADES_BRIEF[category] ?? 'popular film titles';
+        const prompt = `Generate a list of ${count} ${brief} for a game of Charades.
+Every entry must be physically actable in silence — no spelling, no sound.
+Return ONLY the entries separated by commas. No numbering. No years. No quotes.`;
 
         const response = await gemini.models.generateContent({ model: MODEL, contents: prompt });
         const text: string = response.text || '';
