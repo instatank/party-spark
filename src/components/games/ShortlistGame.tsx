@@ -1,13 +1,15 @@
-import React, { useState, use } from 'react';
+import React, { useState, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import {
     Fingerprint, ChevronRight, ChevronDown, ArrowRight, Share2, ScrollText,
-    Heart, Search, FileText, Users,
+    Heart, Search, FileText, Users, Timer,
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService } from '../../services/SessionManager';
 import { shouldAutoExpandRules } from '../../services/firstPlay';
-import { playDing, playBuzzEnd, playReveal, playPop } from '../../services/audio';
+import { playDing, playBuzzEnd, playReveal, playPop, playTick } from '../../services/audio';
+import { useCountdown } from '../../hooks/useCountdown';
+import TimerSetting, { loadTimerPref, saveTimerPref, TIMER_OFF } from '../ui/TimerSetting';
 import { hapticLight, hapticSuccess, hapticError, hapticHeavy } from '../../services/haptics';
 import { shareResultCard } from '../../services/shareCard';
 import { statsStore } from '../../services/statsStore';
@@ -40,6 +42,14 @@ interface Props { onExit: () => void; }
 type Stage = 'SETUP' | 'CASE_INTRO' | 'BOARD' | 'NAME' | 'VERDICT' | 'END';
 
 const dataPromise = import('../../data/shortlist.json').then(m => m.default as unknown as ShortlistData);
+
+// The deliberation clock is OFF by default. Shortlist is the one co-op game:
+// the table arguing itself out of a suspect IS the play, and a clock cuts that
+// short. Where it earns its place is a table that stalls — and the honest
+// penalty for stalling is already in the game, so running out simply TAKES the
+// next clue and the payout drops. It never names anyone for you.
+const TIMER_KEY = 'shortlist_timer_secs';
+const DEFAULT_SECS = TIMER_OFF;
 
 const CASES = 5;
 const LIVES = 3;
@@ -114,6 +124,7 @@ export const ShortlistGame: React.FC<Props> = ({ onExit }) => {
     const [score, setScore] = useState(0);
     const [log, setLog] = useState<CaseLog[]>([]);
     const [shareMsg, setShareMsg] = useState('');
+    const [secs, setSecs] = useState(() => loadTimerPref(TIMER_KEY, DEFAULT_SECS, true));
 
     const named = players.map(p => p.trim()).filter(Boolean).slice(0, MAX_PLAYERS);
     const board: SLBoard = data.boards.find(b => b.id === boardId) ?? data.boards[0];
@@ -160,6 +171,21 @@ export const ShortlistGame: React.FC<Props> = ({ onExit }) => {
         hapticLight(); playReveal();
         setCluesShown(c => c + 1);
     };
+
+    // Time's up on a clue: the app takes the next one for you, which costs
+    // points exactly as taking it yourself would. With no clues left there is
+    // nothing to take — the clock stops rather than forcing an accusation,
+    // because naming someone is the table's call and never the app's.
+    const takeClueRef = useRef(takeClue);
+    takeClueRef.current = takeClue;
+
+    const { secondsLeft } = useCountdown({
+        running: secs !== TIMER_OFF && stage === 'BOARD' && !outOfClues,
+        durationMs: secs * 1000,
+        restartKey: `${caseIdx}-${cluesShown}`,
+        onSecond: n => { if (n > 0 && n <= 5) playTick(0.12); },
+        onExpire: () => { hapticError(); playBuzzEnd(); takeClueRef.current(); },
+    });
 
     const accuse = () => {
         if (!built || picked === null) return;
@@ -259,6 +285,20 @@ export const ShortlistGame: React.FC<Props> = ({ onExit }) => {
                                 ? `${named.join(', ')} — one score, shared.`
                                 : 'Names are optional. You all win or lose together.'}
                         </p>
+                        <div className="flex flex-col items-center gap-1 mb-4">
+                            <TimerSetting
+                                duration={secs}
+                                accent={ACCENT}
+                                allowOff
+                                unit="per clue"
+                                onPick={v => { setSecs(v); saveTimerPref(TIMER_KEY, v); }}
+                            />
+                            <p className="text-[10px] text-muted text-center px-4">
+                                {secs === TIMER_OFF
+                                    ? 'No clock — take as long as you want to argue.'
+                                    : 'Run out and the next clue is taken for you.'}
+                            </p>
+                        </div>
                     </div>
 
                     <p className="max-w-[340px] mx-auto w-full text-[10px] font-bold uppercase tracking-[0.18em] text-muted mb-2 px-1">
@@ -343,15 +383,24 @@ export const ShortlistGame: React.FC<Props> = ({ onExit }) => {
 
     // ---------------- BOARD (the signature screen) ----------------
     if (stage === 'BOARD') {
+        const clockRunning = secs !== TIMER_OFF && !outOfClues;
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title={`Case ${caseIdx + 1} of ${CASES}`} onBack={() => setStage('SETUP')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 overflow-y-auto px-2 pb-4">
                     <div className="max-w-[340px] mx-auto w-full flex items-center justify-between mb-2.5">
                         <Lives />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted">
-                            {left} left on your board
-                        </span>
+                        {clockRunning ? (
+                            <span className="text-[11px] font-black tabular-nums flex items-center gap-1.5"
+                                style={{ color: secondsLeft <= 5 ? WRONG : 'var(--c-ink)' }}>
+                                <Timer size={12} style={{ color: secondsLeft <= 5 ? WRONG : ACCENT }} />
+                                {secondsLeft}s to the next clue
+                            </span>
+                        ) : (
+                            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted">
+                                {left} left on your board
+                            </span>
+                        )}
                     </div>
 
                     {/* the clue tape */}

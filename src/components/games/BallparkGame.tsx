@@ -6,7 +6,7 @@ import {
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { shouldAutoExpandRules } from '../../services/firstPlay';
-import { playDing, playBuzzEnd, playReveal, playPop } from '../../services/audio';
+import { playDing, playBuzzEnd, playReveal, playPop, playTick } from '../../services/audio';
 import { hapticLight, hapticSuccess, hapticError, hapticHeavy } from '../../services/haptics';
 import { shareResultCard } from '../../services/shareCard';
 import { statsStore } from '../../services/statsStore';
@@ -14,7 +14,9 @@ import { gameNightService } from '../../services/gameNightService';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import EndScreen from '../ui/EndScreen';
 import RoomPanel from '../ui/RoomPanel';
-import { useRoom, stateForRound, leaveRoom, type Room, type RoomSession } from '../../services/roomService';
+import { useRoom, msUntil, stateForRound, leaveRoom, type Room, type RoomSession } from '../../services/roomService';
+import { useCountdown } from '../../hooks/useCountdown';
+import TimerSetting, { loadTimerPref, saveTimerPref, TIMER_OFF } from '../ui/TimerSetting';
 import { mulberry32, seededShuffle } from '../../services/seededRandom';
 import { GameType } from '../../types';
 
@@ -50,12 +52,21 @@ interface BallparkData { packs: Pack[]; }
 const dataPromise = import('../../data/ballpark.json').then(m => m.default as unknown as BallparkData);
 
 const QUESTIONS_PER_GAME = 8;
+// The bracket clock is ON by default. A bracket is a commitment, and left
+// untimed it is the kind of decision that expands to fill whatever time it is
+// given — the table talks itself from a Sniper down to a Wild one. 45s is long
+// enough to think and short enough to have to. It can be re-timed or turned
+// off entirely on the setup screen.
+const TIMER_KEY = 'ballpark_timer_secs';
+const DEFAULT_SECS = 45;
 const MAX_PLAYERS = 6;
 const STATS_ID = 'BALLPARK';
 const SOLO_NAME = 'You';
 
 const ACCENT_DARK = '#84CC16';   // lime-500 — unused by any other game
 const ACCENT_LIGHT = '#4D7C0F';  // lime-700, ~25% darker for white surfaces
+const URGENT_DARK = '#FB7185';   // the last five seconds of the bracket clock
+const URGENT_LIGHT = '#BE123C';
 
 // ---------------------------------------------------------------------------
 // Scoring. The bracket's RATIO (high / low) is what's priced — not its width —
@@ -120,10 +131,13 @@ const calibrate = (guesses: (Guess | null)[], answers: number[]): { verdict: str
 // drops in on top of them. Log scale is not decoration — it is the only way a
 // 1.2x bracket and a 40x bracket can share an axis and both stay readable.
 // ---------------------------------------------------------------------------
-interface LineRow { name: string; low: number; high: number; color: string; pts: number; hit: boolean; tier: string; }
+// `none` is a player who never committed a bracket — the clock caught them.
+// It is not a 1–1 bracket and must never be drawn as one: a bar at the bottom
+// of a log scale would read as a confident, precise, wrong answer.
+interface LineRow { name: string; low: number; high: number; color: string; pts: number; hit: boolean; tier: string; none?: boolean }
 
 const NumberLine: React.FC<{ rows: LineRow[]; answer: number; unit: string; revealed: boolean; light: boolean }> = ({ rows, answer, unit, revealed, light }) => {
-    const vals = rows.flatMap(r => [r.low, r.high]).concat(answer).filter(v => v > 0);
+    const vals = rows.filter(r => !r.none).flatMap(r => [r.low, r.high]).concat(answer).filter(v => v > 0);
     const lo = Math.max(Math.min(...vals) / 2.5, 1e-6);
     const hi = Math.max(...vals) * 2.5;
     const L = Math.log10(lo);
@@ -172,20 +186,22 @@ const NumberLine: React.FC<{ rows: LineRow[]; answer: number; unit: string; reve
                                 <div className="flex items-baseline justify-between mb-0.5 relative z-20">
                                     <span className="text-[11px] font-bold text-ink truncate max-w-[45%]">{r.name}</span>
                                     <span className="text-[10px] font-bold tabular-nums" style={{ color: r.hit ? r.color : 'var(--c-muted)' }}>
-                                        {fmt(r.low)}–{fmt(r.high)} · {r.hit ? `+${r.pts}` : '0'}
+                                        {r.none ? 'ran out of time · 0' : `${fmt(r.low)}–${fmt(r.high)} · ${r.hit ? `+${r.pts}` : '0'}`}
                                     </span>
                                 </div>
                                 <div className="relative h-3 rounded-full bg-surface-alt border border-divider overflow-hidden">
-                                    <div
-                                        className="absolute top-0 bottom-0 rounded-full transition-opacity duration-300"
-                                        style={{
-                                            left: `${left}%`,
-                                            width: `${width}%`,
-                                            background: r.color,
-                                            opacity: r.hit ? 0.95 : 0.3,
-                                            border: r.hit ? 'none' : `1px dashed ${r.color}`,
-                                        }}
-                                    />
+                                    {!r.none && (
+                                        <div
+                                            className="absolute top-0 bottom-0 rounded-full transition-opacity duration-300"
+                                            style={{
+                                                left: `${left}%`,
+                                                width: `${width}%`,
+                                                background: r.color,
+                                                opacity: r.hit ? 0.95 : 0.3,
+                                                border: r.hit ? 'none' : `1px dashed ${r.color}`,
+                                            }}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         );
@@ -201,6 +217,7 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
     const { theme } = useTheme();
     const light = theme === 'light';
     const ACCENT = light ? ACCENT_LIGHT : ACCENT_DARK;
+    const URGENT = light ? URGENT_LIGHT : URGENT_DARK;
     const TIER_C = light ? TIER_LIGHT : TIER_DARK;
     const PLAYER_C = light ? PLAYER_LIGHT : PLAYER_DARK;
 
@@ -220,6 +237,12 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
     const [highStr, setHighStr] = useState('');
     const [revealed, setRevealed] = useState(false);
     const [shareMsg, setShareMsg] = useState('');
+    const [secs, setSecs] = useState(() => loadTimerPref(TIMER_KEY, DEFAULT_SECS, true));
+    // Live rounds count down to the ROOM's deadline as it stood when this phone
+    // started the question, not to the round length — a phone that polled the
+    // new round a second late still locks out with everyone else.
+    const [liveMs, setLiveMs] = useState(0);
+    const timerOn = secs !== TIMER_OFF;
 
     // Live (separate phones). `session` is null until a room starts, which is
     // also what keeps this component and RoomPanel from both polling.
@@ -235,6 +258,13 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
         setSession(null);
         setStage('SETUP');
     };
+
+    // In a room the HOST's clock governs everyone — the deadline is a property
+    // of the round, not of each phone's preference. A guest whose own timer is
+    // off must still lock out with the room (otherwise they hang the reveal),
+    // and a guest whose timer is on must not buzz when the host started an
+    // untimed round (deadlineAt null → liveMs 0, which would fire instantly).
+    const clockOn = live ? liveMs > 0 : timerOn;
 
     const named = players.map(p => p.trim()).filter(Boolean).slice(0, MAX_PLAYERS);
     // One unnamed player is the solo game — Ballpark should be tappable
@@ -326,13 +356,22 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
         setLowStr(''); setHighStr('');
         setRevealed(false);
         setShareMsg('');
+        setLiveMs(msUntil(r.meta.deadlineAt));
         setSession(s);
         setStage('BRACKET');
     };
 
-    const lockBracket = () => {
+    // Everything this player has banked BEFORE the question in play. Sent with
+    // every patch so a late joiner's row still reads right (see scoresByPlayer).
+    const liveTotalSoFar = (): number => guesses.reduce((sum, row, qi) => {
+        if (qi >= qIdx) return sum;
+        const g = row?.[mySeat];
+        return sum + (g && questions[qi] ? scoreFor(g.low, g.high, questions[qi].a) : 0);
+    }, 0);
+
+    const lockBracket = (onTime = false) => {
         if (!validBracket) return;
-        hapticLight(); playDing();
+        if (!onTime) { hapticLight(); playDing(); }
 
         if (live) {
             // Post the bracket and wait. Every phone scores its OWN answers, so
@@ -340,17 +379,12 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
             // history for that player — which is what keeps the leaderboard
             // right for someone who joined late or refreshed mid-game.
             const gained = question ? scoreFor(low, high, question.a) : 0;
-            const prior = guesses.reduce((sum, row, qi) => {
-                if (qi >= qIdx) return sum;
-                const g = row?.[mySeat];
-                return sum + (g && questions[qi] ? scoreFor(g.low, g.high, questions[qi].a) : 0);
-            }, 0);
             setGuesses(g => {
                 const next = g.map(row => [...row]);
                 next[qIdx][mySeat] = { low, high };
                 return next;
             });
-            void room.patch({ low, high, total: prior + gained });
+            void room.patch({ low, high, done: 1, total: liveTotalSoFar() + gained });
             setLowStr(''); setHighStr('');
             setStage('LOCKED');
             return;
@@ -371,6 +405,42 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
         }
     };
 
+    // Out of time. A bracket already typed is worth committing — the player
+    // made that call, the clock only stopped them fiddling with it — so it
+    // locks as-is. Nothing valid on screen means no bracket for this question:
+    // zero points, exactly like a miss, and the round still has to move on.
+    const timeUp = () => {
+        hapticHeavy(); playBuzzEnd();
+        if (validBracket) { lockBracket(true); return; }
+        if (live) {
+            // `done` is what the reveal gate reads, so a phone that ran out of
+            // time still counts as "in" — otherwise one distracted player
+            // freezes the whole room on a question nobody can leave.
+            setLowStr(''); setHighStr('');
+            void room.patch({ low: 0, high: 0, done: 1, total: liveTotalSoFar() });
+            setStage('LOCKED');
+            return;
+        }
+        setLowStr(''); setHighStr('');
+        if (turn + 1 < roster.length) {
+            setTurn(turn + 1);
+            setStage('HANDOFF');
+        } else {
+            setRevealed(false);
+            setStage('REVEAL');
+        }
+    };
+    const timeUpRef = useRef(timeUp);
+    timeUpRef.current = timeUp;
+
+    const { secondsLeft } = useCountdown({
+        running: clockOn && stage === 'BRACKET' && Boolean(question),
+        durationMs: live ? liveMs : secs * 1000,
+        restartKey: live ? `live-${qIdx}` : `${qIdx}-${turn}`,
+        onSecond: sec => { if (sec > 0 && sec <= 5) playTick(0.12); },
+        onExpire: () => timeUpRef.current(),
+    });
+
     // Everyone's bracket for the question now in play, straight off the room.
     // Read through stateForRound so a bracket left over from the previous
     // question can never be mistaken for an answer to this one — without that
@@ -385,6 +455,16 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
         });
     };
 
+    // Who has finished with this question — which is NOT the same as who has a
+    // bracket. A player whose clock ran out with nothing typed is done and
+    // scores nothing; gating the reveal on a non-null bracket would leave the
+    // room waiting on them forever.
+    const liveDone = (): boolean[] => {
+        const r = room.room;
+        if (!r) return [];
+        return r.players.map(p => Number(stateForRound(p, r.meta.round).done) === 1);
+    };
+
     // The reveal waits for the whole room. Committing blind is the entire
     // point of playing this on separate phones, so the truth may not drop
     // until nobody can still be influenced by seeing it.
@@ -392,8 +472,9 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
         if (!live || stage !== 'LOCKED') return;
         const r = room.room;
         if (!r) return;
+        const done = liveDone();
+        if (done.length === 0 || done.some(d => !d)) return;
         const brackets = liveBrackets();
-        if (brackets.length === 0 || brackets.some(b => b === null)) return;
         setGuesses(g => {
             const next = g.map(row => [...row]);
             const target = Math.max(0, r.meta.round - 1);
@@ -426,6 +507,7 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
         setQIdx(target);
         setLowStr(''); setHighStr('');
         setRevealed(false);
+        setLiveMs(msUntil(r.meta.deadlineAt));
         setStage('BRACKET');
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [room.room, live, qIdx, questions.length]);
@@ -455,7 +537,7 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
             // Only the host moves the room on; every other phone follows the
             // round number. Two devices advancing independently is how a room
             // ends up on two different questions.
-            void room.host({ round: qIdx + 2 });
+            void room.host({ round: qIdx + 2, durationMs: timerOn ? secs * 1000 : null });
             return;
         }
         setQIdx(qIdx + 1);
@@ -515,11 +597,20 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
 
                     <div className="max-w-[340px] mx-auto w-full">
                         <TeamRosterRow teams={players} onTeamsChange={setPlayers} noun="Player" max={MAX_PLAYERS} />
-                        <p className="text-center text-[11px] text-muted mt-1 mb-4">
+                        <p className="text-center text-[11px] text-muted mt-1 mb-3">
                             {named.length >= 2
                                 ? `${named.length} players — pass the phone, brackets stay private.`
                                 : 'Playing solo. Add 2+ names for pass-and-play.'}
                         </p>
+                        <div className="flex justify-center mb-4">
+                            <TimerSetting
+                                duration={secs}
+                                accent={ACCENT}
+                                allowOff
+                                unit="bracket"
+                                onPick={v => { setSecs(v); saveTimerPref(TIMER_KEY, v); }}
+                            />
+                        </div>
                     </div>
 
                     <div className="max-w-[340px] mx-auto w-full mb-5">
@@ -598,8 +689,19 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
                         accent="lime"
                         config={{ packId }}
                         minPlayers={2}
+                        startDurationMs={timerOn ? secs * 1000 : undefined}
                         hostControls={
                             <div>
+                                <div className="flex items-center justify-between mb-3">
+                                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted">Clock</p>
+                                    <TimerSetting
+                                        duration={secs}
+                                        accent={ACCENT}
+                                        allowOff
+                                        unit="bracket"
+                                        onPick={v => { setSecs(v); saveTimerPref(TIMER_KEY, v); }}
+                                    />
+                                </div>
                                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted mb-2">Pack</p>
                                 <div className="grid gap-2">
                                     {data.packs.map(p => (
@@ -621,8 +723,8 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
 
     // ---------------- LOCKED (committed, waiting on the room) ----------------
     if (stage === 'LOCKED' && question) {
-        const brackets = liveBrackets();
-        const waiting = (room.room?.players ?? []).filter((_, i) => !brackets[i]);
+        const done = liveDone();
+        const waiting = (room.room?.players ?? []).filter((_, i) => !done[i]);
         const mine = guesses[qIdx]?.[mySeat] ?? null;
         return (
             <div className="h-full flex flex-col animate-fade-in">
@@ -682,6 +784,8 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
 
     // ---------------- BRACKET ----------------
     if (stage === 'BRACKET' && question) {
+        const fullSecs = live ? Math.max(1, Math.round(liveMs / 1000)) : secs;
+        const clockPct = Math.max(0, Math.min(100, (secondsLeft / fullSecs) * 100));
         const badgeColor = validBracket ? (low === high ? (light ? '#B8922F' : '#EFC050') : TIER_C[liveTier!.label]) : 'var(--c-muted)';
         const badgeLabel = validBracket ? (low === high ? 'Bullseye or bust' : liveTier!.label) : 'Set your range';
         const badgeBlurb = validBracket
@@ -692,6 +796,22 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title={`Question ${qIdx + 1} of ${questions.length}`} onBack={live ? exitLive : () => setStage('SETUP')} onHome={onExit} confirmOnExit />
                 <div className="flex-1 overflow-y-auto px-2 pb-8">
+                    {clockOn && (
+                        <div className="max-w-[340px] mx-auto w-full mb-2.5">
+                            <div className="flex items-center justify-between mb-1">
+                                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted">
+                                    {validBracket ? 'Locks in as typed' : 'Nothing typed scores nothing'}
+                                </span>
+                                <span className="text-sm font-black tabular-nums" style={{ color: secondsLeft <= 5 ? URGENT : 'var(--c-ink)' }}>
+                                    {secondsLeft}s
+                                </span>
+                            </div>
+                            <div className="h-1.5 rounded-full bg-surface-alt overflow-hidden">
+                                <div className="h-full rounded-full transition-none"
+                                    style={{ width: `${clockPct}%`, background: secondsLeft <= 5 ? URGENT : ACCENT }} />
+                            </div>
+                        </div>
+                    )}
                     {live ? (
                         <p className="text-center text-[10px] font-bold uppercase tracking-[0.25em] mb-2" style={{ color: ACCENT }}>
                             Everyone brackets now · {roster.length} playing
@@ -745,7 +865,7 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
                             </span>
                         </div>
 
-                        <Button onClick={lockBracket} disabled={!validBracket} fullWidth className="h-14 text-lg mt-4">
+                        <Button onClick={() => lockBracket()} disabled={!validBracket} fullWidth className="h-14 text-lg mt-4">
                             <Crosshair className="inline mr-2" size={19} /> Lock the bracket
                         </Button>
                         {lowStr !== '' && highStr !== '' && !validBracket && (
@@ -768,6 +888,7 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
                 name: n, low: lo, high: hi, color: PLAYER_C[i % PLAYER_C.length],
                 pts: g ? scoreFor(lo, hi, question.a) : 0, hit,
                 tier: g ? (lo === hi ? 'Bullseye' : tierFor(lo, hi).label) : 'Wild',
+                none: !g,
             };
         });
         const last = qIdx + 1 >= questions.length;
@@ -791,7 +912,9 @@ export const BallparkGame: React.FC<Props> = ({ onExit }) => {
                     <p className="text-center text-[11px] text-muted mt-4">
                         {rows.some(r => r.hit)
                             ? rows.filter(r => r.hit).map(r => (r.tier === 'Bullseye' ? `${r.name} named it exactly` : `${r.name} landed a ${r.tier.toLowerCase()} bracket`)).join(' · ')
-                            : 'Nobody caught it. The truth was outside every bracket.'}
+                            : rows.every(r => r.none)
+                                ? 'No bracket went in before the clock did.'
+                                : 'Nobody caught it. The truth was outside every bracket.'}
                     </p>
 
                     {live && !room.isHost && !last ? (

@@ -268,6 +268,39 @@ export function placeCard(
     return { state: next, correct, truth };
 }
 
+/**
+ * The optional turn clock ran out: the card is discarded unplayed and counted
+ * as a miss, and a replacement is drawn while the pile lasts — exactly what a
+ * wrong placement costs, because running the table out of time IS the wrong
+ * answer arriving late.
+ *
+ * This exists rather than calling `placeCard` with a knowingly-wrong gap: the
+ * player chose no gap, and a fabricated one would make the verdict screen
+ * ("it belonged just below X") answer a question nobody asked. `truth` is
+ * still reported, so the table learns where the card really sat.
+ *
+ * Same invariant discipline as every other mutation — checked on its own
+ * result, not merely at construction (notes/05).
+ */
+export function timeoutCard(
+    s: GameState, cards: readonly LineCard[], player: number, cardIdx: number,
+): PlaceOutcome {
+    const hand = s.hands[player];
+    if (!hand || !hand.includes(cardIdx)) {
+        throw new LineInvariantError(`player ${player} does not hold card ${cardIdx}`);
+    }
+    const hands = s.hands.map((h, p) => (p === player ? h.filter(i => i !== cardIdx) : [...h]));
+    const draw = [...s.draw];
+    const discard = [...s.discard, cardIdx];
+    const misses = [...s.misses];
+    misses[player] += 1;
+    if (draw.length) hands[player].push(draw.shift()!);
+
+    const next: GameState = { ...s, hands, discard, draw, misses };
+    assertLine(next, cards);
+    return { state: next, correct: false, truth: correctGap(s.order, cards, cardIdx) };
+}
+
 /** Solo keeps drawing, so its terminator is lives spent (or a deck run dry). */
 export const soloOver = (s: GameState): boolean =>
     s.misses[0] >= SOLO_LIVES || s.hands[0].length === 0;
