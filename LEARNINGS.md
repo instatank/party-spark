@@ -148,3 +148,11 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (pending — answer at next wrap)
 - Quiz question: A test finds a button by its visible text. Name two ordinary, correct UI changes that would break it while the app still works perfectly — and what should the test aim at instead?
 - Internalized: no
+
+### 2026-09-07 — Nothing stored and "turn it off" were the same value, so the clock I shipped ON shipped OFF
+- What happened: three games got an optional timer, and "off" needed a value to save. I used zero. The problem is that a setting nobody has ever touched reads back as *nothing*, and the code that turns that into a number turns nothing into zero — the exact value I had just given a meaning to. So a player who had never opened the timer sheet looked, to the app, exactly like a player who had deliberately switched the clock off. Ballpark is the one game where the clock is meant to be on out of the box, and it would have shipped off for every new player. Every test I had written passed. What caught it was opening the screen and reading the chip: it said "No timer" on a fresh install.
+- Concept: a setting has three states, not two — *never chosen*, *chosen: this*, and *chosen: nothing/off* — and the third one needs a value that cannot collide with the first. Reaching for zero (or an empty string, or false) puts "the user decided" and "the user never decided" in the same box, and the failure is invisible precisely because it only affects people with a clean slate, which is nobody on a machine you have already used. The general habit: check whether the setting EXISTS before you read what it says. And the reason a screenshot found it and the tests did not is that all my tests set the value first — they were all the second kind of user.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: You add an "off" option to a setting and save it as 0. What is the one kind of user who will see the wrong behaviour, and why will your tests all pass?
+- Internalized: no
