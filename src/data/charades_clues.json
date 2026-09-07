@@ -1,0 +1,2296 @@
+{
+ "version": 1,
+ "kinds": {
+  "SITUATION": "Situation",
+  "MOVIE": "Movie",
+  "TV": "TV Show",
+  "PHRASE": "Saying",
+  "PERSON": "Person",
+  "JOB": "Job",
+  "ANIMAL": "Animal"
+ },
+ "packs": [
+  {
+   "id": "scenes",
+   "name": "Situations",
+   "description": "Little disasters, acted out in full.",
+   "clues": [
+    {
+     "t": "Blowing out the candles on a birthday cake",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Trying to open a jar that will not budge",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Walking a dog that has spotted a squirrel",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Eating a bowl of noodles that are far too long",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Putting up an umbrella in heavy wind",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Carrying far too many shopping bags at once",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Fighting off a wasp at a picnic",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Falling asleep standing up on a packed train",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Trying to get the last bit of ketchup out of the bottle",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Getting brain freeze from ice cream",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Pulling on jeans that are one size too small",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Taking a selfie and hating every single one",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Chasing a hat that the wind has taken",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Struggling to fold a fitted bedsheet",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Waiting for a kettle that will not boil",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Sneaking in at 3am trying not to wake the house",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Eating something far too spicy and pretending it is fine",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Realising mid-wave that the person was waving at someone behind you",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Assembling flat-pack furniture with one screw left over",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A tourist ordering food in a language they do not speak",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Getting your headphone wire caught on a door handle",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Trying to look busy when the boss walks past",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Waking up late and realising you have missed your flight",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Pretending you remember someone's name",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A first date where the food arrives far too hot",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Getting a wedding ring stuck on your finger",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Losing a contact lens on a crowded floor",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Reversing a car into a space that is much too small",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Being stuck in a lift with a stranger",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Trying to swat a mosquito in the dark at 2am",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Blowing up a balloon and letting it fly around the room",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Bargaining hard with a street vendor and walking away",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Realising you have left your wallet at home at the till",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Getting caught dancing in the mirror",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Teaching someone to drive a manual car",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Being the only person who does not know the dance steps",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Trying to take a group photo on a timer and missing it",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Dropping your phone into a puddle and fishing it out",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Squeezing onto a lift that is already full",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Watching a horror film through your fingers",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Waiting for a bus in the rain that never comes",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Sitting an exam you have not revised for",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A magician whose trick has gone badly wrong",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Setting off a shop alarm on the way out with nothing stolen",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Getting your bag stuck in the train doors",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Somebody spoiling the ending of a film you are watching",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Cooking a meal while reading the recipe off a phone",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Being served a dish you absolutely did not order",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Trying to leave a party without saying goodbye to anyone",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A scuba diver who has just noticed the shark behind them",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "An astronaut trying to eat soup in zero gravity",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A tightrope walker halfway across who has lost their nerve",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A newsreader whose autocue has stopped working",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A chef whose kitchen is on fire but the guests must not know",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A pickpocket who has just picked the wrong pocket",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A ventriloquist whose dummy has started arguing back",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A statue in a park pretending not to be alive",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "Someone realising mid-speech that their flies are undone",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A bomb disposal expert choosing between two wires",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A mime trapped in an invisible box that is shrinking",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A conductor leading an orchestra that keeps speeding up",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "Someone whose parachute has failed and is opening the reserve",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A waiter carrying a tray of drinks across a very slippery floor",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A shepherd whose sheep have all wandered in different directions",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A goalkeeper facing a penalty in a shootout",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A sculptor discovering a crack in a nearly finished statue",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "Someone stuck in quicksand slowly giving up",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "An air traffic controller landing two planes at once",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A fisherman who has hooked something much bigger than the boat",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A puppeteer whose strings have got tangled",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "Somebody being slowly frozen into a block of ice",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A surgeon who has dropped something inside the patient",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A lion tamer whose whip has just snapped in half",
+     "k": "SITUATION",
+     "d": 3
+    }
+   ]
+  },
+  {
+   "id": "screen",
+   "name": "Screen",
+   "description": "Films and shows with something to actually do.",
+   "clues": [
+    {
+     "t": "Jurassic Park",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "The Lion King",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "Titanic",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "Jaws",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "Home Alone",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "Finding Nemo",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "Frozen",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "Toy Story",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "The Karate Kid",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "Snakes on a Plane",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "Back to the Future",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Raiders of the Lost Ark",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Pirates of the Caribbean",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "The Wizard of Oz",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Singin' in the Rain",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Dead Poets Society",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "The Silence of the Lambs",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "One Flew Over the Cuckoo's Nest",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "The Shawshank Redemption",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Catch Me If You Can",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "The Devil Wears Prada",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Kill Bill",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Mad Max: Fury Road",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "The Grand Budapest Hotel",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Eternal Sunshine of the Spotless Mind",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "The Curious Case of Benjamin Button",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "No Country for Old Men",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "There Will Be Blood",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Everything Everywhere All at Once",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "The Good, the Bad and the Ugly",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Twelve Angry Men",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Rear Window",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "The Truman Show",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Groundhog Day",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "The Sixth Sense",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "A Quiet Place",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Life of Pi",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Cast Away",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "The Martian",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Apollo 13",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Free Solo",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Slumdog Millionaire",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Crouching Tiger, Hidden Dragon",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Willy Wonka and the Chocolate Factory",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Beauty and the Beast",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "How to Train Your Dragon",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Monsters, Inc.",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "The Incredibles",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Ratatouille",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Inside Out",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Up",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Wall-E",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Kung Fu Panda",
+     "k": "MOVIE",
+     "d": 1
+    },
+    {
+     "t": "Night at the Museum",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Honey, I Shrunk the Kids",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Mrs. Doubtfire",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "The Blair Witch Project",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "The Texas Chain Saw Massacre",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Weekend at Bernie's",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Planet of the Apes",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "2001: A Space Odyssey",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Close Encounters of the Third Kind",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Rise of the Planet of the Apes",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "The Hunt for Red October",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Saving Private Ryan",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Bridge on the River Kwai",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "The Great Escape",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Ocean's Eleven",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "The Italian Job",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Mission: Impossible",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Top Gun: Maverick",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Dances with Wolves",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "The Fast and the Furious",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Pride and Prejudice",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Little Women",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Mamma Mia!",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "La La Land",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "The Greatest Showman",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Whiplash",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Black Swan",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Billy Elliot",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Chariots of Fire",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Cool Runnings",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Cobra Kai",
+     "k": "TV",
+     "d": 3
+    },
+    {
+     "t": "Breaking Bad",
+     "k": "TV",
+     "d": 2
+    },
+    {
+     "t": "Stranger Things",
+     "k": "TV",
+     "d": 2
+    },
+    {
+     "t": "Squid Game",
+     "k": "TV",
+     "d": 2
+    },
+    {
+     "t": "Game of Thrones",
+     "k": "TV",
+     "d": 2
+    },
+    {
+     "t": "The Great British Bake Off",
+     "k": "TV",
+     "d": 2
+    },
+    {
+     "t": "Friends",
+     "k": "TV",
+     "d": 3
+    },
+    {
+     "t": "The Office",
+     "k": "TV",
+     "d": 3
+    },
+    {
+     "t": "Money Heist",
+     "k": "TV",
+     "d": 2
+    },
+    {
+     "t": "Wednesday",
+     "k": "TV",
+     "d": 2
+    }
+   ]
+  },
+  {
+   "id": "desi",
+   "name": "Desi",
+   "description": "Hindi cinema, plus scenes only India has.",
+   "clues": [
+    {
+     "t": "Dilwale Dulhania Le Jayenge",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Kabhi Khushi Kabhie Gham",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Kuch Kuch Hota Hai",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Hum Aapke Hain Koun",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Kal Ho Naa Ho",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Jab We Met",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Zindagi Na Milegi Dobara",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Dil Chahta Hai",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Taare Zameen Par",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "3 Idiots",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Munna Bhai M.B.B.S.",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Lage Raho Munna Bhai",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Chak De! India",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Bhaag Milkha Bhaag",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Lagaan",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Swades",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Rang De Basanti",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Gully Boy",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Queen",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "English Vinglish",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Piku",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Bajrangi Bhaijaan",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Hera Pheri",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Andaz Apna Apna",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Jaane Bhi Do Yaaro",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Chupke Chupke",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Golmaal",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Bhool Bhulaiyaa",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Padosan",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Sholay",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Mother India",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Mughal-e-Azam",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Mr. India",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Koi... Mil Gaya",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Dhoom",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Krrish",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Singham",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Dangal",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Sultan",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Mary Kom",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Uri: The Surgical Strike",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Border",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Drishyam",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Andhadhun",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Kahaani",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Stree",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Tumbbad",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Baahubali",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "RRR",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Pushpa",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Kantara",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "The Lunchbox",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Barfi!",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Om Shanti Om",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Vicky Donor",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Badhaai Ho",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Hindi Medium",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "OMG: Oh My God!",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Haggling with an auto driver who refuses to use the meter",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Eating a pani puri that is far too big for your mouth",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Touching the feet of every relative at a wedding",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Trying to fit one more person onto a crowded local train",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Being fed by an aunty who will not accept that you are full",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Riding a scooter with the whole family on it",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Getting a head massage at the barber",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Bargaining in a market and walking away to be called back",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Making chai and pouring it from a great height",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Dodging cows in the middle of the road",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Filling a bucket because the water only comes on for an hour",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Doing the hook step at a sangeet with no idea of the moves",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Waving a wedding card at someone you barely know",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "Eating a thali with your hands and running out of hands",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Flying a kite and cutting someone else's string",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Queuing at a temple that has no queue",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "Being interrogated by relatives about when you will get married",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A power cut in the middle of a cricket match",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Trying to open a coconut without the right knife",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Bathing a very unwilling street dog",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Yeh Jawaani Hai Deewani",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Jaane Tu... Ya Jaane Na",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Amar Akbar Anthony",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Hum Saath-Saath Hain",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Rab Ne Bana Di Jodi",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Chennai Express",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Band Baaja Baaraat",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Kapoor & Sons",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Dear Zindagi",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Bareilly Ki Barfi",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Khosla Ka Ghosla",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Delhi Belly",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Jo Jeeta Wohi Sikandar",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Qayamat Se Qayamat Tak",
+     "k": "MOVIE",
+     "d": 3
+    },
+    {
+     "t": "Ek Tha Tiger",
+     "k": "MOVIE",
+     "d": 2
+    },
+    {
+     "t": "Sitting through a three-hour wedding ceremony on the floor",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Squeezing past everyone in a cinema row after the film has started",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Losing your slippers outside a temple",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Rescuing your phone from a very determined monkey",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Sharing one umbrella between three people in monsoon rain",
+     "k": "SITUATION",
+     "d": 2
+    }
+   ]
+  },
+  {
+   "id": "sayings",
+   "name": "Sayings",
+   "description": "Idioms the whole room can shout.",
+   "clues": [
+    {
+     "t": "Kill two birds with one stone",
+     "k": "PHRASE",
+     "d": 1
+    },
+    {
+     "t": "Let the cat out of the bag",
+     "k": "PHRASE",
+     "d": 1
+    },
+    {
+     "t": "It's raining cats and dogs",
+     "k": "PHRASE",
+     "d": 1
+    },
+    {
+     "t": "Break a leg",
+     "k": "PHRASE",
+     "d": 1
+    },
+    {
+     "t": "Piece of cake",
+     "k": "PHRASE",
+     "d": 1
+    },
+    {
+     "t": "Cold feet",
+     "k": "PHRASE",
+     "d": 1
+    },
+    {
+     "t": "Hit the nail on the head",
+     "k": "PHRASE",
+     "d": 1
+    },
+    {
+     "t": "Head in the clouds",
+     "k": "PHRASE",
+     "d": 1
+    },
+    {
+     "t": "Butterflies in your stomach",
+     "k": "PHRASE",
+     "d": 1
+    },
+    {
+     "t": "Two left feet",
+     "k": "PHRASE",
+     "d": 1
+    },
+    {
+     "t": "The elephant in the room",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Bite off more than you can chew",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Spill the beans",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Barking up the wrong tree",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Throw in the towel",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Burning the midnight oil",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Walking on eggshells",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Caught red-handed",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Pull the wool over your eyes",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "A wolf in sheep's clothing",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Don't put all your eggs in one basket",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "The early bird catches the worm",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Don't count your chickens before they hatch",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "When pigs fly",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "A storm in a teacup",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Bury your head in the sand",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Straight from the horse's mouth",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Beating around the bush",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "The last straw",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Add fuel to the fire",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Jumping the gun",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Saved by the bell",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Back to square one",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Under the weather",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Over the moon",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Down in the dumps",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Sitting on the fence",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Behind closed doors",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Once in a blue moon",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "A blessing in disguise",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Every cloud has a silver lining",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Actions speak louder than words",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Curiosity killed the cat",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Too many cooks spoil the broth",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "A watched pot never boils",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Cry over spilt milk",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Take it with a pinch of salt",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Put your foot in your mouth",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Costs an arm and a leg",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Face the music",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Music to my ears",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "On thin ice",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Pull yourself together",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Rome wasn't built in a day",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "The ball is in your court",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Time flies when you're having fun",
+     "k": "PHRASE",
+     "d": 3
+    },
+    {
+     "t": "Bull in a china shop",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Fish out of water",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Snake in the grass",
+     "k": "PHRASE",
+     "d": 2
+    },
+    {
+     "t": "Like a deer in the headlights",
+     "k": "PHRASE",
+     "d": 2
+    }
+   ]
+  },
+  {
+   "id": "characters",
+   "name": "People & Jobs",
+   "description": "Somebody at work, or somebody famous.",
+   "clues": [
+    {
+     "t": "A traffic policeman in the middle of a busy junction",
+     "k": "JOB",
+     "d": 1
+    },
+    {
+     "t": "A dentist working on a patient who will not open wide",
+     "k": "JOB",
+     "d": 1
+    },
+    {
+     "t": "A hairdresser giving a haircut nobody asked for",
+     "k": "JOB",
+     "d": 1
+    },
+    {
+     "t": "A tailor measuring a customer who keeps moving",
+     "k": "JOB",
+     "d": 2
+    },
+    {
+     "t": "A weather presenter in front of a map",
+     "k": "JOB",
+     "d": 2
+    },
+    {
+     "t": "A butcher chopping through something very tough",
+     "k": "JOB",
+     "d": 2
+    },
+    {
+     "t": "A referee sending a player off",
+     "k": "JOB",
+     "d": 1
+    },
+    {
+     "t": "A lifeguard spotting someone in trouble",
+     "k": "JOB",
+     "d": 2
+    },
+    {
+     "t": "A courtroom judge losing patience",
+     "k": "JOB",
+     "d": 2
+    },
+    {
+     "t": "An auctioneer taking bids faster and faster",
+     "k": "JOB",
+     "d": 3
+    },
+    {
+     "t": "A ballet dancer warming up at the barre",
+     "k": "JOB",
+     "d": 2
+    },
+    {
+     "t": "A blacksmith hammering a horseshoe",
+     "k": "JOB",
+     "d": 2
+    },
+    {
+     "t": "A window cleaner on a very high building",
+     "k": "JOB",
+     "d": 2
+    },
+    {
+     "t": "A beekeeper opening a hive",
+     "k": "JOB",
+     "d": 2
+    },
+    {
+     "t": "A snake charmer whose snake is not interested",
+     "k": "JOB",
+     "d": 3
+    },
+    {
+     "t": "A librarian shushing an entire room",
+     "k": "JOB",
+     "d": 2
+    },
+    {
+     "t": "An archaeologist brushing dust off a find",
+     "k": "JOB",
+     "d": 3
+    },
+    {
+     "t": "A puppet on strings",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A robot running out of battery",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "A scarecrow coming to life",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A vampire meeting the sunrise",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A zombie learning to walk again",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "A mermaid trying to walk on land",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A genie granting a wish nobody wanted",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A superhero changing in a phone box",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A cowboy at high noon",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A pirate with a wooden leg and a parrot",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "A knight in armour that has rusted shut",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "A sumo wrestler sizing up an opponent",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A matador and a bull",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "An Egyptian mummy waking up",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A caveman discovering fire",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A sleepwalker wandering through a house",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Charlie Chaplin",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Mr. Bean",
+     "k": "PERSON",
+     "d": 1
+    },
+    {
+     "t": "Sherlock Holmes",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "James Bond",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Superman",
+     "k": "PERSON",
+     "d": 1
+    },
+    {
+     "t": "Spider-Man",
+     "k": "PERSON",
+     "d": 1
+    },
+    {
+     "t": "The Hulk",
+     "k": "PERSON",
+     "d": 1
+    },
+    {
+     "t": "Batman",
+     "k": "PERSON",
+     "d": 1
+    },
+    {
+     "t": "Frankenstein's monster",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Michael Jackson",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Elvis Presley",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Usain Bolt",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Cristiano Ronaldo",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Sachin Tendulkar",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Mahatma Gandhi",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Albert Einstein",
+     "k": "PERSON",
+     "d": 3
+    },
+    {
+     "t": "Isaac Newton under the apple tree",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Napoleon Bonaparte",
+     "k": "PERSON",
+     "d": 3
+    },
+    {
+     "t": "Cleopatra",
+     "k": "PERSON",
+     "d": 3
+    },
+    {
+     "t": "Julius Caesar being stabbed in the senate",
+     "k": "PERSON",
+     "d": 3
+    },
+    {
+     "t": "Rapunzel letting down her hair",
+     "k": "PERSON",
+     "d": 1
+    },
+    {
+     "t": "Pinocchio telling a lie",
+     "k": "PERSON",
+     "d": 1
+    },
+    {
+     "t": "Humpty Dumpty",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Goldilocks trying all three chairs",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "The Pied Piper",
+     "k": "PERSON",
+     "d": 3
+    },
+    {
+     "t": "Robin Hood",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Santa Claus stuck in a chimney",
+     "k": "PERSON",
+     "d": 1
+    },
+    {
+     "t": "Hanuman lifting the mountain",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Krishna playing the flute",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Arjuna drawing his bow",
+     "k": "PERSON",
+     "d": 2
+    },
+    {
+     "t": "Ravana with all ten heads",
+     "k": "PERSON",
+     "d": 3
+    }
+   ]
+  },
+  {
+   "id": "family",
+   "name": "Family",
+   "description": "A seven-year-old can act it and guess it.",
+   "clues": [
+    {
+     "t": "Brushing your teeth",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Making a jam sandwich",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Building a sandcastle",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Blowing bubbles",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Riding a bike up a steep hill",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Flying a kite",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Swimming underwater",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Skipping with a rope",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Building a snowman",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Planting a seed and watching it grow",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Washing a very muddy dog",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Eating an ice cream that is melting fast",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Catching a butterfly in a net",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Doing a jigsaw puzzle with one piece missing",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Tying shoelaces for the first time",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Learning to whistle",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Hopping across stepping stones over a river",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Playing hide and seek and being found straight away",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Losing a tooth and putting it under the pillow",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Getting a splinter taken out",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Blowing up a beach ball",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Trying to carry a fish bowl without spilling it",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Waking up and finding it has snowed",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Painting a picture and getting paint everywhere",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Playing the drums on everything in the house",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Being tickled and trying not to laugh",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Racing a snail and losing",
+     "k": "SITUATION",
+     "d": 3
+    },
+    {
+     "t": "Sharing one packet of crisps between four people",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Making a den out of cushions and blankets",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Reaching for a biscuit on a very high shelf",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Trying to whistle for a dog that ignores you",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Walking barefoot across very hot sand",
+     "k": "SITUATION",
+     "d": 1
+    },
+    {
+     "t": "Getting chewing gum stuck in your hair",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Drinking a milkshake through a blocked straw",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "Pretending to be asleep when someone checks",
+     "k": "SITUATION",
+     "d": 2
+    },
+    {
+     "t": "A penguin waddling and sliding on its belly",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A kangaroo with a joey in its pouch",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A monkey stealing a banana",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "An elephant spraying water over itself",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A giraffe reaching the highest leaves",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A frog catching a fly with its tongue",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A tortoise slowly overtaking nothing at all",
+     "k": "ANIMAL",
+     "d": 2
+    },
+    {
+     "t": "A cheetah chasing and just missing",
+     "k": "ANIMAL",
+     "d": 2
+    },
+    {
+     "t": "A gorilla beating its chest",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A peacock fanning its tail",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A crocodile snapping its jaws shut",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A bear catching a salmon out of a river",
+     "k": "ANIMAL",
+     "d": 2
+    },
+    {
+     "t": "An owl turning its head all the way round",
+     "k": "ANIMAL",
+     "d": 2
+    },
+    {
+     "t": "A flamingo standing on one leg",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A sloth taking forever to move one arm",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A cat knocking things off a table one by one",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A dog chasing its own tail",
+     "k": "ANIMAL",
+     "d": 1
+    },
+    {
+     "t": "A hen laying an egg and announcing it",
+     "k": "ANIMAL",
+     "d": 2
+    },
+    {
+     "t": "A snake swallowing something far too big",
+     "k": "ANIMAL",
+     "d": 2
+    },
+    {
+     "t": "A woodpecker at a tree",
+     "k": "ANIMAL",
+     "d": 2
+    },
+    {
+     "t": "An octopus with too many arms to control",
+     "k": "ANIMAL",
+     "d": 3
+    },
+    {
+     "t": "A camel spitting",
+     "k": "ANIMAL",
+     "d": 2
+    },
+    {
+     "t": "A hedgehog rolling into a ball",
+     "k": "ANIMAL",
+     "d": 2
+    },
+    {
+     "t": "A baby bird learning to fly",
+     "k": "ANIMAL",
+     "d": 2
+    },
+    {
+     "t": "A crab walking sideways",
+     "k": "ANIMAL",
+     "d": 1
+    }
+   ]
+  }
+ ]
+}
