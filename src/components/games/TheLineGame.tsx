@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import {
     ArrowUpNarrowWide, ChevronRight, ChevronDown, ArrowRight, Share2, ScrollText,
-    Check, X, Plus, Heart, Users,
+    Check, X, Plus, Heart, Users, Timer,
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService } from '../../services/SessionManager';
 import { shouldAutoExpandRules } from '../../services/firstPlay';
-import { playDing, playBuzzer, playReveal, playPop, playPangram } from '../../services/audio';
+import { playDing, playBuzzer, playReveal, playPop, playPangram, playTick } from '../../services/audio';
 import { hapticLight, hapticSuccess, hapticError, hapticHeavy } from '../../services/haptics';
 import { shareResultCard } from '../../services/shareCard';
 import { statsStore } from '../../services/statsStore';
@@ -16,10 +16,12 @@ import TeamRosterRow from '../ui/TeamRosterRow';
 import EndScreen from '../ui/EndScreen';
 import RoomPanel from '../ui/RoomPanel';
 import { useRoom, leaveRoom, type Room, type RoomSession } from '../../services/roomService';
+import { useCountdown } from '../../hooks/useCountdown';
+import TimerSetting, { loadTimerPref, saveTimerPref, TIMER_OFF } from '../ui/TimerSetting';
 import { mulberry32 } from '../../services/seededRandom';
 import { GameType } from '../../types';
 import {
-    dealGame, placeCard, formatValue, soloOver, winnerSeat,
+    dealGame, placeCard, timeoutCard, formatValue, soloOver, winnerSeat,
     HAND_SIZE, SOLO_LIVES, MAX_PLAYERS,
     type GameState, type LineData, type LineDeck,
 } from '../../services/lineEngine';
@@ -49,10 +51,20 @@ const dataPromise = import('../../data/the_line.json').then(m => m.default as un
 const STATS_ID = 'THE_LINE';
 const SOLO_NAME = 'You';
 
+// The turn clock is OFF by default, and that is the design, not an oversight:
+// the argument at the table — "no, that's got to be heavier than a piano" — is
+// the game, and a clock ends it early. It exists for the groups who have one
+// player that never commits. Timing out costs exactly what a wrong placement
+// costs (see `timeoutCard`), so the clock changes the pace, never the maths.
+const TIMER_KEY = 'the_line_timer_secs';
+const DEFAULT_SECS = TIMER_OFF;
+
 const ACCENT_DARK = '#60A5FA';   // blue-400 — unused by any other game
 const ACCENT_LIGHT = '#1D4ED8';  // blue-700, ~25% darker for white surfaces
 
-interface Move { seat: number; cardIdx: number; gap: number; correct: boolean; truth: number; }
+// `gap` is -1 for a timeout: the player chose no gap, so there is no slot to
+// draw the rejected card in and nothing on the line to point at.
+interface Move { seat: number; cardIdx: number; gap: number; correct: boolean; truth: number; timedOut?: boolean }
 
 export const TheLineGame: React.FC<Props> = ({ onExit }) => {
     const { theme } = useTheme();
@@ -89,6 +101,7 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
     const [best, setBest] = useState(0);
     const [newBest, setNewBest] = useState(false);
     const [shareMsg, setShareMsg] = useState('');
+    const [secs, setSecs] = useState(() => loadTimerPref(TIMER_KEY, DEFAULT_SECS, true));
 
     const named = players.map(p => p.trim()).filter(Boolean).slice(0, MAX_PLAYERS);
     // In live play the roster IS the room, ordered by join time — so seat N is
@@ -251,6 +264,40 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
         window.setTimeout(() => { setFlip(true); playReveal(); }, 420);
     };
 
+    // Out of time. The card under consideration (or the first in hand if none
+    // was picked up) is discarded as a miss and replaced — the same price as
+    // aiming it at the wrong gap, because that is what running out of time is.
+    //
+    // Deliberately LOCAL-ONLY: the live move log is (turn → cardIdx, gap), and
+    // a timeout has no gap to publish. Encoding one would need a protocol
+    // change on both sides of the replay, so live rooms stay untimed and the
+    // lobby says so, rather than shipping a clock that desynchronises boards.
+    const timeUp = () => {
+        if (!state || !deck || move || live) return;
+        const actor = seat;
+        const card = sel !== null ? sel : state.hands[actor][0];
+        if (card === undefined) return;
+        const out = timeoutCard(state, deck.cards, actor, card);
+        setState(out.state);
+        setMove({ seat: actor, cardIdx: card, gap: -1, correct: false, truth: out.truth, timedOut: true });
+        setSel(null);
+        setFlip(false);
+        hapticHeavy(); playBuzzer();
+        window.setTimeout(() => { setFlip(true); playReveal(); }, 420);
+    };
+    const timeUpRef = useRef(timeUp);
+    timeUpRef.current = timeUp;
+
+    const { secondsLeft } = useCountdown({
+        // Only while a decision is actually being made: not during the reveal
+        // (nothing can be decided) and never in a live room.
+        running: secs !== TIMER_OFF && !live && stage === 'PLAY' && !move,
+        durationMs: secs * 1000,
+        restartKey: `${seat}-${state?.placed[seat] ?? 0}-${state?.misses[seat] ?? 0}`,
+        onSecond: n => { if (n > 0 && n <= 5) playTick(0.12); },
+        onExpire: () => timeUpRef.current(),
+    });
+
     const finish = (s: GameState) => {
         hapticHeavy();
         statsStore.recordPlay(STATS_ID);
@@ -333,6 +380,20 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                                 ? `${named.length} players — first to empty a hand of ${HAND_SIZE} wins.`
                                 : `Playing solo — how long can you make the line on ${SOLO_LIVES} lives? Add 2+ names for pass-and-play.`}
                         </p>
+                        <div className="flex flex-col items-center gap-1 mb-4">
+                            <TimerSetting
+                                duration={secs}
+                                accent={ACCENT}
+                                allowOff
+                                unit="turn"
+                                onPick={v => { setSecs(v); saveTimerPref(TIMER_KEY, v); }}
+                            />
+                            <p className="text-[10px] text-muted text-center px-4">
+                                {secs === TIMER_OFF
+                                    ? 'No clock — the argument at the table is the game.'
+                                    : 'Run out and the card is discarded as a miss.'}
+                            </p>
+                        </div>
                     </div>
 
                     <div className="max-w-[340px] mx-auto w-full mb-5">
@@ -473,6 +534,7 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
     // ---------------- PLAY — the signature screen ----------------
     if (stage === 'PLAY') {
         const showGaps = sel !== null && !move;
+        const clockRunning = secs !== TIMER_OFF && !live && !move;
         const selCard = sel !== null ? cards[sel] : null;
         const moveCard = move ? cards[move.cardIdx] : null;
         const lives = SOLO_LIVES - state.misses[0];
@@ -550,9 +612,17 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
 
                 {/* status strip */}
                 <div className="max-w-[340px] mx-auto w-full flex items-center justify-between mb-2 px-0.5">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted truncate">
-                        {deck.emoji} {deck.name}
-                    </span>
+                    {clockRunning ? (
+                        <span className="text-[11px] font-black tabular-nums flex items-center gap-1.5"
+                            style={{ color: secondsLeft <= 5 ? BAD : 'var(--c-ink)' }}>
+                            <Timer size={12} style={{ color: secondsLeft <= 5 ? BAD : ACCENT }} />
+                            {secondsLeft}s
+                        </span>
+                    ) : (
+                        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted truncate">
+                            {deck.emoji} {deck.name}
+                        </span>
+                    )}
                     {solo ? (
                         <span className="flex items-center gap-1">
                             {Array.from({ length: SOLO_LIVES }, (_, i) => (
@@ -565,6 +635,13 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                         </span>
                     )}
                 </div>
+
+                {clockRunning && (
+                    <div className="max-w-[340px] mx-auto w-full h-1 rounded-full bg-surface-alt overflow-hidden mb-2">
+                        <div className="h-full rounded-full transition-none"
+                            style={{ width: `${Math.max(0, Math.min(100, (secondsLeft / secs) * 100))}%`, background: secondsLeft <= 5 ? BAD : ACCENT }} />
+                    </div>
+                )}
 
                 {/* THE LINE */}
                 <div className="flex-1 min-h-0 overflow-y-auto px-2">
@@ -637,9 +714,11 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                                 <div className="flex items-center gap-2 mb-1">
                                     {move.correct
                                         ? <Check size={16} style={{ color: GOOD }} />
-                                        : <X size={16} style={{ color: BAD }} />}
+                                        : move.timedOut
+                                            ? <Timer size={16} style={{ color: BAD }} />
+                                            : <X size={16} style={{ color: BAD }} />}
                                     <p className="text-[11px] font-black uppercase tracking-[0.2em]" style={{ color: move.correct ? GOOD : BAD }}>
-                                        {move.correct ? 'Locked in' : 'Not quite'}
+                                        {move.correct ? 'Locked in' : move.timedOut ? "Time's up" : 'Not quite'}
                                     </p>
                                     <span className="ml-auto text-[12px] font-black tabular-nums" style={{ color: move.correct ? GOOD : BAD }}>
                                         {moveCard && formatValue(moveCard.value, deck.units)}
@@ -647,6 +726,11 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                                 </div>
                                 <p className="text-[13px] font-bold text-ink leading-snug">{moveCard?.label}</p>
                                 <p className="text-[12px] text-muted leading-snug mt-1">{moveCard?.note}</p>
+                                {move.timedOut && (
+                                    <p className="text-[11px] font-bold mt-1.5" style={{ color: BAD }}>
+                                        Discarded unplayed — it counts as a miss.
+                                    </p>
+                                )}
                                 {!move.correct && (
                                     <p className="text-[11px] font-bold mt-1.5" style={{ color: BAD }}>
                                         It belonged {move.truth === 0
