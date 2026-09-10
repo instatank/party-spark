@@ -1,27 +1,25 @@
-// One Clue charades — the deck built for a single 30/60s clue per turn.
+// The second Charades deck — a better-written version of the word list, kept
+// in its own file so it can be picked (and tested) separately from the
+// original one in games_data.json.
 //
-// The rapid-fire deck (games_data.json) and this one are deliberately NOT the
-// same content. Rapid fire wants "Titanic" — three seconds to read, three
-// seconds to pose, next card. A one-clue round wants something that can hold a
-// person's whole minute: a scene with a turn in it, a saying that breaks into
-// mimeable pieces, a film with something to actually DO. Mixing the two pools
-// is what made the old dataset feel wrong for the way this game gets played.
+// It plays through the EXACT SAME loop as the original deck: the card shows a
+// clue, Correct or Skip moves to the next one, the round ends when the clock
+// does. No extra screens. The only thing that differs is the writing — clues
+// with something to act rather than a noun to pose.
 //
 // Lazy-imported, like every other dataset here, so it stays its own chunk and
-// never lands in the initial bundle. It is also NOT part of games_data.json on
-// purpose — that file is the chunk Taboo shares, and Taboo has no use for this.
+// never lands in the initial bundle. It is deliberately NOT part of
+// games_data.json — that file is the chunk Taboo shares, and Taboo has no use
+// for this.
 
-/** Kinds are announced to the room before the clock starts. Standard charades
- *  practice, and the thing that makes a single 60-second clue fair. */
+/** Announced to the room before the actor starts. Standard charades practice. */
 export type ClueKind = 'SITUATION' | 'MOVIE' | 'TV' | 'PHRASE' | 'PERSON' | 'JOB' | 'ANIMAL';
 
 export interface Clue {
     /** The clue itself. */
     t: string;
-    /** What to announce to the room. */
+    /** What to announce. */
     k: ClueKind;
-    /** 1 warm-up · 2 standard · 3 brutal. */
-    d: 1 | 2 | 3;
 }
 
 export interface CluePack {
@@ -42,51 +40,32 @@ const cluesPromise: Promise<CharadesClueData> = import('../data/charades_clues.j
 
 export const loadCharadesClues = () => cluesPromise;
 
-/** The pseudo-pack id that means "every pack at once". */
-export const MIX_PACK = 'mix';
+/**
+ * The decks the picker offers. Only three are stored; `mixed` is the two movie
+ * packs combined at deal time, so no film is written down twice (the original
+ * deck used to store its mix that way, and shipped every title twice for it).
+ */
+export const MIXED_PACK = 'mixed';
+export const MOVIE_PACKS = ['hollywood', 'bollywood'] as const;
 
 export const packClues = (data: CharadesClueData, packId: string): Clue[] =>
-    packId === MIX_PACK
-        ? data.packs.flatMap(p => p.clues)
+    packId === MIXED_PACK
+        ? data.packs.filter(p => (MOVIE_PACKS as readonly string[]).includes(p.id)).flatMap(p => p.clues)
         : (data.packs.find(p => p.id === packId)?.clues ?? []);
 
-const shuffled = <T,>(xs: readonly T[]): T[] => {
-    const a = [...xs];
+/** Every deck the SETUP screen lists, in order. Mixed leads, as it does on the
+ *  original deck's picker. */
+export const packMenu = (data: CharadesClueData): { id: string; name: string; description: string }[] => [
+    { id: MIXED_PACK, name: 'Movie Mix', description: 'Hollywood and Bollywood together.' },
+    ...data.packs.map(({ id, name, description }) => ({ id, name, description })),
+];
+
+/** Deal a batch for one round: shuffled, no repeats, no ordering games. */
+export const dealClues = (pool: readonly Clue[], count: number): Clue[] => {
+    const a = [...pool];
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
     }
-    return a;
-};
-
-/**
- * Deal `count` clues with a deliberate difficulty CURVE rather than a uniform
- * draw. A uniform draw off a pack that is 60% tier-2 hands you six tier-2
- * clues and every round feels the same; the curve opens easy and ends hard, so
- * a match has a shape. Falls back to whatever is left if a tier runs dry.
- */
-export const dealClues = (pool: readonly Clue[], count: number): Clue[] => {
-    const byTier: Record<number, Clue[]> = { 1: [], 2: [], 3: [] };
-    for (const c of shuffled(pool)) byTier[c.d]?.push(c);
-
-    // The shape: first fifth warm-up, last third brutal, the rest standard.
-    const wanted: (1 | 2 | 3)[] = [];
-    for (let i = 0; i < count; i++) {
-        const p = count === 1 ? 0.5 : i / (count - 1);
-        wanted.push(p < 0.25 ? 1 : p < 0.7 ? 2 : 3);
-    }
-
-    const out: Clue[] = [];
-    const spares = () => shuffled([...byTier[1], ...byTier[2], ...byTier[3]]);
-    for (const tier of wanted) {
-        const next = byTier[tier].pop() ?? spares().pop();
-        if (!next) break;
-        // pop() off a spare list does not remove it from its own tier bucket
-        for (const t of [1, 2, 3]) {
-            const idx = byTier[t].indexOf(next);
-            if (idx >= 0) byTier[t].splice(idx, 1);
-        }
-        out.push(next);
-    }
-    return out;
+    return a.slice(0, count);
 };
