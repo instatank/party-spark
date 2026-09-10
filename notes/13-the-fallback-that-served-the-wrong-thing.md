@@ -73,7 +73,12 @@ Two habits fall out of this:
   is part of the dataset.
 
 The new deck's test (`tests/charadesClues.test.ts`) is written in that spirit: it
-does not assert clue texts, it asserts the deck's *shape* — under 12% one-word
-cards overall, under 30% in any pack, all three difficulty tiers stocked in
-every pack. Those are the properties a future "let's add 200 quick ones" would
-undo, and the only ones worth defending in CI.
+does not assert clue texts, it asserts the deck's *shape* — the general pack
+stays under 10% one-word cards, every pack holds at least a round's worth, and
+each pack stays inside its own lane. Those are the properties a future "let's
+add 200 quick ones" would undo, and the only ones worth defending in CI.
+
+*(Updated 2026-09-10: the deck was later reorganised into Hollywood / Bollywood
+/ Movie Mix / Everything Else, and the one-word bar moved onto the general pack
+alone — plenty of real films are called "Sholay". The lesson above is unchanged;
+only the shape being defended moved.)*
