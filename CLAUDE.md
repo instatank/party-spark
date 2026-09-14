@@ -384,6 +384,8 @@ Themes are **data in two paired files**, not a `switch`. Adding, retiring, or re
 
 **Seasons.** A theme is `evergreen`, a dated `window`, or `retired`. `availableThemes()` filters the picker; `resolveThemeKey()` rescues a stored pick that has since lapsed. Retired themes keep their server prompts **on purpose** — the PWA precaches the shell, so a phone that installed the app in June can still POST `worldcup` in September, and serving it beats a 500. Current windows: `figurine` to 2027-03-31, `digicam` to 2027-06-30, `diwali` to 2026-11-20 (Diwali is 8 Nov 2026; a test pins that the window actually covers the day).
 
+**Labels have ONE source.** `src/data/roastThemes.ts` is it. `RoastResult`'s theme badge used to keep its own `THEME_LABEL` map — a third copy — and it shipped to production rendering an empty badge on the seven new themes. Because `RoastTheme` is now `string` (correct: themes are data and rotate), `Record<RoastTheme, string>` is `Record<string, string>`, which accepts any key — so an exhaustive-looking map stops being exhaustive with no compiler complaint. Read the label from `themeByKey()`; never re-declare one.
+
 **Identity lock.** Every theme's caricature prompt carries `IDENTITY_LOCK`, and a test enforces it. It is the product's core promise — "that's clearly them", not "that looks like a version of them" — and image models drift toward generic idealised faces without it.
 
 **Image resolution.** `imageConfig.imageSize` is `'1K' | '2K' | '4K'`, defaulting to 1K. Single generations pin **2K**: it bills the same 1120 output tokens as 1K and carries four times the pixels, so the old no-config code was shipping 1K for the price of 2K on every roast. 4K is a real price step (2000 tokens) and is used only for composites.
