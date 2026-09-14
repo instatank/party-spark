@@ -222,3 +222,39 @@ export const resolveThemeKey = (key: string | undefined, now: Date = new Date())
     const first = availableThemes(now)[0];
     return first ? first.key : DEFAULT_THEME_KEY;
 };
+
+// ---------------------------------------------------------------------------
+// Collage selection
+// ---------------------------------------------------------------------------
+// Collage mode renders four themes as ONE composite image. Which four is a
+// random draw from whatever is in season, so the same photo gives a different
+// sheet every time — with twelve themes there are 495 possible sets, and that
+// variety IS the feature. A fixed set would make the second collage look like
+// the first.
+//
+// `rng` is injectable so tests can pin a draw. Production passes Math.random.
+
+export const COLLAGE_PANES = 4;
+
+/**
+ * Draw `count` DISTINCT in-season themes, in the order they will be assigned
+ * to quadrants. Returns fewer than `count` only if fewer are in season, which
+ * the caller must tolerate — a season could in principle close enough windows
+ * to drop the roster below four, and silently repeating a theme to pad the
+ * grid would be worse than a three-pane sheet.
+ */
+export const pickCollageThemes = (
+    count: number = COLLAGE_PANES,
+    now: Date = new Date(),
+    rng: () => number = Math.random,
+): RoastThemeMeta[] => {
+    const pool = availableThemes(now);
+    // Fisher-Yates on a copy — partial shuffle is enough, but the whole pass is
+    // cheap at this size and easier to read as obviously unbiased.
+    const shuffled = [...pool];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, Math.min(count, shuffled.length));
+};
