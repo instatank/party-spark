@@ -377,7 +377,7 @@ Themes are **data in two paired files**, not a `switch`. Adding, retiring, or re
 
 | File | Owns |
 |---|---|
-| `src/data/roastThemes.ts` | What a user may pick — key, label (**max 8 chars**, the 4-column grid depends on it), emoji, accent hex, blurb, `season`, `fidelity` |
+| `src/data/roastThemes.ts` | What a user may pick — key, label (**max 8 chars**, the 3-column grid depends on it), emoji, accent hex, blurb, `season`, `fidelity` |
 | `api/_lib/roast-themes.ts` | The prompts — `caricature()` and `roast()` per theme, the shared `IDENTITY_LOCK` paragraph, and `COMPOSITE_DIRECTIVES` (compact one-line versions used for composite panes) |
 
 **They are joined only by matching string keys.** A catalog entry with no server prompt does not crash — `getThemeDef` falls back to the default — so the user taps DIWALI and silently gets a generic caricature. That is invisible to the build, the typecheck and the browser drive, so `tests/roastThemes.test.ts` asserts parity in both directions **in CI**. If you add a theme, add it to both files or the test fails by name.
@@ -390,7 +390,7 @@ Themes are **data in two paired files**, not a `switch`. Adding, retiring, or re
 
 **Identity lock.** Every theme's caricature prompt carries `IDENTITY_LOCK`, and a test enforces it. It is the product's core promise — "that's clearly them", not "that looks like a version of them" — and image models drift toward generic idealised faces without it.
 
-**Image resolution.** `imageConfig.imageSize` is `'1K' | '2K' | '4K'`, defaulting to 1K. Single generations pin **2K**: it bills the same 1120 output tokens as 1K and carries four times the pixels, so the old no-config code was shipping 1K for the price of 2K on every roast. 4K is a real price step (2000 tokens) and is used only for composites.
+**Image resolution.** `imageConfig.imageSize` is `'1K' | '2K' | '4K'`, defaulting to 1K. Single generations pin **2K**: it bills the same 1120 output tokens as 1K and carries four times the pixels, so the old no-config code was shipping 1K for the price of 2K on every roast. 4K is a real price step (2000 tokens) and is currently used by **nothing**: composites tried it and could not finish inside the function budget, so they run at 2K too. Reaching for 4K again means raising `maxDuration` first and measuring.
 
 **Function duration is the binding constraint on image generation.** `vercel.json` sets `maxDuration` for `api/**/*.ts` — it was 30s, which a 4K four-pane composite could not finish inside. The failure looks like this from the outside: one `POST /api/ai` 504 alongside four 200s (the captions), and a generic "couldn't reach the AI" on the client. It is now **90s**, and composites generate at **2K**. Before raising composite resolution again, raise `maxDuration` to match and measure — the clock is the ceiling, not the price.
 
@@ -398,7 +398,9 @@ Themes are **data in two paired files**, not a `switch`. Adding, retiring, or re
 
 **The quadrant order exists ONCE**, as `QUADRANT_LABELS` in `src/services/imageQuadrants.ts`, next to the function that produces the rects. The prompt assigns themes in that order, `quadrantRects` returns them in it, and the chips name them in it. A fourth copy of this ordering in a component would mislabel every panel and read like the model ignoring the prompt.
 
-**Composites + the Roast Lab.** `roast_composite` renders up to four themes as ONE 2x2 image. Output images bill per image, not per pane, so four themes cost one billed image (~$0.24 at 4K) against four (~$0.54 at 2K). `src/services/imageQuadrants.ts` slices it back apart client-side — free, instant, no API. The **open question is fidelity, not cost**: cropping recovers pixels but not detail the model never generated for a face occupying an eighth of the frame. `#roast-lab` (hash route in `App.tsx`, never linked from Home) runs both paths on one photo and shows them side by side at identical size, with a crop-inset slider for tuning seams. ~$0.78 a run. **Not yet a product decision — the lab exists to make it one.**
+**The Roast Lab.** `#roast-lab` (hash route in `App.tsx`, never linked from Home) runs BOTH paths on one photo — one composite and four solo generations — and shows them side by side at identical display size, with a crop-inset slider for tuning seams. It generates at the same resolution the product ships, so what it asks you to judge is what users get. ~$0.67 a run.
+
+COLLAGE shipped as a product feature in #113, so the lab is no longer the only way to see a composite. It is still the sharper instrument, because it puts a pane next to a solo generation of the SAME theme on the SAME face — which a collage on its own cannot show you. **The fidelity question it exists to answer is still open**: cost was never in doubt, and cropping recovers pixels but not detail the model never generated for a face occupying an eighth of the frame. Nobody has yet compared the two side by side.
 
 ### Previously orphaned (deleted 2026-04-21)
 
@@ -530,7 +532,7 @@ Reconciled against code 2026-07-02. Several items from the 2026-04-21 audit were
 
 2. **NHIE has no Claude fallback yet.** `generateNeverHaveIEver` is Gemini-only. Same quota vulnerability TOD/MLT had before the port.
 
-3. **Multiplayer needs a Redis store provisioned on Vercel.** Until then `/api/room` falls back to an in-process Map, which cannot work across serverless instances — two phones in "the same" room never see each other, and the lobby shows an amber warning saying so. Browser steps in the Multiplayer section above. Four games are wired (Scramble, Ballpark, Target, The Line); Echo is the natural next one — it is turn-based, so it follows The Line's move-log pattern rather than the seed-only one.
+3. **Multiplayer: the Redis store IS provisioned** — production `/api/health` reports `roomStore: "redis"` (checked 2026-09-14), so the in-process-Map fallback is no longer what production runs. The fallback and its amber lobby warning still exist and still matter for `vercel dev` and for any deployment built before the store was connected, since env vars are per-deployment. Run `/api/room?action=selftest` on a deployment that misbehaves. Four games are wired (Scramble, Ballpark, Target, The Line); Echo is the natural next one — it is turn-based, so it follows The Line's move-log pattern rather than the seed-only one.
 
 4. **`npm run lint` fails with 62 pre-existing errors** (`no-explicit-any` in data-loading code, `react-refresh/only-export-components` in contexts/UI). Lint is therefore excluded from CI. Pay this down, then add `npm run lint` to `.github/workflows/ci.yml`.
 
