@@ -14,6 +14,7 @@
 
 import type { TabooCard } from '../types';
 import { callAI } from './aiClient';
+import { themeByKey } from '../data/roastThemes';
 
 // =============================================================================
 // Charades
@@ -219,7 +220,12 @@ export const generateContextualLies = async (topic: string, trueStory: string): 
 // Roast Me — image-based
 // =============================================================================
 
-export type RoastTheme = 'animate' | 'tabloid' | 'movie' | 'rock' | 'agra' | 'worldcup';
+// Theme keys are DATA, not a closed union — src/data/roastThemes.ts owns the
+// catalog and themes rotate in and out with the season. A literal union here
+// would have to be edited every time a theme is added or retired, and would
+// still be wrong for any client running an older build. `string` is the honest
+// type; themeByKey() is the runtime check.
+export type RoastTheme = string;
 
 // `team` only applies to the 'worldcup' theme. `variant` only applies to the
 // 'rock' theme ('punk' or 'classic'). Both are ignored by other themes — the
@@ -232,33 +238,42 @@ export const generateRoast = async (base64Image: string, theme: RoastTheme = 'an
 
 /**
  * Edit the image based on a theme or explicit prompt.
- * The UI currently passes themes via getCaricaturePrompt() below, but we now
- * prefer passing the theme key directly so the server owns the prompt text.
+ * Callers pass the theme KEY; the server owns the prompt text.
  * `team` is only meaningful when themeOrPrompt is 'worldcup'; `variant` only
  * when it is 'rock'.
  */
-export const editImage = async (base64Image: string, themeOrPrompt: string, team?: string, variant?: string): Promise<string | null> => {
-    // Backwards-compat: if callers pass a theme key, send it as `theme`; if they
-    // pass a full prompt string (legacy call sites), send as `prompt`.
-    const KNOWN_THEMES = ['animate', 'tabloid', 'movie', 'rock', 'agra', 'worldcup'];
-    const payload = KNOWN_THEMES.includes(themeOrPrompt)
-        ? { base64Image, theme: themeOrPrompt, team, variant }
-        : { base64Image, prompt: themeOrPrompt };
+export const editImage = async (
+    base64Image: string,
+    themeOrPrompt: string,
+    team?: string,
+    variant?: string,
+    imageSize?: string,
+): Promise<string | null> => {
+    // Backwards-compat: if callers pass a known theme key, send it as `theme`;
+    // if they pass a full prompt string (legacy call sites), send as `prompt`.
+    // The known-key check reads the catalog rather than a hardcoded list, so it
+    // cannot drift as themes rotate.
+    const payload = themeByKey(themeOrPrompt)
+        ? { base64Image, theme: themeOrPrompt, team, variant, imageSize }
+        : { base64Image, prompt: themeOrPrompt, imageSize };
     return callAI<string | null>('edit_image', payload);
 };
 
 /**
- * Helper still used client-side by some components to produce an image prompt.
- * Keeping it exported so existing call sites don't break; the server also has
- * a copy of this same mapping for when theme keys are passed through editImage.
+ * Generate up to four themes as ONE 2x2 composite image.
+ *
+ * Output images bill per image, not per pane, so this costs one image where
+ * four separate calls cost four. Used by the Roast Lab (#roast-lab) to test
+ * whether composite panes hold a recognisable face well enough to ship.
+ * Slice the result with cropQuadrants() from services/imageQuadrants.
  */
-export const getCaricaturePrompt = (theme: RoastTheme): string => {
-    // Minimal stub — the server now owns the real prompts. Components that
-    // still call this should migrate to passing the theme key directly to
-    // editImage(). Returning the theme key here is harmless because editImage
-    // will recognize it as a known theme and use the server-side prompt.
-    return theme;
-};
+export const generateComposite = async (
+    base64Image: string,
+    themes: string[],
+    imageSize?: string,
+): Promise<string | null> =>
+    callAI<string | null>('roast_composite', { base64Image, themes, imageSize });
+
 
 /**
  * Base64 cleanup helper — strips the data URL prefix if present.
