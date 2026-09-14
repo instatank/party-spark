@@ -88,7 +88,13 @@ const RoastLab: React.FC<{ onExit: () => void }> = ({ onExit }) => {
     // Re-slicing is free and instant — no regeneration — so the inset slider
     // can be dragged until the seams look right.
     const recrop = useCallback(async (src: string, nextInset: number, themes: RoastThemeMeta[]) => {
-        const panes = await cropQuadrants(src, nextInset);
+        let panes: string[] = [];
+        try {
+            panes = await cropQuadrants(src, nextInset);
+        } catch (err) {
+            console.error('[roast-lab] re-crop failed:', err);
+            return; // keep whatever is already on screen
+        }
         setResults((prev) =>
             prev
                 ? prev.map((r, i) => ({ ...r, pane: panes[i] ?? null }))
@@ -137,7 +143,19 @@ const RoastLab: React.FC<{ onExit: () => void }> = ({ onExit }) => {
 
             setComposite(compositeImg);
 
-            const panes = compositeImg ? await cropQuadrants(compositeImg, inset) : [];
+            // Slicing is the one step here that can throw (image decode), and
+            // by this point the generations are already paid for. Failing to
+            // crop must not discard four successful solo results, so the panes
+            // degrade to empty rather than taking the whole run down.
+            let panes: string[] = [];
+            if (compositeImg) {
+                try {
+                    panes = await cropQuadrants(compositeImg, inset);
+                } catch (cropErr) {
+                    console.error('[roast-lab] crop failed:', cropErr);
+                    setError('The composite came back but could not be sliced. Solo results below are unaffected.');
+                }
+            }
             setResults(
                 themes.map((theme, i) => ({
                     theme,
