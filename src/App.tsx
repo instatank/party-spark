@@ -20,6 +20,9 @@ const IcebreakerGame = lazy(() => import('./components/games/IcebreakerGame').th
 const ImposterGame = lazy(() => import('./components/games/ImposterGame').then(m => ({ default: m.ImposterGame })));
 const WouldYouRatherGame = lazy(() => import('./components/games/WouldYouRatherGame').then(m => ({ default: m.WouldYouRatherGame })));
 const RoastGame = lazy(() => import('./components/games/RoastGame'));
+// Diagnostic screen, reachable only at #roast-lab and never linked from Home.
+// Lazy like everything else, so it costs the normal app nothing.
+const RoastLab = lazy(() => import('./components/games/roast/RoastLab'));
 const MostLikelyToGame = lazy(() => import('./components/games/MostLikelyToGame').then(m => ({ default: m.MostLikelyToGame })));
 const WouldILieToYouGame = lazy(() => import('./components/games/WouldILieToYouGame').then(m => ({ default: m.WouldILieToYouGame })));
 const NeverHaveIEverGame = lazy(() => import('./components/games/NeverHaveIEverGame').then(m => ({ default: m.NeverHaveIEverGame })));
@@ -145,6 +148,19 @@ const App = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [activeGame, setActiveGame] = useState<GameType>(GameType.HOME);
 
+  // #roast-lab opens the composite-vs-solo comparison screen. A hash check
+  // rather than a route: it keeps the deliberate no-router constraint intact
+  // (see CLAUDE.md), keeps the lab off Home and out of the GameType enum, and
+  // still gives a URL that can be opened directly on a phone.
+  const [labOpen, setLabOpen] = useState(
+    () => typeof window !== 'undefined' && window.location.hash === '#roast-lab',
+  );
+  useEffect(() => {
+    const onHash = () => setLabOpen(window.location.hash === '#roast-lab');
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
   useEffect(() => {
     // Brief splash, then home. Kept short (and tap-skippable) — it runs on
     // every cold start, so it must never feel like a wait.
@@ -221,6 +237,23 @@ const App = () => {
         return <HomeMenu onSelectGame={setActiveGame} />;
     }
   };
+
+  // Checked before the splash: the lab is opened by typing a URL, and making
+  // that wait 1.5s for a splash it did not ask for would be silly.
+  if (labOpen) {
+    return (
+      <div className="min-h-screen bg-app text-ink p-4 md:p-6 lg:max-w-md lg:mx-auto shadow-2xl overflow-hidden">
+        <Suspense fallback={<GameLoading />}>
+          <RoastLab
+            onExit={() => {
+              window.location.hash = '';
+              setLabOpen(false);
+            }}
+          />
+        </Suspense>
+      </div>
+    );
+  }
 
   if (showSplash) {
     return <SplashScreen onSkip={() => setShowSplash(false)} />;

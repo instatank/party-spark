@@ -91,6 +91,16 @@ export const AI_REQUEST_SCHEMAS = {
         team: z.string().optional(),
         variant: z.string().optional(),
         prompt: z.string().optional(),  // fallback when no theme is given
+        imageSize: z.string().optional(), // '1K' | '2K' | '4K'; handler defaults to 2K
+    }),
+    // Four themes as one 2x2 image — see handlers-image.ts for why. `themes`
+    // is intentionally z.string() rather than an enum: theme keys rotate with
+    // the season, and an enum here would 400 a PWA-cached client the moment a
+    // theme retired. The handler resolves unknown keys to a default.
+    roast_composite: z.looseObject({
+        base64Image: z.string(),
+        themes: z.array(z.string()).optional(), // handler defaults to ['animate']; max 4 used
+        imageSize: z.string().optional(),       // handler defaults to 4K
     }),
     roast_or_toast: z.looseObject({
         image: z.string(),

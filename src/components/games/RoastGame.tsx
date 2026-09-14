@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import ImageUpload from './roast/ImageUpload';
 import RoastResult from './roast/RoastResult';
 import RoastLoading from './roast/RoastLoading';
-import { cleanBase64, generateRoast, editImage, getCaricaturePrompt, type RoastTheme } from '../../services/geminiService';
+import { cleanBase64, generateRoast, editImage, type RoastTheme } from '../../services/geminiService';
+import { resolveThemeKey } from '../../data/roastThemes';
 import { sessionService } from '../../services/SessionManager';
 import { AppState } from '../../types';
 
@@ -20,9 +21,9 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
     const [originalImage, setOriginalImage] = useState<string | null>(null);
     const [resultImage, setResultImage] = useState<string | null>(null);
     const [roastText, setRoastText] = useState<string>('');
-    const [theme, setTheme] = useState<RoastTheme>('animate');
-    // Only used by the worldcup theme — picks the national-team jersey/crowd.
-    const [team, setTeam] = useState<string>('argentina');
+    // Seeded through resolveThemeKey so a hardcoded default can never point at
+    // a theme that has since gone out of season.
+    const [theme, setTheme] = useState<RoastTheme>(() => resolveThemeKey('animate'));
 
     const handleImageSelected = async (base64: string) => {
         // RATE LIMIT CHECK
@@ -46,10 +47,12 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
             //   - other themes ignore `variant` on the server.
             const variant = theme === 'rock' ? (Math.random() < 0.5 ? 'punk' : 'classic') : undefined;
 
-            // `team` only matters for worldcup; `variant` only for rock.
-            const roastPromise = generateRoast(rawBase64, theme, team, variant);
-            const caricaturePrompt = getCaricaturePrompt(theme);
-            const caricaturePromise = editImage(rawBase64, caricaturePrompt, team, variant);
+            // `variant` only matters for rock; the server ignores it elsewhere.
+            // The theme KEY goes straight to the server, which owns the prompt
+            // text — the old getCaricaturePrompt() client stub was a no-op that
+            // just echoed the key back, so it has been dropped entirely.
+            const roastPromise = generateRoast(rawBase64, theme, undefined, variant);
+            const caricaturePromise = editImage(rawBase64, theme, undefined, variant);
 
             const [roast, caricature] = await Promise.all([roastPromise, caricaturePromise]);
 
@@ -83,8 +86,6 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                 <ImageUpload
                     theme={theme}
                     onThemeChange={setTheme}
-                    team={team}
-                    onTeamChange={setTeam}
                     onImageSelected={handleImageSelected}
                     onClose={onExit}
                 />

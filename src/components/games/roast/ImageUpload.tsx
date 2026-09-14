@@ -1,41 +1,26 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Camera as CameraIcon, Image as PhotoIcon, Sparkles, Home } from 'lucide-react';
 import type { RoastTheme } from '../../../services/geminiService';
+import { availableThemes } from '../../../data/roastThemes';
 
 interface ImageUploadProps {
     theme: RoastTheme;
     onThemeChange: (t: RoastTheme) => void;
-    team: string;
-    onTeamChange: (t: string) => void;
     onImageSelected: (base64: string) => void;
     onClose: () => void;
 }
 
-// Theme catalog mirrors roast-shared.jsx → ROAST_THEMES (key, label, emoji,
-// color). The color is the active-tile fill in the picker grid; rotations
-// are inline because they're per-index data, not utility classes.
-type ThemeMeta = { key: RoastTheme; label: string; emoji: string; color: string };
-const THEMES: ThemeMeta[] = [
-    { key: 'animate',  label: 'ANIMATE',    emoji: '🎨', color: '#E15B82' },
-    { key: 'tabloid',  label: 'TABLOID',    emoji: '📰', color: '#0F1E33' },
-    { key: 'movie',    label: 'MOVIE',      emoji: '🎬', color: '#D83A3A' },
-    { key: 'rock',     label: 'ROCK STAR',  emoji: '🎸', color: '#B91C1C' },
-    { key: 'agra',     label: 'ROYAL',      emoji: '🕌', color: '#B8922F' },
-    { key: 'worldcup', label: 'FIFA 2026',  emoji: '⚽', color: '#1D4ED8' },
-];
-const TILE_ROTATIONS = [-2, 1.5, -1, 2, -1.5, 1];
+// Theme tiles come from src/data/roastThemes.ts, filtered by season — the
+// picker only ever shows what is currently offered, so retiring a theme (as
+// FIFA 2026 was, once the tournament ended) is a data edit rather than a change
+// here. Rotations are per-index decoration and wrap with % so the grid keeps
+// working at any theme count as seasonal themes come and go.
+const TILE_ROTATIONS = [-2, 1.5, -1, 2, -1.5, 1, -1.2, 1.8];
 
-// Sub-options for the worldcup theme — picks the national-team kit + crowd.
-// Emoji is the flag; color is the active-chip background. India is the joke
-// option (they didn't qualify; the server roast leans into that).
-const WORLDCUP_TEAMS: { key: string; label: string; flag: string; color: string }[] = [
-    { key: 'argentina', label: 'Argentina', flag: '🇦🇷', color: '#6CB4EE' },
-    { key: 'brazil',    label: 'Brazil',    flag: '🇧🇷', color: '#FFD700' },
-    { key: 'england',   label: 'England',   flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', color: '#D62027' },
-    { key: 'india',     label: 'India',     flag: '🇮🇳', color: '#FF8C00' },
-];
-
-const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, team, onTeamChange, onImageSelected, onClose }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImageSelected, onClose }) => {
+    // Evaluated once per mount: seasonal windows turn over at midnight, and a
+    // grid that reshuffled mid-session would be worse than one a few hours stale.
+    const themes = useMemo(() => availableThemes(), []);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -190,66 +175,35 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, team, o
                     <div className="text-[10px] font-extrabold tracking-[0.16em] text-muted uppercase mb-2">
                         ★ Pick your sticker
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                        {THEMES.map((t, i) => {
+                    <div className="grid grid-cols-4 gap-1.5">
+                        {themes.map((t, i) => {
                             const active = t.key === theme;
-                            const baseRot = TILE_ROTATIONS[i];
+                            const baseRot = TILE_ROTATIONS[i % TILE_ROTATIONS.length];
                             return (
                                 <button
                                     key={t.key}
                                     onClick={() => onThemeChange(t.key)}
-                                    className="aspect-square rounded-xl border-2 border-ink flex flex-col items-center justify-center gap-1 transition-all"
+                                    className="aspect-square rounded-xl border-2 border-ink flex flex-col items-center justify-center gap-0.5 transition-all"
                                     style={{
                                         background: active ? t.color : 'var(--c-surface)',
                                         color: active ? '#FFFFFF' : 'var(--c-ink)',
-                                        boxShadow: active ? '4px 4px 0 var(--c-ink)' : '2px 2px 0 var(--c-ink)',
-                                        transform: active ? `rotate(${baseRot}deg) scale(1.02)` : `rotate(${baseRot * 0.4}deg)`,
+                                        boxShadow: active ? '3px 3px 0 var(--c-ink)' : '1.5px 1.5px 0 var(--c-ink)',
+                                        transform: active ? `rotate(${baseRot}deg) scale(1.04)` : `rotate(${baseRot * 0.4}deg)`,
                                     }}
                                 >
                                     <span
-                                        className="text-[44px] leading-none"
+                                        className="text-[30px] leading-none"
                                         style={{ filter: active ? 'drop-shadow(0 2px 0 rgba(0,0,0,0.25))' : 'none' }}
                                     >
                                         {t.emoji}
                                     </span>
-                                    <span className="font-display text-[18px] tracking-[0.04em] leading-none">
+                                    <span className="font-display text-[10px] tracking-[0.02em] leading-none">
                                         {t.label}
                                     </span>
                                 </button>
                             );
                         })}
                     </div>
-
-                    {/* Team picker — only when FIFA 2026 is selected. Sub-options
-                        pick the national-team jersey + crowd. India is the
-                        joke pick (server roast leans into "didn't qualify"). */}
-                    {theme === 'worldcup' && (
-                        <div className="mt-3">
-                            <div className="text-[10px] font-extrabold tracking-[0.16em] text-muted uppercase mb-1.5">
-                                ⚽ Pick your team
-                            </div>
-                            <div className="grid grid-cols-4 gap-1.5">
-                                {WORLDCUP_TEAMS.map(opt => {
-                                    const active = opt.key === team;
-                                    return (
-                                        <button
-                                            key={opt.key}
-                                            onClick={() => onTeamChange(opt.key)}
-                                            className="rounded-lg border-2 border-ink flex flex-col items-center justify-center gap-0.5 py-2 transition-all"
-                                            style={{
-                                                background: active ? opt.color : 'var(--c-surface)',
-                                                color: active ? '#FFFFFF' : 'var(--c-ink)',
-                                                boxShadow: active ? '3px 3px 0 var(--c-ink)' : '1.5px 1.5px 0 var(--c-ink)',
-                                            }}
-                                        >
-                                            <span className="text-xl leading-none">{opt.flag}</span>
-                                            <span className="font-display text-[12px] tracking-[0.04em] leading-none">{opt.label}</span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {/* Hero upload card — ember-filled sticker with sparkles */}

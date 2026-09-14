@@ -30,6 +30,7 @@ import {
 import {
     handleGenerateRoast,
     handleEditImage,
+    handleRoastComposite,
     handleRoastOrToast,
 } from './_lib/handlers-image.js';
 
@@ -56,6 +57,7 @@ const DISPATCH: Record<AIRequestType, (params: Record<string, unknown>) => Promi
     contextual_lies: (p) => handleContextualLies(p as unknown as Parameters<typeof handleContextualLies>[0]),
     generate_roast: (p) => handleGenerateRoast(p as unknown as Parameters<typeof handleGenerateRoast>[0]),
     edit_image: (p) => handleEditImage(p as unknown as Parameters<typeof handleEditImage>[0]),
+    roast_composite: (p) => handleRoastComposite(p as unknown as Parameters<typeof handleRoastComposite>[0]),
     roast_or_toast: (p) => handleRoastOrToast(p as unknown as Parameters<typeof handleRoastOrToast>[0]),
 };
 
