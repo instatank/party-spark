@@ -15,6 +15,10 @@ interface ImageUploadProps {
 // FIFA 2026 was, once the tournament ended) is a data edit rather than a change
 // here. Rotations are per-index decoration and wrap with % so the grid keeps
 // working at any theme count as seasonal themes come and go.
+//
+// Three across, so the tiles are big enough to read at a glance — twelve themes
+// make four rows. The label cap in the catalog (8 chars) is sized for THIS
+// width; going back to four columns would need it lowered again.
 const TILE_ROTATIONS = [-2, 1.5, -1, 2, -1.5, 1, -1.2, 1.8];
 
 const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImageSelected, onClose }) => {
@@ -175,7 +179,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
                     <div className="text-[10px] font-extrabold tracking-[0.16em] text-muted uppercase mb-2">
                         ★ Pick your sticker
                     </div>
-                    <div className="grid grid-cols-4 gap-1.5">
+                    <div className="grid grid-cols-3 gap-2">
                         {themes.map((t, i) => {
                             const active = t.key === theme;
                             const baseRot = TILE_ROTATIONS[i % TILE_ROTATIONS.length];
@@ -183,21 +187,21 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
                                 <button
                                     key={t.key}
                                     onClick={() => onThemeChange(t.key)}
-                                    className="aspect-square rounded-xl border-2 border-ink flex flex-col items-center justify-center gap-0.5 transition-all"
+                                    className="aspect-square rounded-xl border-2 border-ink flex flex-col items-center justify-center gap-1 transition-all"
                                     style={{
                                         background: active ? t.color : 'var(--c-surface)',
                                         color: active ? '#FFFFFF' : 'var(--c-ink)',
-                                        boxShadow: active ? '3px 3px 0 var(--c-ink)' : '1.5px 1.5px 0 var(--c-ink)',
+                                        boxShadow: active ? '4px 4px 0 var(--c-ink)' : '2px 2px 0 var(--c-ink)',
                                         transform: active ? `rotate(${baseRot}deg) scale(1.04)` : `rotate(${baseRot * 0.4}deg)`,
                                     }}
                                 >
                                     <span
-                                        className="text-[30px] leading-none"
+                                        className="text-[40px] leading-none"
                                         style={{ filter: active ? 'drop-shadow(0 2px 0 rgba(0,0,0,0.25))' : 'none' }}
                                     >
                                         {t.emoji}
                                     </span>
-                                    <span className="font-display text-[10px] tracking-[0.02em] leading-none">
+                                    <span className="font-display text-[15px] tracking-[0.03em] leading-none">
                                         {t.label}
                                     </span>
                                 </button>
