@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Download, Share2, RefreshCcw, Wand2, X, Skull, Home } from 'lucide-react';
 import { editImage, cleanBase64, type RoastTheme } from '../../../services/geminiService';
+import { themeByKey } from '../../../data/roastThemes';
 
 interface RoastResultProps {
     originalImage: string;
@@ -11,15 +12,6 @@ interface RoastResultProps {
     onReset: () => void;
     onClose: () => void;
 }
-
-const THEME_LABEL: Record<RoastTheme, string> = {
-    animate:  'ANIMATE',
-    tabloid:  'TABLOID',
-    movie:    'MOVIE',
-    rock:     'ROCK STAR',
-    agra:     'ROYAL',
-    worldcup: 'FIFA 2026',
-};
 
 // Refinement chips — preset stylistic modifiers fired through the same
 // editImage() backend the custom input uses. Order tracked so we can show
@@ -350,7 +342,7 @@ const RoastResult: React.FC<RoastResultProps> = ({ originalImage, resultImage, r
                         {/* Meta strip */}
                         <div className="flex items-center gap-1.5 mb-3.5">
                             <span className="font-display text-[11px] tracking-[0.06em] px-2 py-1 rounded-md bg-gold text-slate-900 border border-gold">
-                                {THEME_LABEL[theme]}
+                                {themeByKey(theme)?.label ?? theme.toUpperCase()}
                             </span>
                             <span
                                 className="px-2 py-1 rounded-md border border-roast-red flex items-center gap-0.5"
