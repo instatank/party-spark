@@ -1,6 +1,6 @@
 # PartySpark — Developer Context & Guidelines
 
-> **Last reconciled with code:** 2026-09-06 (**The Line** shipped as a top-level Home game — `TheLineGame.tsx` + `src/services/lineEngine.ts` + `src/data/the_line.json`, the roster's sequencing gap and its first game where a player never states a number at all, only a position. The engine holds THE LINE INVARIANT on the result of *every* mutation and is guarded in CI by `tests/lineEngine.test.ts`, which also pins the *distribution* (notes/07) — correct gaps must spread across the line, no fixed gap may be right more than a third of the time, and the starter must vary and never come from the deck's extremes. Also added `scripts/drive-the-line.mjs`, the `sequence` key to `getIcon`, `blue` as the game's accent, The Line to `scripts/drive-games.mjs` and to Game Night's eligible list, and the `lineFlip` / `lineGap` keyframes to `index.css`.)
+> **Last reconciled with code:** 2026-09-14 (**Roast Me rebuilt around a seasonal theme registry** — 6 themes became 12, FIFA 2026 retired now the tournament is over. Themes are DATA in two paired files: `src/data/roastThemes.ts` (what a user may pick — label, emoji, colour, season window, fidelity tier) and `api/_lib/roast-themes.ts` (the prompts, plus the shared `IDENTITY_LOCK` paragraph and the compact `COMPOSITE_DIRECTIVES`). They are joined only by matching string keys, so `tests/roastThemes.test.ts` asserts parity in CI — a catalog entry with no server prompt silently serves a generic caricature, which is invisible to a build and a typecheck. Also added: composite generation (`roast_composite`, four themes as one 2x2 billed image), `imageConfig.imageSize` on the image calls (single gens moved 1K → **2K, which costs the same and carries 4x the pixels**), `src/services/imageQuadrants.ts` to slice a composite back apart client-side, and the **Roast Lab** at `#roast-lab` — a hash-routed diagnostic screen that runs both paths on one photo and puts them side by side. `scripts/drive-roast-lab.mjs` drives the picker and the lab.)
 >
 If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 >
@@ -157,7 +157,7 @@ Always pass the `GameType` value.
 |---|---|---|---|---|
 | Charades | `CHARADES` | Describe without forbidden words | Gemini (refills) | Round timer editable via the shared `TimerSetting` chip on SETUP (default 60s, persisted) |
 | Taboo | `TABOO` | Word guessing with banned terms | Local + Gemini fallback | Round timer editable via the shared `TimerSetting` chip on the CATEGORY screen (default 60s, persisted) |
-| Roast Me | `ROAST` | AI roast from uploaded image | Gemini (image + text) | Uses image gen, can't swap to Claude |
+| Roast Me | `ROAST` | AI roast from uploaded image | Gemini (image + text) | **Adult-gated** (in `ADULT_GAME_IDS`, PIN 0438). 12 themes from the seasonal registry — see the Roast Me theme system below. Uses image gen, can't swap to Claude |
 | Imposter | `IMPOSTER` | Find the fake among friends | Gemini | |
 | Would You Rather | `WOULD_YOU_RATHER` | Paired dilemmas | Local static data | |
 | Most Likely To | `MOST_LIKELY_TO` | Vote on friends | **Claude → Gemini fallback** | Has "Create Your Vibe" AI custom deck (not PIN-gated; adult decks still are). Plays in 10-card rounds with a ROUND_END break screen (next 10 / change deck) |
@@ -179,6 +179,25 @@ Always pass the `GameType` value.
 | **5 Alive** | `FIVE_ALIVE` | Name N in N seconds, beat the bell | None (offline) | 5 descending rounds — name 5/4/3/2/1, timed 6/5/4/3/2s (extra second to read the clue) — perfect-round bonus, judge tallies. Easy + Hard category pools in `src/data/five_alive.json` (Easy = 124 mainstream + Indian-context; Hard = 106 recall-pressure categories). End-of-round bell + tick synthesized via Web Audio (no bundled assets); the landing screen uses the shared compact `TeamRosterRow` (collapsed gold prompt) for optional player names (persists across games via the shared session team store), difficulty picked after. Also has a "Just Play" no-scoring mode. |
 | **Linked** | `LINKED` | One connector word pairs with all 3 clues (e.g. water/down/rain → FALL) | None (offline) | Two modes: **Pass and Play** (60s per player, self-reported "Got it!"/"Skip", leaderboard, both flash the answer before advancing) and **Just Play** (no timer, group shout, Reveal → self-reported Correct/Incorrect tiles that score a running "solved" count and advance). Easy (78) + Hard (36) puzzle pools in `src/data/linked.json` — shape `{ clues: [3], answer, position? }` (`position` optional, defaults `'suffix'`; bundled data is all-suffix). Buzzer + tick + got-it ding synthesized via Web Audio. Per-puzzle session dedupe via `SessionManager`. |
 | **Scramble** | `JUMBLE` | Find as many words as possible from 7 scrambled letters before the timer | None (offline) | Display name is **Scramble**; the internal `GameType`, component (`JumbleGame`), engine (`jumbleEngine`), data (`jumble_sets.json`), and `jumble_*` localStorage keys all stay `JUMBLE`/`jumble` (renaming would reset saved bests + move the data path). PartySpark's first true **solo** game (also Pass-and-Play). **No authored content + no dictionary shipped** — a dev script (`scripts/build-jumble-sets.mjs`) runs the ENABLE word list (172k inflected words) + an OpenSubtitles top-50k frequency list (both cached gitignored under `scripts/.cache/`) once and bakes 300 easy + 250 hard 7-letter sets, each with its FULL answer key, into `src/data/jumble_sets.json` (~320KB, lazy-loaded via dynamic import so it's code-split out of the initial bundle). At play time validation = O(1) answer-key lookup + a local formability check; zero API, fully offline. Engine in `src/services/jumbleEngine.ts`. **Easy** is SEEDED from a common 7-letter word so its pangram is always a normal everyday word (never Scrabble-obscure); it accepts any real word but the end-screen "missed words" + % of max are measured against the common subset (`commonWords`). **Hard** = full ENABLE (obscure OK) + every word must use the amber **center** tile. Words must be 4+ letters (3-letter words excluded). Length-weighted scoring (4/5/6/7 = 2/4/6/10; 7-letter = pangram + celebration). User-set timer (30/60/90/120/custom 15–300s, persisted to localStorage). **Solo**: beat-your-best (localStorage per difficulty), end screen shows found + high-value missed words + pangram. **Pass and Play** (2–8): same letters + timer for all, pass-to-next gate, **unique-word scoring** (words found by 2+ players cancel) + leaderboard. To refresh/resize the set pack, re-run the build script (needs the dictionary; fetch it to `scripts/.cache/enable1.txt` if missing). |
+
+### Roast Me — the theme system
+
+Themes are **data in two paired files**, not a `switch`. Adding, retiring, or reseasoning one is an edit, never a refactor.
+
+| File | Owns |
+|---|---|
+| `src/data/roastThemes.ts` | What a user may pick — key, label (**max 8 chars**, the 4-column grid depends on it), emoji, accent hex, blurb, `season`, `fidelity` |
+| `api/_lib/roast-themes.ts` | The prompts — `caricature()` and `roast()` per theme, the shared `IDENTITY_LOCK` paragraph, and `COMPOSITE_DIRECTIVES` (compact one-line versions used for composite panes) |
+
+**They are joined only by matching string keys.** A catalog entry with no server prompt does not crash — `getThemeDef` falls back to the default — so the user taps DIWALI and silently gets a generic caricature. That is invisible to the build, the typecheck and the browser drive, so `tests/roastThemes.test.ts` asserts parity in both directions **in CI**. If you add a theme, add it to both files or the test fails by name.
+
+**Seasons.** A theme is `evergreen`, a dated `window`, or `retired`. `availableThemes()` filters the picker; `resolveThemeKey()` rescues a stored pick that has since lapsed. Retired themes keep their server prompts **on purpose** — the PWA precaches the shell, so a phone that installed the app in June can still POST `worldcup` in September, and serving it beats a 500. Current windows: `figurine` to 2027-03-31, `digicam` to 2027-06-30, `diwali` to 2026-11-20 (Diwali is 8 Nov 2026; a test pins that the window actually covers the day).
+
+**Identity lock.** Every theme's caricature prompt carries `IDENTITY_LOCK`, and a test enforces it. It is the product's core promise — "that's clearly them", not "that looks like a version of them" — and image models drift toward generic idealised faces without it.
+
+**Image resolution.** `imageConfig.imageSize` is `'1K' | '2K' | '4K'`, defaulting to 1K. Single generations pin **2K**: it bills the same 1120 output tokens as 1K and carries four times the pixels, so the old no-config code was shipping 1K for the price of 2K on every roast. 4K is a real price step (2000 tokens) and is used only for composites.
+
+**Composites + the Roast Lab.** `roast_composite` renders up to four themes as ONE 2x2 image. Output images bill per image, not per pane, so four themes cost one billed image (~$0.24 at 4K) against four (~$0.54 at 2K). `src/services/imageQuadrants.ts` slices it back apart client-side — free, instant, no API. The **open question is fidelity, not cost**: cropping recovers pixels but not detail the model never generated for a face occupying an eighth of the frame. `#roast-lab` (hash route in `App.tsx`, never linked from Home) runs both paths on one photo and shows them side by side at identical size, with a crop-inset slider for tuning seams. ~$0.78 a run. **Not yet a product decision — the lab exists to make it one.**
 
 ### Previously orphaned (deleted 2026-04-21)
 
@@ -211,7 +230,7 @@ Browser ─── fetch('/api/ai', {type, ...}) ───► Vercel Serverless F
 | `api/_lib/clients.ts` | Lazy SDK singletons (one GoogleGenAI + one Anthropic per cold start). |
 | `api/_lib/handlers-custom.ts` | Custom MLT + custom TOD. Tries Claude first, falls back to Gemini. |
 | `api/_lib/handlers-gemini.ts` | Charades, Taboo, NHIE, WILTY, Mafia, WYR, Imposter, MLT, contextual lies. |
-| `api/_lib/handlers-image.ts` | `generate_roast` (image → roast text), `edit_image` (image → caricature), `roast_or_toast`. |
+| `api/_lib/handlers-image.ts` | `generate_roast` (image → roast text), `edit_image` (image → caricature, 2K), `roast_composite` (four themes as one 2x2 4K image), `roast_or_toast`. Theme prompts live in `_lib/roast-themes.ts`. |
 | `src/services/aiClient.ts` | Single `callAI<T>(type, params)` helper that POSTs to `/api/ai`. |
 | `src/services/geminiService.ts` | **Despite the filename,** this file no longer calls Google directly. It's thin fetch wrappers around `callAI`. Filenames + exports preserved so no component imports break. |
 | `src/services/claudeService.ts` | Same pattern — fetch wrappers. Kept for backwards-compat with imports. |
@@ -276,9 +295,9 @@ The basic / env-var-switched mode was simplified out once advanced was validated
 
 - **Local dev:** `vercel dev` (runs both Vite AND serverless functions). Or `npm run dev` if you're only touching client UI.
 - **Local build:** `npm run build` (runs `tsc -b && vite build`)
-- **Tests:** `npm test` → vitest render smoke test + the Shortlist, Target and The Line engine invariants (`tests/App.smoke.test.tsx`: splash → home menu through the real module graph; jsdom, fetch/matchMedia stubbed in `tests/setup.ts`). Config in `vitest.config.ts` (deliberately separate from `vite.config.ts`).
+- **Tests:** `npm test` → vitest render smoke test + the Shortlist, Target and The Line engine invariants + the Roast theme-registry parity/season checks (`tests/roastThemes.test.ts`) (`tests/App.smoke.test.tsx`: splash → home menu through the real module graph; jsdom, fetch/matchMedia stubbed in `tests/setup.ts`). Config in `vitest.config.ts` (deliberately separate from `vite.config.ts`).
 - **CI:** `.github/workflows/ci.yml` — on push to `main` + PRs: `npm ci`, `npm run build`, `npm test`. **Lint is NOT in CI** — `npm run lint` currently fails with 62 pre-existing errors (mostly `no-explicit-any` and `react-refresh/only-export-components`); add it back once that debt is paid.
-- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens the 18 Play Now games headless — all 22 with `--tabs` — and fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) and `scripts/drive-the-tell.mjs` (plays a full 12-round game of The Tell and asserts every outcome branch) and `scripts/drive-nerve.mjs` (plays a best-of-3 of Nerve and asserts the ladder-escalation invariant) and `scripts/drive-house-rules.mjs` (plays a 9-law session and checks the app's scoring against an independently-computed tally) and `scripts/drive-ballpark.mjs` (a 3-player and a solo game, every expected score recomputed from the JSON) and `scripts/drive-echo.mjs` (asserts the chain-growth invariant at every replay) and `scripts/drive-shortlist.mjs` (re-derives every clue's meaning from the JSON rather than trusting the screen) and `scripts/drive-target.mjs` (re-solves every dealt board itself and replays the app's printed solution back through the UI) and `scripts/drive-the-line.mjs` (checks the rendered line rises by the JSON's values on every single turn, that the piles partition, and that no hand card leaks its number) against — the last three draw randomised content, so run them a few times — `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code.
+- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens the 18 Play Now games headless — all 22 with `--tabs` — and fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) and `scripts/drive-the-tell.mjs` (plays a full 12-round game of The Tell and asserts every outcome branch) and `scripts/drive-nerve.mjs` (plays a best-of-3 of Nerve and asserts the ladder-escalation invariant) and `scripts/drive-house-rules.mjs` (plays a 9-law session and checks the app's scoring against an independently-computed tally) and `scripts/drive-ballpark.mjs` (a 3-player and a solo game, every expected score recomputed from the JSON) and `scripts/drive-echo.mjs` (asserts the chain-growth invariant at every replay) and `scripts/drive-shortlist.mjs` (re-derives every clue's meaning from the JSON rather than trusting the screen) and `scripts/drive-target.mjs` (re-solves every dealt board itself and replays the app's printed solution back through the UI) and `scripts/drive-the-line.mjs` (checks the rendered line rises by the JSON's values on every single turn, that the piles partition, and that no hand card leaks its number) and `scripts/drive-roast-lab.mjs` (clears the 0438 gate, counts the picker's seasonal tiles, checks none overflow, and loads `#roast-lab`) against — the last three draw randomised content, so run them a few times — `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code.
 - **Deployment target:** Vercel, auto-triggered by `git push`
 - **Preview URL format:** `party-spark-git-{branch-slug}-{scope}.vercel.app` (has "Deployment Protection" enabled — you'll see a 401 on manifest.json that can be ignored)
 - **Production URL:** set by the user's Vercel project config (deployed from `main`)
@@ -346,6 +365,7 @@ src/
 │   ├── shortlistEngine.ts           # Shortlist runtime: generates each case's clue chain + holds the case invariant
 │   ├── targetEngine.ts              # Target runtime: deals a guaranteed-solvable puzzle AND solves it (shared legality rules)
 │   ├── lineEngine.ts                # The Line runtime: deals, judges a placement, and holds THE LINE INVARIANT on every mutation
+│   ├── imageQuadrants.ts            # Slices a 2x2 Roast composite back into four images (pure geometry + canvas)
 │   ├── audio.ts                     # Shared Web Audio synth kit + app-wide mute + compact haptic aliases
 │   ├── haptics.ts                   # hapticLight/Success/Error/Heavy (navigator.vibrate; no-op on iOS; respects the mute switch)
 │   ├── shareCard.ts                 # Canvas share cards + shareText (see Engagement layer)
@@ -358,10 +378,14 @@ src/
 └── index.css                        # Tailwind v4 @theme (custom props + keyframes only)
 
 api/_lib/schemas.ts                  # zod schema per /api/ai request type (see AI Services)
+api/_lib/roast-themes.ts             # Roast Me prompts + IDENTITY_LOCK + composite directives (import-free by design)
+src/data/roastThemes.ts              # Roast Me picker catalog + season windows (paired with the above; parity enforced in CI)
+src/components/games/roast/RoastLab.tsx  # #roast-lab composite-vs-solo comparison screen (not linked from Home)
 tests/App.smoke.test.tsx             # vitest render smoke test (run by CI)
 tests/shortlistEngine.test.ts        # vitest: Shortlist's case invariant over 9,000 generated cases (run by CI)
 tests/targetEngine.test.ts           # vitest: Target's deal invariant — every dealt puzzle solvable, every printed solution valid (run by CI)
 tests/lineEngine.test.ts             # vitest: The Line's ordering + partition invariant over hundreds of full games, plus its gap distribution (run by CI)
+tests/roastThemes.test.ts            # vitest: Roast theme catalog<->prompt parity, season windows, composite prompt + quadrant geometry (run by CI)
 .github/workflows/ci.yml             # CI: npm ci, build, test (lint excluded — see Known Issues)
 notes/                               # One lesson per file (what broke + fix); see notes/README.md
 scripts/build-jumble-sets.mjs        # DEV-only generator → src/data/jumble_sets.json (needs cached dicts under scripts/.cache/)
@@ -370,6 +394,7 @@ scripts/deep-drive.mjs               # DEV-only deep flows for the 6 timer games
 scripts/drive-the-tell.mjs           # DEV-only full 12-round drive of The Tell (both guess branches, bust, swap, Double Down, PIN gate)
 scripts/drive-nerve.mjs              # DEV-only best-of-3 drive of Nerve (fold + full-clear endings, ladder-order invariant, swap, PIN gate)
 scripts/drive-house-rules.mjs        # DEV-only 9-law drive of House Rules (Mark hit/miss/self-break scoring, book accumulation, {maker} substitution)
+scripts/drive-roast-lab.mjs          # DEV-only drive of the Roast picker (seasonal tile count, overflow) + the #roast-lab screen
 ```
 
 ## 🎓 End of Session Learning Recap
