@@ -26,8 +26,14 @@ import { ROAST_THEMES, isThemeAvailable, type RoastThemeMeta } from '../../../da
 // List prices for gemini-3-pro-image at the time of writing. Shown so a run's
 // cost is visible before it is spent, not to be authoritative — check current
 // pricing before making a budget decision on these numbers.
-const PRICE_4K = 0.24;
 const PRICE_2K = 0.134;
+
+// The lab generates its composite at the SAME resolution the product ships, so
+// what you judge here is what users get. 4K was tried and 504'd against the
+// function duration budget; it is still reachable by changing this constant and
+// raising maxDuration in vercel.json to match.
+const COMPOSITE_SIZE = '2K';
+const PRICE_COMPOSITE = PRICE_2K;
 
 const PANE_COUNT = 4;
 
@@ -125,7 +131,7 @@ const RoastLab: React.FC<{ onExit: () => void }> = ({ onExit }) => {
             // Both paths fire together so wall-clock is comparable and the run
             // is as fast as the slowest single call rather than their sum.
             const compositeStart = performance.now();
-            const compositePromise = generateComposite(raw, selected, '4K').then((img) => {
+            const compositePromise = generateComposite(raw, selected, COMPOSITE_SIZE).then((img) => {
                 setCompositeMs(performance.now() - compositeStart);
                 return img;
             });
@@ -264,7 +270,7 @@ const RoastLab: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                     {running ? 'GENERATING…' : 'RUN COMPARISON'}
                 </button>
                 <p className="text-[10px] text-muted mt-1.5 text-center">
-                    ~${(PRICE_4K + soloTotal).toFixed(2)} per run · ${PRICE_4K.toFixed(2)} composite (4K) + ${soloTotal.toFixed(2)} for {PANE_COUNT} solo (2K)
+                    ~${(PRICE_COMPOSITE + soloTotal).toFixed(2)} per run · ${PRICE_COMPOSITE.toFixed(2)} composite ({COMPOSITE_SIZE}) + ${soloTotal.toFixed(2)} for {PANE_COUNT} solo (2K)
                 </p>
             </section>
 

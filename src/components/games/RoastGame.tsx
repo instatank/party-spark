@@ -33,6 +33,11 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
     const [collageThemes, setCollageThemes] = useState<RoastThemeMeta[]>(() => pickCollageThemes());
     const [composite, setComposite] = useState<string | null>(null);
     const [captions, setCaptions] = useState<string[]>([]);
+    // The error screen used to always say "check your connection", which is an
+    // active misdiagnosis when the real cause is a server-side timeout — the
+    // user's connection was fine and retrying on the same path fails the same
+    // way. Carry a reason so the screen can say something true.
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleImageSelected = async (base64: string) => {
         // RATE LIMIT CHECK
@@ -71,6 +76,13 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                 if (!sheet) {
                     // No image means nothing to show — the captions alone are
                     // not the product. Surface the error rather than a blank sheet.
+                    // The captions coming back while the sheet did not is the
+                    // signature of the image call outrunning its time budget.
+                    setErrorMessage(
+                        texts.some(Boolean)
+                            ? 'The collage took too long to draw and the server gave up on it. Your connection is fine — try again, or use SINGLE mode.'
+                            : "Couldn't reach the AI. Check your connection and try again.",
+                    );
                     setAppState(AppState.ERROR);
                     return;
                 }
@@ -104,8 +116,8 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
 
         } catch (error) {
             console.error("Game error:", error);
+            setErrorMessage(null);
             setAppState(AppState.ERROR);
-            alert("Something went wrong. Make sure you are connected to the internet and your API key is valid.");
         }
     };
 
@@ -118,6 +130,7 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
         // A fresh draw on every redo — replaying a collage should not replay
         // the same four looks.
         setCollageThemes(pickCollageThemes());
+        setErrorMessage(null);
         setAppState(AppState.IDLE);
     };
 
@@ -146,7 +159,9 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                 <div className="w-full min-h-[600px] flex flex-col items-center justify-center px-6 text-center gap-3">
                     <div className="text-6xl mb-2">🤕</div>
                     <h3 className="font-display text-3xl tracking-wide text-ink">THE GRILL MALFUNCTIONED</h3>
-                    <p className="text-sm text-muted max-w-xs">Couldn't reach the AI. Check your connection and try again.</p>
+                    <p className="text-sm text-muted max-w-xs">
+                        {errorMessage || "Couldn't reach the AI. Check your connection and try again."}
+                    </p>
                     <div className="flex gap-3 mt-2">
                         <button onClick={handleReset} className="px-5 py-2.5 rounded-xl bg-roast-red text-white font-display text-sm tracking-wide">
                             TRY AGAIN

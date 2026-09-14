@@ -31,7 +31,14 @@ const IMAGE_MODEL = 'gemini-3-pro-image';
 // 4K is a real price step (2000 tokens), so it is opt-in and used only for
 // composites, where each pane is a quarter of the frame.
 const DEFAULT_IMAGE_SIZE = '2K';
-const COMPOSITE_IMAGE_SIZE = '4K';
+// Composites ship at 2K, not 4K. A 4K four-pane sheet did not finish inside
+// the function budget — it 504'd in production while the four caption calls
+// beside it returned 200, which is what a duration ceiling looks like from the
+// outside. 2K generates substantially faster, costs 1120 output tokens instead
+// of 2000, and still yields ~1024px panes, which is exactly the resolution a
+// single roast shipped at before this work. Raising it again means raising
+// maxDuration in vercel.json to match, and measuring rather than hoping.
+const COMPOSITE_IMAGE_SIZE = '2K';
 const VALID_IMAGE_SIZES = ['1K', '2K', '4K'];
 
 const normaliseImageSize = (requested: string | undefined, fallback: string): string =>
