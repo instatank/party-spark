@@ -110,6 +110,43 @@ const newPage = async () => {
     else note('✓ no tile overflows its box');
   }
 
+  // The picker grew to four rows of larger tiles, which pushes the upload card
+  // below the fold on a 667px-tall phone. That is fine ONLY as long as the page
+  // actually scrolls — the containers around this screen use overflow-hidden,
+  // and if one of them ever starts clipping instead, the primary action becomes
+  // unreachable and the game is dead on small phones with nothing in the
+  // console to say so.
+  {
+    const small = await browser.newPage();
+    await small.setViewport({ width: 375, height: 667 });
+    await small.goto(BASE, { waitUntil: 'networkidle2' });
+    await new Promise((r) => setTimeout(r, 1900));
+    await small.evaluate(() => {
+      const el = [...document.querySelectorAll('*')].find(
+        (n) => n.children.length === 0 && n.textContent.trim() === 'Roast Me',
+      );
+      (el?.closest('button') || el)?.click();
+    });
+    await new Promise((r) => setTimeout(r, 700));
+    const pin = await small.$$('input[type="tel"]');
+    for (let i = 0; i < pin.length; i++) await pin[i].type('0438'[i]);
+    await new Promise((r) => setTimeout(r, 1600));
+
+    await small.evaluate(() => window.scrollTo(0, 99999));
+    await new Promise((r) => setTimeout(r, 400));
+    const reachable = await small.evaluate(() => {
+      const up = [...document.querySelectorAll('*')].find(
+        (n) => n.children.length === 0 && n.textContent.trim() === 'UPLOAD',
+      );
+      if (!up) return false;
+      const b = up.getBoundingClientRect();
+      return b.top >= 0 && b.bottom <= window.innerHeight;
+    });
+    if (!reachable) fail('UPLOAD is unreachable at 375x667 even after scrolling');
+    else note('✓ upload stays reachable at 375x667 (below the fold, but scrollable)');
+    await small.close();
+  }
+
   // Tapping a theme must not throw and must visibly select.
   await page.evaluate(() => {
     const heading = [...document.querySelectorAll('*')].find(
