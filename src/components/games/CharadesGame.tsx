@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, use } from 'react';
 import { Button, ScreenHeader } from '../ui/Layout';
-import { Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles, Share2 } from 'lucide-react';
+import {
+    Timer, ThumbsUp, ThumbsDown, ChevronRight, Shuffle, Users, Film, Star, Sparkles, Share2,
+} from 'lucide-react';
 import EndScreen from '../ui/EndScreen';
 import { generateCharadesWords } from '../../services/geminiService';
 import { useContent } from '../../contexts/ContentContext';
@@ -17,6 +19,10 @@ import { gameNightService } from '../../services/gameNightService';
 import { shouldAutoExpandRules } from '../../services/firstPlay';
 import { useCountdown } from '../../hooks/useCountdown';
 import { hapticLight, hapticSuccess, hapticHeavy } from '../../services/haptics';
+import {
+    loadCharadesClues, packClues, dealClues, packMenu, MIXED_PACK,
+    type CharadesClueData,
+} from '../../services/charadesClues';
 
 // games_data.json is lazy-loaded via LocalGameService (one shared chunk with
 // Taboo). The fetch starts as soon as this game chunk loads; use() below
@@ -41,11 +47,42 @@ const TILES_LIGHT: Record<string, string> = {
     hollywood_movies:  '#1F77C9',
 };
 
+// ---------------------------------------------------------------------------
+// Which deck a round is dealt from. The LOOP IS THE SAME either way — card,
+// Correct or Skip, next card, until the clock runs out. Only the writing
+// differs: CLASSIC is the original short word list in games_data.json, ONE_CLUE
+// the richer deck in charades_clues.json. Keep it that way; extra screens
+// between the card and the next card were tried and taken back out.
+// ---------------------------------------------------------------------------
+type Format = 'RAPID' | 'ONE_CLUE';
+const FORMAT_KEY = 'charades_format';
+const loadFormat = (): Format => {
+    try { return localStorage.getItem(FORMAT_KEY) === 'ONE_CLUE' ? 'ONE_CLUE' : 'RAPID'; }
+    catch { return 'RAPID'; }
+};
+const saveFormat = (f: Format) => { try { localStorage.setItem(FORMAT_KEY, f); } catch { /* private mode */ } };
+
+// Icon + accent per One Clue deck — deliberately the same four colours the
+// Classic picker uses, since they are the same four decks. Names and blurbs
+// come from the JSON so the two can't drift; only presentation lives here (and
+// the hex goes through an inline style, so the Tailwind v4 JIT gotcha doesn't
+// apply).
+const PACK_META: Record<string, { Icon: typeof Sparkles; dark: string; light: string }> = {
+    [MIXED_PACK]: { Icon: Shuffle,  dark: '#94A3B8', light: '#475569' },
+    hollywood:    { Icon: Star,     dark: '#65B7F0', light: '#1F77C9' },
+    bollywood:    { Icon: Film,     dark: '#EC4899', light: '#C72D7F' },
+    general:      { Icon: Users,    dark: '#EFC050', light: '#B8922F' },
+};
+
+/** One card on the table. `kind` is only set on the One Clue deck, where it is
+ *  the category announced to the room ("Movie", "Saying"). */
+interface Card { text: string; kind?: string; }
+
 export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     const gamesDataRaw = use(gamesDataPromise);
     const { theme } = useTheme();
     const TILES_MAP = theme === 'light' ? TILES_LIGHT : TILES_DARK;
-    const [words, setWords] = useState<string[]>([]);
+    const [words, setWords] = useState<Card[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [gameState, setGameState] = useState<'SETUP' | 'TEAM_INTRO' | 'PLAYING' | 'SUMMARY'>('SETUP');
@@ -68,6 +105,36 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     // fire exactly once per game end, even across re-renders.
     const recordedRef = useRef(false);
 
+    // --- Deck choice ------------------------------------------------------
+    // `category` holds the chosen deck id for WHICHEVER format is live — a
+    // games_data category in Classic, a clue pack in One Clue — so the deal,
+    // the team rounds, the session dedupe and the summary are one code path
+    // rather than two.
+    const [format, setFormat] = useState<Format>(loadFormat);
+    const [clueData, setClueData] = useState<CharadesClueData | null>(null);
+    const [deckError, setDeckError] = useState(false);
+    const oneClue = format === 'ONE_CLUE';
+
+    // The deck list has to render before anything is dealt, so the JSON is
+    // fetched as soon as the format is flipped rather than on the tile tap.
+    // Its own chunk, and never touched at all in Classic.
+    useEffect(() => {
+        if (!oneClue || clueData || deckError) return;
+        // A failed chunk fetch (offline before the service worker has precached
+        // it) would otherwise leave the deck list on "Loading…" forever — a
+        // spinner is a lie once the request is already dead.
+        loadCharadesClues().then(setClueData).catch(() => setDeckError(true));
+    }, [oneClue, clueData, deckError]);
+
+    // Flipping decks resets the chosen tile, so a stale id from the other
+    // format can never reach the dealer (it would deal an empty round).
+    const pickFormat = (f: Format) => {
+        hapticLight();
+        setFormat(f);
+        saveFormat(f);
+        setCategory(f === 'ONE_CLUE' ? MIXED_PACK : 'mix_movies');
+    };
+
     // const categories = ["Movies", "Animals", "Actions", "Celebrities", "Objects"]; // Replaced by constant
     const categories = CHARADES_CATEGORIES;
 
@@ -88,6 +155,9 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         }
     };
 
+    /** Cards dealt per round, for either deck. */
+    const INITIAL_BATCH_SIZE = 30;
+
     // Optional `selectedCat` lets a tile tap immediately start with the tapped
     // category (avoids a stale-state read since setCategory is async and the
     // function would otherwise see the previous value).
@@ -95,6 +165,34 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
         const cat = selectedCat ?? category;
         if (selectedCat) setCategory(selectedCat);
         setLoading(true);
+
+        // One Clue deals from the second deck and stops there: it is hand
+        // authored, offline, and has no AI refill behind it.
+        if (oneClue) {
+            try {
+                const data = clueData ?? await loadCharadesClues();
+                if (!clueData) setClueData(data);
+                const pool = packClues(data, cat);
+                const fresh = sessionService.filterContent(
+                    GameType.CHARADES, `oneclue_${cat}`, pool, c => c.t,
+                );
+                // Session dedupe until the deck is nearly spent, then let it
+                // repeat rather than deal a short round.
+                const dealt = dealClues(fresh.length >= INITIAL_BATCH_SIZE ? fresh : pool, INITIAL_BATCH_SIZE);
+                setWords(dealt.map(c => ({ text: c.t, kind: data.kinds[c.k] })));
+            } catch (e) {
+                console.error('Failed to load charades clues', e);
+                setDeckError(true);
+                setLoading(false);
+                setGameState('SETUP');
+                return;
+            }
+            setLoading(false);
+            setGameState('PLAYING');
+            setScore(0);
+            setCurrentIndex(0);
+            return;
+        }
 
         // Prefetch for background to keep buffer full
         prefetchGameContent('CHARADES', cat);
@@ -132,7 +230,6 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
             );
 
             let selectedWords: string[] = [];
-            const INITIAL_BATCH_SIZE = 30;
 
             if (availableLocal.length >= INITIAL_BATCH_SIZE) {
                 // Enough local content
@@ -152,13 +249,13 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
             }
 
             if (selectedWords.length > 0) {
-                setWords(selectedWords);
+                setWords(selectedWords.map(text => ({ text })));
             } else {
-                setWords(["Error loading words", "Please try again"]);
+                setWords([{ text: 'Error loading words' }, { text: 'Please try again' }]);
             }
         } catch (e) {
             console.error(e);
-            setWords(["Connection Error", "Check Settings"]);
+            setWords([{ text: 'Connection Error' }, { text: 'Check Settings' }]);
         }
 
         setLoading(false);
@@ -222,16 +319,22 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
     };
 
     const nextCard = async () => {
-        // Mark current word as used
+        // Mark current card as used. The One Clue deck keeps its own used-list
+        // so the two decks don't filter each other's content.
         if (words[currentIndex]) {
-            sessionService.markAsUsed(GameType.CHARADES, category, words[currentIndex]);
+            sessionService.markAsUsed(
+                GameType.CHARADES,
+                oneClue ? `oneclue_${category}` : category,
+                words[currentIndex].text,
+            );
         }
 
-        // Check buffer and fetch more if needed
-        if (words.length - currentIndex < 5) {
+        // Top the buffer up from the AI. Classic deck only — One Clue is hand
+        // authored and offline, and simply ends the round when it runs dry.
+        if (!oneClue && words.length - currentIndex < 5) {
             try {
                 const moreWords = await generateCharadesWords(category, 10);
-                setWords(prev => [...prev, ...moreWords]);
+                setWords(prev => [...prev, ...moreWords.map(text => ({ text }))]);
             } catch (e) {
                 console.warn("Background fetch failed", e);
             }
@@ -280,6 +383,29 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                     <h2 className="text-lg font-serif font-bold text-ink mb-0.5">All mime, <em>no</em> words.</h2>
                     <p className="text-muted text-sm">{duration} seconds to act it out.</p>
                 </div>
+                {/* Which deck. Same game either way — this only changes which
+                    word list the tiles below are dealt from. */}
+                <div className="max-w-[340px] mx-auto w-full mb-3">
+                    <div className="grid grid-cols-2 gap-1 p-1 bg-surface-alt border border-divider rounded-xl" role="tablist" aria-label="Card deck">
+                        {([['RAPID', 'Classic', 'The original cards'], ['ONE_CLUE', 'One Clue', 'Richer clues']] as const).map(([id, label, sub]) => (
+                            <button
+                                key={id}
+                                role="tab"
+                                aria-selected={format === id}
+                                aria-label={label}
+                                onClick={() => pickFormat(id)}
+                                className={`rounded-lg py-2 px-2 text-center transition-colors ${
+                                    format === id
+                                        ? 'bg-app-tint border border-gold/50 shadow-inner'
+                                        : 'border border-transparent hover:bg-app-tint/60'
+                                }`}
+                            >
+                                <span className={`block text-sm font-bold leading-tight ${format === id ? 'text-ink' : 'text-muted'}`}>{label}</span>
+                                <span className="block text-[10px] text-muted leading-tight">{sub}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
                 <div className="text-center mb-3">
                     <button onClick={() => setShowHowToPlay(!showHowToPlay)} className="text-xs font-bold text-amber-500 border border-amber-500/30 px-3 py-1 bg-surface-alt hover:bg-app-tint transition relative z-10 mx-auto block rounded shadow-lg uppercase">
                         {showHowToPlay ? 'Hide Rules' : 'How To Play'}
@@ -288,15 +414,62 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                         <div className="text-left text-xs text-ink-soft bg-black/20 border border-divider p-4 mt-2 relative z-10 space-y-3 font-medium rounded animate-fade-in shadow-inner max-w-[340px] mx-auto">
                             <p><strong className="text-ink">1. GOAL:</strong> One player acts out the word on screen using <strong className="text-amber-500">gestures only</strong> — get your team to guess it.</p>
                             <p><strong className="text-red-500">2. NO TALKING:</strong> No speaking, no mouthing words, no pointing at objects in the room. Mime it out.</p>
-                            <p><strong className="text-amber-500">3. THE CLOCK:</strong> Act out as many cards as you can before time runs out. Tap the clock chip above to change the round length.</p>
+                            <p><strong className="text-amber-500">3. THE CLOCK:</strong> Act out as many cards as you can before time runs out. Tap the clock chip above to change the round length, and the deck switch to pick your cards.</p>
                             <p><strong className="text-emerald-500">4. SCORING:</strong> One point per correct guess; skip anything too tough. Add team names to compete head-to-head, or just pass the phone.</p>
                         </div>
                     )}
                 </div>
-                <div className="flex justify-center mb-3">
+                <div className="flex justify-center items-center gap-2 mb-3 flex-wrap">
                     <TimerSetting duration={duration} onPick={s => { setDuration(s); saveTimerPref('charades_timer', s); }} accent="#EFC050" />
                 </div>
                 <TeamRosterRow teams={teams} onTeamsChange={setTeams} />
+                {oneClue && (
+                    <div className="flex-1 overflow-y-auto pb-8">
+                        <div className="grid gap-3 max-w-[340px] mx-auto w-full">
+                            {deckError ? (
+                                <div className="text-center py-8 space-y-3">
+                                    <p className="text-muted text-sm">Could not load the One Clue deck.</p>
+                                    <Button onClick={() => setDeckError(false)}>Try again</Button>
+                                    <button
+                                        onClick={() => { setFormat('RAPID'); saveFormat('RAPID'); }}
+                                        className="block mx-auto text-xs text-muted underline hover:text-ink"
+                                    >
+                                        Play Rapid Fire instead
+                                    </button>
+                                </div>
+                            ) : clueData === null ? (
+                                <p className="text-center text-muted text-sm py-8">Loading the deck…</p>
+                            ) : (
+                                packMenu(clueData).map(p => {
+                                    const meta = PACK_META[p.id] ?? PACK_META[MIXED_PACK];
+                                    const color = theme === 'light' ? meta.light : meta.dark;
+                                    const Icon = meta.Icon;
+                                    return (
+                                        <button
+                                            key={p.id}
+                                            onClick={() => handleCategoryTap(p.id)}
+                                            className="group relative w-full text-left transition-all duration-200 active:scale-[0.99] cursor-pointer"
+                                        >
+                                            <div className="relative bg-surface-alt backdrop-blur-sm border border-divider hover:bg-app-tint hover:border-ink-soft/40 rounded-xl py-3 px-4 transition-colors overflow-hidden">
+                                                <span className="absolute left-0 top-3 bottom-3 w-[3px] rounded-[2px]" style={{ background: color }} />
+                                                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px]" style={{ background: color }} />
+                                                <div className="flex items-center gap-3">
+                                                    <span className="flex-shrink-0" style={{ color }}><Icon size={16} /></span>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="text-base font-bold text-ink leading-tight truncate">{p.name}</h3>
+                                                        <p className="text-xs text-muted leading-snug truncate">{p.description}</p>
+                                                    </div>
+                                                    <ChevronRight size={16} className="text-muted group-hover:text-ink transition-colors flex-shrink-0" />
+                                                </div>
+                                            </div>
+                                        </button>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </div>
+                )}
+                {!oneClue && (
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {categories.map(c => {
@@ -334,6 +507,7 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                         })}
                     </div>
                 </div>
+                )}
             </div>
         );
     }
@@ -387,7 +561,10 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
             : [];
         const winner = ranked[0];
         const tiedTop = inTeamMode && ranked.filter(r => r.score === winner.score).length > 1;
-        const catLabel = categories.find(c => c.id === category)?.label ?? category;
+        const catLabel = oneClue
+            ? (packMenu(clueData ?? { version: 0, kinds: {} as never, packs: [] })
+                .find(p => p.id === category)?.name ?? category)
+            : (categories.find(c => c.id === category)?.label ?? category);
         const handleShare = async () => {
             if (sharing) return;
             setSharing(true);
@@ -502,11 +679,14 @@ export const CharadesGame: React.FC<Props> = ({ onExit }) => {
                         className="self-start text-[10.5px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md relative z-10"
                         style={{ background: 'var(--c-gold-soft)', color: 'var(--c-gold)' }}
                     >
-                        Charades
+                        {words[currentIndex]?.kind ?? 'Charades'}
                     </div>
                     <div className="flex-1 flex items-center justify-center relative z-10">
-                        <h2 className="font-serif font-bold text-[36px] leading-[1.1] tracking-[-0.015em] text-ink text-center break-words animate-slide-up">
-                            {words[currentIndex]}
+                        <h2 className={`font-serif font-bold leading-[1.15] tracking-[-0.015em] text-ink text-center break-words animate-slide-up ${
+                            (words[currentIndex]?.text.length ?? 0) > 44 ? 'text-[24px]'
+                                : (words[currentIndex]?.text.length ?? 0) > 24 ? 'text-[30px]' : 'text-[36px]'
+                        }`}>
+                            {words[currentIndex]?.text}
                         </h2>
                     </div>
                     <div className="text-[11px] text-muted flex items-center justify-between relative z-10">

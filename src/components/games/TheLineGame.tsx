@@ -2,21 +2,26 @@ import React, { useState, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
 import {
     ArrowUpNarrowWide, ChevronRight, ChevronDown, ArrowRight, Share2, ScrollText,
-    Check, X, Plus, Heart,
+    Check, X, Plus, Heart, Users, Timer,
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { sessionService } from '../../services/SessionManager';
 import { shouldAutoExpandRules } from '../../services/firstPlay';
-import { playDing, playBuzzer, playReveal, playPop, playPangram } from '../../services/audio';
+import { playDing, playBuzzer, playReveal, playPop, playPangram, playTick } from '../../services/audio';
 import { hapticLight, hapticSuccess, hapticError, hapticHeavy } from '../../services/haptics';
 import { shareResultCard } from '../../services/shareCard';
 import { statsStore } from '../../services/statsStore';
 import { gameNightService } from '../../services/gameNightService';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import EndScreen from '../ui/EndScreen';
+import RoomPanel from '../ui/RoomPanel';
+import { useRoom, leaveRoom, type Room, type RoomSession } from '../../services/roomService';
+import { useCountdown } from '../../hooks/useCountdown';
+import TimerSetting, { loadTimerPref, saveTimerPref, TIMER_OFF } from '../ui/TimerSetting';
+import { mulberry32 } from '../../services/seededRandom';
 import { GameType } from '../../types';
 import {
-    dealGame, placeCard, formatValue, soloOver, winnerSeat,
+    dealGame, placeCard, timeoutCard, formatValue, soloOver, winnerSeat,
     HAND_SIZE, SOLO_LIVES, MAX_PLAYERS,
     type GameState, type LineData, type LineDeck,
 } from '../../services/lineEngine';
@@ -39,17 +44,27 @@ import {
 
 interface Props { onExit: () => void; }
 
-type Stage = 'SETUP' | 'HANDOFF' | 'PLAY' | 'END';
+type Stage = 'SETUP' | 'ROOM' | 'HANDOFF' | 'PLAY' | 'END';
 
 const dataPromise = import('../../data/the_line.json').then(m => m.default as unknown as LineData);
 
 const STATS_ID = 'THE_LINE';
 const SOLO_NAME = 'You';
 
+// The turn clock is OFF by default, and that is the design, not an oversight:
+// the argument at the table — "no, that's got to be heavier than a piano" — is
+// the game, and a clock ends it early. It exists for the groups who have one
+// player that never commits. Timing out costs exactly what a wrong placement
+// costs (see `timeoutCard`), so the clock changes the pace, never the maths.
+const TIMER_KEY = 'the_line_timer_secs';
+const DEFAULT_SECS = TIMER_OFF;
+
 const ACCENT_DARK = '#60A5FA';   // blue-400 — unused by any other game
 const ACCENT_LIGHT = '#1D4ED8';  // blue-700, ~25% darker for white surfaces
 
-interface Move { seat: number; cardIdx: number; gap: number; correct: boolean; truth: number; }
+// `gap` is -1 for a timeout: the player chose no gap, so there is no slot to
+// draw the rejected card in and nothing on the line to point at.
+interface Move { seat: number; cardIdx: number; gap: number; correct: boolean; truth: number; timedOut?: boolean }
 
 export const TheLineGame: React.FC<Props> = ({ onExit }) => {
     const { theme } = useTheme();
@@ -61,6 +76,19 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
     const data = use(dataPromise);
 
     const [stage, setStage] = useState<Stage>('SETUP');
+    // Live (separate phones). Null until a room actually starts, which is also
+    // what keeps this component and RoomPanel from both polling.
+    const [session, setSession] = useState<RoomSession | null>(null);
+    const room = useRoom(session, ['PLAY']);
+    const live = session !== null;
+    // How many turns THIS device has applied. The replay below never rolls the
+    // board backwards past this, so an optimistic local move is not undone by a
+    // poll that has not seen it yet.
+    const [turnCount, setTurnCount] = useState(0);
+    // This player's own moves, keyed by global turn number. Sent whole on every
+    // patch because the server merges state shallowly — a partial map would
+    // replace the full one and lose the history the replay depends on.
+    const myMoves = useRef<Record<string, { cardIdx: number; gap: number }>>({});
     // Seeded from the shared session roster so names carry in from other games.
     const [players, setPlayers] = useState<string[]>(() => sessionService.getTeams());
     const [showRules, setShowRules] = useState(() => shouldAutoExpandRules('the_line'));
@@ -73,10 +101,24 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
     const [best, setBest] = useState(0);
     const [newBest, setNewBest] = useState(false);
     const [shareMsg, setShareMsg] = useState('');
+    const [secs, setSecs] = useState(() => loadTimerPref(TIMER_KEY, DEFAULT_SECS, true));
 
     const named = players.map(p => p.trim()).filter(Boolean).slice(0, MAX_PLAYERS);
-    const roster = named.length >= 2 ? named : [named[0] || SOLO_NAME];
-    const solo = roster.length === 1;
+    // In live play the roster IS the room, ordered by join time — so seat N is
+    // the same person on every phone, which the whole move log depends on.
+    const liveRoster = room.room?.players.map(p => p.name) ?? [];
+    const roster = live
+        ? (liveRoster.length ? liveRoster : [SOLO_NAME])
+        : (named.length >= 2 ? named : [named[0] || SOLO_NAME]);
+    const solo = !live && roster.length === 1;
+    const mySeat = live && room.room && session
+        ? room.room.players.findIndex(p => p.id === session.playerId)
+        : 0;
+    // Turns rotate strictly, so whose turn it is is DERIVED from how many have
+    // been played. Nothing needs to announce it, and no two devices can
+    // disagree about it.
+    const activeSeat = live ? turnCount % Math.max(1, roster.length) : seat;
+    const myTurn = !live || activeSeat === mySeat;
 
     const landedRef = useRef<HTMLDivElement | null>(null);
 
@@ -102,12 +144,118 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
         setStage(solo ? 'PLAY' : 'HANDOFF');
     };
 
+    // ---- live: deal from the seed, then replay a turn-ordered move log ------
+    //
+    // The Line is turn-based, so unlike the other three games a shared seed is
+    // not enough on its own — the board depends on what people DID, not only on
+    // what was dealt. But it needs no authoritative server either: the deal is
+    // deterministic, placeCard is a pure function, and turns rotate strictly.
+    // So each move is (turn number → cardIdx, gap), only the player whose turn
+    // it is writes turn N, and every device replays the same log to the same
+    // state. One writer per key, no locks, no host arbitration.
+    //
+    // The end of the game falls out of this for free: winnerSeat() is a
+    // property of the replayed state, so every phone reaches it independently.
+    // There is no "host finished but nobody told the guests" bug to have here.
+    const startLive = (sess: RoomSession, r: Room) => {
+        const deckId = (r.meta.config.deckId as string) ?? data.decks[0].id;
+        const d = data.decks.find(x => x.id === deckId) ?? data.decks[0];
+        const n = Math.max(2, r.players.length);
+        hapticLight(); playReveal();
+        myMoves.current = {};
+        setDeck(d);
+        setState(dealGame(d.cards, n, mulberry32(r.meta.seed)));
+        setTurnCount(0);
+        setSeat(0);
+        setSel(null);
+        setMove(null);
+        setFlip(false);
+        setNewBest(false);
+        setShareMsg('');
+        setBest(statsStore.getGame(STATS_ID)?.best ?? 0);
+        setSession(sess);
+        setStage('PLAY');
+    };
+
+    // Collect every player's moves into one turn-indexed log. A gap in the
+    // numbering stops the replay: turn 5 cannot be applied before turn 4, and
+    // applying it out of order would produce a different board on this device
+    // than on the one that made the move.
+    const collectMoves = (): { cardIdx: number; gap: number }[] => {
+        const r = room.room;
+        if (!r) return [];
+        const log: Record<number, { cardIdx: number; gap: number }> = {};
+        r.players.forEach(p => {
+            const raw = (p.state.moves ?? {}) as Record<string, { cardIdx: number; gap: number }>;
+            Object.entries(raw).forEach(([t, m]) => {
+                const n = Number(t);
+                if (Number.isInteger(n) && m && Number.isInteger(m.cardIdx) && Number.isInteger(m.gap)) log[n] = m;
+            });
+        });
+        const out: { cardIdx: number; gap: number }[] = [];
+        for (let t = 0; log[t]; t++) out.push(log[t]);
+        return out;
+    };
+
+    useEffect(() => {
+        if (!live || !deck || !room.room) return;
+        const log = collectMoves();
+        // Never roll the board backwards. Our own move is applied optimistically
+        // the instant it is made; a poll that has not yet seen it would
+        // otherwise yank the card back out of the line under the player.
+        if (log.length <= turnCount) return;
+
+        const n = Math.max(2, room.room.players.length);
+        let s = dealGame(deck.cards, n, mulberry32(room.room.meta.seed));
+        let last: { seat: number; cardIdx: number; gap: number; correct: boolean; truth: number } | null = null;
+        try {
+            log.forEach((m, t) => {
+                const out = placeCard(s, deck.cards, t % n, m.cardIdx, m.gap);
+                s = out.state;
+                last = { seat: t % n, cardIdx: m.cardIdx, gap: m.gap, correct: out.correct, truth: out.truth };
+            });
+        } catch {
+            // A malformed log means someone is on a different game than we are.
+            // Better to hold the last good board than to render a broken one.
+            return;
+        }
+        setState(s);
+        setTurnCount(log.length);
+        setSel(null);
+        if (last) {
+            setMove(last);
+            setFlip(false);
+            window.setTimeout(() => { setFlip(true); playReveal(); }, 420);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [room.room, live, deck, turnCount]);
+
+    // Backing out must free the seat — the turn order is derived from the
+    // roster, so a ghost player would stall every rotation on their turn.
+    const exitLive = () => {
+        if (session) void leaveRoom(session.code, session.playerId);
+        setSession(null);
+        myMoves.current = {};
+        setStage('SETUP');
+    };
+
     const commit = (gap: number) => {
         if (!state || !deck || sel === null || move) return;
-        const out = placeCard(state, deck.cards, seat, sel, gap);
+        if (live && !myTurn) return;
+        const actor = live ? mySeat : seat;
+        const out = placeCard(state, deck.cards, actor, sel, gap);
         setState(out.state);
-        setMove({ seat, cardIdx: sel, gap, correct: out.correct, truth: out.truth });
+        setMove({ seat: actor, cardIdx: sel, gap, correct: out.correct, truth: out.truth });
         setSel(null);
+        if (live) {
+            // Applied locally first so the card lands under your thumb, then
+            // published. The replay above will not undo it: it refuses to move
+            // the board backwards past what this device has already applied.
+            const turn = turnCount;
+            myMoves.current = { ...myMoves.current, [String(turn)]: { cardIdx: sel, gap } };
+            setTurnCount(turn + 1);
+            void room.patch({ moves: myMoves.current, placed: out.state.placed[actor], misses: out.state.misses[actor] });
+        }
         setFlip(false);
         if (out.correct) { hapticSuccess(); playDing(); } else { hapticError(); playBuzzer(); }
         // The value turns over a beat after the card lands. This reveals but
@@ -115,6 +263,40 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
         // under a table still looking at the number (notes/08).
         window.setTimeout(() => { setFlip(true); playReveal(); }, 420);
     };
+
+    // Out of time. The card under consideration (or the first in hand if none
+    // was picked up) is discarded as a miss and replaced — the same price as
+    // aiming it at the wrong gap, because that is what running out of time is.
+    //
+    // Deliberately LOCAL-ONLY: the live move log is (turn → cardIdx, gap), and
+    // a timeout has no gap to publish. Encoding one would need a protocol
+    // change on both sides of the replay, so live rooms stay untimed and the
+    // lobby says so, rather than shipping a clock that desynchronises boards.
+    const timeUp = () => {
+        if (!state || !deck || move || live) return;
+        const actor = seat;
+        const card = sel !== null ? sel : state.hands[actor][0];
+        if (card === undefined) return;
+        const out = timeoutCard(state, deck.cards, actor, card);
+        setState(out.state);
+        setMove({ seat: actor, cardIdx: card, gap: -1, correct: false, truth: out.truth, timedOut: true });
+        setSel(null);
+        setFlip(false);
+        hapticHeavy(); playBuzzer();
+        window.setTimeout(() => { setFlip(true); playReveal(); }, 420);
+    };
+    const timeUpRef = useRef(timeUp);
+    timeUpRef.current = timeUp;
+
+    const { secondsLeft } = useCountdown({
+        // Only while a decision is actually being made: not during the reveal
+        // (nothing can be decided) and never in a live room.
+        running: secs !== TIMER_OFF && !live && stage === 'PLAY' && !move,
+        durationMs: secs * 1000,
+        restartKey: `${seat}-${state?.placed[seat] ?? 0}-${state?.misses[seat] ?? 0}`,
+        onSecond: n => { if (n > 0 && n <= 5) playTick(0.12); },
+        onExpire: () => timeUpRef.current(),
+    });
 
     const finish = (s: GameState) => {
         hapticHeavy();
@@ -142,9 +324,19 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
             return;   // same seat, keep going
         }
         if (winnerSeat(state) >= 0) { finish(state); return; }
+        if (live) return;   // the seat is derived from turnCount; nothing to pass
         setSeat((seat + 1) % roster.length);
         setStage('HANDOFF');
     };
+
+    // Live: the game ending is a property of the replayed board, so every phone
+    // reaches it on its own. Nothing has to be announced, which is the one
+    // failure mode the other three games each needed explicit handling for.
+    useEffect(() => {
+        if (!live || stage !== 'PLAY' || !state || move) return;
+        if (winnerSeat(state) >= 0) finish(state);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [state, live, stage, move]);
 
     const share = async () => {
         if (!deck || !state) return;
@@ -188,6 +380,36 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                                 ? `${named.length} players — first to empty a hand of ${HAND_SIZE} wins.`
                                 : `Playing solo — how long can you make the line on ${SOLO_LIVES} lives? Add 2+ names for pass-and-play.`}
                         </p>
+                        <div className="flex flex-col items-center gap-1 mb-4">
+                            <TimerSetting
+                                duration={secs}
+                                accent={ACCENT}
+                                allowOff
+                                unit="turn"
+                                onPick={v => { setSecs(v); saveTimerPref(TIMER_KEY, v); }}
+                            />
+                            <p className="text-[10px] text-muted text-center px-4">
+                                {secs === TIMER_OFF
+                                    ? 'No clock — the argument at the table is the game.'
+                                    : 'Run out and the card is discarded as a miss.'}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="max-w-[340px] mx-auto w-full mb-5">
+                        <button
+                            onClick={() => { hapticLight(); setStage('ROOM'); }}
+                            className="group relative w-full text-left bg-surface-alt backdrop-blur-sm border border-divider border-l-4 border-b-2 border-l-sky-500 border-b-sky-500 hover:bg-app-tint rounded-xl py-3 px-4 transition-colors overflow-hidden"
+                        >
+                            <div className="flex items-center gap-3 relative z-10">
+                                <Users size={16} className="text-sky-500 flex-shrink-0" />
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-[15px] font-bold text-ink leading-snug">Play on separate phones</p>
+                                    <p className="text-[11px] text-muted leading-snug">Your hand stays yours. Needs internet.</p>
+                                </div>
+                                <ChevronRight size={16} className="text-gray-500 group-hover:text-ink flex-shrink-0" />
+                            </div>
+                        </button>
                     </div>
 
                     <p className="max-w-[340px] mx-auto w-full text-[10px] font-bold uppercase tracking-[0.18em] text-muted mb-2 px-1">
@@ -238,9 +460,48 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
         );
     }
 
+    // ---------------- ROOM (live lobby) ----------------
+    if (stage === 'ROOM') {
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Play live" onBack={() => setStage('SETUP')} onHome={onExit} />
+                <div className="flex-1 overflow-y-auto pb-8 px-2">
+                    <RoomPanel
+                        game={GameType.THE_LINE}
+                        title="Your hand stays yours"
+                        blurb="One shared line, but the cards in your hand are only ever on your own phone — the thing passing one phone around cannot do."
+                        accent="lime"
+                        config={{ deckId: deck?.id ?? data.decks[0].id }}
+                        minPlayers={2}
+                        hostControls={
+                            <div>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted mb-2">Deck</p>
+                                <div className="grid gap-2">
+                                    {data.decks.map(d => (
+                                        <button key={d.id} onClick={() => { hapticLight(); setDeck(d); }}
+                                            className={`text-left rounded-lg py-2 px-3 border transition-colors ${(deck?.id ?? data.decks[0].id) === d.id ? 'bg-lime-500/10 border-lime-500/50' : 'bg-surface-alt border-divider hover:bg-app-tint'}`}>
+                                            <span className="text-sm text-ink font-semibold">{d.emoji} {d.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        }
+                        onStart={(sess, r) => startLive(sess, r)}
+                        onCancel={() => setStage('SETUP')}
+                    />
+                </div>
+            </div>
+        );
+    }
+
     if (!deck || !state) return null;
     const cards = deck.cards;
-    const hand = state.hands[seat] ?? [];
+    // In live play a phone renders only ITS OWN hand. Every device can compute
+    // every hand (the deal is deterministic), so this is UI privacy rather than
+    // a cryptographic guarantee — the same trust model as the rest of the room
+    // layer, where scoring is client-authoritative among friends. What it does
+    // buy is the thing pass-and-play cannot: nobody has to look away.
+    const hand = state.hands[live ? mySeat : seat] ?? [];
 
     // ---------------- HANDOFF ----------------
     if (stage === 'HANDOFF') {
@@ -273,6 +534,7 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
     // ---------------- PLAY — the signature screen ----------------
     if (stage === 'PLAY') {
         const showGaps = sel !== null && !move;
+        const clockRunning = secs !== TIMER_OFF && !live && !move;
         const selCard = sel !== null ? cards[sel] : null;
         const moveCard = move ? cards[move.cardIdx] : null;
         const lives = SOLO_LIVES - state.misses[0];
@@ -342,17 +604,25 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
             // height makes the line the part that scrolls and pins the hand.
             <div className="flex flex-col animate-fade-in h-[calc(100dvh-2rem)] md:h-[calc(100dvh-3rem)]" data-line-stage="PLAY">
                 <ScreenHeader
-                    title={solo ? 'The Line' : roster[seat]}
-                    onBack={() => setStage('SETUP')}
+                    title={live ? (myTurn ? 'Your turn' : `${roster[activeSeat]}'s turn`) : solo ? 'The Line' : roster[seat]}
+                    onBack={live ? exitLive : () => setStage('SETUP')}
                     onHome={onExit}
                     confirmOnExit
                 />
 
                 {/* status strip */}
                 <div className="max-w-[340px] mx-auto w-full flex items-center justify-between mb-2 px-0.5">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted truncate">
-                        {deck.emoji} {deck.name}
-                    </span>
+                    {clockRunning ? (
+                        <span className="text-[11px] font-black tabular-nums flex items-center gap-1.5"
+                            style={{ color: secondsLeft <= 5 ? BAD : 'var(--c-ink)' }}>
+                            <Timer size={12} style={{ color: secondsLeft <= 5 ? BAD : ACCENT }} />
+                            {secondsLeft}s
+                        </span>
+                    ) : (
+                        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted truncate">
+                            {deck.emoji} {deck.name}
+                        </span>
+                    )}
                     {solo ? (
                         <span className="flex items-center gap-1">
                             {Array.from({ length: SOLO_LIVES }, (_, i) => (
@@ -365,6 +635,13 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                         </span>
                     )}
                 </div>
+
+                {clockRunning && (
+                    <div className="max-w-[340px] mx-auto w-full h-1 rounded-full bg-surface-alt overflow-hidden mb-2">
+                        <div className="h-full rounded-full transition-none"
+                            style={{ width: `${Math.max(0, Math.min(100, (secondsLeft / secs) * 100))}%`, background: secondsLeft <= 5 ? BAD : ACCENT }} />
+                    </div>
+                )}
 
                 {/* THE LINE */}
                 <div className="flex-1 min-h-0 overflow-y-auto px-2">
@@ -437,9 +714,11 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                                 <div className="flex items-center gap-2 mb-1">
                                     {move.correct
                                         ? <Check size={16} style={{ color: GOOD }} />
-                                        : <X size={16} style={{ color: BAD }} />}
+                                        : move.timedOut
+                                            ? <Timer size={16} style={{ color: BAD }} />
+                                            : <X size={16} style={{ color: BAD }} />}
                                     <p className="text-[11px] font-black uppercase tracking-[0.2em]" style={{ color: move.correct ? GOOD : BAD }}>
-                                        {move.correct ? 'Locked in' : 'Not quite'}
+                                        {move.correct ? 'Locked in' : move.timedOut ? "Time's up" : 'Not quite'}
                                     </p>
                                     <span className="ml-auto text-[12px] font-black tabular-nums" style={{ color: move.correct ? GOOD : BAD }}>
                                         {moveCard && formatValue(moveCard.value, deck.units)}
@@ -447,6 +726,11 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                                 </div>
                                 <p className="text-[13px] font-bold text-ink leading-snug">{moveCard?.label}</p>
                                 <p className="text-[12px] text-muted leading-snug mt-1">{moveCard?.note}</p>
+                                {move.timedOut && (
+                                    <p className="text-[11px] font-bold mt-1.5" style={{ color: BAD }}>
+                                        Discarded unplayed — it counts as a miss.
+                                    </p>
+                                )}
                                 {!move.correct && (
                                     <p className="text-[11px] font-bold mt-1.5" style={{ color: BAD }}>
                                         It belonged {move.truth === 0
@@ -461,7 +745,7 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                                         ? 'See how you did'
                                         : !solo && winnerSeat(state) >= 0
                                             ? 'Final scores'
-                                            : solo ? 'Next card' : 'Pass the phone'}
+                                            : solo ? 'Next card' : live ? 'Got it' : 'Pass the phone'}
                                     <ArrowRight className="inline ml-2" size={18} />
                                 </Button>
                             </div>
@@ -469,11 +753,13 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                     ) : (
                         <>
                             <p className="text-center text-[11px] text-muted mb-2">
-                                {sel === null
-                                    ? 'Pick a card from your hand.'
-                                    : <>Where does <span className="font-bold" style={{ color: ACCENT }}>{selCard?.label}</span> go?</>}
+                                {live && !myTurn
+                                    ? <><span className="font-bold text-ink">{roster[activeSeat]}</span> is choosing. Your cards stay hidden from them.</>
+                                    : sel === null
+                                        ? 'Pick a card from your hand.'
+                                        : <>Where does <span className="font-bold" style={{ color: ACCENT }}>{selCard?.label}</span> go?</>}
                             </p>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className={`grid grid-cols-2 gap-2 ${live && !myTurn ? 'opacity-45 pointer-events-none' : ''}`}>
                                 {hand.map(idx => {
                                     const on = sel === idx;
                                     return (
@@ -524,7 +810,7 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
         <div className="contents" data-line-stage="END">
         <EndScreen
             title="The Line"
-            onBack={() => setStage('SETUP')}
+            onBack={live ? exitLive : () => setStage('SETUP')}
             onHome={onExit}
             entries={entries}
             accent="theme"
@@ -532,7 +818,7 @@ export const TheLineGame: React.FC<Props> = ({ onExit }) => {
                 ? `got ${top.score} card${top.score === 1 ? '' : 's'} onto the line.`
                 : `emptied their hand first.`)}
             playAgainLabel="New line"
-            onPlayAgain={() => setStage('SETUP')}
+            onPlayAgain={live ? exitLive : () => setStage('SETUP')}
             exitLabel="Back to Home"
             onExit={onExit}
             footerExtra={

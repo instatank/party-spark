@@ -2,6 +2,10 @@
 
 > **Last reconciled with code:** 2026-09-14 (**Roast Me rebuilt around a seasonal theme registry** — 6 themes became 12, FIFA 2026 retired now the tournament is over. Themes are DATA in two paired files: `src/data/roastThemes.ts` (what a user may pick — label, emoji, colour, season window, fidelity tier) and `api/_lib/roast-themes.ts` (the prompts, plus the shared `IDENTITY_LOCK` paragraph and the compact `COMPOSITE_DIRECTIVES`). They are joined only by matching string keys, so `tests/roastThemes.test.ts` asserts parity in CI — a catalog entry with no server prompt silently serves a generic caricature, which is invisible to a build and a typecheck. Also added: composite generation (`roast_composite`, four themes as one 2x2 billed image), `imageConfig.imageSize` on the image calls (single gens moved 1K → **2K, which costs the same and carries 4x the pixels**), `src/services/imageQuadrants.ts` to slice a composite back apart client-side, and the **Roast Lab** at `#roast-lab` — a hash-routed diagnostic screen that runs both paths on one photo and puts them side by side. `scripts/drive-roast-lab.mjs` drives the picker and the lab.)
 >
+> **2026-09-10** (**Charades' second deck, reshaped and simplified.** The extra screens the One Clue format had grown — a blurred brief with a Reveal tap, a per-turn verdict screen, a dealt-up-front turn schedule, a clues-each knob — are **gone**. Both decks now run the ORIGINAL loop: card, Correct or Skip, next card, until the clock runs out. The founder asked for it back in those words; don't reintroduce a step between the card and the next card. `charades_clues.json` was reorganised to four decks — **Hollywood** (197), **Bollywood** (180), **Movie Mix** (the two combined, derived at deal time, 377) and **Everything Else** (292: situations, sayings, people, jobs, animals, TV) — 669 clues stored, no film written down twice. Per-clue difficulty tiers were dropped with the curve that consumed them. Pinned by `tests/charadesClues.test.ts` and `scripts/drive-charades-one-clue.mjs`.)
+>
+> **2026-09-06** (**Multiplayer rooms** shipped — `api/room.ts` + `api/_lib/roomStore.ts` + `src/services/roomService.ts` + `src/services/seededRandom.ts` + `src/components/ui/RoomPanel.tsx`, the app's FIRST server-side state and first feature that does not work offline. **Four games are wired**: Scramble head-to-head, Ballpark live (blind simultaneous brackets), Target live (same six numbers, same clock) and The Line live (turn-based via a replayed move log — the only one where hands are genuinely private). Guarded in CI by `tests/roomSync.test.ts` (THE ROOM INVARIANT) and out of CI by four *two-browser* drives plus `scripts/serve-with-api.mjs`, because `vite preview` does not run `/api/*`. **Requires a Redis store provisioned on Vercel** — see Multiplayer below. Same day, a Home-screen change: the six newest games — The Line, Target, Shortlist, Echo, Ballpark, House Rules — now sit behind a **NEW tab** (`NEW_GAME_IDS` in `App.tsx`) instead of the main list, so every browser drive that opens one of them clicks that tab first.)
+>
 If you're reading this and something in the codebase doesn't match what's described here, **the code is the source of truth** — please update this file in the same PR that makes the change.
 >
 > There is also a `notes/` directory — one *lesson* per file (what was tried, what broke, what fixed it). Architecture facts live here; war stories live there.
@@ -42,7 +46,8 @@ You are the lead developer and architect of **PartySpark**, a premium, AI-powere
 - `src/services/audio.ts` — the Web Audio synth kit (lazy singleton `AudioContext`, `unlockAudio()`, `beep()`, `playBell`, `playBuzzer`, `playTick`, `playDing`). Formerly duplicated in 5 Alive / Linked / Scramble.
 - `src/services/haptics.ts` — `hapticLight` / `hapticSuccess` / `hapticError` / `hapticHeavy` on `navigator.vibrate` (feature-checked; iOS Safari never supports it — Android/Chrome only). Wired at the same moments as sounds.
 - `src/components/ui/EndScreen.tsx` — the ranked-leaderboard end screen (winner tint + trophy, tie line, optional expandable row detail, Play Again/exit footer). Used by 5 Alive, Linked, Charades, Taboo. Fact or Fiction / Scramble / Truth or Drink end screens are structurally different and intentionally NOT on it — don't force them without a design pass.
-- `src/components/ui/TimerSetting.tsx` + `TeamRosterRow.tsx` — as before (see Design System).
+- `src/components/ui/TimerSetting.tsx` + `TeamRosterRow.tsx` — as before (see Design System). `TimerSetting` also takes **`allowOff`** (adds a "No timer" choice that reports `0` / `TIMER_OFF`) and **`unit`** (the chip reads "45s bracket", "60s turn", "45s per clue"). `allowOff` is opt-in per game and always will be: the clock IS the mechanic in Charades, Taboo, Scramble, 5 Alive, Echo and Target, so an off switch there would not relax the game, it would delete it. A game that passes `allowOff` must handle `0` everywhere it starts a countdown, and `loadTimerPref(key, def, true)` is what lets a stored `0` survive a reload.
+- `src/components/ui/RoomPanel.tsx` — the shared multiplayer front door: create or join a room by 4-digit code, then a lobby until the host starts. Owns the room lifecycle and **no game state**, which is what keeps wiring the next game cheap. Used by Scramble (head-to-head) and Ballpark (live). See the Multiplayer section.
 - `src/components/ui/SpinTheBottle.tsx` — the shared "who goes next?" decider. Circular table of name chips + a rotating bottle whose neck ends in an arrowhead; a sight-line ray fades in on landing so the target is unambiguous. **The winner is picked first (uniform random), then the rotation is solved backwards** to land inside that seat's sector with jitter — so the result can never disagree with where the arrow points. rAF ease-out over `spinMs` (default 5000), transform written straight to the DOM node (zero re-renders during the spin); wheel ticks fire on each seat-boundary crossing so the click cadence decelerates for free. Honours `prefers-reduced-motion` (1.2s, one turn). Props: `names`, `accent`, `mode` (`'single'` | `'pair'` — pair does two spins, who-asks → who-answers), `spinMs`, `onPick`, `ctaLabel`/`onCta`. Owns no game state and no storage. Fewer than 2 names falls back to an internal numbered-seat stepper (2–12) so it's testable without a roster.
 
   **Status: built, not yet baked in.** It currently lives only as a test screen inside Truth or Drink (`gameState === 'BOTTLE'`, tile on the category screen, amber `#F59E0B`). Wiring it into a game means calling it from that game's turn-advance path and seeding `turnIndex` from `onPick` — no changes to this component should be needed.
@@ -95,17 +100,30 @@ This bit us several times. If you add a new accent color, verify it in the compi
 
 ### Shared round-timer chip
 
-`src/components/ui/TimerSetting.tsx` — a compact "⏱ 60s round ✎" chip that opens a bottom-sheet of presets (30/60/90/120 + custom 15–300s). Used by **Scramble, Charades, Taboo** (each passes its own `accent` hex + persists its own localStorage key via `loadTimerPref`/`saveTimerPref`). Default 60s. There is no dedicated "pick a timer" step — the chip lives on each game's setup/difficulty/category screen.
+`src/components/ui/TimerSetting.tsx` — a compact "⏱ 60s round ✎" chip that opens a bottom-sheet of presets (30/60/90/120 + custom 15–300s, and a full-width **No timer** row when `allowOff` is set). Used by **Scramble, Charades, Taboo, Echo, Target** (fixed clocks) and **Ballpark, The Line, Shortlist** (optional clocks) — each passes its own `accent` hex + persists its own localStorage key via `loadTimerPref`/`saveTimerPref`. Default 60s. There is no dedicated "pick a timer" step — the chip lives on each game's setup/difficulty/category screen.
+
+**Which games have a clock, and why.** A timer is either the mechanic or it is pressure; the two are not interchangeable, so the default differs:
+
+| Game | Clock | Default | What zero does |
+|---|---|---|---|
+| Charades, Taboo, Scramble, 5 Alive, Echo, Target | the mechanic | on, no off switch | ends the round — that IS the game |
+| **Ballpark** | pressure | **on, 45s per bracket** | a valid bracket locks itself in; nothing typed scores nothing, and the question still moves on |
+| **The Line** | pressure | **off** | the card is discarded as a miss (`timeoutCard`) and the line does not move |
+| **Shortlist** | pressure | **off** | takes the next clue for you, which drops the payout exactly as taking it by hand would; it never names a suspect |
+| House Rules | — | none | nothing to time: the phone is the rulebook and the play happens off-screen, between rounds it does not see |
+
+Ballpark defaults ON because a bracket is a commitment and, left untimed, it is the decision that expands to fill the evening — the table talks itself from a Sniper down to a Wild one. The Line and Shortlist default OFF because in both the *argument* is the game; the clock is there for the table with one player who never commits.
 
 ### Home screen (`App.tsx`)
 
 - **Tabs hidden:** the old "Play Now / Coming Soon" tab bar is gated behind a `SHOW_TABS` flag (currently `false`) — the front end shows only the Play Now games. All Coming Soon games + tab logic stay in code; flip `SHOW_TABS = true` to bring them back for testing.
+- **Games / NEW tabs:** the newest games (`NEW_GAME_IDS` in `App.tsx` — The Line, Target, Shortlist, Echo, Ballpark, House Rules) are split out of the main list into their own **NEW** tab above the filter pills, so the front page stays a short list. The tab strip hides itself while a search is running, because **search deliberately spans both tabs** — a game the user typed the name of must never come back "no games match" because it sits on the other tab. Moving an id out of `NEW_GAME_IDS` returns that game to the main list, nothing else to change. This is separate from the `SHOW_TABS` Play Now / Coming Soon bar above. **Dev drives must click the NEW tab** (`button[aria-label="New games"]`) before those six game cards exist in the DOM — `drive-games.mjs` and the six per-game drives already do.
 - **Filter pills** (`HOME_FILTERS` in `constants.tsx`): All / Quick / Solo / Couples / Crowd / Spicy. `quick` matches by short duration; the rest match by tag in `GAME_RICH_META[id].tags`.
 - **Game cards** use tightened vertical padding (`!px-4 !py-2.5`) and the header spacing is compact.
 - **Splash** is 1.5s max and tap-skippable — never make users wait on it.
 - **"Tonight's crew" banner**: when the shared session roster (`sessionService.getTeams()`) is non-empty, Home shows a gold banner listing the names with an X to clear — this is how users discover that names carry across games.
 - **Quick-action row**: two slim tiles above the filter pills — Game Night (violet, shows "live · Next up: X" during an active night) and Daily Scramble (gold, shows streak / done state). Header buttons ride the "Always Invited" tagline row itself (absolutely positioned, zero extra height): Trophy (Stats screen) in the left corner, mute toggle + ThemeToggle in the right corner.
-- **Today's Pick tile**: full-width tile between the quick-action row and the crew banner — one game spotlighted per day (`pickOfTheDay()` in `App.tsx`: FNV-1a over `dayKey()`, same pick for everyone). Deliberately warmer than its neighbours but static, no animation: gold border + soft glow + gold gradient wash, Sparkles eyebrow, the game's own icon/color blob, chevron. Adult-gated and coming-soon games are excluded from the rotation so a tap always drops straight into play (no PIN speed bump). The picked game still appears in the list below — the tile is a spotlight, not the only entry.
+- **Today's Pick tile**: full-width tile between the quick-action row and the crew banner — one game spotlighted per day (`pickOfTheDay()` in `App.tsx`: FNV-1a over `dayKey()`, same pick for everyone). Deliberately warmer than its neighbours but static, no animation: gold border + soft glow + gold gradient wash, Sparkles eyebrow, the game's own icon/color blob, chevron. Adult-gated and coming-soon games are excluded from the rotation so a tap always drops straight into play (no PIN speed bump). The picked game still appears in the list below (under the NEW tab, if it is one of the new six) — the tile is a spotlight, not the only entry.
 
 ## 🔁 Engagement layer (Phase 2, added 2026-07-03)
 
@@ -119,6 +137,179 @@ Cross-game retention + sharing systems. All localStorage, **no accounts, ever**;
 | **Daily Scramble** | `src/services/dailyChallenge.ts` + Daily mode in `JumbleGame` | Same date-seeded easy set for everyone (FNV hash of local date), 60s, one attempt/day, streak with ONE freeze/ISO-week, spoiler-free emoji-grid share. Home tile deep-links via sessionStorage `partyspark_open_daily`. |
 | **Lifetime stats** | `src/services/statsStore.ts` + `src/components/StatsScreen.tsx` (route `GameType.STATS`, trophy button on Home) | Plays / bests / wins-per-player-name across all scored games; backfills `jumble_best_*`. Two-tap reset. |
 | **First-play rules** | `src/services/firstPlay.ts` | Each game's How-To-Play auto-expands on first open (`useState(() => shouldAutoExpandRules('key'))`), collapsed forever after. |
+
+## 🔗 Multiplayer rooms (added 2026-09-06)
+
+Two or more phones playing the same game at the same time, joined by a 4-digit
+room code. **This is the only part of the app that needs a connection** — every
+other game stays fully offline, so multiplayer is always an opt-in branch off a
+game's setup screen and never sits on the default path.
+
+### The core idea: a shared seed, not a shared screen
+
+Room state is NOT a replica of anyone's UI. Two phones exchange a **seed** and a
+**per-player results inbox**, nothing else:
+
+- **Content never crosses the wire.** Every engine already accepts an injectable
+  `rnd: () => number` (`dealGame`, `dealPuzzle`, `buildCase`) or an index
+  (`setAtIndex`), because Daily Scramble and the invariant tests needed
+  determinism. `src/services/seededRandom.ts` (`mulberry32`, `seededShuffle`,
+  `roundSeed`) turns that into "both phones deal the identical puzzle from one
+  32-bit integer".
+- **Timers sync on a server-stamped DEADLINE, never a "go" message.** The client
+  asks for a duration; `api/room.ts` decides when it lands. Each client counts
+  down using a measured clock offset (`serverNow()` / `msUntil()` in
+  `roomService.ts`). A phone that hears about the round a second late, on a
+  device whose clock is minutes wrong, still buzzes at the same instant. **Never
+  accept an absolute deadline from a client** — that reintroduces exactly the
+  skew this design removes.
+
+### Key layout — one writer per key
+
+Room state is split so no two writers ever touch the same key:
+
+```
+room:{code}:meta          host only  (phase, round, seed, deadlineAt, config)
+room:{code}:members       Redis SET of player ids (SADD/SREM are atomic)
+room:{code}:p:{playerId}  that player only  (name + their state blob)
+```
+
+A single-document room would need read-modify-write, and two phones posting a
+score in the same tick would silently clobber one another. Partitioning by
+writer makes the lost update **unrepresentable** rather than merely unlikely —
+no locks, no WATCH/MULTI, no Lua. Don't "simplify" this back into one document.
+
+A new round does **not** clear anyone's state (the host would have to write keys
+it doesn't own). Instead every player doc carries `stateRound`; readers use
+`stateForRound(player, round)` and stale payloads are ignored. Cumulative fields
+(e.g. Ballpark's `total`) are read off `player.state` directly, outside the
+round gate.
+
+### Files
+
+| File | Purpose |
+|---|---|
+| `src/services/seededRandom.ts` | `mulberry32` / `seededShuffle` / `roundSeed` / `newSeed`. Not cryptographic — reproducible, not unguessable. |
+| `api/_lib/roomStore.ts` | Upstash Redis over REST, 3h TTL refreshed on every write. In-process `Map` fallback for `vercel dev` — `isPersistent()` reports which, and the lobby surfaces it. |
+| `api/_lib/roomSchemas.ts` | zod per action. Routes on **`action`**, not `type`, to sidestep the notes/01 dispatcher collision entirely. |
+| `api/room.ts` | `create` / `join` / `poll` / `patch` / `host` / `leave`. Every response carries the server's `now`. Host-only guard on `host`. |
+| `src/services/roomService.ts` | Transport + clock offset + `useRoom()` hook. **The whole network boundary** — swapping polling for websockets means reimplementing this file only. |
+| `src/components/ui/RoomPanel.tsx` | Shared create/join + lobby. Owns the room lifecycle, never game state — which is what keeps wiring the next game cheap. Props: `game`, `config`, `startDurationMs`, `hostControls`, `onStart`, `onCancel`. |
+
+### Wired games
+
+- **Scramble → Head-to-head** (`mode: 'versus'`). Same seven letters from the
+  seed, deadline-synced clock, opponent's score ticking live, shared end screen.
+  Scores **RAW**, unlike Pass and Play's unique-word rule — the live ticker is
+  the whole mode, and a number that silently repriced itself at the buzzer would
+  make it a lie for the whole round. Shared words appear on the end screen as a
+  stat, not as scoring.
+- **Ballpark → Play live on separate phones**. Everyone brackets **blind and
+  simultaneously**; the reveal waits for the entire room before the truth drops
+  onto the number line. This is what the signature screen was drawn for —
+  pass-and-play's HANDOFF means everyone after the first player has already
+  watched somebody think. Session dedupe is deliberately **skipped** in live
+  play: it reads this device's localStorage, so two phones would filter
+  different questions out of the pack and deal different games from one seed.
+- **Target → Race on separate phones**. Five rounds; `dealPuzzle` runs its own
+  search from the shared seed on each device, so every phone independently
+  arrives at the same six numbers, target *and* solution. The live ticker
+  publishes **distance, never the number** — "Priya is 2 away" is pressure, the
+  number would hand over part of the answer. An exact hit ends a turn early, so
+  the reveal gate is load-bearing: the solution stays hidden until everyone is
+  done.
+- **The Line → Play on separate phones**. The only game where separate phones do
+  something pass-and-play physically cannot: **your hand stays yours**. See the
+  turn-based pattern below — it is the one wired game that needs more than a
+  seed.
+
+### Turn-based games: replay a move log (The Line)
+
+Three of the four wired games are simultaneous — everyone acts at once and only
+results are exchanged. The Line is turn-based, so the board depends on what
+people **did**, not only on what was dealt, and a seed alone is not enough.
+
+It still needs no authoritative server. The deal is deterministic, `placeCard`
+is a pure function, and turns rotate strictly, so:
+
+- each move is published as **(global turn number → cardIdx, gap)**;
+- only the player whose turn it is writes turn N (still one writer per key);
+- every device merges the move maps into one turn-indexed log and replays it.
+
+Two properties fall out for free, and are worth copying for any future
+turn-based game:
+
+- **Whose turn it is is derived**, not announced: `turnCount % players`. Nothing
+  broadcasts it and no two devices can disagree about it.
+- **The ending is derived too.** `winnerSeat()` is a property of the replayed
+  board, so every phone reaches it alone. This is the one game with no "host
+  finished but nobody told the guests" bug to have — a failure both Ballpark and
+  Target needed explicit `phase: 'END'` handling for.
+
+The replay **must refuse to move the board backwards** past what the device has
+already applied, or a move made optimistically under the player's thumb gets
+yanked back out by a poll that has not seen it yet.
+
+Hand privacy is **UI-level, not cryptographic** — every device can compute every
+hand from the deterministic deal. That matches the rest of the room layer
+(scoring is already client-authoritative among friends) and is stated in the
+code rather than implied. Don't market it as secrecy.
+
+### Wiring another game
+
+1. Add a stage/mode for the room, render `<RoomPanel>` from it.
+2. On `onStart(session, room)`, derive content from `room.meta.seed` (+
+   `roundSeed` for multi-round) — never from `Math.random`, never from anything
+   in localStorage.
+3. `patch()` this player's result; read others via `stateForRound`.
+4. Only the host calls `host({ round })` / `host({ phase })`; everyone else
+   reacts to the change arriving on a poll. **Two devices advancing
+   independently is how a room ends up on two different questions.**
+5. Ending is a ROOM event, not a local one, and leaving must free the seat —
+   both were real bugs (notes/11). Turn-based games get both for free from the
+   replayed log; simultaneous ones must signal `phase: 'END'` explicitly.
+6. **Put the room screen ABOVE any `if (!state) return null` guard.** The lobby
+   runs before anything is dealt, so a room stage below that guard renders a
+   silent blank page — React returning null looks exactly like a component that
+   meant to. This bit both Target and The Line (notes/12).
+
+### Constraints
+
+- **Scoring is client-authoritative** and always will be. Anti-cheat among
+  friends in a room costs more than it protects. Nothing in `api/room.ts` is a
+  security boundary.
+- **No accounts, ever** (unchanged). A room holds a nickname and a score, and
+  everything expires on a 3h TTL, so there is no cleanup job to forget.
+- Multiplayer must **fail gracefully back to solo**. Never put it on a path a
+  player has to cross to reach an offline game.
+
+### Verifying it actually works
+
+Two browser-openable diagnostics, because the local drives **cannot** cover
+this: `scripts/serve-with-api.mjs` has no Upstash credentials, so every
+two-browser drive exercises the in-process `Map`. The Redis path (REST
+pipeline, `SADD`/`SMEMBERS`, `EXPIRE`, TTL refresh) only ever runs on a real
+deployment.
+
+| URL | Answers |
+|---|---|
+| `/api/health` | `roomStore: "redis" \| "memory"` — is a store wired to *this deployment*? Env vars are per-deployment, so a build made before the store was connected still says `memory`. |
+| `/api/room?action=selftest` | Does the store actually work? Round-trips a document with a TTL, checks the expiry is armed, adds and reads a member set, then cleans up. Writes only to a `selftest:` key namespace, so it can never touch a live room. |
+
+Run the self test after provisioning, after changing store plans, and on any
+deployment where multiplayer misbehaves — "two phones can't see each other" and
+"the store is misconfigured" look identical from inside the game.
+
+### ⚠️ Requires provisioning (browser step)
+
+Without a Redis store the server falls back to an in-process `Map`, which cannot
+work across serverless instances — two phones "in the same room" never see each
+other. The lobby shows an amber warning when this is the case. To fix, in the
+Vercel dashboard: **party-spark → Storage → Create Database → Upstash for Redis
+→ Connect**, then redeploy. The integration injects `UPSTASH_REDIS_REST_URL` +
+`UPSTASH_REDIS_REST_TOKEN` (the store also accepts the older `KV_REST_API_*`
+names). Free tier is far more than enough — a 2-player, 5-minute game is roughly
+600 requests.
 
 ## 🚫 Explicit Constraints & "Do Not Touch" Rules
 
@@ -155,7 +346,7 @@ Always pass the `GameType` value.
 
 | Game | GameType | Mechanic | AI | Notes |
 |---|---|---|---|---|
-| Charades | `CHARADES` | Describe without forbidden words | Gemini (refills) | Round timer editable via the shared `TimerSetting` chip on SETUP (default 60s, persisted) |
+| Charades | `CHARADES` | Act it out silently | Gemini (Classic refills only) | **One loop, two decks.** The deck switch sits on SETUP and persists (`charades_format`); everything after it is the same code path. The loop is the original and deliberately minimal: the card shows a clue, **Correct or Skip goes straight to the next card**, the round ends when the clock does (or the batch runs out), then TEAM_INTRO for the next team or SUMMARY. A reveal gate, a per-turn verdict screen and a turn schedule were built here once and **taken back out at the founder's request — do not reintroduce a step between the card and the next card.** **Classic** deals from `games_data.json`'s short word list (Movie Mix / Family Mix / Bollywood / Hollywood) and is the only deck with an AI refill behind it. **One Clue** deals from `src/data/charades_clues.json` via `src/services/charadesClues.ts` — a better-written deck of 669 clues in four decks: Hollywood (197), Bollywood (180), **Movie Mix** (those two combined at deal time, never stored twice) and **Everything Else** (292 — situations, sayings, people, jobs, animals, TV). It is hand authored and offline; when it runs dry the round simply ends. Each One Clue card carries a `kind` shown in the card's pill ("Movie", "Saying") — the category a charades player announces before starting; Classic cards show "Charades" there. Round timer via the shared `TimerSetting` chip (default 60s, persisted, shared by both decks). |
 | Taboo | `TABOO` | Word guessing with banned terms | Local + Gemini fallback | Round timer editable via the shared `TimerSetting` chip on the CATEGORY screen (default 60s, persisted) |
 | Roast Me | `ROAST` | AI roast from uploaded image | Gemini (image + text) | **Adult-gated** (in `ADULT_GAME_IDS`, PIN 0438). 12 themes from the seasonal registry — see the Roast Me theme system below. Uses image gen, can't swap to Claude |
 | Imposter | `IMPOSTER` | Find the fake among friends | Gemini | |
@@ -171,11 +362,11 @@ Always pass the `GameType` value.
 | **The Tell** | *(no GameType — a sub-screen of `TRUTH_OR_DRINK`)* | Secret mission vs. the partner who has to name it | None (offline) | Strictly 2 players, date-night shaped. Each round one player (the Operative) is shown a mission only they can see — blurred until press-and-hold; a timer runs with the phone face down while they try to pull it off; at the buzzer their partner picks what it was from 3 options (the real one + 2 decoys from the same tier). Correct guess = **Caught** (Operative pays the mission's forfeit); wrong = **Clean getaway** (guesser pays the mission's spoils); the Operative can also self-report **bottled it** for the tier's bust penalty. Optional **Double Down** on the brief screen is a private bluff — doubles both stakes, revealed only at the verdict. Any mission can be swapped for another in the same tier before the clock starts (consent-forward, same spirit as Slow Burn's trade rule). 12 rounds, alternating, 4 per tier across 3 escalating tiers. Two decks in `src/data/the_tell.json` (8 missions x 3 tiers each): **Sips** (drinking, clothes on, ungated beyond TOD's own 0438 gate) and **After Dark** (explicit; gated by PIN `2525`, reusing Intimate Drinking's `partyspark_intimate_unlocked` key so one unlock covers both). Reuses `useCountdown`, `TimerSetting` (`the_tell_timer_secs`, default 90s), `TeamRosterRow` (max 2), `audio` / `haptics`, and per-theme accent palettes. Bespoke end screen (cleans + reads per player) — deliberately NOT on the shared `EndScreen`. No share card, no Game Night reporting, no stats: the content isn't shareable. |
 | **Nerve** | *(no GameType — a sub-screen of `TRUTH_OR_DRINK`)* | Two-player chicken up a ladder of escalating dares | None (offline) | Strictly 2 players. One ladder of 6 rungs per round, each worse than the last; players alternate. On your turn: **Do it** (the ladder climbs one rung and passes to your partner) or **Fold** (round over — you pay the forfeit printed on the rung you refused, and they take the round). Clearing the top rung wins the round outright and the other player pays the tier's `top` price. Best of 3 — one round per tier, and the opening player alternates each round so neither always draws rung 1. The fold screen reveals the rung you dodged. **No timer and no RNG in the play loop** — the only pressure is who blinks first, which is what separates it from Intimate Drinking (dice) and The Tell (deduction). One **swap** per player per round is the consent affordance; folding itself is a legitimate move rather than a failure state. Two decks in `src/data/nerve.json` (8 rungs x 3 tiers each, authored in escalating order): **Sips** and **After Dark** (PIN `2525`, same `partyspark_intimate_unlocked` key as Intimate Drinking / The Tell). **Ladders are stored as authored indices, not rung objects, and every mutation must keep them ascending** — see `notes/05-invariant-held-by-constructor-only.md`. Reuses `TeamRosterRow` (max 2), `audio` / `haptics`, `PinGateModal`, per-theme accents. Bespoke end screen; no share card / Game Night / stats, same reasoning as The Tell. |
 | **House Rules** | `HOUSE_RULES` | Laws accumulate; the phone is the rulebook | None (offline) | 3–8 players (4–5 ideal), the first proper group drinking game since NHIE. Each round one player is the **Lawmaker**: the phone hands them a law that binds the whole table for the rest of the session (laws never expire), and before reading it out they secretly pick a **Mark** — who they think breaks it first. Play continues normally; when someone slips, the table taps in which law and who, and that player drinks the law's sips. Mark was right → Lawmaker scores 2; anyone else → the Lawmaker drinks the same sips for the bad call (**except** when the Lawmaker broke their own law, where they've already paid — don't "fix" that into a double charge). 9 laws over 3 escalating tiers (2/3/4 sips) from `src/data/house_rules.json` (30 laws, 3 drawn per tier); `{maker}` in a law's text/detail is substituted with the Lawmaker's name at deal time. **The Book of Laws is the hub screen** and the whole reason this is an app rather than a card deck. Uses the shared `EndScreen` (`accent="theme"`, `footerExtra` share button), `TeamRosterRow` seeded from `sessionService.getTeams()`, `statsStore`, `gameNightService.reportResult`, and a share card. Not adult-gated, so it *is* Game Night eligible. |
-| **Ballpark** | `BALLPARK` | Bracket the number, don't guess it | None (offline) | 1–6 players and the app's second true **solo** game. Every question has one true number; you never name it, you commit a LOW and a HIGH. The bracket is priced off its **ratio** (`high / low`), not its width, so a tier means the same thing whether the answer is 12 or 6 billion — Wild 1 / Loose 2 / Solid 4 / Sharp 6 / Sniper 10, and a single exact number is a 20-point **Bullseye**. Miss and you score zero however close you were. Because the price is computable from the player's own two numbers, the badge prices the bracket **live while they type** (with a haptic tick on every tier crossing) — that is the whole feel of the game. Signature screen: every player's bracket on one **log-scaled number line**, then the truth drops in on top of them; a miss stays visible (player colour, dashed, 30% opacity) so you can see *where* you were wrong. The end screen scores the thing trivia never does — a **calibration read** (hit rate against geometric-mean bracket width) verdicting each player Deadly / Playing it safe / Well calibrated / Overconfident / Wildly overconfident. 120 authored questions over 3 packs (Mixed Bag / Planet & Cosmos / Body & Beasts), each with a one-line fact note shown on reveal; 8 per game, session-deduped via `SessionManager`. Uses the shared `EndScreen` (`accent="theme"`, calibration card + share button in `footerExtra`), `TeamRosterRow`, `statsStore` (`recordBest` in solo), `gameNightService.reportResult`, and a share card. Not adult-gated, so Game Night eligible. |
+| **Ballpark** | `BALLPARK` | Bracket the number, don't guess it | None (offline) | 1–6 players and the app's second true **solo** game. Every question has one true number; you never name it, you commit a LOW and a HIGH. The bracket is priced off its **ratio** (`high / low`), not its width, so a tier means the same thing whether the answer is 12 or 6 billion — Wild 1 / Loose 2 / Solid 4 / Sharp 6 / Sniper 10, and a single exact number is a 20-point **Bullseye**. Miss and you score zero however close you were. Because the price is computable from the player's own two numbers, the badge prices the bracket **live while they type** (with a haptic tick on every tier crossing) — that is the whole feel of the game. Signature screen: every player's bracket on one **log-scaled number line**, then the truth drops in on top of them; a miss stays visible (player colour, dashed, 30% opacity) so you can see *where* you were wrong. The end screen scores the thing trivia never does — a **calibration read** (hit rate against geometric-mean bracket width) verdicting each player Deadly / Playing it safe / Well calibrated / Overconfident / Wildly overconfident. 120 authored questions over 3 packs (Mixed Bag / Planet & Cosmos / Body & Beasts), each with a one-line fact note shown on reveal; 8 per game, session-deduped via `SessionManager`. **The bracket clock is ON by default (45s, `ballpark_timer_secs`, editable or off via the shared `TimerSetting` chip).** At zero a valid bracket locks itself in as typed — the player made that call, the clock only stopped them fiddling — and an empty one is no bracket at all: zero points, and the reveal says "ran out of time" rather than drawing a fake 1–1 range on the number line. **In a room the HOST's clock governs everyone**, stamped as a server deadline on each round (`host({ round, durationMs })`), because a per-phone preference would either hang the reveal or buzz a guest out of an untimed round. The reveal gate therefore reads a published `done` flag, NOT "has a bracket" — a phone that ran out of time is finished, and gating on a non-null bracket would freeze the room on them. Uses the shared `EndScreen` (`accent="theme"`, calibration card + share button in `footerExtra`), `TeamRosterRow`, `statsStore` (`recordBest` in solo), `gameNightService.reportResult`, and a share card. Not adult-gated, so Game Night eligible. |
 | **Echo** | `ECHO` | Recite the growing chain, then choose what breaks the next player | None (offline) | 2–6 players. One shared chain; on your turn you tap the whole thing back **in order** from a 16-tile board with nothing marked, and only then do you **choose** the next item to add. The choice is the mechanic — every board is stocked with deliberate lookalikes (Lemon/Melon, Fish/Prawns, Potato/Sweet potato, Lion/Tiger), so you're picking the item you think they'll confuse. A clean recital pays the **length of the chain you carried**; one wrong tap or the clock ends the round. 3 rounds, and the opening player rotates so nobody always draws the empty chain. Signature screen: the public **chain replay**, each chip landing a semitone higher than the last. The break screen shows exactly what you tapped against exactly what you needed. 4 boards x 16 items in `src/data/echo.json`. **THE CHAIN INVARIANT: it only ever grows, by exactly one item, never reorders and never repeats** — it is stored as authored indices, not item objects, so the property is measurable at the point of mutation, and `scripts/drive-echo.mjs` asserts the invariant itself at every replay (see `notes/05`). Reuses `useCountdown` + `TimerSetting` (`echo_timer_secs`, default 45s), `TeamRosterRow`, `EndScreen`, `audio`/`haptics`, `statsStore`, `gameNightService`, share card. Not adult-gated, so Game Night eligible. |
-| **Shortlist** | `SHORTLIST` | Sixteen suspects, one culprit, clues that cost you points | None (offline) | 2–8 players and **the app's first cooperative game** — nobody plays each other, everyone plays the app. It hides one of sixteen suspects and feeds truthful clues one at a time; the table crosses suspects off, argues, and names someone. Closing on clue 1 pays 10 and it drops (10/8/6/4/3/2) with every clue taken, so the whole game is one question asked five times: *do we know enough yet?* A wrong name costs one of 3 lives and forces another clue; 0 lives ends the night. **Content is GENERATED, not authored** — `src/services/shortlistEngine.ts` derives every clue from each suspect's structured attributes (plus a derived name-length attribute, which is what keeps Eagle and Owl distinguishable), so three 16-suspect boards in `src/data/shortlist.json` produce endless cases. **THE CASE INVARIANT: every clue is true of the hidden suspect, the suspect survives every clue, each clue strictly narrows the field, and the last clue leaves exactly ONE suspect standing** — that last part is what makes a case closable by deduction rather than a coin flip; `buildCase` throws rather than serve a case that breaks it. `tests/shortlistEngine.test.ts` asserts it over 9,000 generated cases **in CI**, and also pins two properties invisible in any single case: chain length must vary (a plain halving curve lands on exactly 4 clues for every 16-suspect case, flattening the whole scoring curve) and clues should not repeat an attribute back-to-back. Signature screen: the clue tape stacking above the striking-through board. Crossing off is the table's own bookkeeping — the app never reacts to it, because reacting would do the deduction for them. Bespoke end screen (one shared result, no leaderboard); reports the shared score to Game Night but writes **nothing** to the per-player wins board, because a co-op game has no individual winner. Not adult-gated, so Game Night eligible. |
+| **Shortlist** | `SHORTLIST` | Sixteen suspects, one culprit, clues that cost you points | None (offline) | 2–8 players and **the app's first cooperative game** — nobody plays each other, everyone plays the app. It hides one of sixteen suspects and feeds truthful clues one at a time; the table crosses suspects off, argues, and names someone. Closing on clue 1 pays 10 and it drops (10/8/6/4/3/2) with every clue taken, so the whole game is one question asked five times: *do we know enough yet?* A wrong name costs one of 3 lives and forces another clue; 0 lives ends the night. **Content is GENERATED, not authored** — `src/services/shortlistEngine.ts` derives every clue from each suspect's structured attributes (plus a derived name-length attribute, which is what keeps Eagle and Owl distinguishable), so three 16-suspect boards in `src/data/shortlist.json` produce endless cases. **THE CASE INVARIANT: every clue is true of the hidden suspect, the suspect survives every clue, each clue strictly narrows the field, and the last clue leaves exactly ONE suspect standing** — that last part is what makes a case closable by deduction rather than a coin flip; `buildCase` throws rather than serve a case that breaks it. `tests/shortlistEngine.test.ts` asserts it over 9,000 generated cases **in CI**, and also pins two properties invisible in any single case: chain length must vary (a plain halving curve lands on exactly 4 clues for every 16-suspect case, flattening the whole scoring curve) and clues should not repeat an attribute back-to-back. Signature screen: the clue tape stacking above the striking-through board. Crossing off is the table's own bookkeeping — the app never reacts to it, because reacting would do the deduction for them. **The clue clock is OFF by default** (`shortlist_timer_secs`, `allowOff`): the table arguing itself out of a suspect IS the play. When it is on, zero takes the next clue for you — the honest penalty for stalling is already in the scoring curve — and it never names anyone, because accusing is the table's call and never the app's. With no clues left the clock simply stops rather than forcing an accusation. Bespoke end screen (one shared result, no leaderboard); reports the shared score to Game Night but writes **nothing** to the per-player wins board, because a co-op game has no individual winner. Not adult-gated, so Game Night eligible. |
 | **Target** | `TARGET` | Six numbers, one three-digit target, four operations | None (offline) | 1–6 players, solo-capable. Reach the target with + − × ÷, each number used at most once. **The phone earns its place by solving the puzzle too**: at the buzzer it shows the way in, and knowing the answer was always there is what makes a near miss sting properly. That reveal is the signature screen. Numbers are combined by **tapping** (tile → operator → tile, and the two collapse into their result) rather than typed as an expression, which makes every illegal move unreachable instead of rejected — there is no way to enter a fraction or a negative. Scoring is Countdown's: exact 10, within 5 is 7, within 10 is 5, further is nothing; your closest number counts automatically so there is nothing to declare, and an exact hit ends the turn on the spot. 5 rounds, two difficulties (Classic: 1–2 large, target 101–499; Tough: 2–4 large, target 300–999 **and** rejected if the target is reachable with three numbers or fewer). **THE DEAL INVARIANT: every puzzle dealt is exactly solvable, and the printed solution is valid — each step combines two numbers available at that moment, never divides unevenly or goes negative, and the last step lands on the target.** `dealPuzzle` only returns a puzzle it has already solved, so "there was always a way" is a property of the dealer rather than a hope; `tests/targetEngine.test.ts` re-verifies it over 800+ deals in CI. `applyOp` is deliberately the single definition of legality shared by the solver and the player's board. **The only game with no `src/data` file** — engine in `src/services/targetEngine.ts` (~6ms per deal, so it deals synchronously). Reuses `useCountdown` + `TimerSetting` (`target_timer_secs`, default 60s), `TeamRosterRow`, `EndScreen`, `audio`/`haptics`, `statsStore` (`recordBest` in solo), `gameNightService`, share card. Not adult-gated, so Game Night eligible. |
-| **The Line** | `THE_LINE` | Never say the number — say where it goes | None (offline) | 1–8 players, solo-capable. Every card is a claim with a **hidden** number; one starter is face up, and from then on a player only ever chooses the **gap** in the shared line where their card belongs. Correct → it locks in and the value turns over. Wrong → it is discarded, the truth is shown, and they draw a replacement. First to empty a hand of 4 wins; level scores break on fewest misses. **THE LINE INVARIANT: the line is always strictly ascending by hidden value, and line / hands / discard / draw always partition the deck exactly** — enforced in `assertLine`, which every mutation runs on its OWN RESULT, not just at construction (`notes/05`). The line is stored as **deck indices**, never card objects, so both halves are measurable at the point of mutation. Nothing in the engine assumes the JSON is authored in value order — it happens to be, which is exactly why a comparison that used the index would look correct on the shipped data forever; `tests/lineEngine.test.ts` pins that with a deliberately value-shuffled deck, re-implements the invariant independently, and runs it over hundreds of full games in CI. Content is 208 authored cards over **four single-axis decks** — How Tall (m), How Fast (km/h), How Long Ago (year), How Heavy (kg) — each mixing subjects onto ONE unit, which is the thing a printed deck cannot do. Values are deliberately non-drifting (heights, speeds, years, masses; no populations, prices or "as of" caveats), and each deck carries a **unit ladder** in its JSON so a nine-order-of-magnitude range still reads like something a person would say ("58 g", "397 tonnes", "5.9 million tonnes"). Design calls: hand of 4; a wrong card is **replaced, not lost**, so a miss costs tempo rather than snowballing; **no timer**, because the argument at the table is the game; solo is a **1-player game, not a mode** — the same loop with a different terminator (3 misses instead of an empty hand), which is the one rule that lives on the state (`endless`) so `placeCard` cannot be called with the wrong refill policy. Signature screen: the line itself, which opens into tappable gaps labelled with the **range each one claims** ("under 96 m", "452 m – 979 m", "over 6,190 m"). Reuses `TeamRosterRow`, `EndScreen` (`accent="theme"`, final-line card + share button in `footerExtra`), `audio`/`haptics`, `statsStore` (`recordBest` in solo), `gameNightService`, share card. Not adult-gated, so Game Night eligible. |
+| **The Line** | `THE_LINE` | Never say the number — say where it goes | None (offline) | 1–8 players, solo-capable. Every card is a claim with a **hidden** number; one starter is face up, and from then on a player only ever chooses the **gap** in the shared line where their card belongs. Correct → it locks in and the value turns over. Wrong → it is discarded, the truth is shown, and they draw a replacement. First to empty a hand of 4 wins; level scores break on fewest misses. **THE LINE INVARIANT: the line is always strictly ascending by hidden value, and line / hands / discard / draw always partition the deck exactly** — enforced in `assertLine`, which every mutation runs on its OWN RESULT, not just at construction (`notes/05`). The line is stored as **deck indices**, never card objects, so both halves are measurable at the point of mutation. Nothing in the engine assumes the JSON is authored in value order — it happens to be, which is exactly why a comparison that used the index would look correct on the shipped data forever; `tests/lineEngine.test.ts` pins that with a deliberately value-shuffled deck, re-implements the invariant independently, and runs it over hundreds of full games in CI. Content is 208 authored cards over **four single-axis decks** — How Tall (m), How Fast (km/h), How Long Ago (year), How Heavy (kg) — each mixing subjects onto ONE unit, which is the thing a printed deck cannot do. Values are deliberately non-drifting (heights, speeds, years, masses; no populations, prices or "as of" caveats), and each deck carries a **unit ladder** in its JSON so a nine-order-of-magnitude range still reads like something a person would say ("58 g", "397 tonnes", "5.9 million tonnes"). Design calls: hand of 4; a wrong card is **replaced, not lost**, so a miss costs tempo rather than snowballing; **no timer**, because the argument at the table is the game; solo is a **1-player game, not a mode** — the same loop with a different terminator (3 misses instead of an empty hand), which is the one rule that lives on the state (`endless`) so `placeCard` cannot be called with the wrong refill policy. Signature screen: the line itself, which opens into tappable gaps labelled with the **range each one claims** ("under 96 m", "452 m – 979 m", "over 6,190 m"). **The turn clock is OFF by default** (`the_line_timer_secs`, `allowOff`) — "no timer" is the design, because the argument at the table is the game; it exists for the group with one player who never commits. Running out calls `timeoutCard`, NOT `placeCard` with a knowingly-wrong gap: the player chose no gap, so the card is discarded as a miss and replaced (the same price as aiming it wrong) while the line does not move, and the verdict says where it belonged instead of answering a question nobody asked. **Local play only** — a live move is `(turn → cardIdx, gap)` and a timeout has no gap, so publishing one would need a protocol change on both sides of the replay; live rooms stay untimed rather than ship a clock that desynchronises boards. Reuses `TeamRosterRow`, `EndScreen` (`accent="theme"`, final-line card + share button in `footerExtra`), `audio`/`haptics`, `statsStore` (`recordBest` in solo), `gameNightService`, share card. Not adult-gated, so Game Night eligible. |
 | **5 Alive** | `FIVE_ALIVE` | Name N in N seconds, beat the bell | None (offline) | 5 descending rounds — name 5/4/3/2/1, timed 6/5/4/3/2s (extra second to read the clue) — perfect-round bonus, judge tallies. Easy + Hard category pools in `src/data/five_alive.json` (Easy = 124 mainstream + Indian-context; Hard = 106 recall-pressure categories). End-of-round bell + tick synthesized via Web Audio (no bundled assets); the landing screen uses the shared compact `TeamRosterRow` (collapsed gold prompt) for optional player names (persists across games via the shared session team store), difficulty picked after. Also has a "Just Play" no-scoring mode. |
 | **Linked** | `LINKED` | One connector word pairs with all 3 clues (e.g. water/down/rain → FALL) | None (offline) | Two modes: **Pass and Play** (60s per player, self-reported "Got it!"/"Skip", leaderboard, both flash the answer before advancing) and **Just Play** (no timer, group shout, Reveal → self-reported Correct/Incorrect tiles that score a running "solved" count and advance). Easy (78) + Hard (36) puzzle pools in `src/data/linked.json` — shape `{ clues: [3], answer, position? }` (`position` optional, defaults `'suffix'`; bundled data is all-suffix). Buzzer + tick + got-it ding synthesized via Web Audio. Per-puzzle session dedupe via `SessionManager`. |
 | **Scramble** | `JUMBLE` | Find as many words as possible from 7 scrambled letters before the timer | None (offline) | Display name is **Scramble**; the internal `GameType`, component (`JumbleGame`), engine (`jumbleEngine`), data (`jumble_sets.json`), and `jumble_*` localStorage keys all stay `JUMBLE`/`jumble` (renaming would reset saved bests + move the data path). PartySpark's first true **solo** game (also Pass-and-Play). **No authored content + no dictionary shipped** — a dev script (`scripts/build-jumble-sets.mjs`) runs the ENABLE word list (172k inflected words) + an OpenSubtitles top-50k frequency list (both cached gitignored under `scripts/.cache/`) once and bakes 300 easy + 250 hard 7-letter sets, each with its FULL answer key, into `src/data/jumble_sets.json` (~320KB, lazy-loaded via dynamic import so it's code-split out of the initial bundle). At play time validation = O(1) answer-key lookup + a local formability check; zero API, fully offline. Engine in `src/services/jumbleEngine.ts`. **Easy** is SEEDED from a common 7-letter word so its pangram is always a normal everyday word (never Scrabble-obscure); it accepts any real word but the end-screen "missed words" + % of max are measured against the common subset (`commonWords`). **Hard** = full ENABLE (obscure OK) + every word must use the amber **center** tile. Words must be 4+ letters (3-letter words excluded). Length-weighted scoring (4/5/6/7 = 2/4/6/10; 7-letter = pangram + celebration). User-set timer (30/60/90/120/custom 15–300s, persisted to localStorage). **Solo**: beat-your-best (localStorage per difficulty), end screen shows found + high-value missed words + pangram. **Pass and Play** (2–8): same letters + timer for all, pass-to-next gate, **unique-word scoring** (words found by 2+ players cancel) + leaderboard. To refresh/resize the set pack, re-run the build script (needs the dictionary; fetch it to `scripts/.cache/enable1.txt` if missing). |
@@ -295,9 +486,9 @@ The basic / env-var-switched mode was simplified out once advanced was validated
 
 - **Local dev:** `vercel dev` (runs both Vite AND serverless functions). Or `npm run dev` if you're only touching client UI.
 - **Local build:** `npm run build` (runs `tsc -b && vite build`)
-- **Tests:** `npm test` → vitest render smoke test + the Shortlist, Target and The Line engine invariants + the Roast theme-registry parity/season checks (`tests/roastThemes.test.ts`) (`tests/App.smoke.test.tsx`: splash → home menu through the real module graph; jsdom, fetch/matchMedia stubbed in `tests/setup.ts`). Config in `vitest.config.ts` (deliberately separate from `vite.config.ts`).
+- **Tests:** `npm test` → vitest render smoke test (`tests/App.smoke.test.tsx`: splash → home menu through the real module graph; jsdom, fetch/matchMedia stubbed in `tests/setup.ts`) + the Shortlist, Target and The Line engine invariants + THE ROOM INVARIANT (`tests/roomSync.test.ts`) + THE ONE-CLUE BAR (`tests/charadesClues.test.ts`) + the stored-timer-preference test (`tests/timerPref.test.ts` — an unset key must not read as "no timer"). Config in `vitest.config.ts` (deliberately separate from `vite.config.ts`). + the Roast theme-registry parity/season checks (`tests/roastThemes.test.ts`)
 - **CI:** `.github/workflows/ci.yml` — on push to `main` + PRs: `npm ci`, `npm run build`, `npm test`. **Lint is NOT in CI** — `npm run lint` currently fails with 62 pre-existing errors (mostly `no-explicit-any` and `react-refresh/only-export-components`); add it back once that debt is paid.
-- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens the 18 Play Now games headless — all 22 with `--tabs` — and fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) and `scripts/drive-the-tell.mjs` (plays a full 12-round game of The Tell and asserts every outcome branch) and `scripts/drive-nerve.mjs` (plays a best-of-3 of Nerve and asserts the ladder-escalation invariant) and `scripts/drive-house-rules.mjs` (plays a 9-law session and checks the app's scoring against an independently-computed tally) and `scripts/drive-ballpark.mjs` (a 3-player and a solo game, every expected score recomputed from the JSON) and `scripts/drive-echo.mjs` (asserts the chain-growth invariant at every replay) and `scripts/drive-shortlist.mjs` (re-derives every clue's meaning from the JSON rather than trusting the screen) and `scripts/drive-target.mjs` (re-solves every dealt board itself and replays the app's printed solution back through the UI) and `scripts/drive-the-line.mjs` (checks the rendered line rises by the JSON's values on every single turn, that the piles partition, and that no hand card leaks its number) and `scripts/drive-roast-lab.mjs` (clears the 0438 gate, counts the picker's seasonal tiles, checks none overflow, and loads `#roast-lab`) against — the last three draw randomised content, so run them a few times — `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code.
+- **Browser regression drives (dev-only, not in CI):** `scripts/drive-games.mjs` (opens the 18 Play Now games headless — 12 from the main list, 6 behind the NEW tab, all 22 with `--tabs` — and fails on console errors) and `scripts/deep-drive.mjs` (countdown/expiry/score flows in the 6 timer games) and `scripts/drive-the-tell.mjs` (plays a full 12-round game of The Tell and asserts every outcome branch) and `scripts/drive-nerve.mjs` (plays a best-of-3 of Nerve and asserts the ladder-escalation invariant) and `scripts/drive-charades-one-clue.mjs` (plays a round on each of the four One Clue decks and checks every card against `charades_clues.json`, so the deck switch can never silently fall through to the Classic word list; also pins that Movie Mix is the two movie packs and nothing else, that Correct advances straight to the next card with no screen in between, and that Classic still deals its own cards) and `scripts/drive-house-rules.mjs` (plays a 9-law session and checks the app's scoring against an independently-computed tally) and `scripts/drive-ballpark.mjs` (a 3-player and a solo game, every expected score recomputed from the JSON) and `scripts/drive-echo.mjs` (asserts the chain-growth invariant at every replay) and `scripts/drive-shortlist.mjs` (re-derives every clue's meaning from the JSON rather than trusting the screen) and `scripts/drive-target.mjs` (re-solves every dealt board itself and replays the app's printed solution back through the UI) and `scripts/drive-the-line.mjs` (checks the rendered line rises by the JSON's values on every single turn, that the piles partition, and that no hand card leaks its number) and `scripts/drive-timers.mjs` (the three OPTIONAL clocks — what each one does at ZERO, which no other drive can reach; it really waits out a 15s clock three times, so it takes about a minute) and the four **two-browser** multiplayer drives `scripts/drive-versus.mjs` + `scripts/drive-ballpark-live.mjs` + `scripts/drive-target-live.mjs` + `scripts/drive-the-line-live.mjs` (which all need `node scripts/serve-with-api.mjs 4173` instead of `vite preview`, since preview does not run `/api/*`) against — the last three draw randomised content, so run them a few times — `npm run build && npx vite preview --port 4173`. See `notes/02-browser-regression-drive.md` for the gotchas. Run these after touching shared game code. and `scripts/drive-roast-lab.mjs` (clears the 0438 gate, counts the picker's seasonal tiles, checks none overflow, and loads `#roast-lab`)
 - **Deployment target:** Vercel, auto-triggered by `git push`
 - **Preview URL format:** `party-spark-git-{branch-slug}-{scope}.vercel.app` (has "Deployment Protection" enabled — you'll see a 401 on manifest.json that can be ignored)
 - **Production URL:** set by the user's Vercel project config (deployed from `main`)
@@ -329,9 +520,11 @@ Reconciled against code 2026-07-02. Several items from the 2026-04-21 audit were
 
 2. **NHIE has no Claude fallback yet.** `generateNeverHaveIEver` is Gemini-only. Same quota vulnerability TOD/MLT had before the port.
 
-3. **`npm run lint` fails with 62 pre-existing errors** (`no-explicit-any` in data-loading code, `react-refresh/only-export-components` in contexts/UI). Lint is therefore excluded from CI. Pay this down, then add `npm run lint` to `.github/workflows/ci.yml`.
+3. **Multiplayer needs a Redis store provisioned on Vercel.** Until then `/api/room` falls back to an in-process Map, which cannot work across serverless instances — two phones in "the same" room never see each other, and the lobby shows an amber warning saying so. Browser steps in the Multiplayer section above. Four games are wired (Scramble, Ballpark, Target, The Line); Echo is the natural next one — it is turn-based, so it follows The Line's move-log pattern rather than the seed-only one.
 
-4. **A handler param named `type` can never reach `/api/ai` handlers** — the dispatcher strips `type` as its routing key, and the client spread can even overwrite it (breaks the icebreaker "deep" and roast_or_toast "toast" variants over the wire). Details + the fix recipe: `notes/01-api-type-param-collision.md`.
+4. **`npm run lint` fails with 62 pre-existing errors** (`no-explicit-any` in data-loading code, `react-refresh/only-export-components` in contexts/UI). Lint is therefore excluded from CI. Pay this down, then add `npm run lint` to `.github/workflows/ci.yml`.
+
+5. **A handler param named `type` can never reach `/api/ai` handlers** — the dispatcher strips `type` as its routing key, and the client spread can even overwrite it (breaks the icebreaker "deep" and roast_or_toast "toast" variants over the wire). Details + the fix recipe: `notes/01-api-type-param-collision.md`.
 
 ~~Old items "No code splitting" and "No service worker" removed 2026-07-03: fixed by Phase 1 hardening — every game is `React.lazy`, every data JSON is a dynamic import, and vite-plugin-pwa precaches the shell (see Key files).~~
 
@@ -351,7 +544,8 @@ src/
 │   │   ├── TeamRosterRow.tsx        # Shared optional player/team-names row (gold pill, persists)
 │   │   ├── TimerSetting.tsx         # Shared editable round-timer chip (Scramble/Charades/Taboo)
 │   │   ├── EndScreen.tsx            # Shared ranked-leaderboard end screen (5 Alive/Linked/Charades/Taboo)
-│   │   └── SpinTheBottle.tsx        # Shared "who goes next?" bottle spinner (test screen inside Truth or Drink)
+│   │   ├── SpinTheBottle.tsx        # Shared "who goes next?" bottle spinner (test screen inside Truth or Drink)
+│   │   └── RoomPanel.tsx            # Shared multiplayer create/join + lobby (Scramble versus, Ballpark live)
 │   └── games/                       # One file per game (incl. JumbleGame = "Scramble", IntimateDiceGame, TheTellGame, NerveGame, HouseRulesGame, BallparkGame, EchoGame, ShortlistGame, TargetGame, TheLineGame)
 ├── contexts/
 │   └── ContentContext.tsx           # AI content prefetch cache
@@ -361,10 +555,13 @@ src/
 ├── services/
 │   ├── geminiService.ts             # Thin fetch wrappers around /api/ai (not a direct Google client)
 │   ├── claudeService.ts             # Thin fetch wrappers (back-compat)
+│   ├── charadesClues.ts             # Charades One Clue deck: loader, packMenu, Movie Mix union, shuffled deal — separate from games_data.json
 │   ├── jumbleEngine.ts              # Scramble runtime: set picker, validation, scoring, missed-words
 │   ├── shortlistEngine.ts           # Shortlist runtime: generates each case's clue chain + holds the case invariant
 │   ├── targetEngine.ts              # Target runtime: deals a guaranteed-solvable puzzle AND solves it (shared legality rules)
-│   ├── lineEngine.ts                # The Line runtime: deals, judges a placement, and holds THE LINE INVARIANT on every mutation
+│   ├── lineEngine.ts                # The Line runtime: deals, judges a placement or a timeout, holds THE LINE INVARIANT on every mutation
+│   ├── seededRandom.ts              # mulberry32 / seededShuffle / roundSeed — same seed ⇒ same content on every device
+│   ├── roomService.ts               # Multiplayer transport + clock offset + useRoom() — the ENTIRE network boundary
 │   ├── imageQuadrants.ts            # Slices a 2x2 Roast composite back into four images (pure geometry + canvas)
 │   ├── audio.ts                     # Shared Web Audio synth kit + app-wide mute + compact haptic aliases
 │   ├── haptics.ts                   # hapticLight/Success/Error/Heavy (navigator.vibrate; no-op on iOS; respects the mute switch)
@@ -381,19 +578,26 @@ api/_lib/schemas.ts                  # zod schema per /api/ai request type (see 
 api/_lib/roast-themes.ts             # Roast Me prompts + IDENTITY_LOCK + composite directives (import-free by design)
 src/data/roastThemes.ts              # Roast Me picker catalog + season windows (paired with the above; parity enforced in CI)
 src/components/games/roast/RoastLab.tsx  # #roast-lab composite-vs-solo comparison screen (not linked from Home)
+api/_lib/roomSchemas.ts              # zod schema per /api/room action (routes on `action`, not `type`)
+api/_lib/roomStore.ts                # Room storage: Upstash Redis REST + in-process dev fallback; one writer per key
+api/room.ts                          # Multiplayer rooms — the app's only stateful endpoint
 tests/App.smoke.test.tsx             # vitest render smoke test (run by CI)
 tests/shortlistEngine.test.ts        # vitest: Shortlist's case invariant over 9,000 generated cases (run by CI)
 tests/targetEngine.test.ts           # vitest: Target's deal invariant — every dealt puzzle solvable, every printed solution valid (run by CI)
-tests/lineEngine.test.ts             # vitest: The Line's ordering + partition invariant over hundreds of full games, plus its gap distribution (run by CI)
-tests/roastThemes.test.ts            # vitest: Roast theme catalog<->prompt parity, season windows, composite prompt + quadrant geometry (run by CI)
+tests/lineEngine.test.ts             # vitest: The Line's ordering + partition invariant over hundreds of full games, its gap distribution, and that a timeout costs exactly what a miss costs (run by CI)
+tests/charadesClues.test.ts          # vitest: the Charades One Clue deck's shape — pack membership, Movie Mix = the two movie packs, no one-word drift in the general pack (run by CI)
+tests/roomSync.test.ts               # vitest: THE ROOM INVARIANT — same seed + round ⇒ byte-identical content on every device (run by CI)
+tests/timerPref.test.ts              # vitest: an unset timer key is the game default, never "no timer" (run by CI)
 .github/workflows/ci.yml             # CI: npm ci, build, test (lint excluded — see Known Issues)
 notes/                               # One lesson per file (what broke + fix); see notes/README.md
 scripts/build-jumble-sets.mjs        # DEV-only generator → src/data/jumble_sets.json (needs cached dicts under scripts/.cache/)
-scripts/drive-games.mjs              # DEV-only headless-browser drive: opens the 18 Play Now games (22 with --tabs), fails on console errors
+scripts/drive-games.mjs              # DEV-only headless-browser drive: opens the 18 Play Now games (6 via the NEW tab; 22 with --tabs), fails on console errors
 scripts/deep-drive.mjs               # DEV-only deep flows for the 6 timer games (countdown/expiry/scoring)
 scripts/drive-the-tell.mjs           # DEV-only full 12-round drive of The Tell (both guess branches, bust, swap, Double Down, PIN gate)
 scripts/drive-nerve.mjs              # DEV-only best-of-3 drive of Nerve (fold + full-clear endings, ladder-order invariant, swap, PIN gate)
+scripts/drive-charades-one-clue.mjs  # DEV-only drive of all four One Clue decks (card provenance, pack boundaries, no extra steps in the loop)
 scripts/drive-house-rules.mjs        # DEV-only 9-law drive of House Rules (Mark hit/miss/self-break scoring, book accumulation, {maker} substitution)
+scripts/drive-timers.mjs             # DEV-only: the optional clocks at zero (Ballpark auto-lock, The Line timeout-as-miss, Shortlist auto-clue)
 scripts/drive-roast-lab.mjs          # DEV-only drive of the Roast picker (seasonal tile count, overflow) + the #roast-lab screen
 ```
 

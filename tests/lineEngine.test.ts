@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-    dealGame, placeCard, correctGap, gapIsCorrect, assertLine, formatValue,
+    dealGame, placeCard, timeoutCard, correctGap, gapIsCorrect, assertLine, formatValue,
     HAND_SIZE, SOLO_LIVES, soloOver, LineInvariantError,
     type GameState, type LineCard, type LineDeck, type LineData,
 } from '../src/services/lineEngine';
@@ -124,6 +124,36 @@ describe('the line invariant', () => {
         expect(out.state.hands[0]).toHaveLength(HAND_SIZE);   // replaced
         expect(out.state.misses[0]).toBe(1);
         expect(violation(out.state, scrambled)).toBeNull();
+    });
+
+    it('a timed-out card costs exactly what a wrong placement costs, and the line does not move', () => {
+        const s = dealGame(scrambled, 2, lcg(37));
+        const card = s.hands[0][0];
+        const out = timeoutCard(s, scrambled, 0, card);
+        expect(out.correct).toBe(false);
+        // The clock running out is not a placement: nothing joins the line.
+        expect(out.state.order).toEqual(s.order);
+        expect(out.state.discard).toContain(card);
+        expect(out.state.hands[0]).not.toContain(card);
+        expect(out.state.hands[0]).toHaveLength(HAND_SIZE);   // replaced, same as a miss
+        expect(out.state.misses[0]).toBe(1);
+        expect(out.state.placed[0]).toBe(0);
+        // It still reports where the card belonged — the table gets to learn.
+        expect(out.truth).toBe(correctGap(s.order, scrambled, card));
+        expect(violation(out.state, scrambled)).toBeNull();
+        // and it refuses a card the player is not holding, like every mutation
+        expect(() => timeoutCard(s, scrambled, 1, card)).toThrow(LineInvariantError);
+    });
+
+    it('a solo run can end on the clock alone — timeouts spend lives like misses', () => {
+        let s = dealGame(scrambled, 1, lcg(52));
+        for (let i = 0; i < SOLO_LIVES; i++) {
+            expect(soloOver(s)).toBe(false);
+            s = timeoutCard(s, scrambled, 0, s.hands[0][0]).state;
+            expect(violation(s, scrambled)).toBeNull();
+        }
+        expect(s.misses[0]).toBe(SOLO_LIVES);
+        expect(soloOver(s)).toBe(true);
     });
 
     it('a correct placement shrinks a multiplayer hand but refills a solo run', () => {
