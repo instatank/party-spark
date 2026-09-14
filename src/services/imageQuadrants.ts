@@ -9,6 +9,17 @@
 // Canvas in jsdom is a stub; rectangle arithmetic is not, and the arithmetic is
 // where an off-by-one would silently shave a face in half.
 
+/**
+ * Human-readable names for the quadrants, in the SAME order quadrantRects()
+ * returns them and the same order api/_lib/roast-themes.ts assigns themes in.
+ *
+ * This lives here rather than in the component that displays it because the
+ * ordering has already been duplicated once too often in this feature: a stale
+ * second copy of a theme list shipped to production with an empty badge. An
+ * ordering that exists once cannot disagree with itself.
+ */
+export const QUADRANT_LABELS = ['TOP LEFT', 'TOP RIGHT', 'LOWER LEFT', 'LOWER RIGHT'] as const;
+
 export interface Rect {
     x: number;
     y: number;

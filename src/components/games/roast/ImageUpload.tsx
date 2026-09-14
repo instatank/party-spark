@@ -1,14 +1,26 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Camera as CameraIcon, Image as PhotoIcon, Sparkles, Home } from 'lucide-react';
+import { Camera as CameraIcon, Image as PhotoIcon, Sparkles, Home, Shuffle } from 'lucide-react';
 import type { RoastTheme } from '../../../services/geminiService';
-import { availableThemes } from '../../../data/roastThemes';
+import { availableThemes, type RoastThemeMeta } from '../../../data/roastThemes';
+import { QUADRANT_LABELS } from '../../../services/imageQuadrants';
+
+export type RoastMode = 'single' | 'collage';
 
 interface ImageUploadProps {
     theme: RoastTheme;
     onThemeChange: (t: RoastTheme) => void;
+    mode: RoastMode;
+    onModeChange: (m: RoastMode) => void;
+    /** The four themes drawn for a collage, in quadrant order. */
+    collageThemes: RoastThemeMeta[];
+    onShuffleCollage: () => void;
     onImageSelected: (base64: string) => void;
     onClose: () => void;
 }
+
+// Shown on the chips so the sheet is predictable — you know which corner each
+// look will land in before spending a generation on it. The ordering itself
+// comes from imageQuadrants, which is also what does the slicing.
 
 // Theme tiles come from src/data/roastThemes.ts, filtered by season — the
 // picker only ever shows what is currently offered, so retiring a theme (as
@@ -21,7 +33,7 @@ interface ImageUploadProps {
 // width; going back to four columns would need it lowered again.
 const TILE_ROTATIONS = [-2, 1.5, -1, 2, -1.5, 1, -1.2, 1.8];
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImageSelected, onClose }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, mode, onModeChange, collageThemes, onShuffleCollage, onImageSelected, onClose }) => {
     // Evaluated once per mount: seasonal windows turn over at midnight, and a
     // grid that reshuffled mid-session would be worse than one a few hours stale.
     const themes = useMemo(() => availableThemes(), []);
@@ -174,40 +186,101 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
                     </p>
                 </div>
 
-                {/* Theme picker — 3-col sticker tile grid */}
+                {/* Mode tabs + picker.
+                    SINGLE is the original flow: one theme, one image.
+                    COLLAGE renders FOUR themes as ONE composite image — one
+                    billed image instead of four — and the four are drawn at
+                    random from whatever is in season, so no two sheets match.
+                    The draw is shown before generating, with a reshuffle, so it
+                    reads as a choice rather than a surprise. */}
                 <div>
-                    <div className="text-[10px] font-extrabold tracking-[0.16em] text-muted uppercase mb-2">
-                        ★ Pick your sticker
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                        {themes.map((t, i) => {
-                            const active = t.key === theme;
-                            const baseRot = TILE_ROTATIONS[i % TILE_ROTATIONS.length];
+                    <div className="flex gap-1.5 mb-2.5">
+                        {(['single', 'collage'] as const).map((m) => {
+                            const active = mode === m;
                             return (
                                 <button
-                                    key={t.key}
-                                    onClick={() => onThemeChange(t.key)}
-                                    className="aspect-square rounded-xl border-2 border-ink flex flex-col items-center justify-center gap-1 transition-all"
-                                    style={{
-                                        background: active ? t.color : 'var(--c-surface)',
-                                        color: active ? '#FFFFFF' : 'var(--c-ink)',
-                                        boxShadow: active ? '4px 4px 0 var(--c-ink)' : '2px 2px 0 var(--c-ink)',
-                                        transform: active ? `rotate(${baseRot}deg) scale(1.04)` : `rotate(${baseRot * 0.4}deg)`,
-                                    }}
+                                    key={m}
+                                    onClick={() => onModeChange(m)}
+                                    className={`flex-1 py-2 rounded-lg border-2 border-ink font-display text-[13px] tracking-[0.06em] transition-all ${active ? 'bg-roast-red text-white' : 'bg-surface text-ink'}`}
+                                    style={{ boxShadow: active ? '3px 3px 0 var(--c-ink)' : '1.5px 1.5px 0 var(--c-ink)' }}
                                 >
-                                    <span
-                                        className="text-[40px] leading-none"
-                                        style={{ filter: active ? 'drop-shadow(0 2px 0 rgba(0,0,0,0.25))' : 'none' }}
-                                    >
-                                        {t.emoji}
-                                    </span>
-                                    <span className="font-display text-[15px] tracking-[0.03em] leading-none">
-                                        {t.label}
-                                    </span>
+                                    {m === 'single' ? 'SINGLE' : 'COLLAGE ×4'}
                                 </button>
                             );
                         })}
                     </div>
+
+                    {mode === 'single' ? (
+                        <>
+                            <div className="text-[10px] font-extrabold tracking-[0.16em] text-muted uppercase mb-2">
+                                ★ Pick your sticker
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                                {themes.map((t, i) => {
+                                    const active = t.key === theme;
+                                    const baseRot = TILE_ROTATIONS[i % TILE_ROTATIONS.length];
+                                    return (
+                                        <button
+                                            key={t.key}
+                                            onClick={() => onThemeChange(t.key)}
+                                            className="aspect-square rounded-xl border-2 border-ink flex flex-col items-center justify-center gap-1 transition-all"
+                                            style={{
+                                                background: active ? t.color : 'var(--c-surface)',
+                                                color: active ? '#FFFFFF' : 'var(--c-ink)',
+                                                boxShadow: active ? '4px 4px 0 var(--c-ink)' : '2px 2px 0 var(--c-ink)',
+                                                transform: active ? `rotate(${baseRot}deg) scale(1.04)` : `rotate(${baseRot * 0.4}deg)`,
+                                            }}
+                                        >
+                                            <span
+                                                className="text-[40px] leading-none"
+                                                style={{ filter: active ? 'drop-shadow(0 2px 0 rgba(0,0,0,0.25))' : 'none' }}
+                                            >
+                                                {t.emoji}
+                                            </span>
+                                            <span className="font-display text-[15px] tracking-[0.03em] leading-none">
+                                                {t.label}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-extrabold tracking-[0.16em] text-muted uppercase">
+                                    ★ Tonight&apos;s four
+                                </span>
+                                <button
+                                    onClick={onShuffleCollage}
+                                    className="flex items-center gap-1 text-[10px] font-extrabold tracking-[0.1em] text-roast-red uppercase"
+                                >
+                                    <Shuffle size={12} />
+                                    Reshuffle
+                                </button>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                {collageThemes.map((t, i) => (
+                                    <div
+                                        key={t.key}
+                                        className="rounded-xl border-2 border-ink flex items-center gap-2 px-2.5 py-2.5"
+                                        style={{ background: t.color, color: '#FFFFFF', boxShadow: '3px 3px 0 var(--c-ink)' }}
+                                    >
+                                        <span className="text-[26px] leading-none">{t.emoji}</span>
+                                        <div className="min-w-0">
+                                            <div className="font-display text-[13px] tracking-[0.03em] leading-none">{t.label}</div>
+                                            <div className="text-[9px] font-bold opacity-80 leading-none mt-0.5">
+                                                {QUADRANT_LABELS[i] || ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-[10px] text-muted mt-2 leading-snug">
+                                One photo, four looks, generated together as a single sheet. Tap any panel afterwards to blow it up.
+                            </p>
+                        </>
+                    )}
                 </div>
 
                 {/* Hero upload card — ember-filled sticker with sparkles */}
@@ -234,7 +307,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ theme, onThemeChange, onImage
                             DROP YOUR FACE
                         </div>
                         <div className="text-[11px] font-bold text-[#3A1A00] mb-3">
-                            We'll do the worst.
+                            {mode === 'collage' ? "We'll do the worst. Four times." : "We'll do the worst."}
                         </div>
 
                         {/* Buttons sit on the fixed-orange ember card, so their colors

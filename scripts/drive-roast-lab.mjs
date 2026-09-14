@@ -157,6 +157,57 @@ const newPage = async () => {
   await new Promise((r) => setTimeout(r, 400));
   note('✓ theme selection does not throw');
 
+  // --- COLLAGE tab -------------------------------------------------------
+  const chipsOf = () => page.evaluate(() => {
+    const h = [...document.querySelectorAll('*')].find(
+      (n) => n.children.length === 0 && n.textContent.includes("Tonight's four"),
+    );
+    const grid = h?.closest('div')?.parentElement?.querySelector('div[class*="grid-cols-2"]');
+    return grid ? [...grid.children].map((c) => c.textContent.replace(/\s+/g, ' ').trim()) : null;
+  });
+
+  await page.evaluate(() => {
+    const btn = [...document.querySelectorAll('button')].find((b) => b.textContent.includes('COLLAGE'));
+    btn?.click();
+  });
+  await new Promise((r) => setTimeout(r, 500));
+
+  const chips = await chipsOf();
+  if (!chips) {
+    fail('COLLAGE tab did not render the four-theme draw');
+  } else if (chips.length !== 4) {
+    fail(`COLLAGE drew ${chips.length} themes, expected 4`);
+  } else {
+    note(`✓ COLLAGE draws 4 themes: ${chips.map((c) => c.split(' ')[0]).join(', ')}`);
+    const labels = chips.map((c) => c.replace(/TOP LEFT|TOP RIGHT|LOWER LEFT|LOWER RIGHT/g, '').trim());
+    if (new Set(labels).size !== labels.length) fail(`COLLAGE drew a duplicate theme: ${labels.join(', ')}`);
+    else note('✓ the four drawn themes are distinct');
+  }
+
+  // Reshuffle must actually redraw. Two identical draws in a row is possible
+  // (1 in 495) but five is not, so retry before calling it stuck.
+  let reshuffled = false;
+  for (let i = 0; i < 5 && !reshuffled; i++) {
+    const before = JSON.stringify(await chipsOf());
+    await page.evaluate(() => {
+      const b = [...document.querySelectorAll('button')].find((x) => x.textContent.includes('Reshuffle'));
+      b?.click();
+    });
+    await new Promise((r) => setTimeout(r, 250));
+    if (JSON.stringify(await chipsOf()) !== before) reshuffled = true;
+  }
+  if (!reshuffled) fail('Reshuffle did not change the draw in 5 attempts');
+  else note('✓ Reshuffle redraws the four');
+
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/collage-tab.png` });
+
+  // Back to SINGLE so the screenshot matches the default screen.
+  await page.evaluate(() => {
+    const b = [...document.querySelectorAll('button')].find((x) => x.textContent.trim() === 'SINGLE');
+    b?.click();
+  });
+  await new Promise((r) => setTimeout(r, 400));
+
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/picker.png` });
   await page.close();
 }

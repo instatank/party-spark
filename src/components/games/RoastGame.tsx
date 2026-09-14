@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import ImageUpload from './roast/ImageUpload';
+import ImageUpload, { type RoastMode } from './roast/ImageUpload';
 import RoastResult from './roast/RoastResult';
+import CollageResult from './roast/CollageResult';
 import RoastLoading from './roast/RoastLoading';
-import { cleanBase64, generateRoast, editImage, type RoastTheme } from '../../services/geminiService';
-import { resolveThemeKey } from '../../data/roastThemes';
+import { cleanBase64, generateRoast, editImage, generateComposite, type RoastTheme } from '../../services/geminiService';
+import { resolveThemeKey, pickCollageThemes, type RoastThemeMeta } from '../../data/roastThemes';
 import { sessionService } from '../../services/SessionManager';
 import { AppState } from '../../types';
 
@@ -25,6 +26,14 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
     // a theme that has since gone out of season.
     const [theme, setTheme] = useState<RoastTheme>(() => resolveThemeKey('animate'));
 
+    // COLLAGE mode: four themes as ONE composite image. The four are drawn at
+    // random from whatever is in season and re-drawn on Reshuffle, so the same
+    // photo gives a different sheet each time.
+    const [mode, setMode] = useState<RoastMode>('single');
+    const [collageThemes, setCollageThemes] = useState<RoastThemeMeta[]>(() => pickCollageThemes());
+    const [composite, setComposite] = useState<string | null>(null);
+    const [captions, setCaptions] = useState<string[]>([]);
+
     const handleImageSelected = async (base64: string) => {
         // RATE LIMIT CHECK
         const currentRoasts = import.meta.env.VITE_ROAST_LIMIT ? parseInt(import.meta.env.VITE_ROAST_LIMIT) : 100;
@@ -40,6 +49,37 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
 
         try {
             const rawBase64 = cleanBase64(base64);
+
+            if (mode === 'collage') {
+                const keys = collageThemes.map((t) => t.key);
+
+                // Rock's COMPOSITE directive is the punk scene specifically, so
+                // its caption must be pinned to the punk voice too — otherwise
+                // a basement-punk panel gets a stadium-rock joke under it.
+                const compositePromise = generateComposite(rawBase64, keys, '4K');
+                const captionPromises = keys.map((k) =>
+                    generateRoast(rawBase64, k, undefined, k === 'rock' ? 'punk' : undefined),
+                );
+
+                const [sheet, texts] = await Promise.all([
+                    compositePromise,
+                    Promise.all(captionPromises),
+                ]);
+
+                sessionService.markAsUsed('ROAST', 'default', Date.now().toString());
+
+                if (!sheet) {
+                    // No image means nothing to show — the captions alone are
+                    // not the product. Surface the error rather than a blank sheet.
+                    setAppState(AppState.ERROR);
+                    return;
+                }
+
+                setComposite(sheet);
+                setCaptions(texts);
+                setAppState(AppState.COMPLETE);
+                return;
+            }
 
             // Pick a sub-vibe ONCE per submit so the image and the roast
             // caption land on the same side of any theme that has variants.
@@ -73,6 +113,11 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
         setOriginalImage(null);
         setResultImage(null);
         setRoastText('');
+        setComposite(null);
+        setCaptions([]);
+        // A fresh draw on every redo — replaying a collage should not replay
+        // the same four looks.
+        setCollageThemes(pickCollageThemes());
         setAppState(AppState.IDLE);
     };
 
@@ -86,6 +131,10 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                 <ImageUpload
                     theme={theme}
                     onThemeChange={setTheme}
+                    mode={mode}
+                    onModeChange={setMode}
+                    collageThemes={collageThemes}
+                    onShuffleCollage={() => setCollageThemes(pickCollageThemes())}
                     onImageSelected={handleImageSelected}
                     onClose={onExit}
                 />
@@ -109,7 +158,17 @@ const RoastGame: React.FC<Props> = ({ onExit }) => {
                 </div>
             )}
 
-            {appState === AppState.COMPLETE && originalImage && resultImage && (
+            {appState === AppState.COMPLETE && mode === 'collage' && composite && (
+                <CollageResult
+                    composite={composite}
+                    themes={collageThemes}
+                    captions={captions}
+                    onReset={handleReset}
+                    onClose={onExit}
+                />
+            )}
+
+            {appState === AppState.COMPLETE && mode === 'single' && originalImage && resultImage && (
                 <RoastResult
                     originalImage={originalImage}
                     resultImage={resultImage}

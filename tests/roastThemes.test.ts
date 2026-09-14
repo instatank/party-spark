@@ -6,6 +6,8 @@ import {
     resolveThemeKey,
     themeByKey,
     localDayKey,
+    pickCollageThemes,
+    COLLAGE_PANES,
 } from '../src/data/roastThemes';
 import {
     ROAST_THEME_PROMPTS,
@@ -17,7 +19,7 @@ import {
     DEFAULT_THEME,
     type PickFn,
 } from '../api/_lib/roast-themes';
-import { quadrantRects } from '../src/services/imageQuadrants';
+import { quadrantRects, QUADRANT_LABELS } from '../src/services/imageQuadrants';
 
 // Deterministic pick so prompt assertions are reproducible — production uses
 // randomPick, which would make these flaky for no benefit.
@@ -275,5 +277,61 @@ describe('quadrant geometry', () => {
         // generation delivers. Panes are not a resolution compromise.
         const panes = quadrantRects(2048, 2048, 0);
         expect(panes[0].w).toBeGreaterThanOrEqual(1024);
+    });
+});
+
+
+describe('collage theme draw', () => {
+    it('draws four DISTINCT themes', () => {
+        // A repeated theme would waste a pane on a look the sheet already has,
+        // and the pane labels would name the same theme twice.
+        for (let i = 0; i < 200; i++) {
+            const picked = pickCollageThemes();
+            expect(picked).toHaveLength(COLLAGE_PANES);
+            expect(new Set(picked.map((t) => t.key)).size).toBe(COLLAGE_PANES);
+        }
+    });
+
+    it('never draws a theme that is out of season', () => {
+        const live = new Set(availableThemes().map((t) => t.key));
+        for (let i = 0; i < 200; i++) {
+            for (const t of pickCollageThemes()) {
+                expect(live.has(t.key), `${t.key} is not in season`).toBe(true);
+            }
+        }
+    });
+
+    it('actually varies — it is a draw, not a fixed set', () => {
+        // The whole point of randomising is that a second collage does not look
+        // like the first. A shuffle bug that returned the pool's first four
+        // every time would pass every other test in this block.
+        const seen = new Set<string>();
+        for (let i = 0; i < 200; i++) {
+            seen.add(pickCollageThemes().map((t) => t.key).join(','));
+        }
+        expect(seen.size).toBeGreaterThan(20);
+    });
+
+    it('is deterministic under an injected rng', () => {
+        const fixed = () => 0.42;
+        expect(pickCollageThemes(4, new Date(), fixed).map((t) => t.key))
+            .toEqual(pickCollageThemes(4, new Date(), fixed).map((t) => t.key));
+    });
+
+    it('returns fewer rather than repeating when the pool is small', () => {
+        // A season could in principle close enough windows to drop the roster
+        // below four. Padding the grid by repeating a theme would be worse than
+        // a short sheet.
+        const picked = pickCollageThemes(99);
+        expect(picked.length).toBe(availableThemes().length);
+        expect(new Set(picked.map((t) => t.key)).size).toBe(picked.length);
+    });
+
+    it('quadrant labels line up with the rects they name', () => {
+        // The label strip, the crop order, and the order the prompt assigns
+        // themes in must all agree, or every panel is captioned with the wrong
+        // theme — which looks like the model ignoring the prompt.
+        expect(QUADRANT_LABELS).toHaveLength(quadrantRects(100, 100).length);
+        expect(QUADRANT_LABELS).toHaveLength(COLLAGE_PANES);
     });
 });
