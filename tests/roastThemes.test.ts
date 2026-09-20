@@ -96,12 +96,57 @@ describe('theme content', () => {
         expect(ROAST_THEME_PROMPTS.rock.roast({ ...ctx, variant: 'classic' })).toContain('classic-rock');
     });
 
-    it('picker labels fit the 4-column grid', () => {
-        // The tile is roughly 80px wide at 10px type. Longer labels wrap and
-        // break the grid's alignment, which is invisible until you look at a phone.
+    it('picker labels fit the 3-column grid', () => {
+        // The grid is 3 across, so a tile is roughly 100px wide at 15px display
+        // type. Longer labels wrap and break the grid's alignment, which is
+        // invisible until you look at a phone.
         for (const t of ROAST_THEMES) {
             expect(t.label.length, `${t.label} too long`).toBeLessThanOrEqual(8);
         }
+    });
+});
+
+describe('the passport theme', () => {
+    const passport = () => ROAST_THEME_PROMPTS.passport.caricature(ctx);
+
+    it('refuses to reproduce a real country\u2019s document', () => {
+        // We are putting a real person's face on an identity document. A
+        // convincing replica of a real nation's data page is a forgery template
+        // whatever caption sits under it, so the prompt must always demand an
+        // invented issuer. This is the kind of paragraph a tidy-up reword drops
+        // silently, which is exactly why it is pinned here and not just reviewed.
+        const prompt = passport();
+        expect(prompt).toContain('do not reproduce any real country');
+        expect(prompt).toContain('invented');
+        expect(prompt).toMatch(/fictional/i);
+
+        // Every randomised variant carries it too — the constraint sits in the
+        // fixed body, but a future variant could be written to fight it.
+        const variants: PickFn = (arr) => arr[arr.length - 1];
+        expect(ROAST_THEME_PROMPTS.passport.caricature({ pick: variants }))
+            .toContain('do not reproduce any real country');
+    });
+
+    it('asks for the zoomed photo panel, not the whole booklet', () => {
+        // The framing IS the theme. Ask an image model for "a passport" and it
+        // draws the open booklet lying on a desk, where the face is a postage
+        // stamp in the corner and the roast has nothing to land on. The tight
+        // crop plus the data column bleeding off one edge is the entire look.
+        const prompt = passport();
+        expect(prompt).toMatch(/close-up/i);
+        expect(prompt).toMatch(/fills most of the frame/i);
+        expect(prompt).toMatch(/runs straight off the frame edge/i);
+        expect(prompt).toMatch(/NOT fully in frame/i);
+    });
+
+    it('is available today and carries a composite directive', () => {
+        const meta = themeByKey('passport');
+        expect(meta).toBeDefined();
+        expect(isThemeAvailable(meta!, new Date())).toBe(true);
+        expect(COMPOSITE_DIRECTIVES.passport).toBeTruthy();
+        // A collage pane is a quarter of the sheet, so the directive has to lead
+        // with the face rather than the paperwork around it.
+        expect(COMPOSITE_DIRECTIVES.passport).toMatch(/photograph filling the pane/i);
     });
 });
 
@@ -116,9 +161,13 @@ describe('unknown and retired keys resolve rather than throw', () => {
     });
 
     it('retired themes still resolve to their own prompts server-side', () => {
-        // worldcup is retired from the picker but must keep working over the wire.
-        expect(getThemeDef('worldcup').key).toBe('worldcup');
-        expect(getThemeDef('worldcup').caricature(ctx)).toContain('IDENTITY LOCK');
+        // worldcup and linkedin are retired from the picker but must keep working
+        // over the wire — a phone that cached the app before the retirement will
+        // still POST the old key, and it should get the roast it asked for.
+        for (const key of ['worldcup', 'linkedin']) {
+            expect(getThemeDef(key).key, key).toBe(key);
+            expect(getThemeDef(key).caricature(ctx), key).toContain('IDENTITY LOCK');
+        }
     });
 
     it('getCompositeDirective falls back for an unknown key', () => {
@@ -141,6 +190,7 @@ describe('seasons', () => {
     it('retired themes are never available', () => {
         const retired = ROAST_THEMES.filter((t) => t.season.kind === 'retired');
         expect(retired.map((t) => t.key)).toContain('worldcup');
+        expect(retired.map((t) => t.key)).toContain('linkedin');
         for (const t of retired) {
             expect(isThemeAvailable(t, on('2020-01-01'))).toBe(false);
             expect(isThemeAvailable(t, on('2026-09-14'))).toBe(false);

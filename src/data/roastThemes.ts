@@ -41,7 +41,7 @@ export type FidelityTier = 'high' | 'medium' | 'low';
 
 export interface RoastThemeMeta {
     key: string;
-    /** Picker tile label — kept to 8 characters so it fits the 4-column grid. */
+    /** Picker tile label — kept to 8 characters so it fits the 3-column grid. */
     label: string;
     emoji: string;
     /** Active-tile fill colour. Literal hex, not a Tailwind class (see CLAUDE.md's JIT gotcha). */
@@ -52,7 +52,7 @@ export interface RoastThemeMeta {
     fidelity: FidelityTier;
 }
 
-// Order is tap order: the grid is 4 across, so the first four tiles get the
+// Order is tap order: the grid is 3 across, so the first three tiles get the
 // most attention. Newest and most viral lead, classics follow.
 export const ROAST_THEMES: RoastThemeMeta[] = [
     {
@@ -71,6 +71,15 @@ export const ROAST_THEMES: RoastThemeMeta[] = [
         color: '#7C3AED',
         blurb: 'A 2007 house party, harsh flash, timestamp in the corner.',
         season: { kind: 'window', from: '2026-09-01', to: '2027-06-30', note: 'Anti-AI / authentic-imperfection swing. Long window; it may well earn evergreen.' },
+        fidelity: 'high',
+    },
+    {
+        key: 'passport',
+        label: 'PASSPORT',
+        emoji: '🛂',
+        color: '#1E3A8A',
+        blurb: 'Your passport data page, zoomed in. The photo is doing you no favours.',
+        season: { kind: 'evergreen' },
         fidelity: 'high',
     },
     {
@@ -119,15 +128,6 @@ export const ROAST_THEMES: RoastThemeMeta[] = [
         fidelity: 'high',
     },
     {
-        key: 'linkedin',
-        label: 'LINKEDIN',
-        emoji: '💼',
-        color: '#0A66C2',
-        blurb: 'Corporate headshot plus the humblebrag post underneath it.',
-        season: { kind: 'evergreen' },
-        fidelity: 'high',
-    },
-    {
         key: 'rock',
         label: 'ROCK',
         emoji: '🎸',
@@ -165,6 +165,19 @@ export const ROAST_THEMES: RoastThemeMeta[] = [
     },
 
     // --- retired ---------------------------------------------------------
+    {
+        key: 'linkedin',
+        label: 'LINKEDIN',
+        emoji: '💼',
+        color: '#0A66C2',
+        blurb: 'Corporate headshot plus the humblebrag post underneath it.',
+        season: {
+            kind: 'retired',
+            since: '2026-09-20',
+            note: 'Founder call — the corporate-headshot joke never landed as hard as the rest. PASSPORT replaces it and does the same "official document" bit with a far funnier source photograph.',
+        },
+        fidelity: 'high',
+    },
     {
         key: 'worldcup',
         label: 'FIFA',

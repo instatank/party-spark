@@ -306,23 +306,6 @@ Re-render this person as a 1985 high-school yearbook glamour portrait, shot in a
         ])}`,
     },
 
-    linkedin: {
-        key: 'linkedin',
-        caricature: ({ pick }) => `${IDENTITY_LOCK}
-
-Re-render this person as a corporate headshot for someone who describes themselves as a thought leader. Dress them in smart business-casual — a well-fitted blazer over a plain shirt, top button open, no tie. Bright even flattering light, clean commercial retouching, the background a softly blurred modern office: glass partitions, pale wood, a plant, a meeting room out of focus behind. They are giving the practised professional half-smile that does not reach the eyes, arms folded or one hand in a small mid-explanation gesture. Everything must look expensive, competent, and completely hollow. ${pick([
-            'Have them caught mid-gesture as though making a point nobody asked about.',
-            'Put a lanyard on them from a conference that is clearly beneath them.',
-            'Add a whiteboard behind, softly out of focus, covered in meaningless arrows.',
-            'Frame it as a speaker photo, a blurred stage and seated audience behind.',
-        ])}`,
-        roast: ({ pick }) => `Write the opening lines of this person's LinkedIn post. They are posting their own headshot with a "vulnerable" story that is transparently a humblebrag, and they believe it is profound. Nail the exact voice: short portentous sentences on their own lines, a hard-won lesson nobody needed, a closing question to drive engagement. The roast is that you are writing it perfectly straight. Under 280 characters. ${pick([
-            'Open with a banal event framed as a turning point.',
-            'Open by quoting something their driver, barista, or child supposedly said.',
-            'Open by admitting a "failure" that is obviously a boast.',
-            'Open with a one-word sentence, then a dramatic pause, then the lesson.',
-        ])}`,
-    },
 
     wanted: {
         key: 'wanted',
@@ -360,9 +343,68 @@ Re-draw this person as a soft-painted animation portrait in the style of hand-pa
         ])}`,
     },
 
+    // The replacement for the retired LINKEDIN theme. Same "official document"
+    // instinct, much better source material: a passport photo is the one
+    // portrait everybody has and nobody likes, taken under rules designed to
+    // remove every flattering thing about a face. The theme does not have to
+    // invent the indignity — it just zooms in on it.
+    //
+    // The framing is the whole idea and is stated twice on purpose: a tight crop
+    // on the photo panel with the printed data column bleeding in off one edge.
+    // Ask for "a passport" and the model draws the whole booklet on a table,
+    // where the face is 200px wide and the joke is gone.
+    //
+    // The fictional-issuer paragraph is NOT decoration. We are putting a real
+    // person's face on an identity document, and a convincing replica of a real
+    // country's data page is a forgery template whatever the caption says. An
+    // invented country is also simply funnier, so nothing is traded away.
+    passport: {
+        key: 'passport',
+        caricature: ({ pick }) => `${IDENTITY_LOCK}
+
+Re-render this photo as an extreme close-up of the photograph panel on a passport's data page — as though someone laid the open booklet flat and zoomed all the way in on the picture.
+
+FRAMING — THIS IS THE WHOLE SHOT: the printed passport photograph fills most of the frame, cropped in tight around the head and shoulders. Along ONE side, the machine-printed data column intrudes into shot and runs straight off the frame edge, so only the beginning of each line survives — small bold sans-serif field labels stacked above their values, four or five lines of them, the rest cut off by the image border. The booklet is NOT fully in frame and must not be: this is a zoomed detail of one corner of one page, never a whole document.
+
+THE PHOTOGRAPH ITSELF — a real passport photo, and therefore deeply unkind. Flat, even, shadowless light straight onto the face. A completely plain pale grey or off-white backdrop with nothing in it. Squared head-on to the camera, shoulders level, both ears showing, no tilt. Neutral closed-mouth expression — no smile, no warmth, the faintly criminal look of somebody who has just been told to stop smiling. Slightly desaturated, slightly too contrasty, with the hard sharpening and mild print dot of an image reproduced at 35x45mm.
+
+THE DOCUMENT SURFACE — the details that sell it: fine guilloche rosettes and wavy security line-work printed across and around the photograph; a faint secondary "ghost" portrait of the same face repeated small beside it; a glossy laminate overlay catching one diagonal band of light with a hint of holographic rainbow in it; the raised ring of an embossed dry stamp crossing one corner of the photo; microprinted rules; visible paper fibre and a whisper of offset misregistration; the booklet's gutter darkening one side; a slight page curve.
+
+FICTIONAL ISSUER — REQUIRED: do not reproduce any real country's passport. The issuing state, crest, emblem, flag, colours, typography and every printed word must be invented and plainly fictional. No real national arms, no real passport design, no real document or personal numbers. ${pick([
+            'Let a band of machine-readable-zone characters — monospaced capitals and rows of chevron filler — clip the very bottom edge of the frame.',
+            'Land an inked entry stamp half across the photograph, its ring and date readable at an angle.',
+            'Lift the laminate very slightly at one corner, a trapped bubble under it catching the light.',
+            'Let the facing page intrude as a soft out-of-focus sliver of overlapping stamps down the far edge.',
+        ])}`,
+        roast: ({ pick }) => `You are a border control officer at the end of a very long shift. The person in this photo is standing in front of you and their passport is open in your hand, and you are looking from the photograph, to their face, and back to the photograph. Say the one thing you are thinking. Flat, bureaucratic, faintly hostile, and completely personal — built from what is actually visible: the expression, the hair, the clothes, the face they are currently making at you. The joke is that you are entirely serious and in no hurry. ${ONE_LINER} ${pick([
+            'Deliver it as a question you already know the answer to.',
+            'Deliver it as the reason you are going to keep them at the desk a while longer.',
+            'Deliver it as a flat observation about how badly the photograph serves them — or how accurately.',
+            'Deliver it as a note you are entering into the record, read aloud as you type it.',
+        ])}`,
+    },
+
     // =======================================================================
     // RETIRED — never offered by the picker; kept so PWA-cached clients resolve
     // =======================================================================
+
+    linkedin: {
+        key: 'linkedin',
+        caricature: ({ pick }) => `${IDENTITY_LOCK}
+
+Re-render this person as a corporate headshot for someone who describes themselves as a thought leader. Dress them in smart business-casual — a well-fitted blazer over a plain shirt, top button open, no tie. Bright even flattering light, clean commercial retouching, the background a softly blurred modern office: glass partitions, pale wood, a plant, a meeting room out of focus behind. They are giving the practised professional half-smile that does not reach the eyes, arms folded or one hand in a small mid-explanation gesture. Everything must look expensive, competent, and completely hollow. ${pick([
+            'Have them caught mid-gesture as though making a point nobody asked about.',
+            'Put a lanyard on them from a conference that is clearly beneath them.',
+            'Add a whiteboard behind, softly out of focus, covered in meaningless arrows.',
+            'Frame it as a speaker photo, a blurred stage and seated audience behind.',
+        ])}`,
+        roast: ({ pick }) => `Write the opening lines of this person's LinkedIn post. They are posting their own headshot with a "vulnerable" story that is transparently a humblebrag, and they believe it is profound. Nail the exact voice: short portentous sentences on their own lines, a hard-won lesson nobody needed, a closing question to drive engagement. The roast is that you are writing it perfectly straight. Under 280 characters. ${pick([
+            'Open with a banal event framed as a turning point.',
+            'Open by quoting something their driver, barista, or child supposedly said.',
+            'Open by admitting a "failure" that is obviously a boast.',
+            'Open with a one-word sentence, then a dramatic pause, then the lesson.',
+        ])}`,
+    },
 
     worldcup: {
         key: 'worldcup',
@@ -423,6 +465,7 @@ export const COMPOSITE_DIRECTIVES: Record<string, string> = {
     digicam: 'a 2007 compact-camera party snapshot — harsh direct flash, background falling to black, warm wrong white balance, sensor noise, orange timestamp in the corner',
     diwali: 'a warm Diwali festive portrait — rich silk festive Indian clothing, face lit from below by oil-lamp diyas, strings of warm bokeh lights behind',
     yearbook: 'a 1985 mall-studio yearbook portrait — heavy soft-focus glow, big feathered hair, pastel blazer with shoulder pads, mottled blue backdrop with laser streaks',
+    passport: 'an extreme close-up of a fictional passport data page — a flat, unsmiling, evenly lit passport photograph filling the pane, guilloche security patterning and a laminate sheen across it, a sliver of printed data column running off one edge',
     linkedin: 'a corporate thought-leader headshot — blazer over open-collar shirt, bright even light, softly blurred modern glass office behind, practised hollow half-smile',
     wanted: 'an Old West WANTED poster — their face as a large cross-hatched ink engraving centred on yellowed torn paper, heavy weathered wood-type above and below',
     anime: 'a soft-painted hand-drawn animation portrait — clean linework, cel-shaded skin, large expressive eyes, lush painted watercolour background, warm nostalgic palette',
