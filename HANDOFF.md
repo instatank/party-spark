@@ -27,7 +27,7 @@ Home order (from `GAMES` array in `src/constants.tsx`). Dataset counts below wer
 last audited 2026-08-16 except where a later entry says otherwise — treat them as
 indicative, not authoritative; the JSON in `src/data/` is the source of truth.
 
-1. **Roast Me** — AI image roast. 6 themes: Animate / Tabloid / Movie / Rock Star / Mughal / FIFA 2026. Rock and FIFA have sub-variants (rock = punk vs classic, FIFA = team picker). Client picks `variant`/`team` and sends to BOTH the image and the caption call so they stay coherent. All prompts include the IDENTITY-LOCK preamble. Adult-gated while prompts are tuned.
+1. **Roast Me** — AI image roast. Themes are now DATA in two paired files, not a hardcoded list; **this file deliberately does not name them** — see CLAUDE.md's "Roast Me — the theme system" for the live roster, and `src/data/roastThemes.ts` for the truth. (It used to list six here. That copy went stale and is the reason this line points instead of repeating.) Rock still has punk/classic sub-variants: the client picks `variant` once and forwards it to BOTH the image and the caption call so they stay coherent. Every prompt carries the shared IDENTITY_LOCK paragraph. Adult-gated.
 2. **5 Alive** — speed recall. 3 levels: Easy (300) / Hard (300) / Spicy (151, PIN-gated 18+). 5 rounds: name 5/4/3/2/1 in 6/5/4/3/2 seconds. Synthesised bell at the end of each round. Per-turn scoring + recap screen.
 3. **Fact or Fiction** — 6 categories: Animal Kingdom (50) / Science (50) / General Knowledge (50) / Sports (50) / History (50) / FIFA World Cup Football (81). Difficulty cascades down one level at a time when the current level runs out.
 4. **Scramble** (internally `JUMBLE`) — solo + pass-and-play word finder. 300 easy + 250 hard 7-letter sets baked by `scripts/build-jumble-sets.mjs`. Also powers the Daily Scramble tile on Home.
@@ -73,7 +73,7 @@ If you add a new game, follow the same pattern (prop on the mid-play screens, or
 | **Fact or Fiction** | 5 base categories of 50 each + new **FIFA World Cup Football (81)**. ⚽ emoji tile (lucide has no soccer-ball glyph, so `TOPIC_META` supports `emoji` as an alternative to `Icon`). Difficulty cascade walks down one level at a time when the current is dry. |
 | **Charades** | Hollywood **200** (replaced), Bollywood **200** (replaced), Mix **441** (existing 50 kept + 400 appended, 9 dupes). |
 | **Taboo** | Easy **298** (+48 from a 99-batch, 51 dupes skipped), Medium **167** (full replace), Hard 75. |
-| **Roast Me** | Added FIFA 2026 theme + Rock Star (replaced Disco). MUGHAL label (was AGRA ROYAL). Identity-lock prompt + scene variants on FIFA + Rock. Rock's punk/classic variants are routed via a `variant` field so image and caption agree. |
+| **Roast Me** | Added FIFA 2026 theme + Rock Star (replaced Disco). MUGHAL label (was AGRA ROYAL). Identity-lock prompt + scene variants on FIFA + Rock. Rock's punk/classic variants are routed via a `variant` field so image and caption agree. **(Historical — superseded by the 2026-09-14 theme-registry rebuild. FIFA is retired; the roster and the add-a-theme recipe both live in CLAUDE.md now.)** |
 
 ---
 
@@ -143,7 +143,7 @@ App icon assets are at `public/icons/*` (generated from `public/_source/partyspa
 - **Bigger Linked dataset.** 78E + 36H is the smallest play-now pool. Adding 50–100 more easy puzzles would round it out.
 - **Mafia / WYR / Icebreakers / WILTY** are still in Coming Soon. They mostly work — they were dropped to that tab for content reasons, not technical ones. Could be promoted with curation passes.
 - **Vercel preview** for the branch isn't always auto-watched — if the user wants you to watch a PR for review comments / CI, use `mcp__github__subscribe_pr_activity` and act on events as they arrive.
-- **Roast Me variants** (rock punk/classic, FIFA team) work via a `variant` / `team` field that the client picks once and forwards to both the image and the caption call. If you add a new themed variant flow, follow the same pattern so image and caption stay coherent.
+- **Roast Me variants** work via a `variant` / `team` field the client picks once and forwards to both the image and the caption call, so the picture and the joke land on the same side of the genre line. Only `rock` (punk vs classic) still uses it; `team` belonged to the retired FIFA theme and survives only for PWA-cached clients. If you add a new themed variant flow, follow the same pattern.
 
 ---
 
@@ -153,7 +153,7 @@ Things that came up but weren't built. Use as a menu, not a roadmap.
 
 1. **Promote Coming Soon games to Play Now.** WYR, Icebreakers, WILTY, and Mafia are routed and playable; they're parked there for content/quality, not because they're broken. Each needs a curation pass (WYR's dataset is the thinnest — see counts in HANDOFF; WILTY has only 10 topics; Icebreakers leans on AI generation).
 2. **Bigger Linked pool.** 78 Easy + 36 Hard is the smallest pool in Play Now. Adding ~100 more Easy puzzles + ~40 more Hard would round it out. The runtime gracefully repeats from the full pool when fresh-this-session runs low, but a thicker pool means longer freshness.
-3. **More Roast Me themes.** The themed-variant pattern (`variant` + `team`) is reusable. Easy adds: Cricket fan-cam (counterpart to FIFA), 90s yearbook, Met Gala, '60s mod, etc. Each theme = (a) new key in `RoastTheme`, (b) `getCaricaturePrompt` + `getRoastSystemPrompt` case in `api/_lib/handlers-image.ts`, (c) tile in `ImageUpload.tsx`. Identity-lock preamble is already shared — reuse it.
+3. **More Roast Me themes.** ⚠️ **The recipe that used to be written here was wrong after the 2026-09-14 rebuild** — it pointed at a `RoastTheme` key list and `switch` cases in `api/_lib/handlers-image.ts`, and neither owns theme logic any more. Adding a theme is now TWO paired edits joined only by a matching string key: an entry in `src/data/roastThemes.ts` (label ≤8 chars, emoji, colour, season, fidelity) and a prompt def **plus** a `COMPOSITE_DIRECTIVES` line in `api/_lib/roast-themes.ts`. `tests/roastThemes.test.ts` fails by name if you do only one — do not skip it, because a half-added theme does not crash, it silently serves a generic caricature. Full detail in CLAUDE.md.
 4. **Spread the "Spicy" tile pattern.** 5 Alive got a third, adult-gated difficulty. NHIE already has "No Filter" (PG-13ish). Taboo could get a Spicy pool. MLT has X-Rated. There's no strict consistency across games — could be unified into one "after dark" sub-deck pattern with the same PIN-gate hook.
 5. **AI Custom Vibe for more games.** MLT and TOD have it. Could extend to NHIE (custom statements with group context), Charades (custom word packs), and FoF (custom topic + 10 generated Q/A). Server side: add a new `handlers-custom.ts` case; client side: similar setup flow to existing Custom Vibe screens.
 6. **Roast Me rate limit UX.** `VITE_ROAST_LIMIT` is a hard cap with an `alert()`. The session tracks usage via `SessionManager.getUsageCount('ROAST')`. Could surface "X of Y roasts left" inline before the upload, and add a graceful "come back later" screen instead of the alert.
