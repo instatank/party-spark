@@ -15,9 +15,7 @@
 // Usage: npm run build && npx vite preview --port 4173 &
 //        node scripts/drive-five-alive-decks.mjs [http://localhost:4173]
 import fs from 'node:fs';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const puppeteer = require('puppeteer');
+import { launch, newPage, reporter, sleep } from './_drive-kit.mjs';
 
 const BASE = process.argv[2] || 'http://localhost:4173';
 const POOLS = JSON.parse(fs.readFileSync(new URL('../src/data/five_alive.json', import.meta.url), 'utf8'));
@@ -32,30 +30,12 @@ const DECKS = [
 const ADULT_PIN = '0438';
 const ROUNDS = 5;
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-const isEnvNoise = u => u.includes('fonts.googleapis.com') || u.includes('fonts.gstatic.com') || u.includes('/api/');
 
 const fail = [];
 const check = (ok, msg) => { if (!ok) { fail.push(msg); console.log(`  ✗ ${msg}`); } else console.log(`  ✓ ${msg}`); };
 
-const browser = await puppeteer.launch({
-  ...(fs.existsSync('/opt/pw-browsers/chromium') ? { executablePath: '/opt/pw-browsers/chromium' } : {}),
-  headless: 'new',
-  args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'],
-});
-const page = await browser.newPage();
-await page.setViewport({ width: 390, height: 844 });
-const errors = [];
-page.on('console', m => {
-  if (m.type() !== 'error') return;
-  const loc = m.location()?.url || '';
-  if (m.text().includes('Failed to load resource') && (isEnvNoise(loc) || loc === '')) return;
-  errors.push(`[console] ${m.text()}`);
-});
-page.on('pageerror', e => errors.push(`[pageerror] ${e.message}`));
-// The play screen arms a beforeunload guard (confirmOnExit) so a real player
-// can't lose a round by refreshing. Left unhandled it hangs page.goto().
-page.on('dialog', d => d.accept().catch(() => {}));
+const browser = await launch();
+const { page, errors } = await newPage(browser, { ignoreUrls: ['/api/'] });
 
 const clickText = async (sel, text) => {
   const ok = await page.evaluate(({ sel, text }) => {

@@ -14,38 +14,25 @@
 // Usage:  npm run build
 //         node scripts/serve-with-api.mjs 4173 &
 //         node scripts/drive-target-live.mjs [http://localhost:4173]
-import fs from 'node:fs';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const puppeteer = require('puppeteer');
+import { launch, newPage, reporter, sleep } from './_drive-kit.mjs';
 
 const BASE = process.argv[2] || 'http://localhost:4173';
 const ROUNDS = 5;
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-const fails = [];
-const check = (ok, label) => { console.log(`${ok ? '  ✓' : '  ✗'} ${label}`); if (!ok) fails.push(label); };
-const isEnvNoise = u => u.includes('fonts.googleapis.com') || u.includes('fonts.gstatic.com');
+const { fails, check } = reporter();
 
-const browser = await puppeteer.launch({
-    ...(fs.existsSync('/opt/pw-browsers/chromium') ? { executablePath: '/opt/pw-browsers/chromium' } : {}),
-    headless: 'new', args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'],
-});
+const browser = await launch();
 
 const errors = [];
 async function newPhone(label) {
-    const ctx = await browser.createBrowserContext();   // isolated storage per phone
-    const page = await ctx.newPage();
-    await page.setViewport({ width: 390, height: 900 });
-    page.on('console', m => {
-        if (m.type() !== 'error') return;
-        const loc = m.location()?.url || '';
-        if (m.text().includes('Failed to load resource') && (isEnvNoise(loc) || loc === '')) return;
-        errors.push(`[${label}] ${m.text()}`);
+    // A separate browser context per phone — shared storage would let one
+    // phone's session leak into the other and quietly fake the sync.
+    const ctx = await browser.createBrowserContext();
+    const { page } = await newPage(ctx, {
+        viewport: { width: 390, height: 900 },
+        onError: m => errors.push(`[${label}] ${m}`),
+        seed: { fn: () => localStorage.setItem('target_timer_secs', '90') },
     });
-    page.on('pageerror', e => errors.push(`[${label}] ${e.message}`));
-    page.on('dialog', d => d.accept().catch(() => {}));
-    await page.evaluateOnNewDocument(() => localStorage.setItem('target_timer_secs', '90'));
     await page.goto(BASE, { waitUntil: 'networkidle2' });
     await page.waitForFunction(
         () => [...document.querySelectorAll('h3')].some(h => h.textContent.includes('Charades')),

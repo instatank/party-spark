@@ -3,39 +3,25 @@
 // Fiction, 5 Alive, Linked, Scramble). Companion to drive-games.mjs.
 // Usage:  npm run build && npx vite preview --port 4173 &
 //         node scripts/deep-drive.mjs [http://localhost:4173]
-import fs from 'node:fs';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const puppeteer = require('puppeteer');
+import { launch, newPage, sleep } from './_drive-kit.mjs';
 
 const BASE = process.argv[2] || 'http://localhost:4173';
-const sleep = ms => new Promise(r => setTimeout(r, ms));
 // fonts: no external network in this sandbox. /api/: no serverless functions
 // behind vite preview / python http.server — games fall back to local data.
-const isEnvNoise = url => url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com') || url.includes('/api/');
-const isEnvNoiseMsg = msg => msg.includes('[ai/') || msg.includes('501') || msg.includes('404');
 
-const browser = await puppeteer.launch({
-  // sandbox Chromium if present, else puppeteer's own download
-  ...(fs.existsSync('/opt/pw-browsers/chromium') ? { executablePath: '/opt/pw-browsers/chromium' } : {}), headless: 'new',
-  args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'],
-});
+const browser = await launch();
 
 async function freshGame(gameTitle, errors) {
-  const page = await browser.newPage();
-  await page.setViewport({ width: 390, height: 844 });
-  page.on('console', m => {
-    if (m.type() !== 'error') return;
-    const loc = m.location()?.url || '';
-    if (m.text().includes('Failed to load resource') && (isEnvNoise(loc) || loc === '')) return;
-    if (isEnvNoiseMsg(m.text())) return;
-    errors.push(`[console] ${m.text()}`);
-  });
-  page.on('requestfailed', r => { if (!isEnvNoise(r.url())) errors.push(`[reqfail] ${r.url()}`); });
-  page.on('pageerror', e => errors.push(`[pageerror] ${e.message}`));
-  await page.evaluateOnNewDocument(() => {
-    sessionStorage.setItem('partyspark_adult_unlocked', 'true');
-    sessionStorage.setItem('partyspark_intimate_unlocked', 'true');
+  const { page } = await newPage(browser, {
+    // vite preview does not run /api/*, so those 404s are the harness, not the app
+    requestFailed: true,
+    ignoreUrls: ['/api/'],
+    ignoreText: ['[ai/', '501', '404'],
+    onError: m => errors.push(m),
+    seed: { fn: () => {
+      sessionStorage.setItem('partyspark_adult_unlocked', 'true');
+      sessionStorage.setItem('partyspark_intimate_unlocked', 'true');
+    } },
   });
   await page.goto(BASE, { waitUntil: 'networkidle2' });
   await page.waitForFunction(() => [...document.querySelectorAll('h3')].some(h => h.textContent.includes('Charades')), { timeout: 15000 });
