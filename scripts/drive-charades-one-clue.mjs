@@ -14,9 +14,7 @@
 // Usage: npm run build && npx vite preview --port 4173 &
 //        node scripts/drive-charades-one-clue.mjs [http://localhost:4173]
 import fs from 'node:fs';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const puppeteer = require('puppeteer');
+import { launch, newPage, reporter, sleep } from './_drive-kit.mjs';
 
 const BASE = process.argv[2] || 'http://localhost:4173';
 const DECK = JSON.parse(fs.readFileSync(new URL('../src/data/charades_clues.json', import.meta.url), 'utf8'));
@@ -24,33 +22,12 @@ const PACK = Object.fromEntries(DECK.packs.map(p => [p.id, new Set(p.clues.map(c
 const ALL = new Map(DECK.packs.flatMap(p => p.clues.map(c => [c.t, { ...c, pack: p.id }])));
 const KIND = DECK.kinds;
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-const isEnvNoise = u => u.includes('fonts.googleapis.com') || u.includes('fonts.gstatic.com') || u.includes('/api/');
-const isEnvNoiseMsg = m => m.includes('[ai/') || m.includes('404') || m.includes('501');
 
 const fail = [];
 const check = (ok, msg) => { if (!ok) { fail.push(msg); console.log(`  ✗ ${msg}`); } else console.log(`  ✓ ${msg}`); };
 
-const browser = await puppeteer.launch({
-  ...(fs.existsSync('/opt/pw-browsers/chromium') ? { executablePath: '/opt/pw-browsers/chromium' } : {}),
-  headless: 'new',
-  args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'],
-});
-const page = await browser.newPage();
-await page.setViewport({ width: 390, height: 844 });
-const errors = [];
-page.on('console', m => {
-  if (m.type() !== 'error') return;
-  const loc = m.location()?.url || '';
-  if (m.text().includes('Failed to load resource') && (isEnvNoise(loc) || loc === '')) return;
-  if (isEnvNoiseMsg(m.text())) return;
-  errors.push(`[console] ${m.text()}`);
-});
-page.on('pageerror', e => errors.push(`[pageerror] ${e.message}`));
-// The play screen arms a beforeunload guard so a real player can't lose a
-// round by hitting refresh. Left unhandled it hangs page.goto() forever
-// (LEARNINGS 2026-08-23), so accept it and let the drive navigate.
-page.on('dialog', d => d.accept().catch(() => {}));
+const browser = await launch();
+const { page, errors } = await newPage(browser, { ignoreUrls: ['/api/'], ignoreText: ['[ai/', '404', '501'] });
 
 const clickText = async (sel, text) => {
   const ok = await page.evaluate(({ sel, text }) => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, use } from 'react';
 import { ScreenHeader, Button } from '../ui/Layout';
-import { Timer, ChevronRight, Plus, Zap, ArrowRight, Minus, Flame, Share2 } from 'lucide-react';
+import { Timer, ChevronRight, Plus, Zap, ArrowRight, Minus, Flame, Share2, Sparkles, Baby } from 'lucide-react';
 import TeamRosterRow from '../ui/TeamRosterRow';
 import EndScreen from '../ui/EndScreen';
 import type { LucideIcon } from 'lucide-react';
@@ -23,10 +23,10 @@ interface Props {
     onExit: () => void;
 }
 
-type Difficulty = 'easy' | 'hard' | 'spicy';
+type Difficulty = 'easy' | 'hard' | 'spicy' | 'desi' | 'kids';
 type Mode = 'named' | 'just_play';
 type GameState =
-    | 'CATEGORY_SELECT'  // pick Easy / Hard
+    | 'CATEGORY_SELECT'  // pick a deck (Easy / Hard / Desi / Kids / Social)
     | 'SETUP'            // player names OR Just Play
     | 'PASS'             // "Pass to <player>" gate (named mode only)
     | 'PLAYING'          // category shown + timer running (auto-starts on entry — no Start button)
@@ -55,6 +55,8 @@ const CATEGORIES_PER_GAME = TOTAL_ROUNDS;
 const DIFFICULTY_TILES: { id: Difficulty; title: string; tagline: string; color: string; Icon: LucideIcon; adult?: boolean }[] = [
     { id: 'easy',  title: 'Easy',  tagline: 'Broad categories — everyone can play.',       color: '#10B981', Icon: Timer },
     { id: 'hard',  title: 'Hard',  tagline: 'Specialist territory. Brains required.',      color: '#E11D48', Icon: Timer },
+    { id: 'desi',  title: 'Desi',  tagline: 'India — food, films, cricket, shaadi.',       color: '#F59E0B', Icon: Sparkles },
+    { id: 'kids',  title: 'Kids',  tagline: 'Family-safe. Nothing a kid cannot name.', color: '#0EA5E9', Icon: Baby },
     { id: 'spicy', title: 'Social', tagline: 'After dark · dating, drinks, drama · 18+',    color: '#BE185D', Icon: Flame, adult: true },
 ];
 
@@ -193,8 +195,8 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
         return picked;
     };
 
-    // SETUP → CATEGORY_SELECT (Easy/Hard). "Start" picks the scored mode;
-    // "Just Play" picks the no-scoring mode. Difficulty is chosen next.
+    // SETUP → CATEGORY_SELECT (the deck picker). "Start" picks the scored
+    // mode; "Just Play" picks the no-scoring mode. The deck is chosen next.
     const handleStartNamed = () => {
         unlockAudio();
         setMode('named');
@@ -293,7 +295,7 @@ export const FiveAliveGame: React.FC<Props> = ({ onExit }) => {
     // RENDER
     // =======================================================================
 
-    // ---- CATEGORY_SELECT (difficulty picker — comes after the player screen) ----
+    // ---- CATEGORY_SELECT (deck picker — comes after the player screen) ----
     if (gameState === 'CATEGORY_SELECT') {
         return (
             <div className="h-full flex flex-col animate-fade-in">

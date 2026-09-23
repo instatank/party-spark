@@ -20,9 +20,7 @@
 // Usage:  npm run build && npx vite preview --port 4173 &
 //         node scripts/drive-shortlist.mjs [http://localhost:4173]
 import fs from 'node:fs';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const puppeteer = require('puppeteer');
+import { launch, newPage, reporter, sleep } from './_drive-kit.mjs';
 
 const BASE = process.argv[2] || 'http://localhost:4173';
 const DATA = JSON.parse(fs.readFileSync(new URL('../src/data/shortlist.json', import.meta.url), 'utf8'));
@@ -74,31 +72,16 @@ const predBySentence = board => {
   return m;
 };
 
-const isEnvNoise = u => u.includes('fonts.googleapis.com') || u.includes('fonts.gstatic.com');
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-const fails = [];
-const check = (ok, label) => { console.log(`${ok ? '  ✓' : '  ✗'} ${label}`); if (!ok) fails.push(label); };
+const { fails, check } = reporter();
 
-const browser = await puppeteer.launch({
-  ...(fs.existsSync('/opt/pw-browsers/chromium') ? { executablePath: '/opt/pw-browsers/chromium' } : {}),
-  headless: 'new', args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'],
+const browser = await launch();
+const { page, errors } = await newPage(browser, {
+  viewport: { width: 390, height: 950 }, requestFailed: true,
+  seed: { fn: names => {
+    const now = Date.now();
+    localStorage.setItem('party_spark_session', JSON.stringify({ startTime: now, lastActivity: now, usedContent: {}, teams: names }));
+  }, arg: PLAYERS },
 });
-const errors = [];
-const page = await browser.newPage();
-await page.setViewport({ width: 390, height: 950 });
-page.on('console', m => {
-  if (m.type() !== 'error') return;
-  const loc = m.location()?.url || '';
-  if (m.text().includes('Failed to load resource') && (isEnvNoise(loc) || loc === '')) return;
-  errors.push(`[console] ${m.text()} (${loc})`);
-});
-page.on('requestfailed', r => { if (!isEnvNoise(r.url())) errors.push(`[reqfail] ${r.url()} ${r.failure()?.errorText}`); });
-page.on('pageerror', e => errors.push(`[pageerror] ${e.message}`));
-page.on('dialog', d => d.accept().catch(() => {}));
-await page.evaluateOnNewDocument(names => {
-  const now = Date.now();
-  localStorage.setItem('party_spark_session', JSON.stringify({ startTime: now, lastActivity: now, usedContent: {}, teams: names }));
-}, PLAYERS);
 
 const text = () => page.evaluate(() => document.body.innerText);
 // innerText comes back AFTER css text-transform, so anything styled uppercase

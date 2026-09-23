@@ -9,9 +9,7 @@
 // Usage:  npm run build && npx vite preview --port 4173 &
 //         node scripts/drive-house-rules.mjs [http://localhost:4173]
 import fs from 'node:fs';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const puppeteer = require('puppeteer');
+import { launch, newPage, reporter, sleep } from './_drive-kit.mjs';
 
 const BASE = process.argv[2] || 'http://localhost:4173';
 const DECK = JSON.parse(fs.readFileSync(new URL('../src/data/house_rules.json', import.meta.url), 'utf8'));
@@ -19,34 +17,19 @@ const PLAYERS = ['Ankit', 'Priya', 'Sam', 'Mo'];
 const LAWS = 9;
 const MARK_PTS = 2;
 
-const isEnvNoise = u => u.includes('fonts.googleapis.com') || u.includes('fonts.gstatic.com');
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-const fails = [];
-const check = (ok, label) => { console.log(`${ok ? '  ✓' : '  ✗'} ${label}`); if (!ok) fails.push(label); };
+const { fails, check } = reporter();
 
-const browser = await puppeteer.launch({
-  ...(fs.existsSync('/opt/pw-browsers/chromium') ? { executablePath: '/opt/pw-browsers/chromium' } : {}),
-  headless: 'new', args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'],
+const browser = await launch();
+const { page, errors } = await newPage(browser, {
+  requestFailed: true,
+  seed: { fn: names => {
+    // Seed the shared session roster the same shape SessionManager writes.
+    const now = Date.now();
+    localStorage.setItem('party_spark_session', JSON.stringify({
+      startTime: now, lastActivity: now, usedContent: {}, teams: names,
+    }));
+  }, arg: PLAYERS },
 });
-const page = await browser.newPage();
-await page.setViewport({ width: 390, height: 844 });
-const errors = [];
-page.on('console', m => {
-  if (m.type() !== 'error') return;
-  const loc = m.location()?.url || '';
-  if (m.text().includes('Failed to load resource') && (isEnvNoise(loc) || loc === '')) return;
-  errors.push(`[console] ${m.text()} (${loc})`);
-});
-page.on('requestfailed', r => { if (!isEnvNoise(r.url())) errors.push(`[reqfail] ${r.url()} ${r.failure()?.errorText}`); });
-page.on('pageerror', e => errors.push(`[pageerror] ${e.message}`));
-page.on('dialog', d => d.accept().catch(() => {}));
-await page.evaluateOnNewDocument(names => {
-  // Seed the shared session roster the same shape SessionManager writes.
-  const now = Date.now();
-  localStorage.setItem('party_spark_session', JSON.stringify({
-    startTime: now, lastActivity: now, usedContent: {}, teams: names,
-  }));
-}, PLAYERS);
 
 const text = () => page.evaluate(() => document.body.innerText);
 const lower = async () => (await text()).toLowerCase();

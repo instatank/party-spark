@@ -9,39 +9,27 @@
 //
 // Usage:  npm run build && npx vite preview --port 4173 &
 //         node scripts/drive-roast-lab.mjs [http://localhost:4173]
-import fs from 'node:fs';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const puppeteer = require('puppeteer');
+import { launch, newPage as kitPage, clearPinGate, pinGateShowing, ADULT_PIN } from './_drive-kit.mjs';
 
 const BASE = process.argv[2] || 'http://localhost:4173';
 const SHOTS = process.env.SHOT_DIR || null;
 
-const isEnvNoise = (url) => url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com');
 
-const browser = await puppeteer.launch({
-  ...(fs.existsSync('/opt/pw-browsers/chromium') ? { executablePath: '/opt/pw-browsers/chromium' } : {}),
-  headless: 'new',
-  args: ['--no-sandbox'],
-});
+const browser = await launch();
 
 const failures = [];
 const note = (msg) => { console.log(msg); };
 const fail = (msg) => { failures.push(msg); console.log(`✗ ${msg}`); };
 
 const newPage = async () => {
-  const page = await browser.newPage();
-  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
-  page.on('console', (m) => {
-    if (m.type() !== 'error') return;
-    // "Failed to load resource" messages carry no URL in their text — the URL
-    // is on the location. Checking only the text lets blocked Google Fonts
-    // requests (unreachable from this sandbox) read as app errors.
-    const where = m.location()?.url || '';
-    if (isEnvNoise(m.text()) || isEnvNoise(where)) return;
-    fail(`console error: ${m.text().slice(0, 160)} @ ${where.slice(0, 80)}`);
+  // Fonts are unreachable from this sandbox; their failures are environmental.
+  // The kit checks BOTH the message text and m.location().url, because a
+  // "Failed to load resource" message carries its URL only on the location.
+  const { page } = await kitPage(browser, {
+    viewport: { width: 390, height: 844, deviceScaleFactor: 2 },
+    ignoreText: ['fonts.googleapis.com', 'fonts.gstatic.com'],
+    onError: (m) => fail(m),
   });
-  page.on('pageerror', (e) => fail(`page error: ${String(e).slice(0, 200)}`));
   return page;
 };
 
@@ -66,11 +54,9 @@ const newPage = async () => {
 
   // Roast Me is one of the three adult-gated games (see ADULT_GAME_IDS in
   // App.tsx), so the PIN gate stands between Home and the theme picker.
-  const gated = await page.evaluate(() => document.body.innerText.includes('Enter the 4-digit PIN'));
+  const gated = await pinGateShowing(page);
   if (gated) {
-    const boxes = await page.$$('input[type="tel"]');
-    if (boxes.length !== 4) fail(`PIN gate showed ${boxes.length} inputs, expected 4`);
-    for (let i = 0; i < boxes.length; i++) await boxes[i].type('0438'[i]);
+    await clearPinGate(page, ADULT_PIN);
     await new Promise((r) => setTimeout(r, 900));
     note('✓ cleared the adult PIN gate');
   }
@@ -128,8 +114,7 @@ const newPage = async () => {
       (el?.closest('button') || el)?.click();
     });
     await new Promise((r) => setTimeout(r, 700));
-    const pin = await small.$$('input[type="tel"]');
-    for (let i = 0; i < pin.length; i++) await pin[i].type('0438'[i]);
+    await clearPinGate(small, ADULT_PIN);
     await new Promise((r) => setTimeout(r, 1600));
 
     await small.evaluate(() => window.scrollTo(0, 99999));

@@ -4,10 +4,7 @@
 //         node scripts/drive-games.mjs [http://localhost:4173] [--tabs]
 // --tabs: also drives the 4 hidden Coming Soon games — requires a build with
 //         SHOW_TABS=true in src/App.tsx (flip temporarily, rebuild, revert).
-import fs from 'node:fs';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const puppeteer = require('puppeteer');
+import { launch, newPage, sleep } from './_drive-kit.mjs';
 
 const BASE = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : 'http://localhost:4173';
 const DEEP = process.argv.includes('--deep');
@@ -33,33 +30,18 @@ const GAMES = [
 
 // External resources (Google Fonts) are unreachable from this sandbox — their
 // failures are environmental, not app bugs. localhost failures always count.
-const isEnvNoise = url => url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com');
 
 const results = [];
-const browser = await puppeteer.launch({
-  // sandbox Chromium if present, else puppeteer's own download
-  ...(fs.existsSync('/opt/pw-browsers/chromium') ? { executablePath: '/opt/pw-browsers/chromium' } : {}),
-  headless: 'new',
-  args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'],
-});
+const browser = await launch();
 
 async function freshPage() {
-  const page = await browser.newPage();
-  await page.setViewport({ width: 390, height: 844 });
-  const errors = [];
-  page.on('console', m => {
-    if (m.type() !== 'error') return;
-    const loc = m.location()?.url || '';
-    if (m.text().includes('Failed to load resource') && (isEnvNoise(loc) || loc === '')) return;
-    errors.push(`[console] ${m.text()} (${loc})`);
+  return newPage(browser, {
+    requestFailed: true,
+    seed: { fn: () => {
+      sessionStorage.setItem('partyspark_adult_unlocked', 'true');
+      sessionStorage.setItem('partyspark_intimate_unlocked', 'true');
+    } },
   });
-  page.on('requestfailed', r => { if (!isEnvNoise(r.url())) errors.push(`[reqfail] ${r.url()} ${r.failure()?.errorText}`); });
-  page.on('pageerror', e => errors.push(`[pageerror] ${e.message}`));
-  await page.evaluateOnNewDocument(() => {
-    sessionStorage.setItem('partyspark_adult_unlocked', 'true');
-    sessionStorage.setItem('partyspark_intimate_unlocked', 'true');
-  });
-  return { page, errors };
 }
 
 // Wait for splash (5s) to clear and home cards to render.
@@ -92,7 +74,6 @@ const clickNewTab = async (page) => {
   if (!ok) throw new Error('clickNewTab failed: no NEW tab on home');
 };
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 for (const { t: title, tab } of GAMES) {
   const { page, errors } = await freshPage();

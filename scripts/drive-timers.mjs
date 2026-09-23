@@ -16,43 +16,28 @@
 //
 // Usage:  npm run build && npx vite preview --port 4173 &
 //         node scripts/drive-timers.mjs [http://localhost:4173]
-import fs from 'node:fs';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const puppeteer = require('puppeteer');
+import { launch, newPage as kitPage, reporter, sleep } from './_drive-kit.mjs';
 
 const BASE = process.argv[2] || 'http://localhost:4173';
 const SECS = 15;                  // TIMER_MIN in src/components/ui/TimerSetting.tsx
 const WAIT = (SECS + 3) * 1000;   // the clock, plus the reveal beat after it
 
-const isEnvNoise = u => u.includes('fonts.googleapis.com') || u.includes('fonts.gstatic.com');
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-const fails = [];
-const check = (ok, label) => { console.log(`${ok ? '  ✓' : '  ✗'} ${label}`); if (!ok) fails.push(label); };
+const { fails, check } = reporter();
 
-const browser = await puppeteer.launch({
-  ...(fs.existsSync('/opt/pw-browsers/chromium') ? { executablePath: '/opt/pw-browsers/chromium' } : {}),
-  headless: 'new', args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'],
-});
+const browser = await launch();
 const errors = [];
 
 // Each game reads its own localStorage key, so the drive sets the clock the
 // same way a player would — through the stored preference, not a test hook.
 async function newPage(prefs) {
-  const page = await browser.newPage();
-  await page.setViewport({ width: 390, height: 900 });
-  page.on('console', m => {
-    if (m.type() !== 'error') return;
-    const loc = m.location()?.url || '';
-    if (m.text().includes('Failed to load resource') && (isEnvNoise(loc) || loc === '')) return;
-    errors.push(`[console] ${m.text()} (${loc})`);
+  const { page } = await kitPage(browser, {
+    viewport: { width: 390, height: 900 },
+    requestFailed: true,
+    onError: m => errors.push(m),
+    seed: { fn: p => {
+      for (const [k, v] of Object.entries(p)) localStorage.setItem(k, String(v));
+    }, arg: prefs },
   });
-  page.on('requestfailed', r => { if (!isEnvNoise(r.url())) errors.push(`[reqfail] ${r.url()} ${r.failure()?.errorText}`); });
-  page.on('pageerror', e => errors.push(`[pageerror] ${e.message}`));
-  page.on('dialog', d => d.accept().catch(() => {}));
-  await page.evaluateOnNewDocument(p => {
-    for (const [k, v] of Object.entries(p)) localStorage.setItem(k, String(v));
-  }, prefs);
   return page;
 }
 
