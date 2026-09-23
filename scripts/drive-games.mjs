@@ -2,7 +2,7 @@
 // screen in headless Chromium and fails on any console/page error.
 // Usage:  npm run build && npx vite preview --port 4173 &
 //         node scripts/drive-games.mjs [http://localhost:4173] [--tabs]
-// --tabs: also drives the 4 hidden Coming Soon games — requires a build with
+// --tabs: also drives the 3 hidden Coming Soon games — requires a build with
 //         SHOW_TABS=true in src/App.tsx (flip temporarily, rebuild, revert).
 import fs from 'node:fs';
 import { createRequire } from 'module';
@@ -12,7 +12,7 @@ const puppeteer = require('puppeteer');
 const BASE = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : 'http://localhost:4173';
 const DEEP = process.argv.includes('--deep');
 
-// Coming Soon games (WILTY, Icebreakers, Traitors, WYR) are hidden while
+// Coming Soon games (WILTY, Icebreakers, Traitors) are hidden while
 // SHOW_TABS=false in App.tsx — pass --tabs when driving a build that has the
 // flag flipped, and the script will click the Coming Soon tab for them.
 const HOME_GAMES = [
@@ -22,8 +22,8 @@ const HOME_GAMES = [
 ];
 // Behind the home screen's NEW tab (NEW_GAME_IDS in App.tsx) — one extra
 // click before the card exists in the DOM.
-const NEW_GAMES = ['The Line', 'Target', 'Shortlist', 'Echo', 'Ballpark', 'House Rules'];
-const COMING_SOON_GAMES = ['Would I Lie To You', 'Icebreakers', 'The Traitors', 'Would You Rather'];
+const NEW_GAMES = ['Would You Rather', 'The Line', 'Target', 'Shortlist', 'Echo', 'Ballpark', 'House Rules'];
+const COMING_SOON_GAMES = ['Would I Lie To You', 'Icebreakers', 'The Traitors'];
 const WITH_TABS = process.argv.includes('--tabs');
 const GAMES = [
   ...HOME_GAMES.map(t => ({ t, tab: null })),

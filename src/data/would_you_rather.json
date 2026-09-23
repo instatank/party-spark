@@ -1,198 +1,1013 @@
 {
+  "_note": "stats are PartySpark's authored estimates of how a room splits, NOT recorded votes. The UI must say so.",
   "categories": [
     {
-      "id": "classic_chaos",
-      "name": "Classic Chaos",
+      "id": "general",
+      "name": "The Main Deck",
+      "tagline": "Two options. Both hurt. Pick one.",
+      "color": "#6366F1",
       "adult": false,
       "items": [
-        { "id": "cc_01", "optionA": "Fight 100 duck-sized horses", "optionB": "Fight 1 horse-sized duck", "stats": { "a": 45, "b": 55 }, "analysisA": "You think quantity is easier than quality. You're wrong. You're just going to get nibbled to death.", "analysisB": "You prefer a boss battle. Main character energy, but you're underestimating the beak." },
-        { "id": "cc_02", "optionA": "Have pause buttons for your life", "optionB": "Have rewind buttons for your life", "stats": { "a": 30, "b": 70 }, "analysisA": "You're overwhelmed. You just need a break. Procrastinator energy.", "analysisB": "You live in the past. You regret things easily and want a do-over. Perfectionist." },
-        { "id": "cc_03", "optionA": "Be invisible for a day", "optionB": "Fly for a day", "stats": { "a": 55, "b": 45 }, "analysisA": "You're nosy. You want to snoop. Trust issues detected.", "analysisB": "You crave freedom. You feel trapped and just want to escape it all." },
-        { "id": "cc_04", "optionA": "Talk to animals", "optionB": "Speak every human language", "stats": { "a": 50, "b": 50 }, "analysisA": "You prefer pets to people. Socially awkward but pure heart.", "analysisB": "You want to connect with humans. Or just eavesdrop on tourists." },
-        { "id": "cc_05", "optionA": "Be a reverse centaur (human legs, horse top)", "optionB": "Be a standard centaur (horse legs, human top)", "stats": { "a": 10, "b": 90 }, "analysisA": "You're a monster. Why would you choose this? Pure chaos.", "analysisB": "You want the speed but keep the brain. Logical choice." },
-        { "id": "cc_06", "optionA": "Sneeze every time you hide", "optionB": "Laugh every time you lie", "stats": { "a": 40, "b": 60 }, "analysisA": "You're terrible at stealth games.", "analysisB": "You're a terrible liar. But at least you're jolly." },
-        { "id": "cc_07", "optionA": "See 10 minutes into the future", "optionB": "See 100 years into the future", "stats": { "a": 60, "b": 40 }, "analysisA": "You're anxious. You want to control the immediate outcome.", "analysisB": "You're curious about the big picture. Or you just want to know if we survive." },
-        { "id": "cc_08", "optionA": "Wear a clown wig every day", "optionB": "Wear clown shoes every day", "stats": { "a": 50, "b": 50 }, "analysisA": "You want people to look at your face. Attention seeker.", "analysisB": "You hope people don't look down. Shuffler." },
-        { "id": "cc_09", "optionA": "Have a tail (prehensile)", "optionB": "Have functional gills", "stats": { "a": 70, "b": 30 }, "analysisA": "Innovator. You fantasise about hands-free everything. Mostly groceries.", "analysisB": "Mermaid energy. You hate sweating and rent." },
-        { "id": "cc_10", "optionA": "Have a pet dragon the size of a cat", "optionB": "Have a pet cat the size of a dragon", "stats": { "a": 75, "b": 25 }, "analysisA": "Closet fantasy enthusiast. Dangerous, but make it cute.", "analysisB": "You think bigger is always better. Your house smells of catnip and fear." },
-        { "id": "cc_11", "optionA": "Snap your fingers and a random object appears 1 foot away", "optionB": "Clap your hands and a random object disappears 1 foot away", "stats": { "a": 50, "b": 50 }, "analysisA": "Maximalist. Accidental hoarder in 6 months.", "analysisB": "Petty minimalist. The neighbour's gnome is going first." },
-        { "id": "cc_12", "optionA": "Be followed everywhere by a personal spotlight", "optionB": "Be followed everywhere by a personal theme song (only you hear it)", "stats": { "a": 20, "b": 80 }, "analysisA": "Narcissist in training. You think everything is your cue.", "analysisB": "Inner monologue is a Hans Zimmer score. Delusional but iconic." },
-        { "id": "cc_13", "optionA": "Have your thoughts appear as speech bubbles above your head", "optionB": "Have everything you say come out auto-tuned and robotic", "stats": { "a": 55, "b": 45 }, "analysisA": "Your inner monologue is so dull you think people need subtitles.", "analysisB": "You think a robot voice fixes a personality. It does not." },
-        { "id": "cc_14", "optionA": "Speak only in interpretive dance", "optionB": "Speak only by singing every word like opera", "stats": { "a": 20, "b": 80 }, "analysisA": "Performance artist waiting for your moment. Life is a confused ballet.", "analysisB": "Every room is a stage. The grocery store dreads you." },
-        { "id": "cc_15", "optionA": "Sneeze and have glitter explode from your nose", "optionB": "Burp and have a tiny puff of smoke come out", "stats": { "a": 40, "b": 60 }, "analysisA": "Perpetually fabulous and messy. Carpet is destroyed.", "analysisB": "Subtle dramatic flair. Your farts probably have mood lighting too." },
-        { "id": "cc_16", "optionA": "Open every door to a dramatic gust of wind", "optionB": "Answer every phone call to a mysterious fog filling the room", "stats": { "a": 60, "b": 40 }, "analysisA": "You make an entrance to the bathroom. Main character syndrome.", "analysisB": "You add fog to ordering pizza. Get a hobby." },
-        { "id": "cc_17", "optionA": "Have a permanent tiny rain cloud over your head", "optionB": "Have a permanent tiny sunbeam follow you (even indoors)", "stats": { "a": 30, "b": 70 }, "analysisA": "Goth aesthetic locked in. Your hair is always damp.", "analysisB": "Sunburn at the cinema. But great for selfies." },
-        { "id": "cc_18", "optionA": "Have hands that are always slightly sticky", "optionB": "Have feet that are always slightly damp", "stats": { "a": 40, "b": 60 }, "analysisA": "Trapped in your own life metaphor. Handshakes are over.", "analysisB": "Sock industry hates you. Yoga class banishes you." },
-        { "id": "cc_19", "optionA": "Be able to perfectly mimic any sound you hear", "optionB": "Be able to perfectly draw anything you see", "stats": { "a": 50, "b": 50 }, "analysisA": "You chose 'human parrot.' Your talent is literally copying.", "analysisB": "You chose 'human camera.' Originality wasn't on the menu." },
-        { "id": "cc_20", "optionA": "Always know if someone is lying — but never know the truth", "optionB": "Always know the truth — but never know if someone is lying", "stats": { "a": 45, "b": 55 }, "analysisA": "You just want to feel superior by catching people. Trust issues much?", "analysisB": "Ignorance is bliss. You'll believe anything as long as it's 'true'." },
-        { "id": "cc_21", "optionA": "Teleport, but only to places you've already been", "optionB": "Fly, but only at jogging speed", "stats": { "a": 70, "b": 30 }, "analysisA": "Efficient mediocrity. Comfort zone got a fast pass.", "analysisB": "Too lazy to walk, too uninspired to soar. So you jog. In the air." },
-        { "id": "cc_22", "optionA": "Talk to plants — but they're sarcastic", "optionB": "Talk to animals — but they only complain", "stats": { "a": 55, "b": 45 }, "analysisA": "You crave verbal sparring. Your houseplants already glare.", "analysisB": "You're an emotional support human for the animal kingdom." },
-        { "id": "cc_23", "optionA": "Have a dramatic wind machine activate whenever you walk", "optionB": "Have slow-motion replays trigger every time you do something cool", "stats": { "a": 45, "b": 55 }, "analysisA": "Beyoncé energy. Every hallway is a runway.", "analysisB": "You highlight-reel yourself eating cereal. Iconic." },
-        { "id": "cc_24", "optionA": "Have a constant low-volume kazoo soundtrack to your life", "optionB": "Have your inner monologue narrated by Morgan Freeman (out loud)", "stats": { "a": 25, "b": 75 }, "analysisA": "Comedy at the cost of dignity. You'll lose every job interview.", "analysisB": "Every grocery list becomes profound. Worth the lawsuit." },
-        { "id": "cc_25", "optionA": "Sneeze and confetti shoots out", "optionB": "Cough and a tiny rainbow appears", "stats": { "a": 55, "b": 45 }, "analysisA": "Allergy season is now a parade. Very exhausting branding.", "analysisB": "Bronchitis pride. You're a Pixar short film." },
-        { "id": "cc_26", "optionA": "Have a random celebrity cameo in every selfie you take", "optionB": "Have every group photo accidentally exclude you", "stats": { "a": 70, "b": 30 }, "analysisA": "Clout farming on hard mode. Your camera roll is chaos.", "analysisB": "Ghost in your own life. Great for plausible deniability." },
-        { "id": "cc_27", "optionA": "Have one finger that's twice as long as the others", "optionB": "Have one ear that's twice as big as the other", "stats": { "a": 50, "b": 50 }, "analysisA": "Typing is destroyed. Pointing is unmatched.", "analysisB": "You hear secrets stereo. Sunglasses sit weird forever." },
-        { "id": "cc_28", "optionA": "Burp every time you say 'thank you'", "optionB": "Hiccup every time you say 'sorry'", "stats": { "a": 35, "b": 65 }, "analysisA": "Customer service jobs over. Weddings ruined.", "analysisB": "Apologetic by nature, hiccupping forever. British people would die." },
-        { "id": "cc_29", "optionA": "Always have an audience laugh-track on your good jokes", "optionB": "Always have crickets play on your bad jokes", "stats": { "a": 60, "b": 40 }, "analysisA": "Sitcom protagonist energy. You'll start writing for the laugh.", "analysisB": "Brutal feedback loop. Stand-up career instantly viable." },
-        { "id": "cc_30", "optionA": "Be cursed to always finish other people's sentences (incorrectly)", "optionB": "Be cursed to always misremember the punchline of every joke", "stats": { "a": 40, "b": 60 }, "analysisA": "Conversational chaos agent. Friends warn strangers about you.", "analysisB": "Dad-joke ruiner. Everyone winces but loves you anyway." },
-        { "id": "cc_31", "optionA": "Have a tiny invisible orchestra play whenever you cook", "optionB": "Have a tiny invisible choir sing whenever you shower", "stats": { "a": 45, "b": 55 }, "analysisA": "Every omelette is a Michelin moment. Pasta is now opera.", "analysisB": "Concerts in the bathroom. Roommates moving out tomorrow." },
-        { "id": "cc_32", "optionA": "Be unable to say the letter 'S'", "optionB": "Be unable to say the letter 'T'", "stats": { "a": 50, "b": 50 }, "analysisA": "'Yeth pleathe' for the rest of your life. Snake names ruined.", "analysisB": "'Hank you' to everyone. 'Toas' for breakfast. Devastating." }
-      ]
-    },
-    {
-      "id": "deep_revealing",
-      "name": "Deep & Revealing",
-      "adult": false,
-      "items": [
-        { "id": "dr_01", "optionA": "Lose all your money and valuables", "optionB": "Lose all the photos you've ever taken", "stats": { "a": 20, "b": 80 }, "analysisA": "Sentimental. You value memories over wealth. Or you're broke anyway.", "analysisB": "Materialist. You'd rather buy new memories than keep the old ones." },
-        { "id": "dr_02", "optionA": "Be famous when you're alive and forgotten when you die", "optionB": "Go down in history when you die but be unknown while alive", "stats": { "a": 60, "b": 40 }, "analysisA": "You thrive on validation. Instant gratification junkie.", "analysisB": "You're an artist. You care about legacy more than comfort. Or you're a martyr." },
-        { "id": "dr_03", "optionA": "Be an unknown superhero", "optionB": "Be a famous villain", "stats": { "a": 65, "b": 35 }, "analysisA": "Altruistic. You do good for good's sake.", "analysisB": "You want the credit. You'd burn the world to be known." },
-        { "id": "dr_04", "optionA": "Find true love", "optionB": "Find a suitcase with 5 million dollars", "stats": { "a": 45, "b": 55 }, "analysisA": "Hopeless romantic. Unrealistically optimistic.", "analysisB": "Realist. You can buy a lot of dates with five mil." },
-        { "id": "dr_05", "optionA": "Remember everything but never forget anything painful or embarrassing", "optionB": "Only remember pleasant memories but constantly forget important details", "stats": { "a": 60, "b": 40 }, "analysisA": "Walking encyclopedia of regrets. You hold grudges and excel at trivia.", "analysisB": "Blissful optimist or conveniently forgetful. Highlight-reel personality." },
-        { "id": "dr_06", "optionA": "Know the exact day you'll die", "optionB": "Know exactly how you'll die", "stats": { "a": 40, "b": 60 }, "analysisA": "You want to plan the bucket list. Type-A even about death.", "analysisB": "You want to dodge it. You'll never sleep again." },
-        { "id": "dr_07", "optionA": "Have everyone you love forget who you are", "optionB": "Forget everyone you love", "stats": { "a": 35, "b": 65 }, "analysisA": "Brutal. You'd rather suffer than make them suffer.", "analysisB": "You chose your own peace. Unsettlingly self-protective." },
-        { "id": "dr_08", "optionA": "Be perfectly happy but average at everything", "optionB": "Be exceptional at one thing but never satisfied", "stats": { "a": 55, "b": 45 }, "analysisA": "You picked peace. Boring people live longer.", "analysisB": "Tortured-genius cosplay. You need the chase." },
-        { "id": "dr_09", "optionA": "Always feel slightly anxious", "optionB": "Always feel slightly numb", "stats": { "a": 50, "b": 50 }, "analysisA": "At least you're alive. Existing in fight-or-flight is a vibe.", "analysisB": "Functional but hollow. You'll text 'I'm fine' forever." },
-        { "id": "dr_10", "optionA": "Know what everyone really thinks of you", "optionB": "Never know what anyone really thinks of you", "stats": { "a": 30, "b": 70 }, "analysisA": "Brave. Or about to spiral. You can't unhear it.", "analysisB": "You picked the lie. Comfortable, blissful, unexamined." },
-        { "id": "dr_11", "optionA": "Have your biggest secret revealed to everyone you know", "optionB": "Have a random secret about you (you choose) revealed worldwide", "stats": { "a": 35, "b": 65 }, "analysisA": "You'd rather burn locally than globally. Strategic.", "analysisB": "You'd trade familiarity for anonymity. Strangers don't matter to you." },
-        { "id": "dr_12", "optionA": "Live a long life full of regret", "optionB": "Live a short life with no regrets", "stats": { "a": 25, "b": 75 }, "analysisA": "You're betting on time to fix things. Bold assumption.", "analysisB": "You'd burn out clean. Romantic but reckless." },
-        { "id": "dr_13", "optionA": "Be deeply loved by 3 people", "optionB": "Be casually liked by 3000 people", "stats": { "a": 70, "b": 30 }, "analysisA": "Quality over quantity. Therapist-approved.", "analysisB": "You confused popularity with peace. Lonely in a crowd." },
-        { "id": "dr_14", "optionA": "Always be 5 minutes late to everything", "optionB": "Always know you'll fail right before you try", "stats": { "a": 80, "b": 20 }, "analysisA": "Annoying but liveable. Your friends already know.", "analysisB": "You picked despair on a calendar. That's bleak." },
-        { "id": "dr_15", "optionA": "Have to live every day like it's your last", "optionB": "Have to plan 10 years ahead at all times", "stats": { "a": 50, "b": 50 }, "analysisA": "Exhausting hedonism. You'll be broke and emotional.", "analysisB": "Spreadsheet for a soul. You forgot to live." },
-        { "id": "dr_16", "optionA": "Lose the ability to lie", "optionB": "Lose the ability to keep a secret", "stats": { "a": 55, "b": 45 }, "analysisA": "Brutal honesty. Friendships will not survive.", "analysisB": "Walking gossip. People will stop telling you anything." },
-        { "id": "dr_17", "optionA": "Know the moment your parents will die", "optionB": "Know the moment your best friend will betray you", "stats": { "a": 60, "b": 40 }, "analysisA": "Painful but useful. You can say goodbye.", "analysisB": "You'd rather pre-grieve a person who's still hugging you." },
-        { "id": "dr_18", "optionA": "Have your biggest dream come true exactly once", "optionB": "Have a small, content life — guaranteed", "stats": { "a": 65, "b": 35 }, "analysisA": "You'd trade decades for one perfect moment. Romantic.", "analysisB": "You picked the soft life. Wise, slightly dim." },
-        { "id": "dr_19", "optionA": "Be respected but never loved", "optionB": "Be loved but never respected", "stats": { "a": 55, "b": 45 }, "analysisA": "Boardroom over bedroom. Lonely at the top.", "analysisB": "Hugged but never heard. Exhausting." },
-        { "id": "dr_20", "optionA": "Forget your happiest memory", "optionB": "Forget your worst memory", "stats": { "a": 40, "b": 60 }, "analysisA": "You'd lose joy to keep the lesson. Therapist energy.", "analysisB": "You'd erase the wound. Self-protective. Maybe cowardly." },
-        { "id": "dr_21", "optionA": "Be feared but never crossed", "optionB": "Be liked but constantly underestimated", "stats": { "a": 35, "b": 65 }, "analysisA": "Power move. Lonely move.", "analysisB": "Underdog forever. Quietly satisfying revenge potential." },
-        { "id": "dr_22", "optionA": "Have one true soulmate but you'll never meet them", "optionB": "Have many shallow loves your whole life", "stats": { "a": 45, "b": 55 }, "analysisA": "Beautifully tragic. You'll romanticise it forever.", "analysisB": "Realistic. Slightly cynical. Many great stories." },
-        { "id": "dr_23", "optionA": "Be honest in every conversation, no filter", "optionB": "Be tactful in every conversation, even when it's a lie", "stats": { "a": 35, "b": 65 }, "analysisA": "Truth-bomb personality. Free, friendless.", "analysisB": "Diplomat. Smooth, sometimes hollow." },
-        { "id": "dr_24", "optionA": "Be the smartest person you know", "optionB": "Be the kindest person you know", "stats": { "a": 30, "b": 70 }, "analysisA": "Ego choice. You want the trophy, not the warmth.", "analysisB": "Soft power. You'll be remembered longer." },
-        { "id": "dr_25", "optionA": "Live in a world without lies", "optionB": "Live in a world without surprises", "stats": { "a": 60, "b": 40 }, "analysisA": "You'd love it for a week. Then crave a polite lie.", "analysisB": "Predictable. Safe. Slightly grim." },
-        { "id": "dr_26", "optionA": "Always know what you should do — but never do it", "optionB": "Never know what to do — but always commit fully", "stats": { "a": 25, "b": 75 }, "analysisA": "Awareness-as-prison. The classic overthinker.", "analysisB": "Blissful chaos agent. At least you move." },
-        { "id": "dr_27", "optionA": "Have your worst trait erased forever", "optionB": "Have your best trait amplified to perfection", "stats": { "a": 65, "b": 35 }, "analysisA": "You picked therapy. Healthy.", "analysisB": "You picked superpower. Risky — your worst trait is still there." },
-        { "id": "dr_28", "optionA": "Always be the one who loves more in a relationship", "optionB": "Always be the one who's loved more in a relationship", "stats": { "a": 45, "b": 55 }, "analysisA": "Romantic giver. Often heartbroken.", "analysisB": "Quietly powerful. Often guilty." },
-        { "id": "dr_29", "optionA": "Live a life that looks great but feels empty", "optionB": "Live a life that feels great but looks like a mess", "stats": { "a": 20, "b": 80 }, "analysisA": "Instagram won. You lost.", "analysisB": "You picked yourself. Inconvenient for others, freeing for you." },
-        { "id": "dr_30", "optionA": "Be remembered for your worst moment", "optionB": "Be forgotten despite your best moment", "stats": { "a": 25, "b": 75 }, "analysisA": "Infamy is a kind of immortality. Bleak.", "analysisB": "You'd rather vanish than be defined by a low. Dignified." },
-        { "id": "dr_31", "optionA": "Always tell people exactly how much you love them", "optionB": "Always show people exactly how much you love them", "stats": { "a": 45, "b": 55 }, "analysisA": "Verbal lover. Words are your gift — and your overshare.", "analysisB": "Acts of service. Quiet, exhausting, undervalued." },
-        { "id": "dr_32", "optionA": "Be incapable of feeling jealousy", "optionB": "Be incapable of feeling regret", "stats": { "a": 55, "b": 45 }, "analysisA": "Healthy. Annoying. Your friends won't believe you.", "analysisB": "Sociopath-adjacent. But peaceful." }
-      ]
-    },
-    {
-      "id": "travel_living",
-      "name": "Travel & Living",
-      "adult": false,
-      "items": [
-        { "id": "tl_01", "optionA": "Have unlimited free food", "optionB": "Have unlimited free travel", "stats": { "a": 40, "b": 60 }, "analysisA": "Homebody. Comfort food is your love language.", "analysisB": "Explorer. Experiences over calories." },
-        { "id": "tl_02", "optionA": "Live in a house that's always too hot", "optionB": "Live in a house that's always too cold", "stats": { "a": 25, "b": 75 }, "analysisA": "You're a lizard. You like to bake.", "analysisB": "You can always put on more layers. Practical thinker." },
-        { "id": "tl_03", "optionA": "Live in a beautiful, isolated cabin in the woods with no internet", "optionB": "Live in a bustling city penthouse with constant connectivity", "stats": { "a": 30, "b": 70 }, "analysisA": "You call it 'peaceful' — we call it 'avoidant.' Go hug a tree.", "analysisB": "Addicted to noise. Your soul is as quiet as a Friday penthouse." },
-        { "id": "tl_04", "optionA": "Travel anywhere instantly but only stay 1 hour", "optionB": "Travel anywhere for unlimited time but it takes a year to get there", "stats": { "a": 55, "b": 45 }, "analysisA": "Superficial sightseer. Your Instagram is checkbox tourism.", "analysisB": "Journey-over-destination type. Or just terrifyingly patient." },
-        { "id": "tl_05", "optionA": "Live in a mansion that's always messy and disorganised", "optionB": "Live in a tiny apartment that's always perfectly clean", "stats": { "a": 40, "b": 60 }, "analysisA": "Maximalist with a chaotic soul. Clutter is 'character.'", "analysisB": "Minimalist with an obsessive streak. Sock drawer is immaculate." },
-        { "id": "tl_06", "optionA": "Only eat food you cook yourself", "optionB": "Only eat food prepared by others", "stats": { "a": 65, "b": 35 }, "analysisA": "Control freak in the kitchen. Potlucks are a biohazard to you.", "analysisB": "Lazy or trusting. Your favourite takeout menu is memorised." },
-        { "id": "tl_07", "optionA": "Only eat extremely bland food forever", "optionB": "Only eat incredibly spicy food forever", "stats": { "a": 60, "b": 40 }, "analysisA": "You chose a life as flavourless as your wardrobe.", "analysisB": "Chasing a chemical high because life lacks excitement." },
-        { "id": "tl_08", "optionA": "Taste exotic flavours brilliantly but familiar food tastes like cardboard", "optionB": "Only taste familiar food but it's always perfect", "stats": { "a": 45, "b": 55 }, "analysisA": "Adventurous epicurean. Bored by the mundane.", "analysisB": "Comfort eater. You have a favourite diner and you defend it." },
-        { "id": "tl_09", "optionA": "Have a personal chef but only for instant ramen", "optionB": "Have a personal stylist but only for Crocs and fanny packs", "stats": { "a": 70, "b": 30 }, "analysisA": "You outsource the simplest tasks. Monument to convenience.", "analysisB": "Peak irony. Just admit you have no style." },
-        { "id": "tl_10", "optionA": "Travel only by train, forever", "optionB": "Travel only by plane, forever", "stats": { "a": 55, "b": 45 }, "analysisA": "Slow romantic. You think every journey is a Wes Anderson film.", "analysisB": "Time-obsessed. You'd rather cramp than wait." },
-        { "id": "tl_11", "optionA": "Live somewhere it's always 22°C and sunny", "optionB": "Live somewhere with all four dramatic seasons", "stats": { "a": 50, "b": 50 }, "analysisA": "Boring climate, boring person. (Sorry, San Diego.)", "analysisB": "You want feelings with your weather. Maximalist." },
-        { "id": "tl_12", "optionA": "Live above a bakery", "optionB": "Live above a coffee shop", "stats": { "a": 55, "b": 45 }, "analysisA": "You'd weigh 200kg in a year. Worth it.", "analysisB": "Caffeine-fuelled, sleep-deprived, weirdly happy." },
-        { "id": "tl_13", "optionA": "Have one dream restaurant for free, forever", "optionB": "Have any restaurant in the world, but pay full price", "stats": { "a": 55, "b": 45 }, "analysisA": "Loyalist. The waiter is now family. Boring but cosy.", "analysisB": "Variety-driven. Broke but cultured." },
-        { "id": "tl_14", "optionA": "Drink only water for the rest of your life", "optionB": "Drink anything except water for the rest of your life", "stats": { "a": 35, "b": 65 }, "analysisA": "Health saint. Brunches are now sad.", "analysisB": "Kidney roulette. But the brunches go hard." },
-        { "id": "tl_15", "optionA": "Have to eat the same breakfast every day for life", "optionB": "Never eat the same breakfast twice", "stats": { "a": 60, "b": 40 }, "analysisA": "Routine over chaos. You probably already do this.", "analysisB": "Decision fatigue is your hobby. Exhausting." },
-        { "id": "tl_16", "optionA": "Live in a city you've always dreamed of but know no one", "optionB": "Live in your hometown forever, surrounded by everyone you love", "stats": { "a": 50, "b": 50 }, "analysisA": "Brave reset. Loneliness incoming.", "analysisB": "Cosy stagnation. You'll wonder 'what if' forever." },
-        { "id": "tl_17", "optionA": "Stay in 5-star hotels but always solo", "optionB": "Stay in hostels but always with great company", "stats": { "a": 45, "b": 55 }, "analysisA": "Luxurious loner. The minibar is your friend.", "analysisB": "Memory-rich, sleep-poor. The bunk bed builds character." },
-        { "id": "tl_18", "optionA": "Eat your favourite meal every day and never get sick of it", "optionB": "Eat a different brand-new meal every day", "stats": { "a": 50, "b": 50 }, "analysisA": "Loyalist comfort core. Your palate is locked in.", "analysisB": "Foodie chaos goblin. The kitchen is a science lab." },
-        { "id": "tl_19", "optionA": "Have a kitchen that cooks for you (badly)", "optionB": "Have a kitchen you cook in yourself (well)", "stats": { "a": 55, "b": 45 }, "analysisA": "Lazy. You'll eat mediocre forever and call it a win.", "analysisB": "Skilled but tired. Your back hurts." },
-        { "id": "tl_20", "optionA": "Live a year in Paris", "optionB": "Live a year in Tokyo", "stats": { "a": 50, "b": 50 }, "analysisA": "Romantic. Croissant-pilled. Slightly cliché.", "analysisB": "Hyper-modern. Convenience-store dinner enthusiast." },
-        { "id": "tl_21", "optionA": "Have an apartment with an incredible view but tiny", "optionB": "Have a huge apartment with a brick wall view", "stats": { "a": 65, "b": 35 }, "analysisA": "Aesthetic over function. Daily inspiration tax.", "analysisB": "Practical hermit. The brick is honestly fine." },
-        { "id": "tl_22", "optionA": "Always be cold but live by the beach", "optionB": "Always be hot but live in the mountains", "stats": { "a": 50, "b": 50 }, "analysisA": "Picturesque suffering. Worth it for the sunsets.", "analysisB": "Elevated misery. Hiking apologists." },
-        { "id": "tl_23", "optionA": "Drink the world's best coffee, but only one cup a day", "optionB": "Drink unlimited mediocre coffee", "stats": { "a": 60, "b": 40 }, "analysisA": "Quality snob. Ritual matters more than caffeine.", "analysisB": "Volume person. You don't drink coffee, you commute on it." },
-        { "id": "tl_24", "optionA": "Eat sushi every day", "optionB": "Eat pizza every day", "stats": { "a": 50, "b": 50 }, "analysisA": "Refined palate, expensive habit, smug emails.", "analysisB": "Joyful gremlin. No notes." },
-        { "id": "tl_25", "optionA": "Travel the world solo for a year", "optionB": "Travel one country deeply for a year with friends", "stats": { "a": 50, "b": 50 }, "analysisA": "Eat-Pray-Love arc. You'll come back insufferable.", "analysisB": "Memory factory. You'll have inside jokes for life." },
-        { "id": "tl_26", "optionA": "Live somewhere with an amazing food scene but no nature", "optionB": "Live somewhere with incredible nature but bad food", "stats": { "a": 60, "b": 40 }, "analysisA": "Mouth over lungs. Predictable city dweller.", "analysisB": "Lungs over mouth. You will get tired of granola." },
-        { "id": "tl_27", "optionA": "Have to wake up at 5 AM every day", "optionB": "Have to stay up till 3 AM every night", "stats": { "a": 45, "b": 55 }, "analysisA": "Smug morning evangelist. Insufferable on Mondays.", "analysisB": "Vampire shift. Productive at 2 AM, useless at 10." },
-        { "id": "tl_28", "optionA": "Live in a houseboat", "optionB": "Live in a converted van", "stats": { "a": 55, "b": 45 }, "analysisA": "Permanent gentle rocking. Your back is somehow fine.", "analysisB": "Van-life Instagram phase. Showering is the problem." },
-        { "id": "tl_29", "optionA": "Have all your meals delivered, never cook", "optionB": "Have to cook every single meal from scratch", "stats": { "a": 60, "b": 40 }, "analysisA": "Outsourced existence. Wallet hates you.", "analysisB": "Chef energy or martyr energy. Possibly both." },
-        { "id": "tl_30", "optionA": "Have one perfect food memory you can taste any time", "optionB": "Have one perfect travel memory you can re-live any time", "stats": { "a": 30, "b": 70 }, "analysisA": "Sensory loyalist. Grandma's curry on tap.", "analysisB": "Adventurer's nostalgia. The sunset replays forever." },
-        { "id": "tl_31", "optionA": "Live in a place where it's always your favourite season", "optionB": "Live in a place where every day is a brand-new adventure", "stats": { "a": 55, "b": 45 }, "analysisA": "Comfort-coded. Predictable bliss.", "analysisB": "Chaos-coded. Exhausted but smiling." },
-        { "id": "tl_32", "optionA": "Eat dinner with your 10-year-old self", "optionB": "Eat dinner with your 80-year-old self", "stats": { "a": 45, "b": 55 }, "analysisA": "Healing arc. Will end in tears.", "analysisB": "Spoilers arc. Will also end in tears." }
-      ]
-    },
-    {
-      "id": "pop_culture",
-      "name": "Pop Culture & Fandom",
-      "adult": false,
-      "items": [
-        { "id": "pc_01", "optionA": "Be Batman", "optionB": "Be Iron Man", "stats": { "a": 45, "b": 55 }, "analysisA": "Brooding and edgy. You think trauma makes you interesting.", "analysisB": "Flashy and arrogant. You think money solves everything." },
-        { "id": "pc_02", "optionA": "Give up social media forever", "optionB": "Give up movies and TV forever", "stats": { "a": 30, "b": 70 }, "analysisA": "Addicted to the scroll. You need validation.", "analysisB": "You value connection over content. Or you really like memes." },
-        { "id": "pc_03", "optionA": "Live without music", "optionB": "Live without TV", "stats": { "a": 20, "b": 80 }, "analysisA": "You have no soul.", "analysisB": "You can make your own entertainment." },
-        { "id": "pc_04", "optionA": "Live in the Marvel universe", "optionB": "Live in the Harry Potter universe", "stats": { "a": 45, "b": 55 }, "analysisA": "Saviour complex. Constant city-destroying chaos.", "analysisB": "Boarding-school nostalgic. Ignoring the wizard fascism." },
-        { "id": "pc_05", "optionA": "Lose all music made before 2010", "optionB": "Lose all music made after 2010", "stats": { "a": 50, "b": 50 }, "analysisA": "Modernist. Goodbye Queen, hello brain rot.", "analysisB": "Boomer in training. Slightly justified." },
-        { "id": "pc_06", "optionA": "Be the lead in a hit reality TV show", "optionB": "Be a writer behind your favourite scripted show", "stats": { "a": 35, "b": 65 }, "analysisA": "Fame-thirsty. The contract will ruin your life.", "analysisB": "Dignified influence. No one will know your name." },
-        { "id": "pc_07", "optionA": "Have a verified blue check on every platform but only 50 followers", "optionB": "Have 1 million followers but no verification, ever", "stats": { "a": 30, "b": 70 }, "analysisA": "Vanity over reach. Cute.", "analysisB": "Reach over status. Smart and slightly chaotic." },
-        { "id": "pc_08", "optionA": "Be in a Christopher Nolan film (you won't understand it)", "optionB": "Be in a Wes Anderson film (you have to wear that outfit forever)", "stats": { "a": 50, "b": 50 }, "analysisA": "Confused but cinematic. Inception-core.", "analysisB": "Symmetrical for life. The hat is non-negotiable." },
-        { "id": "pc_09", "optionA": "Have unlimited concert tickets but only solo seats", "optionB": "Have one VIP backstage pass per year but never buy tickets again", "stats": { "a": 55, "b": 45 }, "analysisA": "Anti-social music nerd. Headphones are family.", "analysisB": "Big swing energy. One night a year carries you." },
-        { "id": "pc_10", "optionA": "Be cast in the next Bond film", "optionB": "Be cast in the next Marvel film", "stats": { "a": 50, "b": 50 }, "analysisA": "Old-school cool. Tuxedos and stunts.", "analysisB": "Franchise contract slavery. But the trailer drops slap." },
-        { "id": "pc_11", "optionA": "Spend a day on the set of Friends", "optionB": "Spend a day on the set of Game of Thrones", "stats": { "a": 60, "b": 40 }, "analysisA": "Comfort TV core. You'd flirt with Joey.", "analysisB": "Drama tourist. The CGI dragons are smaller than you think." },
-        { "id": "pc_12", "optionA": "Be famous on TikTok forever", "optionB": "Be famous in print magazines forever", "stats": { "a": 40, "b": 60 }, "analysisA": "Algorithm pet. Burnout in 18 months.", "analysisB": "Vintage prestige. Nobody under 30 knows you." },
-        { "id": "pc_13", "optionA": "Watch only the same 5 movies for the rest of your life", "optionB": "Watch every new release but never re-watch anything", "stats": { "a": 45, "b": 55 }, "analysisA": "Comfort over discovery. You'll quote them constantly.", "analysisB": "Critic mode. No emotional attachment, just throughput." },
-        { "id": "pc_14", "optionA": "Have unlimited access to Netflix but no other platform", "optionB": "Have access to every platform but only 1 hour a day", "stats": { "a": 60, "b": 40 }, "analysisA": "Algorithm captive. You'll watch the same crime doc twice.", "analysisB": "Curated viewer. Forced to actually choose." },
-        { "id": "pc_15", "optionA": "Be a one-hit-wonder pop star", "optionB": "Be a respected indie artist no one buys", "stats": { "a": 55, "b": 45 }, "analysisA": "Quick fame, long shame. Royalties are nice.", "analysisB": "Critical darling, eternal broke. Pitchfork loves you." },
-        { "id": "pc_16", "optionA": "Live in any anime universe", "optionB": "Live in any video game universe", "stats": { "a": 50, "b": 50 }, "analysisA": "Dramatic monologue energy. Hair is now extreme.", "analysisB": "Respawn enabled. Inventory management is hell." },
-        { "id": "pc_17", "optionA": "Sing the next James Bond theme", "optionB": "Score the next Pixar film", "stats": { "a": 55, "b": 45 }, "analysisA": "Solo glory. One iconic note.", "analysisB": "Quietly devastating. Children will sob to your music." },
-        { "id": "pc_18", "optionA": "Win a Nobel Prize but no one knows what for", "optionB": "Win an Oscar but for a movie you didn't make", "stats": { "a": 40, "b": 60 }, "analysisA": "Mystery genius. The plaque is enough.", "analysisB": "Fraud, but accepting the speech anyway." },
-        { "id": "pc_19", "optionA": "Be best friends with your favourite musician", "optionB": "Be best friends with your favourite actor", "stats": { "a": 50, "b": 50 }, "analysisA": "Backstage forever. Their schedule will ruin you.", "analysisB": "Premiere-pilled. They'll never text back." },
-        { "id": "pc_20", "optionA": "Be famous for one viral mistake forever", "optionB": "Be invisible despite a brilliant career", "stats": { "a": 30, "b": 70 }, "analysisA": "You picked infamy. Bold.", "analysisB": "Quiet legend. Slightly bitter, very respected." },
-        { "id": "pc_21", "optionA": "Have your favourite show get one perfect final season", "optionB": "Have your favourite show go on for 20 more seasons (mid quality)", "stats": { "a": 75, "b": 25 }, "analysisA": "Adult choice. Closure-pilled.", "analysisB": "You'd milk it dry. Late seasons are your whole personality." },
-        { "id": "pc_22", "optionA": "Direct one Oscar-winning film", "optionB": "Star in ten forgettable hits", "stats": { "a": 55, "b": 45 }, "analysisA": "Auteur. Cocktail-party god.", "analysisB": "Working actor. Comfortable, anonymous, employed." },
-        { "id": "pc_23", "optionA": "Have a daily column in a major paper", "optionB": "Have a podcast 1 million people listen to", "stats": { "a": 35, "b": 65 }, "analysisA": "Respected. Slow. Print is dying anyway.", "analysisB": "Loud, lucrative, exhausting. You'll have a cold-brew sponsor." },
-        { "id": "pc_24", "optionA": "Be the breakout star of a sitcom", "optionB": "Be the villain in a prestige drama", "stats": { "a": 50, "b": 50 }, "analysisA": "Catchphrase forever. Typecast forever.", "analysisB": "Emmy bait. Strangers will hate you in real life." },
-        { "id": "pc_25", "optionA": "Trade lives with your favourite musician for a week", "optionB": "Trade lives with your favourite athlete for a week", "stats": { "a": 50, "b": 50 }, "analysisA": "Hangover-core. The voice does not survive this.", "analysisB": "Pain-core. Your body is not built for it." },
-        { "id": "pc_26", "optionA": "Have to listen only to the top 40 forever", "optionB": "Have to listen only to your dad's music forever", "stats": { "a": 50, "b": 50 }, "analysisA": "Algorithm slop. You'll know every Drake feature.", "analysisB": "Classic rock prison. Actually maybe upgrade." },
-        { "id": "pc_27", "optionA": "Have a movie made about your life starring a great actor (it's mid)", "optionB": "Have a documentary made about your life that's brilliant (no one watches)", "stats": { "a": 55, "b": 45 }, "analysisA": "Vanity over truth. The trailer is decent.", "analysisB": "Truth over fame. You'll dine out on the Sundance moment." },
-        { "id": "pc_28", "optionA": "Be in a band that breaks up after one perfect album", "optionB": "Be in a band that releases 12 mediocre albums", "stats": { "a": 65, "b": 35 }, "analysisA": "Cult-classic energy. Reunion tour rumours forever.", "analysisB": "Touring lifers. Royalty-comfortable, soul-tired." },
-        { "id": "pc_29", "optionA": "Be able to spoil any movie or show before watching it", "optionB": "Never have anything spoiled, ever, ever", "stats": { "a": 25, "b": 75 }, "analysisA": "Chaos goblin. You ruin parties.", "analysisB": "Pure consumer bliss. The internet has been muted." },
-        { "id": "pc_30", "optionA": "Have unlimited free books for life", "optionB": "Have unlimited free streaming for life", "stats": { "a": 50, "b": 50 }, "analysisA": "Tea-and-cardigan core. Quietly superior.", "analysisB": "Couch-pilled. You'll finish nothing but watch everything." },
-        { "id": "pc_31", "optionA": "Be the star of a Studio Ghibli film", "optionB": "Be the star of a Pixar film", "stats": { "a": 55, "b": 45 }, "analysisA": "Soft, watercolour life. There's a forest spirit involved.", "analysisB": "Emotionally devastating in 90 minutes. Inevitable life lesson." },
-        { "id": "pc_32", "optionA": "Have a character named after you in your favourite franchise", "optionB": "Be the actor who plays a tiny but iconic role in it", "stats": { "a": 55, "b": 45 }, "analysisA": "Immortal nerd cred. Wikipedia entry locked in.", "analysisB": "Convention-circuit royalty. Forever 'that guy.'" }
-      ]
-    },
-    {
-      "id": "spicy",
-      "name": "Spicy / Adults Only",
-      "adult": true,
-      "items": [
-        { "id": "sp_01", "optionA": "Date someone wildly attractive but boring in conversation", "optionB": "Date someone average-looking but the best conversationalist you've ever met", "stats": { "a": 25, "b": 75 }, "analysisA": "Honest. Shallow. The silence will break you in 3 weeks.", "analysisB": "Mature. Smug. You'll write a Medium post about it." },
-        { "id": "sp_02", "optionA": "Have your search history made public for one day", "optionB": "Have your DMs made public for one day", "stats": { "a": 65, "b": 35 }, "analysisA": "You'd rather be judged for curiosity than receipts.", "analysisB": "You're either innocent or about to be unemployed." },
-        { "id": "sp_03", "optionA": "Have an amazing first kiss but a terrible relationship", "optionB": "Have an awkward first kiss but a perfect relationship", "stats": { "a": 20, "b": 80 }, "analysisA": "Sucker for fireworks. You'll romanticise the wreckage.", "analysisB": "Long-game player. The kiss gets better, promise." },
-        { "id": "sp_04", "optionA": "Be told every flaw your ex saw in you", "optionB": "Be told every reason your ex still thinks about you", "stats": { "a": 30, "b": 70 }, "analysisA": "Masochist. Therapy on hard mode.", "analysisB": "Ego food. You'll spiral but smile." },
-        { "id": "sp_05", "optionA": "Date someone who's secretly read your diary", "optionB": "Date someone whose diary you've secretly read", "stats": { "a": 55, "b": 45 }, "analysisA": "You'd rather be exposed than be the snake.", "analysisB": "Snake. You picked snake. Self-aware queen." },
-        { "id": "sp_06", "optionA": "Have one wild story about you go viral", "optionB": "Have all your text exchanges with your crush leaked", "stats": { "a": 70, "b": 30 }, "analysisA": "Folk-hero ambitions. The story is now mythology.", "analysisB": "You'd rather die. We get it." },
-        { "id": "sp_07", "optionA": "Always know if someone's flirting with you", "optionB": "Always know if you're flirting with someone (you can't tell now)", "stats": { "a": 60, "b": 40 }, "analysisA": "You missed every signal in your 20s. This is overdue.", "analysisB": "Self-awareness chaos. You're flirty and didn't know." },
-        { "id": "sp_08", "optionA": "Have a partner who's wildly jealous", "optionB": "Have a partner who's bizarrely uninterested", "stats": { "a": 40, "b": 60 }, "analysisA": "You read jealousy as love. Red flag, possibly a parade.", "analysisB": "You'd rather be ignored than smothered. Avoidant much?" },
-        { "id": "sp_09", "optionA": "Sext only via emoji forever", "optionB": "Sext only in fully formatted essays forever", "stats": { "a": 60, "b": 40 }, "analysisA": "Lazy and effective. 🍑🔥 carries you.", "analysisB": "MLA citations on the foreplay. Niche, weirdly hot." },
-        { "id": "sp_10", "optionA": "Hook up with your celebrity crush once (no one ever knows)", "optionB": "Have everyone know about it but it never actually happened", "stats": { "a": 65, "b": 35 }, "analysisA": "Private win. You'll smile to yourself for years.", "analysisB": "Clout over reality. The lie is the prize." },
-        { "id": "sp_11", "optionA": "Date someone with the exact same flaws as you", "optionB": "Date someone with the exact opposite flaws as you", "stats": { "a": 35, "b": 65 }, "analysisA": "Trauma-bond fast track. Therapy can't keep up.", "analysisB": "Friction-bond. Either growth or war." },
-        { "id": "sp_12", "optionA": "Have an ex marry someone better than you", "optionB": "Have an ex marry someone obviously worse than you", "stats": { "a": 45, "b": 55 }, "analysisA": "Mature. You're rooting for them. Sort of.", "analysisB": "Petty. Comforting. Smug for years." },
-        { "id": "sp_13", "optionA": "Have a one-night stand you remember forever", "optionB": "Have a 5-year relationship you barely remember", "stats": { "a": 50, "b": 50 }, "analysisA": "Quality intensity. Very romantic, slightly unhinged.", "analysisB": "Beige comfort. You forgot anniversaries on purpose." },
-        { "id": "sp_14", "optionA": "Be told every flirty thought your partner has had about other people", "optionB": "Be told every flirty thought you've had revealed to your partner", "stats": { "a": 40, "b": 60 }, "analysisA": "You can handle the truth. Allegedly.", "analysisB": "You'd rather burn yourself than them. Self-sacrificial chaos." },
-        { "id": "sp_15", "optionA": "Have a partner who PDA's constantly in public", "optionB": "Have a partner who never touches you in public, ever", "stats": { "a": 55, "b": 45 }, "analysisA": "Performative love. Friends are leaving the chat.", "analysisB": "Cold-coded. Nobody believes you're together." },
-        { "id": "sp_16", "optionA": "Have your most embarrassing dating moment shown on national TV", "optionB": "Have your most embarrassing dating moment played at your wedding", "stats": { "a": 40, "b": 60 }, "analysisA": "Strangers laughing is survivable. Just.", "analysisB": "At least it's an inside joke now. Right? Right??" },
-        { "id": "sp_17", "optionA": "Date someone 10 years older", "optionB": "Date someone 10 years younger", "stats": { "a": 50, "b": 50 }, "analysisA": "Wisdom-pilled. Their friends will hate you.", "analysisB": "Energy-pilled. Their playlists will baffle you." },
-        { "id": "sp_18", "optionA": "Always be the bigger flirt in the relationship", "optionB": "Always be the more reserved one", "stats": { "a": 50, "b": 50 }, "analysisA": "Charm is your love language. And your weapon.", "analysisB": "Slow-burn. Quietly devastating once you commit." },
-        { "id": "sp_19", "optionA": "Sleep with the lights on every night", "optionB": "Sleep in pitch black every night", "stats": { "a": 25, "b": 75 }, "analysisA": "Scared of the dark. Or of yourself.", "analysisB": "Cave-dweller. Productivity post-nap is unmatched." },
-        { "id": "sp_20", "optionA": "Have your partner read every text you've ever sent", "optionB": "Have your boss read every text you've ever sent", "stats": { "a": 70, "b": 30 }, "analysisA": "Awkward, possibly survivable. Mostly.", "analysisB": "Career-ending event. Unemployment incoming." },
-        { "id": "sp_21", "optionA": "Date your celebrity crush for 1 month, knowing it ends", "optionB": "Date a stranger for 50 years, perfect happiness guaranteed", "stats": { "a": 25, "b": 75 }, "analysisA": "Live fast, regret late. Iconic.", "analysisB": "Boring. Wise. Probably correct." },
-        { "id": "sp_22", "optionA": "Have to share your phone unlocked with your partner forever", "optionB": "Have to share your bank account fully visible with your partner forever", "stats": { "a": 30, "b": 70 }, "analysisA": "You have nothing to hide. Allegedly.", "analysisB": "Money is the lesser secret. Telling." },
-        { "id": "sp_23", "optionA": "Hook up with someone who's a great kisser but selfish", "optionB": "Hook up with someone who's a bad kisser but generous", "stats": { "a": 30, "b": 70 }, "analysisA": "You picked the trailer over the movie. Bold.", "analysisB": "Wise long-game. The kiss can be coached." },
-        { "id": "sp_24", "optionA": "Be told the exact day you meet your soulmate", "optionB": "Be told the exact day your last relationship ends", "stats": { "a": 65, "b": 35 }, "analysisA": "Hopeful planner. The countdown will haunt you.", "analysisB": "Doom-pilled. You'd live in pre-grief forever." },
-        { "id": "sp_25", "optionA": "Have one wild secret about you tattooed on your arm", "optionB": "Have one bland fact about you screamed at you every morning", "stats": { "a": 30, "b": 70 }, "analysisA": "You wear your chaos. It's a vibe.", "analysisB": "Annoying but private. Wins long-term." },
-        { "id": "sp_26", "optionA": "Find out your partner has hooked up with one of your friends (before you met)", "optionB": "Find out your partner has hooked up with one of your siblings (before you met)", "stats": { "a": 80, "b": 20 }, "analysisA": "Awkward Christmas. Survivable.", "analysisB": "Family group chat is now a war zone." },
-        { "id": "sp_27", "optionA": "Have an open book about every person you've ever kissed", "optionB": "Have an open book about every person who's ever rejected you", "stats": { "a": 60, "b": 40 }, "analysisA": "Receipts. Mostly fine. A few will sting.", "analysisB": "The receipts are devastating in volume." },
-        { "id": "sp_28", "optionA": "Be cursed to always tell the truth on a first date", "optionB": "Be cursed to always lie on a first date", "stats": { "a": 60, "b": 40 }, "analysisA": "Speedrun the red flags. Efficient.", "analysisB": "Built on sand. Second date becomes cardio." },
-        { "id": "sp_29", "optionA": "Have a partner who's loud in private", "optionB": "Have a partner who's loud in public", "stats": { "a": 75, "b": 25 }, "analysisA": "Standard. Slightly smug. Walls are thin though.", "analysisB": "Restaurant horror. Friends stop inviting you." },
-        { "id": "sp_30", "optionA": "Have your last text sent at 2 AM read by everyone you know", "optionB": "Have your last screenshot saved read by everyone you know", "stats": { "a": 50, "b": 50 }, "analysisA": "Drunk feelings, public feelings. Career-adjacent risk.", "analysisB": "Receipts hoarder exposed. Friendships adjusting." },
-        { "id": "sp_31", "optionA": "Marry the person you've loved most (it lasts 5 years)", "optionB": "Marry someone you grow to love deeply (it lasts 50 years)", "stats": { "a": 35, "b": 65 }, "analysisA": "Romantic. Doomed. Worth it.", "analysisB": "Pragmatic. Lovely. Possibly the right answer." },
-        { "id": "sp_32", "optionA": "Be irresistible to people you have zero interest in", "optionB": "Be invisible to people you're wildly attracted to", "stats": { "a": 55, "b": 45 }, "analysisA": "Endless awkward declines. The ego is fed though.", "analysisB": "Romantic ghost. The crushes will outlive you." }
+        {
+          "id": "g_001",
+          "tag": "social",
+          "optionA": "Have your screen-time report sent to the family group every Sunday",
+          "optionB": "Have the last 20 photos in your gallery shown at the next family dinner",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_002",
+          "tag": "social",
+          "optionA": "Reply-all to the whole office with your honest opinion of a meeting",
+          "optionB": "Accidentally like your ex's photo from 2016",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_003",
+          "tag": "social",
+          "optionA": "Have everyone near you hear your thoughts for one random minute a day",
+          "optionB": "Have one stranger hear all your thoughts, forever",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_004",
+          "tag": "social",
+          "optionA": "Give a speech at every wedding you attend",
+          "optionB": "Dance solo on stage for one full song at every wedding you attend",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_005",
+          "tag": "social",
+          "optionA": "Have your friends see your live location forever",
+          "optionB": "Have your parents see your live location forever",
+          "stats": {
+            "a": 70,
+            "b": 30
+          }
+        },
+        {
+          "id": "g_006",
+          "tag": "social",
+          "optionA": "Never be able to remember anyone's name",
+          "optionB": "Never be able to remember anyone's face",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_007",
+          "tag": "social",
+          "optionA": "Have a laugh track play after everything you say, funny or not",
+          "optionB": "Have dramatic background music follow you, matching your mood",
+          "stats": {
+            "a": 30,
+            "b": 70
+          }
+        },
+        {
+          "id": "g_008",
+          "tag": "social",
+          "optionA": "Hear a quiet beep every time someone lies to you",
+          "optionB": "Tell one lie a day that nobody can ever detect",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_009",
+          "tag": "social",
+          "optionA": "Always be the most overdressed person in the room",
+          "optionB": "Always be the most underdressed person in the room",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_010",
+          "tag": "social",
+          "optionA": "Be stuck in a lift for three hours with your boss",
+          "optionB": "Be stuck in a lift for three hours with your ex",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_011",
+          "tag": "social",
+          "optionA": "Find the group chat your friends made without you, and read all of it",
+          "optionB": "Never find out it exists",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_012",
+          "tag": "social",
+          "optionA": "Have your parents added to your friends' group chat",
+          "optionB": "Have your friends added to your family group chat",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_013",
+          "tag": "social",
+          "optionA": "Laugh three seconds late at every joke",
+          "optionB": "Laugh slightly too loudly at every joke",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_014",
+          "tag": "social",
+          "optionA": "Have your YouTube recommendations shown on the big screen at work",
+          "optionB": "Have your full music history shared with your family",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_015",
+          "tag": "social",
+          "optionA": "Have a narrator only you can hear, who's quietly rude about you",
+          "optionB": "Have a narrator everyone can hear, who's always kind about you",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_016",
+          "tag": "social",
+          "optionA": "Hear a whoopee-cushion noise every time you sit down",
+          "optionB": "Get a round of applause every time you stand up",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_017",
+          "tag": "social",
+          "optionA": "Hand your unlocked phone to your best friend for an hour",
+          "optionB": "Hand your unlocked phone to your mum for ten minutes",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_018",
+          "tag": "social",
+          "optionA": "Always split the bill evenly, even when you only had water",
+          "optionB": "Always split it item by item, with a calculator, at the table",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_019",
+          "tag": "social",
+          "optionA": "Hiccup every time you tell a lie",
+          "optionB": "Blush bright red every time someone compliments you",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_020",
+          "tag": "social",
+          "optionA": "Be stuck at a party where you know no one",
+          "optionB": "Be stuck at a party where everyone asks about your life choices",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_021",
+          "tag": "life",
+          "optionA": "Get ten extra minutes every morning",
+          "optionB": "Fall asleep the moment your head hits the pillow, every night",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_022",
+          "tag": "life",
+          "optionA": "Never wait in a queue again",
+          "optionB": "Never get stuck in traffic again",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_023",
+          "tag": "life",
+          "optionA": "Only ever shower in cold water",
+          "optionB": "Only ever drink warm water, even on the hottest day",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_024",
+          "tag": "life",
+          "optionA": "Have a phone that's always at 100% but has a cracked screen forever",
+          "optionB": "Have a flawless phone that dies at 6pm every day",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_025",
+          "tag": "life",
+          "optionA": "Have a personal chef, but eat whatever they decide",
+          "optionB": "Have a personal driver, but they choose all the music",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_026",
+          "tag": "life",
+          "optionA": "Never do laundry again",
+          "optionB": "Never wash dishes again",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_027",
+          "tag": "life",
+          "optionA": "Lose your phone for a week",
+          "optionB": "Lose your wallet, cards and ID for a week",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_028",
+          "tag": "life",
+          "optionA": "Relive the same ordinary Tuesday for a month",
+          "optionB": "Skip a whole year and never find out what happened in it",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_029",
+          "tag": "life",
+          "optionA": "Always arrive twenty minutes early",
+          "optionB": "Always arrive ten minutes late",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_030",
+          "tag": "life",
+          "optionA": "Plan every family trip, forever",
+          "optionB": "Never get a say in where the family goes",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_031",
+          "tag": "life",
+          "optionA": "Attend every family function for the next year",
+          "optionB": "Miss every single one, including the big ones",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_032",
+          "tag": "life",
+          "optionA": "Always get a parking spot right outside",
+          "optionB": "Always order the best thing on any menu",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_033",
+          "tag": "life",
+          "optionA": "Go a month without internet",
+          "optionB": "Go a month without hot water",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_034",
+          "tag": "life",
+          "optionA": "Live somewhere beautiful with terrible internet",
+          "optionB": "Live somewhere ugly where everything works perfectly",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_035",
+          "tag": "life",
+          "optionA": "Fly free forever, but always in the middle seat",
+          "optionB": "Pay for every flight, but always fly business",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_036",
+          "tag": "powers",
+          "optionA": "Teleport, but only to places you've already been",
+          "optionB": "Teleport anywhere, but you can't leave for 24 hours",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_037",
+          "tag": "powers",
+          "optionA": "Get one extra hour every day that only you experience",
+          "optionB": "Need only two hours of sleep a night",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_038",
+          "tag": "powers",
+          "optionA": "Undo the last ten seconds, five times a day",
+          "optionB": "See ten seconds into the future, whenever you like",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_039",
+          "tag": "powers",
+          "optionA": "Speak every language fluently",
+          "optionB": "Play every instrument perfectly",
+          "stats": {
+            "a": 70,
+            "b": 30
+          }
+        },
+        {
+          "id": "g_040",
+          "tag": "powers",
+          "optionA": "Master any skill instantly, but forget it after 24 hours",
+          "optionB": "Learn anything twice as fast, forever",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_041",
+          "tag": "powers",
+          "optionA": "Erase the last 30 seconds of any conversation from everyone's memory",
+          "optionB": "Always know the perfect thing to say, in the moment",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_042",
+          "tag": "powers",
+          "optionA": "Never feel hungry again",
+          "optionB": "Never feel tired again",
+          "stats": {
+            "a": 30,
+            "b": 70
+          }
+        },
+        {
+          "id": "g_043",
+          "tag": "powers",
+          "optionA": "Be invisible to every camera",
+          "optionB": "Look great in every photo ever taken of you",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_044",
+          "tag": "powers",
+          "optionA": "Control the weather in your city",
+          "optionB": "Control every traffic light you drive up to",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_045",
+          "tag": "powers",
+          "optionA": "See everyone's mood glowing above their head",
+          "optionB": "See everyone's bank balance above their head",
+          "stats": {
+            "a": 65,
+            "b": 35
+          }
+        },
+        {
+          "id": "g_046",
+          "tag": "powers",
+          "optionA": "Win every argument",
+          "optionB": "Always be right, but nobody ever believes you",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_047",
+          "tag": "powers",
+          "optionA": "Mute any one person for an hour, once a day",
+          "optionB": "Fast-forward through any boring event you're stuck at",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_048",
+          "tag": "powers",
+          "optionA": "Talk to animals, but they only ever talk about food",
+          "optionB": "Understand babies, but they only ever complain",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_049",
+          "tag": "money",
+          "optionA": "Get ten years of your salary as a lump sum, today",
+          "optionB": "Get a 50% raise that lasts your whole career",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_050",
+          "tag": "money",
+          "optionA": "Be famous for something embarrassing",
+          "optionB": "Do something amazing that nobody ever knows was you",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_051",
+          "tag": "money",
+          "optionA": "Work a four-day week, forever",
+          "optionB": "Work six days a week, but take three months off every year",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_052",
+          "tag": "money",
+          "optionA": "Love your boss but hate your job",
+          "optionB": "Love your job but hate your boss",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_053",
+          "tag": "money",
+          "optionA": "Retire at 45, comfortable but careful",
+          "optionB": "Work until 65 and be genuinely rich",
+          "stats": {
+            "a": 65,
+            "b": 35
+          }
+        },
+        {
+          "id": "g_054",
+          "tag": "money",
+          "optionA": "Win the lottery, but everyone you know is told the amount",
+          "optionB": "Win half as much and never tell a soul",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_055",
+          "tag": "money",
+          "optionA": "Be the best in the world at something nobody cares about",
+          "optionB": "Be above average at everything",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_056",
+          "tag": "money",
+          "optionA": "Have your salary shown to your friends",
+          "optionB": "Have your bank balance shown to your family",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_057",
+          "tag": "money",
+          "optionA": "Double your salary at a job that bores you",
+          "optionB": "Keep your salary at a job you love",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_058",
+          "tag": "money",
+          "optionA": "Be the richest person in your friend group",
+          "optionB": "Be the best-looking person in your friend group",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_059",
+          "tag": "money",
+          "optionA": "Have a job with a view of the sea",
+          "optionB": "Have a job five minutes from home",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_060",
+          "tag": "truth",
+          "optionA": "Find out what everyone really thought of you at school",
+          "optionB": "Find out what everyone really thinks of you at work",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_061",
+          "tag": "truth",
+          "optionA": "See a five-minute clip of your life ten years from now",
+          "optionB": "Get one sentence of advice from yourself ten years from now",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_062",
+          "tag": "truth",
+          "optionA": "Know every secret of one person close to you",
+          "optionB": "Have one person close to you know every secret of yours",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_063",
+          "tag": "truth",
+          "optionA": "Learn the answer to one big question about the universe",
+          "optionB": "Learn the truth about one mystery from your own life",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_064",
+          "tag": "truth",
+          "optionA": "Know what your pet really thinks of you",
+          "optionB": "Know what your parents really think of your life choices",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_065",
+          "tag": "truth",
+          "optionA": "Get a ten-word text from your future self once a year",
+          "optionB": "Send one message, any length, to your past self, once",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_066",
+          "tag": "truth",
+          "optionA": "Replay any memory in perfect detail",
+          "optionB": "Erase any memory for good",
+          "stats": {
+            "a": 65,
+            "b": 35
+          }
+        },
+        {
+          "id": "g_067",
+          "tag": "truth",
+          "optionA": "Have your search history read out at your funeral",
+          "optionB": "Have your camera roll play as the slideshow at your funeral",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_068",
+          "tag": "truth",
+          "optionA": "Redo one year of your past",
+          "optionB": "Skip the worst year of your future",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_069",
+          "tag": "truth",
+          "optionA": "Live 100 ordinary years",
+          "optionB": "Live 50 extraordinary ones",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_070",
+          "tag": "truth",
+          "optionA": "Cheat once at anything and never get caught",
+          "optionB": "Find out every time anyone has ever cheated you",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_071",
+          "tag": "truth",
+          "optionA": "Relive school knowing everything you know now",
+          "optionB": "Skip straight to 60 with a good life guaranteed",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_072",
+          "tag": "truth",
+          "optionA": "Rewatch your favourite show for the first time again",
+          "optionB": "Get one brand-new season of a show that ended",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_073",
+          "tag": "food",
+          "optionA": "Give up tea and coffee forever",
+          "optionB": "Give up sugar forever",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_074",
+          "tag": "food",
+          "optionA": "Eat only home-cooked food forever",
+          "optionB": "Never eat home-cooked food again",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_075",
+          "tag": "food",
+          "optionA": "Have every meal be slightly too salty",
+          "optionB": "Have every meal be slightly cold",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_076",
+          "tag": "food",
+          "optionA": "Eat the same breakfast every day for life",
+          "optionB": "Never eat the same breakfast twice",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_077",
+          "tag": "food",
+          "optionA": "Give up fried food forever",
+          "optionB": "Give up dessert forever",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_078",
+          "tag": "food",
+          "optionA": "Never eat anything spicy again",
+          "optionB": "Have everything you eat be extremely spicy",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_079",
+          "tag": "food",
+          "optionA": "Always cook for everyone",
+          "optionB": "Always wash up after everyone",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_080",
+          "tag": "food",
+          "optionA": "Share every plate with whoever you're eating with",
+          "optionB": "Never be allowed to taste anyone else's food",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_081",
+          "tag": "phone",
+          "optionA": "Lose every photo on your phone",
+          "optionB": "Lose every chat on your phone",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_082",
+          "tag": "phone",
+          "optionA": "Reply to every message within one minute",
+          "optionB": "Check your messages only once a day",
+          "stats": {
+            "a": 30,
+            "b": 70
+          }
+        },
+        {
+          "id": "g_083",
+          "tag": "phone",
+          "optionA": "Give up social media for a year",
+          "optionB": "Give up food delivery and online shopping for a year",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_084",
+          "tag": "phone",
+          "optionA": "Have every text you send come out in ALL CAPS",
+          "optionB": "Have every text end with a random emoji you didn't choose",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_085",
+          "tag": "phone",
+          "optionA": "Only communicate by voice note",
+          "optionB": "Only communicate by text, no calls or voice notes",
+          "stats": {
+            "a": 30,
+            "b": 70
+          }
+        },
+        {
+          "id": "g_086",
+          "tag": "phone",
+          "optionA": "Have your phone read every notification out loud, in public",
+          "optionB": "Have your phone lock you out for an hour, at random, once a day",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_087",
+          "tag": "people",
+          "optionA": "Let your friends choose your partner",
+          "optionB": "Let your parents choose your partner",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_088",
+          "tag": "people",
+          "optionA": "Have a friend who's always an hour late",
+          "optionB": "Have a friend who cancels last minute half the time",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_089",
+          "tag": "people",
+          "optionA": "Be the funny one in the group",
+          "optionB": "Be the one everyone calls in a crisis",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_090",
+          "tag": "people",
+          "optionA": "Have your best friend move to another country",
+          "optionB": "Have your best friend start dating your sibling",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_091",
+          "tag": "people",
+          "optionA": "Be the oldest sibling",
+          "optionB": "Be the youngest sibling",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_092",
+          "tag": "people",
+          "optionA": "Host every party your friends ever have",
+          "optionB": "Never host, but always be the designated driver",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_093",
+          "tag": "people",
+          "optionA": "Have your partner's family live with you for a month",
+          "optionB": "Have your own family live with you for a month",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_094",
+          "tag": "people",
+          "optionA": "Be known as the friend who's always late",
+          "optionB": "Be known as the friend who forgets birthdays",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_095",
+          "tag": "people",
+          "optionA": "Swap lives with your mum for a week",
+          "optionB": "Swap lives with your boss for a week",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_096",
+          "tag": "people",
+          "optionA": "Hear your mum's voice commenting on every decision you make",
+          "optionB": "Hear a PE teacher shouting encouragement at every task you do",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_097",
+          "tag": "weird",
+          "optionA": "Live the rest of your life as a Bollywood film, songs included",
+          "optionB": "Live it as a reality show, confession booth included",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_098",
+          "tag": "weird",
+          "optionA": "Have your entrance announced, like royalty, everywhere you go",
+          "optionB": "Have a lone violin play sadly whenever something goes wrong",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_099",
+          "tag": "weird",
+          "optionA": "Dance brilliantly, but only when nobody's watching",
+          "optionB": "Dance terribly, but always believe you're brilliant",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_100",
+          "tag": "weird",
+          "optionA": "Only listen to the same three songs for the rest of your life",
+          "optionB": "Only ever hear songs you've never heard before",
+          "stats": {
+            "a": 30,
+            "b": 70
+          }
+        }
       ]
     }
   ]
