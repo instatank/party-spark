@@ -161,7 +161,7 @@ export const GAMES: GameMeta[] = [
     {
         id: GameType.WOULD_YOU_RATHER,
         title: "Would You Rather",
-        description: "This or that? Make tough choices!",
+        description: "Two options. Both hurt. Pick one.",
         icon: "split",
         color: "bg-indigo-500",
         minPlayers: 1
@@ -205,7 +205,7 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.CHARADES]:            { vibe: 'Classic',  duration: '10 min', players: '4+',   tags: ['teams', 'active', 'crowd'] },
     [GameType.MINI_MAFIA]:          { vibe: 'Strategy', duration: '20 min', players: '5+',   tags: ['betrayal', 'long', 'crowd'] },
     [GameType.NEVER_HAVE_I_EVER]:   { vibe: 'Confess',  duration: '10 min', players: '3+',   tags: ['classic', 'reveal', 'crowd', 'spicy', 'couples'] },
-    [GameType.WOULD_YOU_RATHER]:    { vibe: 'Debate',   duration: '10 min', players: '1+',   tags: ['quick', 'any', 'couples', 'spicy'] },
+    [GameType.WOULD_YOU_RATHER]:    { vibe: 'Debate',   duration: '10 min', players: '2+',   tags: ['quick', 'any', 'couples', 'crowd'] },
     [GameType.ICEBREAKERS]:         { vibe: 'Warm-up',  duration: '5 min',  players: '2+',   tags: ['quick', 'meet', 'gentle', 'couples'] },
     [GameType.WOULD_I_LIE_TO_YOU]:  { vibe: 'Bluff',    duration: '10 min', players: '3+',   tags: ['story', 'read', 'crowd'] },
     [GameType.TRUTH_OR_DRINK]:      { vibe: 'Deep',     duration: '15 min', players: '2+',   tags: ['adult', 'honest', 'spicy', 'couples'] },
@@ -292,11 +292,7 @@ export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
         { label: 'Jobs',    tags: ['jobs', 'careers', 'work', 'professions'] },
     ],
     [GameType.WOULD_YOU_RATHER]: [
-        { label: 'Classic Chaos',      tags: ['classic', 'fun', 'hypothetical', 'chaos'] },
-        { label: 'Deep & Revealing',   tags: ['deep', 'vulnerable', 'philosophical', 'real'] },
-        { label: 'Travel & Living',    tags: ['travel', 'food', 'living', 'lifestyle'] },
-        { label: 'Pop Culture',        tags: ['pop', 'culture', 'movies', 'music', 'tv', 'fandom'] },
-        { label: 'Spicy',              tags: ['spicy', 'saucy', 'dating', 'intimate', '18+'] },
+        { label: 'The Main Deck', tags: ['general', 'dilemma', 'debate', 'this or that', 'hypothetical'] },
     ],
     [GameType.COMPATIBILITY_TEST]: [
         { label: 'Friends', tags: ['friends', 'platonic'] },
@@ -431,10 +427,3 @@ export const IMPOSTER_CATEGORIES = [
     { id: 'jobs', label: 'Jobs', color: 'bg-red-500', words: ['Doctor', 'Teacher', 'Artist', 'Chef', 'Pilot', 'Firefighter', 'Police', 'Actor', 'Scientist', 'Soldier', 'Magician', 'Astronaut', 'Archaeologist', 'Spy', 'Surgeon', 'Lifeguard', 'Architect', 'Sommelier', 'Stuntman', 'Zookeeper', 'Bounty Hunter', 'Ventriloquist', 'Bomb Disposal', 'Cryptographer', 'Beekeeper', 'Ghost Hunter', 'Jockey', 'Taxidermist', 'Mime', 'Rickshaw Driver', 'Mechanic', 'Plumber', 'Electrician', 'Carpenter', 'Janitor', 'Bouncer', 'Lumberjack', 'Meteorologist', 'Judge', 'Politician', 'Dentist', 'Nurse', 'Baker', 'Butcher', 'Tailor', 'Barber', 'Florist', 'Photographer', 'Journalist', 'Librarian', 'Singer', 'Dancer', 'Pianist', 'Drummer', 'Guitarist', 'Comedian', 'Writer', 'Poet', 'Director', 'Producer'] }
 ];
 
-export const WOULD_YOU_RATHER_CATEGORIES = [
-    { id: 'classic_chaos', title: 'Classic Chaos', tagline: 'Absurd hypotheticals & superpowers. Easy laughs.', accentText: 'text-indigo-400', gradient: 'from-indigo-600 to-violet-500', shadow: 'shadow-indigo-900/30', adult: false },
-    { id: 'deep_revealing', title: 'Deep & Revealing', tagline: 'Values, regret, legacy. Accidental therapy.', accentText: 'text-violet-400', gradient: 'from-violet-600 to-fuchsia-500', shadow: 'shadow-violet-900/30', adult: false },
-    { id: 'travel_living', title: 'Travel & Living', tagline: 'Food, drink, cities, daily-life dilemmas.', accentText: 'text-emerald-400', gradient: 'from-emerald-600 to-teal-500', shadow: 'shadow-emerald-900/30', adult: false },
-    { id: 'pop_culture', title: 'Pop Culture & Fandom', tagline: 'Franchises, celebs, music, TV.', accentText: 'text-pink-400', gradient: 'from-pink-600 to-rose-500', shadow: 'shadow-pink-900/30', adult: false },
-    { id: 'spicy', title: 'Spicy', tagline: 'Dating, intimacy, taboo. PIN required.', accentText: 'text-rose-400', gradient: 'from-rose-600 to-orange-500', shadow: 'shadow-rose-900/30', adult: true }
-];

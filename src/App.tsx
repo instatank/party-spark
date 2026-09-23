@@ -102,15 +102,15 @@ const comingSoonGameIds = [
   GameType.WOULD_I_LIE_TO_YOU,
   GameType.ICEBREAKERS,
   GameType.MINI_MAFIA,
-  GameType.WOULD_YOU_RATHER,
 ];
 
 // The newest games. They live under their own "NEW" tab on Home rather
-// than in the main Play Now list — six extra cards on the front page is
+// than in the main Play Now list — seven extra cards on the front page is
 // what tips it from "a menu" into "a wall". Order here drives display
 // order inside the tab (newest first). Move an id out of this list once
 // it stops being new and it rejoins the main list automatically.
 const NEW_GAME_IDS = [
+  GameType.WOULD_YOU_RATHER,
   GameType.THE_LINE,
   GameType.TARGET,
   GameType.SHORTLIST,

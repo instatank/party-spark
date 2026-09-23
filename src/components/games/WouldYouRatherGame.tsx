@@ -2,8 +2,7 @@
 import React, { useState, use } from 'react';
 import { Card, Button } from '../ui/Layout';
 import { ScreenHeader } from '../ui/Layout';
-import { ArrowRight, Brain, ChevronRight, Sparkles, Compass, Film, Flame } from 'lucide-react';
-import { WOULD_YOU_RATHER_CATEGORIES } from '../../constants';
+import { ArrowRight, ChevronRight, Sparkles, RotateCcw } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
@@ -13,26 +12,22 @@ import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 // App-level Suspense boundary on first render.
 const wyrDataPromise = import('../../data/would_you_rather.json').then(m => m.default);
 
-const CATEGORY_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
-    classic_chaos: Sparkles,
-    deep_revealing: Brain,
-    travel_living: Compass,
-    pop_culture: Film,
-    spicy: Flame,
-};
-
 interface WYRQuestion {
     id: string;
     optionA: string;
     optionB: string;
+    // Authored ESTIMATES of how a room splits — not recorded votes. The
+    // footnote on the card says so; never label these "player votes".
     stats: { a: number; b: number };
-    analysisA: string;
-    analysisB: string;
 }
 
+// Decks are data: name, tagline and accent live in the JSON, so adding a
+// deck is a JSON edit. With a single deck the picker is skipped entirely.
 interface WYRCategory {
     id: string;
     name: string;
+    tagline: string;
+    color: string;
     adult: boolean;
     items: WYRQuestion[];
 }
@@ -44,8 +39,10 @@ interface WouldYouRatherGameProps {
 const ROUND_SIZE = 10;
 
 export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }) => {
-    const WYR_DATA = use(wyrDataPromise);
-    const [gameState, setGameState] = useState<'CATEGORY' | 'PLAYING'>('CATEGORY');
+    const WYR_DATA = use(wyrDataPromise) as { categories: WYRCategory[] };
+    const singleDeck = WYR_DATA.categories.length === 1;
+    const [gameState, setGameState] = useState<'CATEGORY' | 'PLAYING' | 'ROUND_END'>('CATEGORY');
+    const [majorityCount, setMajorityCount] = useState(0);
     const [activeCategory, setActiveCategory] = useState<WYRCategory | null>(null);
     const [questions, setQuestions] = useState<WYRQuestion[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -63,7 +60,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
     }, [currentQuestionIndex]);
 
     const startCategory = (categoryId: string) => {
-        const category = (WYR_DATA as { categories: WYRCategory[] }).categories.find(c => c.id === categoryId);
+        const category = WYR_DATA.categories.find(c => c.id === categoryId);
         if (!category) return;
 
         if (category.adult && !isAdultUnlocked()) {
@@ -93,13 +90,22 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
         setCurrentQuestionIndex(0);
         setHasVoted(false);
         setSelectedOption(null);
+        setMajorityCount(0);
         setGameState('PLAYING');
     };
+
+    // One deck → no picker: deal straight into play on first render.
+    React.useEffect(() => {
+        if (singleDeck && gameState === 'CATEGORY') startCategory(WYR_DATA.categories[0].id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [singleDeck]);
 
     const handleVote = (option: 'A' | 'B') => {
         if (hasVoted) return;
         setHasVoted(true);
         setSelectedOption(option);
+        const q = questions[currentQuestionIndex];
+        if (q && (option === 'A' ? q.stats.a : q.stats.b) > 50) setMajorityCount(n => n + 1);
     };
 
     React.useEffect(() => {
@@ -110,8 +116,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
 
     const nextQuestion = () => {
         if (currentQuestionIndex >= questions.length - 1) {
-            setGameState('CATEGORY');
-            setActiveCategory(null);
+            setGameState('ROUND_END');
             return;
         }
         setCurrentQuestionIndex(prev => prev + 1);
@@ -122,15 +127,9 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
     // ===== CATEGORY SELECT =====
     if (gameState === 'CATEGORY') {
         // Same design pattern as MLT/TOD: 3px inset left bar + 33% center
-        // bottom line. WYR has no AI custom-vibe deck. The single 'spicy'
-        // category is adult-gated and gets an 18+ pill.
-        const TILES: Record<string, string> = {
-            classic_chaos:  '#6366F1', // indigo-500
-            deep_revealing: '#A855F7', // purple-500
-            travel_living:  '#10B981', // emerald-500
-            pop_culture:    '#EC4899', // pink-500
-            spicy:          '#F43F5E', // rose-500
-        };
+        // bottom line. Only reached when the JSON holds 2+ decks; an adult
+        // deck gets an 18+ pill and the 0438 gate.
+        if (singleDeck) return null;
 
         return (
             <div className="h-full flex flex-col animate-fade-in">
@@ -149,13 +148,12 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                     />
                 )}
                 <p className="text-muted mb-4 text-sm text-center">
-                    Vote on 10 brutal hypotheticals. Get psychoanalysed.
+                    Ten dilemmas a round. Both options hurt.
                 </p>
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
-                        {WOULD_YOU_RATHER_CATEGORIES.map(cat => {
-                            const Icon = CATEGORY_ICONS[cat.id] ?? Sparkles;
-                            const color = TILES[cat.id] || '#94A3B8';
+                        {WYR_DATA.categories.map(cat => {
+                            const color = cat.color || '#94A3B8';
                             return (
                                 <button
                                     key={cat.id}
@@ -173,11 +171,11 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                                         />
                                         <div className="flex items-center gap-3">
                                             <span className="flex-shrink-0" style={{ color }}>
-                                                <Icon size={16} />
+                                                <Sparkles size={16} />
                                             </span>
                                             <div className="flex-1 min-w-0">
                                                 <h3 className="text-base font-bold text-ink leading-tight flex items-center gap-1.5">
-                                                    <span className="truncate">{cat.title}</span>
+                                                    <span className="truncate">{cat.name}</span>
                                                     {cat.adult && (
                                                         <span className="text-[9px] font-extrabold tracking-[0.1em] text-red-500 bg-red-500/15 px-1.5 py-[2px] rounded flex-shrink-0">
                                                             18+
@@ -203,11 +201,46 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
     if (!currentQuestion) {
         return <div className="text-ink text-center p-10">Loading…</div>;
     }
-    const analysis = selectedOption === 'A' ? currentQuestion.analysisA : currentQuestion.analysisB;
+    // With one deck there is no picker to go back to, so Back leaves the game.
     const goBackToCategory = () => {
+        if (singleDeck) { onExit(); return; }
         setGameState('CATEGORY');
         setActiveCategory(null);
     };
+
+    // ===== ROUND END =====
+    if (gameState === 'ROUND_END') {
+        const replay = () => activeCategory && startCategory(activeCategory.id);
+        return (
+            <div className="h-full flex flex-col animate-fade-in">
+                <ScreenHeader title="Would You Rather?" onBack={goBackToCategory} onHome={onExit} />
+                <div className="flex-1 flex flex-col items-center justify-center text-center px-6 gap-6">
+                    <div className="text-5xl">⚖️</div>
+                    <div>
+                        <h2 className="text-2xl font-black text-ink mb-2">That's {questions.length}.</h2>
+                        <p className="text-muted">
+                            You went with the crowd on <span className="text-ink font-bold">{majorityCount} of {questions.length}</span>.
+                        </p>
+                        <p className="text-xs text-muted mt-1">
+                            {majorityCount >= Math.ceil(questions.length * 0.7)
+                                ? 'Reliably mainstream.'
+                                : majorityCount <= Math.floor(questions.length * 0.3)
+                                    ? 'A proper contrarian.'
+                                    : 'Unpredictable. Nobody can call you.'}
+                        </p>
+                    </div>
+                    <div className="w-full max-w-[340px] grid gap-3">
+                        <Button onClick={replay} className="w-full py-4 text-lg font-bold flex items-center justify-center gap-2">
+                            <RotateCcw size={18} /> Ten more
+                        </Button>
+                        <button onClick={goBackToCategory} className="text-sm text-muted hover:text-ink py-2">
+                            {singleDeck ? 'Done' : 'Change deck'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full flex flex-col">
@@ -235,22 +268,22 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                         disabled={hasVoted}
                         className={`relative w-full p-6 md:p-8 rounded-2xl border-2 transition-all duration-300 text-left group flex items-center justify-between gap-4 ${hasVoted
                             ? selectedOption === 'A'
-                                ? 'bg-green-600/30 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
-                                : 'bg-red-600/30 border-red-500 opacity-60'
+                                ? 'bg-gold/15 border-gold shadow-[0_0_15px_rgba(234,179,8,0.25)]'
+                                : 'bg-surface border-divider opacity-60'
                             : 'bg-surface border-divider hover:bg-surface-alt hover:border-gold hover:shadow-lg active:scale-[0.98]'
                             }`}
                     >
                         <div className="relative z-10 flex-1">
-                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'A' ? 'text-green-500' : 'text-red-500') : 'text-gold'}`}>Option A</div>
+                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'A' ? 'text-gold' : 'text-muted') : 'text-gold'}`}>Option A</div>
                             <h3 className="text-xl md:text-3xl font-bold text-ink leading-tight">
                                 {currentQuestion.optionA}
                             </h3>
                         </div>
 
                         {hasVoted && (
-                            <div className={`shrink-0 w-16 h-16 rounded-full flex items-center justify-center border-4 shadow-lg animate-fade-in ${currentQuestion.stats.a >= 50
-                                ? 'bg-green-500 text-white border-green-400'
-                                : 'bg-red-500 text-white border-red-400'
+                            <div className={`shrink-0 w-16 h-16 rounded-full flex items-center justify-center border-4 shadow-lg animate-fade-in ${selectedOption === 'A'
+                                ? 'bg-gold text-slate-900 border-gold/60'
+                                : 'bg-surface-alt text-ink border-divider'
                                 }`}>
                                 <span className="text-xl font-black">{currentQuestion.stats.a}%</span>
                             </div>
@@ -270,22 +303,22 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                         disabled={hasVoted}
                         className={`relative w-full p-6 md:p-8 rounded-2xl border-2 transition-all duration-300 text-left group flex items-center justify-between gap-4 ${hasVoted
                             ? selectedOption === 'B'
-                                ? 'bg-green-600/30 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
-                                : 'bg-red-600/30 border-red-500 opacity-60'
+                                ? 'bg-gold/15 border-gold shadow-[0_0_15px_rgba(234,179,8,0.25)]'
+                                : 'bg-surface border-divider opacity-60'
                             : 'bg-surface border-divider hover:bg-surface-alt hover:border-accent hover:shadow-lg active:scale-[0.98]'
                             }`}
                     >
                         <div className="relative z-10 flex-1">
-                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'B' ? 'text-green-500' : 'text-red-500') : 'text-accent'}`}>Option B</div>
+                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'B' ? 'text-gold' : 'text-muted') : 'text-accent'}`}>Option B</div>
                             <h3 className="text-xl md:text-3xl font-bold text-ink leading-tight">
                                 {currentQuestion.optionB}
                             </h3>
                         </div>
 
                         {hasVoted && (
-                            <div className={`shrink-0 w-16 h-16 rounded-full flex items-center justify-center border-4 shadow-lg animate-fade-in ${currentQuestion.stats.b >= 50
-                                ? 'bg-green-500 text-white border-green-400'
-                                : 'bg-red-500 text-white border-red-400'
+                            <div className={`shrink-0 w-16 h-16 rounded-full flex items-center justify-center border-4 shadow-lg animate-fade-in ${selectedOption === 'B'
+                                ? 'bg-gold text-slate-900 border-gold/60'
+                                : 'bg-surface-alt text-ink border-divider'
                                 }`}>
                                 <span className="text-xl font-black">{currentQuestion.stats.b}%</span>
                             </div>
@@ -295,21 +328,18 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
 
                 {/* Analysis & Next Button Area */}
                 <div className={`mt-auto pb-10 transition-all duration-500 ease-out transform ${hasVoted ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
-                    <div className="bg-app-tint backdrop-blur-md rounded-xl p-4 border border-divider mb-6">
-                        <div className="flex items-start gap-3">
-                            <div className="p-2 bg-purple-500/20 rounded-lg shrink-0">
-                                <Brain className="w-5 h-5 text-vibe" />
-                            </div>
-                            <div>
-                                <h4 className="text-sm font-bold text-vibe uppercase tracking-wider mb-1">
-                                    Psychoanalysis
-                                </h4>
-                                <p className="text-ink-soft italic leading-relaxed">
-                                    {analysis}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    {selectedOption && (() => {
+                        const mine = selectedOption === 'A' ? currentQuestion.stats.a : currentQuestion.stats.b;
+                        return (
+                            <p className="text-center text-sm text-ink-soft mb-5">
+                                {mine > 50
+                                    ? <>You're with the <span className="font-bold text-ink">{mine}%</span>.</>
+                                    : mine === 50
+                                        ? <>Dead even. The room splits <span className="font-bold text-ink">50/50</span>.</>
+                                        : <>Bold. Only <span className="font-bold text-ink">{mine}%</span> pick that.</>}
+                            </p>
+                        );
+                    })()}
 
                     <Button
                         onClick={nextQuestion}
@@ -324,7 +354,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
 
                 <div className="mt-8 text-center shrink-0">
                     <p className="text-[10px] text-muted font-mono">
-                        * Percentages represent global player votes
+                        * Splits are PartySpark's estimates, not live votes
                     </p>
                 </div>
             </Card>
