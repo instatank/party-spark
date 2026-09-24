@@ -6,7 +6,7 @@ import data from '../src/data/would_you_rather.json';
 // The percentages are authored ESTIMATES (the card footnote says so) — these
 // tests pin their shape, not their truth.
 
-type Card = { id: string; optionA: string; optionB: string; stats: { a: number; b: number } };
+type Card = { id: string; optionA: string; optionB: string; stats: { a: number; b: number }; hooks: string[] };
 type Deck = { id: string; name: string; tagline: string; icon?: string; color: string; adult: boolean; items: Card[] };
 const decks = (data as { categories: Deck[] }).categories;
 const cards = decks.flatMap(d => d.items);
@@ -67,6 +67,18 @@ describe('Would You Rather deck', () => {
                 expect(o, c.id).not.toMatch(/[.?!]$/);
                 expect(o, c.id).not.toMatch(/^would you rather/i);
             }
+        }
+    });
+
+    // THE FUN BAR (founder, 2026-09-24): a card that is merely a real choice is
+    // not enough — it has to be edgy, funny, exciting or revealing. Each card
+    // names the bar it clears. The label is an authoring judgement, not a
+    // measurement: this test can only stop a card shipping with NO claim.
+    it('every card names at least one bar it clears: edgy, funny, exciting or revealing', () => {
+        const allowed = new Set(['edgy', 'funny', 'exciting', 'revealing']);
+        for (const c of cards) {
+            expect(Array.isArray(c.hooks) && c.hooks.length > 0, `${c.id} has no hook`).toBe(true);
+            for (const h of c.hooks) expect(allowed.has(h), `${c.id}: unknown hook "${h}"`).toBe(true);
         }
     });
 
