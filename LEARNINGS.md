@@ -37,6 +37,7 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 
 ### 2026-08-16 — Rebuilt a browser-drive script from scratch and got it wrong three times, while a working one sat in `scripts/`
 - What happened: to verify the new Spin the Bottle landed where it pointed, I wrote a fresh headless-browser script. It failed three times in a row: it imported Playwright (this repo uses puppeteer), it clicked game titles as `button` elements (Home cards aren't buttons — the title is `.game-card h3`), and it waited on fixed `setTimeout`s for the splash instead of the screen actually rendering. Every one of those three problems was already solved, correctly, in `scripts/drive-games.mjs` — the repo's own regression driver, ~20 lines I could have copied.
+- **Recurred 2026-09-23:** wrote the Would You Rather drive importing Playwright first, again; it failed on the missing package before `drive-games.mjs` was opened and copied. The card did not fire at the moment it was needed — worth quizzing.
 - Concept: before writing a new tool, check whether the repo already contains one that solved the same problem — the existing one encodes fixes for environment quirks you haven't hit yet and will otherwise rediscover one failure at a time. This is the same "reuse the shared module" rule CLAUDE.md applies to game code (useCountdown, audio.ts, EndScreen), applied to the dev-tooling layer, which is exactly where it's easiest to forget because the script feels throwaway.
 - In my words: (pending — answer at next wrap)
 - Where else: (pending — answer at next wrap)
@@ -45,6 +46,7 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 
 ### 2026-08-16 — The automated check said the arrow was correct while the screenshot showed it pointing past the name
 - **Predicted again 2026-09-05:** every test passed on Ballpark's pack picker while the tiles were invisible in light mode. Third session running where the only defect that shipped past the tests was caught by looking at a screenshot.
+- **And again 2026-09-23:** Would You Rather's drive passed, but the round-end screenshot read "went with the crowd on 7 of 10" on a run that included a 50/50 card — a dead-even split was being counted as siding with the majority. Only the screenshot showed it.
 - What happened: I wrote a geometric assertion for the bottle spinner — read the rotation off the DOM, compute the angle, compare it with the highlighted seat's position. It reported `MATCH=true` on every spin. Then I looked at the screenshot: the sight-line ray ran from the bottle out to the rim, which put its arrowhead *past* the name chip rather than at it. Numerically dead-on; visually it read as pointing at whatever was behind the winner.
 - Concept: an assertion proves the property you thought to encode, not that the interface communicates. Geometry, contrast, spacing and overlap can each be provably "right" and still read wrong to a human, because what the user reads is the relationship between elements, not any single measured value. On anything visual, a passing check licenses you to *look* — it doesn't replace looking. Note: this concept paid out on 2026-08-23 — The Tell's drive script passed every assertion with zero console errors, and the screenshot review is the only thing that caught a decorative element rendering as a grey disc. The card predicted the failure class; that's the ladder working.
 - In my words: (pending — answer at next wrap)
@@ -203,4 +205,20 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - In my words: (pending — answer at next wrap)
 - Where else: (pending — answer at next wrap)
 - Quiz question: The same note has now predicted its own recurrence three sessions running and been right each time. What does that say about the difference between recording a lesson and removing a trap — and what is the one concrete thing that would end it?
+- Internalized: no
+
+### 2026-09-23 — The game told players its percentages were "global player votes". No votes were ever collected.
+- What happened: Would You Rather showed a split under every card ("62% pick this") with the footnote "Percentages represent global player votes". Nothing in the app records a vote anywhere; the numbers were typed into the JSON by whoever wrote the cards. The line had shipped in code for months, and the founder's own question ("I don't know where that comes from") is what surfaced it.
+- Concept: every number on screen has a source, and the label must name the real one. A figure presented as measured when it was estimated is a false claim to the user, even if the estimate is good — and no build, test or typecheck can catch it, because the code is working exactly as written. The fix was not to delete the numbers but to relabel them honestly ("PartySpark's estimates, not live votes"); real counts are a separate, later decision.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: A card shows "78% of players chose this". What do you check before you let that sentence ship?
+- Internalized: no
+
+### 2026-09-23 — Merged a PR seconds after opening it, before its CI had run
+- What happened: asked to "push to main" (which is branch-protected, so it means PR + merge), I opened #117 and merged it immediately. GitHub allowed it because CI had not reported yet, so no required check was failing. The change had passed build + tests locally, and CI on `main` went green afterwards — but for about a minute production was deploying code CI had never looked at. On #118 the next day I waited for `build-and-test` to pass on the PR before merging.
+- Concept: a check that has not run yet is not a check that passed. "Nothing is red" and "everything is green" look the same in a merge button that only blocks on failures. Local green is necessary but not sufficient — CI runs on a clean machine from the lockfile, which is exactly where "works on mine" breaks.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: The merge button is enabled and there are no red checks on the PR. Why is that not the same as "CI passed", and what do you look for instead?
 - Internalized: no

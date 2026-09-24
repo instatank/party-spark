@@ -1,5 +1,5 @@
 {
-  "_note": "stats are PartySpark's authored estimates of how a room splits, NOT recorded votes. The UI must say so.",
+  "_note": "stats are PartySpark's authored estimates of how a room splits, NOT recorded votes. The UI must say so. hooks name the bar each card clears (edgy / funny / exciting / revealing); every card must clear at least one.",
   "categories": [
     {
       "id": "general",
@@ -16,7 +16,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny",
+            "edgy"
+          ]
         },
         {
           "id": "g_002",
@@ -26,7 +30,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_003",
@@ -36,7 +44,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_004",
@@ -46,7 +58,11 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "funny",
+            "exciting"
+          ]
         },
         {
           "id": "g_005",
@@ -56,17 +72,24 @@
           "stats": {
             "a": 70,
             "b": 30
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_006",
           "tag": "social",
-          "optionA": "Never be able to remember anyone's name",
-          "optionB": "Never be able to remember anyone's face",
+          "optionA": "Accidentally call your boss 'Mum', once a week",
+          "optionB": "Wave back at someone who wasn't waving at you, once a day",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_007",
@@ -76,7 +99,10 @@
           "stats": {
             "a": 30,
             "b": 70
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_008",
@@ -86,7 +112,10 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_009",
@@ -96,7 +125,11 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_010",
@@ -106,7 +139,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_011",
@@ -116,7 +153,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_012",
@@ -126,7 +167,11 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "funny",
+            "edgy"
+          ]
         },
         {
           "id": "g_013",
@@ -136,7 +181,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_014",
@@ -146,7 +194,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_015",
@@ -156,7 +208,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_016",
@@ -166,7 +222,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_017",
@@ -176,7 +235,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_018",
@@ -186,7 +249,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_019",
@@ -196,7 +263,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_020",
@@ -206,77 +277,104 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_021",
-          "tag": "life",
-          "optionA": "Get ten extra minutes every morning",
-          "optionB": "Fall asleep the moment your head hits the pillow, every night",
-          "stats": {
-            "a": 35,
-            "b": 65
-          }
-        },
-        {
-          "id": "g_022",
-          "tag": "life",
-          "optionA": "Never wait in a queue again",
-          "optionB": "Never get stuck in traffic again",
-          "stats": {
-            "a": 35,
-            "b": 65
-          }
-        },
-        {
-          "id": "g_023",
-          "tag": "life",
-          "optionA": "Only ever shower in cold water",
-          "optionB": "Only ever drink warm water, even on the hottest day",
+          "tag": "social",
+          "optionA": "Fall asleep at every wedding you attend",
+          "optionB": "Cry at every advert you watch",
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
+        },
+        {
+          "id": "g_022",
+          "tag": "social",
+          "optionA": "Be stuck in traffic for an hour next to your ex's car",
+          "optionB": "Be stuck in a queue for an hour behind your old school bully",
+          "stats": {
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
+        },
+        {
+          "id": "g_023",
+          "tag": "weird",
+          "optionA": "Have everything you eat taste faintly of coriander",
+          "optionB": "Have every room you enter smell faintly of wet dog",
+          "stats": {
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_024",
-          "tag": "life",
-          "optionA": "Have a phone that's always at 100% but has a cracked screen forever",
-          "optionB": "Have a flawless phone that dies at 6pm every day",
+          "tag": "phone",
+          "optionA": "Accidentally go live on Instagram singing in the car",
+          "optionB": "Accidentally go live crying at a sad film",
           "stats": {
-            "a": 60,
-            "b": 40
-          }
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_025",
           "tag": "life",
-          "optionA": "Have a personal chef, but eat whatever they decide",
-          "optionB": "Have a personal driver, but they choose all the music",
+          "optionA": "Have a stylist who's brutally honest about every outfit",
+          "optionB": "Have a chef who comments on every bite you take",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_026",
           "tag": "life",
-          "optionA": "Never do laundry again",
-          "optionB": "Never wash dishes again",
+          "optionA": "Always be the one who gets food poisoning on holiday",
+          "optionB": "Always be the one whose luggage gets lost",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_027",
-          "tag": "life",
-          "optionA": "Lose your phone for a week",
-          "optionB": "Lose your wallet, cards and ID for a week",
+          "tag": "family",
+          "optionA": "Send a voice note of you singing to the family group",
+          "optionB": "Send a screenshot of the family group to the family group",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_028",
@@ -286,27 +384,39 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_029",
-          "tag": "life",
-          "optionA": "Always arrive twenty minutes early",
-          "optionB": "Always arrive ten minutes late",
+          "tag": "social",
+          "optionA": "Laugh uncontrollably at every funeral",
+          "optionB": "Cry uncontrollably at every birthday party",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_030",
-          "tag": "life",
-          "optionA": "Plan every family trip, forever",
-          "optionB": "Never get a say in where the family goes",
+          "tag": "family",
+          "optionA": "Plan every family trip and get blamed for everything",
+          "optionB": "Never plan, and have to be grateful for whatever happens",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_031",
@@ -316,67 +426,92 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_032",
-          "tag": "life",
-          "optionA": "Always get a parking spot right outside",
-          "optionB": "Always order the best thing on any menu",
+          "tag": "powers",
+          "optionA": "Always know when someone's about to ask you for money",
+          "optionB": "Always know when someone's about to cancel on you",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_033",
-          "tag": "life",
-          "optionA": "Go a month without internet",
-          "optionB": "Go a month without hot water",
+          "tag": "phone",
+          "optionA": "Go a month with no phone, and nobody is told why",
+          "optionB": "Go a month posting a selfie every single day",
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_034",
           "tag": "life",
-          "optionA": "Live somewhere beautiful with terrible internet",
-          "optionB": "Live somewhere ugly where everything works perfectly",
-          "stats": {
-            "a": 45,
-            "b": 55
-          }
-        },
-        {
-          "id": "g_035",
-          "tag": "life",
-          "optionA": "Fly free forever, but always in the middle seat",
-          "optionB": "Pay for every flight, but always fly business",
+          "optionA": "Have your old headteacher as your next-door neighbour",
+          "optionB": "Have your boss as your next-door neighbour",
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
+        },
+        {
+          "id": "g_035",
+          "tag": "family",
+          "optionA": "Fly free forever, with your mum in the seat next to you",
+          "optionB": "Pay for every flight, but always fly alone",
+          "stats": {
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_036",
           "tag": "powers",
-          "optionA": "Teleport, but only to places you've already been",
-          "optionB": "Teleport anywhere, but you can't leave for 24 hours",
+          "optionA": "Teleport anywhere, but arrive sweaty and out of breath",
+          "optionB": "Fly anywhere, but only while singing loudly",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_037",
-          "tag": "powers",
-          "optionA": "Get one extra hour every day that only you experience",
-          "optionB": "Need only two hours of sleep a night",
+          "tag": "truth",
+          "optionA": "Find out who has a secret crush on you",
+          "optionB": "Find out who secretly can't stand you",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_038",
@@ -386,27 +521,38 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "exciting"
+          ]
         },
         {
           "id": "g_039",
           "tag": "powers",
-          "optionA": "Speak every language fluently",
-          "optionB": "Play every instrument perfectly",
+          "optionA": "Understand every language, including the one your parents gossip in",
+          "optionB": "Play any song on any instrument after hearing it once",
           "stats": {
-            "a": 70,
-            "b": 30
-          }
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "funny",
+            "exciting"
+          ]
         },
         {
           "id": "g_040",
           "tag": "powers",
-          "optionA": "Master any skill instantly, but forget it after 24 hours",
-          "optionB": "Learn anything twice as fast, forever",
+          "optionA": "Perfectly imitate anyone's voice",
+          "optionB": "Perfectly forge anyone's signature",
           "stats": {
-            "a": 35,
-            "b": 65
-          }
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "edgy",
+            "exciting"
+          ]
         },
         {
           "id": "g_041",
@@ -416,17 +562,24 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_042",
-          "tag": "powers",
-          "optionA": "Never feel hungry again",
-          "optionB": "Never feel tired again",
+          "tag": "life",
+          "optionA": "Never need sleep, but always look exhausted",
+          "optionB": "Sleep twelve hours a night, but always look incredible",
           "stats": {
-            "a": 30,
-            "b": 70
-          }
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_043",
@@ -436,7 +589,11 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_044",
@@ -446,7 +603,11 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "funny",
+            "exciting"
+          ]
         },
         {
           "id": "g_045",
@@ -456,7 +617,11 @@
           "stats": {
             "a": 65,
             "b": 35
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_046",
@@ -466,7 +631,10 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_047",
@@ -476,7 +644,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "funny",
+            "edgy"
+          ]
         },
         {
           "id": "g_048",
@@ -486,17 +658,24 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_049",
           "tag": "money",
-          "optionA": "Get ten years of your salary as a lump sum, today",
-          "optionB": "Get a 50% raise that lasts your whole career",
+          "optionA": "Get promoted for taking credit for a friend's work",
+          "optionB": "Watch a friend get promoted for taking credit for yours",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 30,
+            "b": 70
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_050",
@@ -506,37 +685,52 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_051",
           "tag": "money",
-          "optionA": "Work a four-day week, forever",
-          "optionB": "Work six days a week, but take three months off every year",
+          "optionA": "Have your mum as your manager",
+          "optionB": "Have your ex as your manager",
           "stats": {
-            "a": 60,
-            "b": 40
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_052",
           "tag": "money",
-          "optionA": "Love your boss but hate your job",
-          "optionB": "Love your job but hate your boss",
+          "optionA": "Get fired in front of the whole office",
+          "optionB": "Quietly find out everyone was relieved when you left",
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_053",
           "tag": "money",
-          "optionA": "Retire at 45, comfortable but careful",
-          "optionB": "Work until 65 and be genuinely rich",
+          "optionA": "Retire at 40, in a village with no Wi-Fi",
+          "optionB": "Work until 70, in a city you love",
           "stats": {
-            "a": 65,
-            "b": 35
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_054",
@@ -546,7 +740,10 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_055",
@@ -556,7 +753,10 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_056",
@@ -566,17 +766,25 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_057",
           "tag": "money",
-          "optionA": "Double your salary at a job that bores you",
-          "optionB": "Keep your salary at a job you love",
+          "optionA": "Earn a fortune doing something you'd be embarrassed to explain at dinner",
+          "optionB": "Earn very little doing something everyone admires",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_058",
@@ -586,17 +794,25 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_059",
           "tag": "money",
-          "optionA": "Have a job with a view of the sea",
-          "optionB": "Have a job five minutes from home",
+          "optionA": "Be secretly the best at your job, and nobody notices",
+          "optionB": "Be secretly the worst at your job, and nobody notices",
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_060",
@@ -606,7 +822,11 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_061",
@@ -616,7 +836,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_062",
@@ -626,7 +850,11 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_063",
@@ -636,7 +864,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_064",
@@ -646,7 +877,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_065",
@@ -656,7 +891,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_066",
@@ -666,7 +905,10 @@
           "stats": {
             "a": 65,
             "b": 35
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_067",
@@ -676,7 +918,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_068",
@@ -686,7 +932,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_069",
@@ -696,7 +945,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_070",
@@ -706,7 +958,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_071",
@@ -716,87 +972,118 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_072",
-          "tag": "truth",
-          "optionA": "Rewatch your favourite show for the first time again",
-          "optionB": "Get one brand-new season of a show that ended",
+          "tag": "social",
+          "optionA": "Have your most embarrassing moment become a meme",
+          "optionB": "Have it become the story told at every family function",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_073",
           "tag": "food",
-          "optionA": "Give up tea and coffee forever",
-          "optionB": "Give up sugar forever",
+          "optionA": "Give up chai forever",
+          "optionB": "Drink every cup of chai every aunty ever offers you",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 35,
+            "b": 65
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_074",
           "tag": "food",
-          "optionA": "Eat only home-cooked food forever",
-          "optionB": "Never eat home-cooked food again",
+          "optionA": "Tell your mum, honestly, that her cooking is bad",
+          "optionB": "Eat it happily every day for the rest of your life",
           "stats": {
-            "a": 60,
-            "b": 40
-          }
+            "a": 25,
+            "b": 75
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_075",
           "tag": "food",
-          "optionA": "Have every meal be slightly too salty",
-          "optionB": "Have every meal be slightly cold",
+          "optionA": "Always find a hair in your food",
+          "optionB": "Always find out the calorie count right after you've eaten",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_076",
           "tag": "food",
-          "optionA": "Eat the same breakfast every day for life",
-          "optionB": "Never eat the same breakfast twice",
+          "optionA": "Only eat what you can cook yourself, for a year",
+          "optionB": "Only eat what your friends cook for you, for a year",
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_077",
           "tag": "food",
-          "optionA": "Give up fried food forever",
-          "optionB": "Give up dessert forever",
+          "optionA": "Give up biryani forever",
+          "optionB": "Give up pizza forever",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "exciting"
+          ]
         },
         {
           "id": "g_078",
           "tag": "food",
-          "optionA": "Never eat anything spicy again",
-          "optionB": "Have everything you eat be extremely spicy",
+          "optionA": "Eat whatever the person on your left orders, every time",
+          "optionB": "Let the whole table order for you, every time",
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny",
+            "exciting"
+          ]
         },
         {
           "id": "g_079",
           "tag": "food",
-          "optionA": "Always cook for everyone",
-          "optionB": "Always wash up after everyone",
+          "optionA": "Have your mum review every meal you cook, out loud",
+          "optionB": "Have a food critic review every meal you cook, in print",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_080",
@@ -806,7 +1093,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_081",
@@ -816,27 +1107,37 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_082",
           "tag": "phone",
-          "optionA": "Reply to every message within one minute",
-          "optionB": "Check your messages only once a day",
+          "optionA": "Reply 'ok' to a long, heartfelt message by accident",
+          "optionB": "Send a heart emoji to your manager by accident",
           "stats": {
-            "a": 30,
-            "b": 70
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_083",
           "tag": "phone",
-          "optionA": "Give up social media for a year",
-          "optionB": "Give up food delivery and online shopping for a year",
+          "optionA": "Have your first-ever social media post pinned to your profile forever",
+          "optionB": "Have your most-liked post deleted forever",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 60,
+            "b": 40
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_084",
@@ -846,17 +1147,24 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_085",
           "tag": "phone",
-          "optionA": "Only communicate by voice note",
-          "optionB": "Only communicate by text, no calls or voice notes",
+          "optionA": "Have everyone you've ever left on 'seen' get notified today",
+          "optionB": "Have everyone who's ever left you on 'seen' get notified today",
           "stats": {
-            "a": 30,
-            "b": 70
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_086",
@@ -866,7 +1174,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_087",
@@ -876,7 +1188,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_088",
@@ -886,7 +1202,10 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_089",
@@ -896,7 +1215,10 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_090",
@@ -906,27 +1228,39 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_091",
-          "tag": "people",
-          "optionA": "Be the oldest sibling",
-          "optionB": "Be the youngest sibling",
+          "tag": "family",
+          "optionA": "Be compared to your cousin at every family function",
+          "optionB": "Be the cousin everyone else gets compared to",
           "stats": {
-            "a": 35,
-            "b": 65
-          }
+            "a": 30,
+            "b": 70
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_092",
           "tag": "people",
-          "optionA": "Host every party your friends ever have",
-          "optionB": "Never host, but always be the designated driver",
+          "optionA": "Be the friend who always ends up holding everyone's bags",
+          "optionB": "Be the friend who always pays and never gets paid back",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 60,
+            "b": 40
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_093",
@@ -936,17 +1270,24 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_094",
           "tag": "people",
-          "optionA": "Be known as the friend who's always late",
-          "optionB": "Be known as the friend who forgets birthdays",
+          "optionA": "Be known as the friend who overshares",
+          "optionB": "Be known as the friend who never tells anyone anything",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_095",
@@ -956,7 +1297,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny",
+            "exciting"
+          ]
         },
         {
           "id": "g_096",
@@ -966,7 +1311,10 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_097",
@@ -976,7 +1324,11 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "funny",
+            "exciting"
+          ]
         },
         {
           "id": "g_098",
@@ -986,7 +1338,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_099",
@@ -996,17 +1351,24 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_100",
           "tag": "weird",
-          "optionA": "Only listen to the same three songs for the rest of your life",
-          "optionB": "Only ever hear songs you've never heard before",
+          "optionA": "Have a theme song play whenever you walk in, chosen by your enemy",
+          "optionB": "Have a theme song play whenever you walk in, chosen by your mum",
           "stats": {
-            "a": 30,
-            "b": 70
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_101",
@@ -1016,7 +1378,11 @@
           "stats": {
             "a": 30,
             "b": 70
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_102",
@@ -1026,7 +1392,10 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_103",
@@ -1036,7 +1405,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_104",
@@ -1046,7 +1418,10 @@
           "stats": {
             "a": 30,
             "b": 70
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_105",
@@ -1056,7 +1431,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_106",
@@ -1066,37 +1444,51 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "g_107",
-          "tag": "family",
-          "optionA": "Control the music on every road trip, but never the route",
-          "optionB": "Control the route on every road trip, but never the music",
+          "tag": "people",
+          "optionA": "Take a road trip with the friend who never stops talking",
+          "optionB": "Take a road trip with the friend who only plays one artist",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_108",
-          "tag": "family",
-          "optionA": "Cook one dish perfectly",
-          "optionB": "Cook everything decently",
+          "tag": "truth",
+          "optionA": "Be secretly bad at something everyone thinks you're great at",
+          "optionB": "Be secretly great at something everyone thinks you're bad at",
           "stats": {
-            "a": 30,
-            "b": 70
-          }
+            "a": 35,
+            "b": 65
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_109",
           "tag": "family",
-          "optionA": "Have a house full of people every weekend",
-          "optionB": "Have the house to yourself every weekend",
+          "optionA": "Have relatives drop in unannounced every Sunday",
+          "optionB": "Have no relatives visit, ever",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_110",
@@ -1106,17 +1498,23 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_111",
-          "tag": "family",
-          "optionA": "Always remember everyone's birthday",
-          "optionB": "Always give the perfect gift, but only when reminded",
+          "tag": "people",
+          "optionA": "Have your birthday forgotten by everyone",
+          "optionB": "Have a surprise party thrown for you, every single year",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 35,
+            "b": 65
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_112",
@@ -1126,7 +1524,10 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_113",
@@ -1136,7 +1537,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "funny",
+            "exciting"
+          ]
         },
         {
           "id": "g_114",
@@ -1146,7 +1551,10 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_115",
@@ -1156,17 +1564,25 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_116",
           "tag": "family",
-          "optionA": "Relive your favourite family holiday exactly as it was",
-          "optionB": "Take a brand-new family holiday anywhere, all paid for",
+          "optionA": "Go on holiday with your parents, who plan every minute",
+          "optionB": "Go on holiday with your friends, and nobody plans anything",
           "stats": {
-            "a": 35,
-            "b": 65
-          }
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "funny",
+            "exciting"
+          ]
         },
         {
           "id": "g_117",
@@ -1176,17 +1592,24 @@
           "stats": {
             "a": 65,
             "b": 35
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_118",
           "tag": "family",
-          "optionA": "Always win at cards against your family",
-          "optionB": "Always get the last piece of dessert",
+          "optionA": "Always win at cards, and everyone suspects you cheat",
+          "optionB": "Always lose at cards, and everyone suspects you're doing it on purpose",
           "stats": {
-            "a": 40,
-            "b": 60
-          }
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_119",
@@ -1196,57 +1619,75 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_120",
-          "tag": "life",
-          "optionA": "Have a home that cleans itself",
-          "optionB": "Have a car that drives itself",
-          "stats": {
-            "a": 60,
-            "b": 40
-          }
-        },
-        {
-          "id": "g_121",
-          "tag": "life",
-          "optionA": "Wake up at 5am feeling amazing",
-          "optionB": "Wake up at 10am feeling average",
-          "stats": {
-            "a": 45,
-            "b": 55
-          }
-        },
-        {
-          "id": "g_122",
-          "tag": "life",
-          "optionA": "Have a bathroom you never have to share",
-          "optionB": "Have a kitchen you never have to clean",
+          "tag": "family",
+          "optionA": "Have a robot that does all your chores, but reports to your mum",
+          "optionB": "Do every chore yourself, with nobody checking",
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
+        },
+        {
+          "id": "g_121",
+          "tag": "weird",
+          "optionA": "Wake up with a new random accent every day",
+          "optionB": "Wake up with a new random hairstyle every day",
+          "stats": {
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "funny"
+          ]
+        },
+        {
+          "id": "g_122",
+          "tag": "family",
+          "optionA": "Share one bathroom with eight relatives, forever",
+          "optionB": "Have your shower singing broadcast to the whole building",
+          "stats": {
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_123",
           "tag": "life",
-          "optionA": "Sit next to a non-stop talker on a 12-hour flight",
-          "optionB": "Sit next to a loud snorer on a 12-hour flight",
+          "optionA": "Sit next to someone eating fish on a 12-hour flight",
+          "optionB": "Sit next to someone with their shoes off on a 12-hour flight",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_124",
-          "tag": "life",
-          "optionA": "Walk everywhere within three kilometres",
-          "optionB": "Never walk more than 200 metres again",
+          "tag": "weird",
+          "optionA": "Arrive everywhere on a horse, like a groom",
+          "optionB": "Arrive everywhere with a small marching band behind you",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_125",
@@ -1256,87 +1697,119 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_126",
-          "tag": "life",
-          "optionA": "Only ever wear one colour",
-          "optionB": "Never wear the same outfit twice",
+          "tag": "weird",
+          "optionA": "Wear your school uniform to work for a month",
+          "optionB": "Wear a full wedding outfit to work for a month",
           "stats": {
-            "a": 60,
-            "b": 40
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_127",
-          "tag": "life",
-          "optionA": "Live without air conditioning",
-          "optionB": "Live without a fridge",
+          "tag": "social",
+          "optionA": "Say yes to every invitation for a month",
+          "optionB": "Say no to every invitation for a month",
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_128",
-          "tag": "life",
-          "optionA": "Have a month packed with plans you love",
-          "optionB": "Have a month with a completely empty calendar",
+          "tag": "social",
+          "optionA": "Relive your most embarrassing moment once a year",
+          "optionB": "Forget it completely, while everyone else remembers it forever",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_129",
-          "tag": "life",
-          "optionA": "Get a free holiday every year, but someone else picks where",
-          "optionB": "Pay for your own and go wherever you like",
+          "tag": "family",
+          "optionA": "Win a free holiday, but take your most annoying relative",
+          "optionB": "Pay full price and go alone",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_130",
           "tag": "powers",
-          "optionA": "Instantly identify any song you hear",
-          "optionB": "Instantly identify any plant, bird or star you see",
+          "optionA": "Always know when someone's talking about you",
+          "optionB": "Always hear what's being said about you, but never who said it",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "edgy",
+            "exciting"
+          ]
         },
         {
           "id": "g_131",
-          "tag": "powers",
-          "optionA": "Remember everything you've ever read",
-          "optionB": "Remember every face and conversation you've ever had",
+          "tag": "truth",
+          "optionA": "Remember every mistake anyone's ever made, perfectly",
+          "optionB": "Forget every mistake anyone's ever made, including yours",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_132",
           "tag": "powers",
-          "optionA": "Be fluent in sign language",
-          "optionB": "Be able to read lips perfectly",
+          "optionA": "Read lips from across any room",
+          "optionB": "Hear any whisper anywhere in the building",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "edgy",
+            "exciting"
+          ]
         },
         {
           "id": "g_133",
-          "tag": "powers",
-          "optionA": "Spend one day in any year of the past",
-          "optionB": "Spend one day in the year 2100",
+          "tag": "weird",
+          "optionA": "Watch your parents' first date, invisible",
+          "optionB": "Watch the day you were born, invisible",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 70,
+            "b": 30
+          },
+          "hooks": [
+            "funny",
+            "edgy"
+          ]
         },
         {
           "id": "g_134",
@@ -1346,7 +1819,11 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_135",
@@ -1356,7 +1833,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "g_136",
@@ -1366,7 +1847,10 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_137",
@@ -1376,7 +1860,10 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "exciting"
+          ]
         },
         {
           "id": "g_138",
@@ -1386,27 +1873,37 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_139",
-          "tag": "money",
-          "optionA": "Learn one new skill every year, but forget an old one",
-          "optionB": "Keep every skill you have, but never learn a new one",
+          "tag": "social",
+          "optionA": "Be terrible at small talk",
+          "optionB": "Take 45 minutes to leave every party",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "g_140",
-          "tag": "money",
-          "optionA": "Be a genius with numbers",
-          "optionB": "Be a genius with people",
+          "tag": "truth",
+          "optionA": "Be a genius who's socially awkward",
+          "optionB": "Be average, but everyone's favourite person in the room",
           "stats": {
             "a": 30,
             "b": 70
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_141",
@@ -1416,7 +1913,10 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_142",
@@ -1426,7 +1926,10 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_143",
@@ -1436,7 +1939,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "g_144",
@@ -1446,7 +1953,10 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_145",
@@ -1456,57 +1966,76 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "g_146",
           "tag": "food",
-          "optionA": "Eat only street food for a month",
-          "optionB": "Eat only five-star hotel food for a month",
+          "optionA": "Crash a stranger's wedding buffet every weekend",
+          "optionB": "Never eat at a wedding buffet again",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "funny",
+            "edgy"
+          ]
         },
         {
           "id": "g_147",
           "tag": "food",
-          "optionA": "Eat only breakfast food, for every meal",
-          "optionB": "Never eat breakfast food again",
+          "optionA": "Have your mum pack your lunch forever, with a note inside",
+          "optionB": "Never eat home food at work again",
           "stats": {
-            "a": 60,
-            "b": 40
-          }
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_148",
           "tag": "food",
-          "optionA": "Have unlimited mangoes forever",
-          "optionB": "Have unlimited chocolate forever",
+          "optionA": "Eat everything with a spoon, including pizza and roti",
+          "optionB": "Eat everything with your hands, including soup",
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_149",
-          "tag": "food",
-          "optionA": "Own your grandmother's recipe for every dish you love",
-          "optionB": "Have a top chef cook for you once a month",
+          "tag": "family",
+          "optionA": "Inherit your grandmother's recipe book",
+          "optionB": "Inherit your grandmother's gossip diary",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 30,
+            "b": 70
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "g_150",
           "tag": "phone",
-          "optionA": "Delete every app except five",
-          "optionB": "Keep every app, but get 30 minutes of screen time a day",
+          "optionA": "Have your autocorrect learn only from your mum's messages",
+          "optionB": "Have your autocorrect learn only from your group chat",
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         }
       ],
       "icon": "users"
@@ -1527,7 +2056,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "c_002",
@@ -1537,7 +2070,11 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "c_003",
@@ -1547,7 +2084,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
         },
         {
           "id": "c_004",
@@ -1557,7 +2098,10 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_005",
@@ -1567,27 +2111,38 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_006",
-          "tag": "plans",
-          "optionA": "Have your partner plan every holiday",
-          "optionB": "Plan every holiday yourself",
+          "tag": "trust",
+          "optionA": "Let your partner see your Google Maps history for a year",
+          "optionB": "Let them see your music history for a year",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "c_007",
           "tag": "plans",
-          "optionA": "Get a surprise date every month, planned by them",
-          "optionB": "Plan every date together",
+          "optionA": "Recreate your first date exactly, awkward parts included",
+          "optionB": "Go on a date pretending to be strangers meeting for the first time",
           "stats": {
-            "a": 60,
-            "b": 40
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "funny",
+            "exciting"
+          ]
         },
         {
           "id": "c_008",
@@ -1597,7 +2152,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "c_009",
@@ -1607,17 +2166,24 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "c_010",
-          "tag": "habits",
-          "optionA": "Be with someone who's always early",
-          "optionB": "Be with someone who's always late",
+          "tag": "people",
+          "optionA": "Have your partner's mum text you every morning",
+          "optionB": "Have your mum text your partner every morning",
           "stats": {
-            "a": 70,
-            "b": 30
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_011",
@@ -1627,17 +2193,24 @@
           "stats": {
             "a": 70,
             "b": 30
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "c_012",
           "tag": "love",
-          "optionA": "Get one long love letter from them every year",
-          "optionB": "Get one tiny surprise from them every week",
+          "optionA": "Get a love song written about you that's genuinely terrible",
+          "optionB": "Get a brilliant love poem read out at a family dinner",
           "stats": {
-            "a": 40,
-            "b": 60
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_013",
@@ -1647,7 +2220,10 @@
           "stats": {
             "a": 65,
             "b": 35
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_014",
@@ -1657,7 +2233,10 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_015",
@@ -1667,17 +2246,24 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "c_016",
-          "tag": "plans",
-          "optionA": "Travel the world together on a tight budget",
-          "optionB": "Stay home together, comfortable",
+          "tag": "people",
+          "optionA": "Go on holiday with your partner's parents",
+          "optionB": "Have your parents join your honeymoon",
           "stats": {
-            "a": 70,
-            "b": 30
-          }
+            "a": 75,
+            "b": 25
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_017",
@@ -1687,17 +2273,25 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "c_018",
-          "tag": "home",
-          "optionA": "Work in the same office as your partner",
-          "optionB": "Barely see them on weekdays",
+          "tag": "trust",
+          "optionA": "Find out your partner has a 'work spouse'",
+          "optionB": "Find out they have a secret crush at the gym",
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "c_019",
@@ -1707,7 +2301,10 @@
           "stats": {
             "a": 65,
             "b": 35
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_020",
@@ -1717,27 +2314,37 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_021",
-          "tag": "home",
-          "optionA": "Have a partner who cooks brilliantly and leaves a disaster",
-          "optionB": "Have one who can't cook but cleans everything",
+          "tag": "habits",
+          "optionA": "Be with someone perfect who chews loudly",
+          "optionB": "Be with someone perfect who replies 'k'",
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_022",
-          "tag": "talk",
-          "optionA": "Only text each other for a week, no calls",
-          "optionB": "Only talk face to face for a week, no phones",
+          "tag": "habits",
+          "optionA": "Be with someone who sends you forty reels a day",
+          "optionB": "Be with someone who never sends you anything",
           "stats": {
-            "a": 30,
-            "b": 70
-          }
+            "a": 60,
+            "b": 40
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "c_023",
@@ -1747,17 +2354,24 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_024",
           "tag": "love",
-          "optionA": "Have your partner forget your birthday once",
-          "optionB": "Have your partner forget your anniversary once",
+          "optionA": "Have your partner forget your anniversary",
+          "optionB": "Have your partner remember your ex's birthday",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 70,
+            "b": 30
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "c_025",
@@ -1767,7 +2381,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy"
+          ]
         },
         {
           "id": "c_026",
@@ -1777,7 +2394,10 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_027",
@@ -1787,7 +2407,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_028",
@@ -1797,7 +2420,10 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_029",
@@ -1807,7 +2433,10 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_030",
@@ -1817,7 +2446,10 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_031",
@@ -1827,7 +2459,10 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_032",
@@ -1837,7 +2472,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_033",
@@ -1847,7 +2485,11 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "c_034",
@@ -1857,7 +2499,10 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_035",
@@ -1867,27 +2512,37 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_036",
-          "tag": "food",
-          "optionA": "Always get the last bite of every shared dessert",
-          "optionB": "Always choose the restaurant",
+          "tag": "habits",
+          "optionA": "Always be the one who says 'I don't mind, you choose'",
+          "optionB": "Always be the one who has to choose",
           "stats": {
-            "a": 40,
-            "b": 60
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "funny",
+            "revealing"
+          ]
         },
         {
           "id": "c_037",
           "tag": "habits",
-          "optionA": "Share all your hobbies",
-          "optionB": "Have completely different hobbies",
+          "optionA": "Have your partner get obsessed with a hobby you can't stand",
+          "optionB": "Have them openly hate the hobby you love most",
           "stats": {
-            "a": 45,
-            "b": 55
-          }
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_038",
@@ -1897,7 +2552,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_039",
@@ -1907,7 +2565,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_040",
@@ -1917,7 +2578,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_041",
@@ -1927,17 +2591,24 @@
           "stats": {
             "a": 25,
             "b": 75
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_042",
           "tag": "plans",
-          "optionA": "Plan the whole wedding yourselves on a tight budget",
-          "optionB": "Hand it all to a planner and choose nothing",
+          "optionA": "Have the most talked-about wedding of the year, for the wrong reasons",
+          "optionB": "Have a perfect wedding nobody remembers",
           "stats": {
-            "a": 60,
-            "b": 40
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "c_043",
@@ -1947,7 +2618,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "c_044",
@@ -1957,7 +2632,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "c_045",
@@ -1967,7 +2646,10 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_046",
@@ -1977,17 +2659,25 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "c_047",
-          "tag": "time",
-          "optionA": "Grow old in the city where you met",
-          "optionB": "Retire somewhere neither of you has ever been",
+          "tag": "trust",
+          "optionA": "Know your partner's celebrity hall pass",
+          "optionB": "Know the real person they'd have picked if you'd never met",
           "stats": {
-            "a": 40,
-            "b": 60
-          }
+            "a": 65,
+            "b": 35
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "c_048",
@@ -1997,7 +2687,10 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_049",
@@ -2007,7 +2700,10 @@
           "stats": {
             "a": 75,
             "b": 25
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "c_050",
@@ -2017,7 +2713,10 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_051",
@@ -2027,7 +2726,10 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_052",
@@ -2037,17 +2739,23 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_053",
-          "tag": "food",
-          "optionA": "Always agree on what to eat",
-          "optionB": "Always agree on what to watch",
+          "tag": "fights",
+          "optionA": "Have your partner laugh during every serious argument",
+          "optionB": "Have your partner cry during every silly argument",
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_054",
@@ -2057,7 +2765,10 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "c_055",
@@ -2067,7 +2778,10 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         }
       ]
     },
@@ -2087,7 +2801,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_002",
@@ -2097,7 +2815,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "exciting"
+          ]
         },
         {
           "id": "s_003",
@@ -2107,7 +2829,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_004",
@@ -2117,7 +2843,11 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_005",
@@ -2127,7 +2857,10 @@
           "stats": {
             "a": 25,
             "b": 75
-          }
+          },
+          "hooks": [
+            "edgy"
+          ]
         },
         {
           "id": "s_006",
@@ -2137,7 +2870,10 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy"
+          ]
         },
         {
           "id": "s_007",
@@ -2147,7 +2883,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_008",
@@ -2157,7 +2897,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_009",
@@ -2167,7 +2911,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_010",
@@ -2177,7 +2925,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "revealing"
+          ]
         },
         {
           "id": "s_011",
@@ -2187,7 +2938,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_012",
@@ -2197,7 +2952,11 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_013",
@@ -2207,7 +2966,11 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_014",
@@ -2217,7 +2980,11 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_015",
@@ -2227,7 +2994,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "exciting"
+          ]
         },
         {
           "id": "s_016",
@@ -2237,7 +3008,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_017",
@@ -2247,7 +3022,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_018",
@@ -2257,7 +3036,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_019",
@@ -2267,7 +3050,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_020",
@@ -2277,7 +3064,10 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "edgy"
+          ]
         },
         {
           "id": "s_021",
@@ -2287,7 +3077,11 @@
           "stats": {
             "a": 40,
             "b": 60
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_022",
@@ -2297,17 +3091,25 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_023",
           "tag": "dating",
-          "optionA": "Only date people your friends set you up with",
-          "optionB": "Only date people you meet on apps",
+          "optionA": "Date someone your mum picked",
+          "optionB": "Date someone your ex picked",
           "stats": {
-            "a": 50,
-            "b": 50
-          }
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_024",
@@ -2317,7 +3119,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_025",
@@ -2327,7 +3133,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "exciting"
+          ]
         },
         {
           "id": "s_026",
@@ -2337,7 +3147,11 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_027",
@@ -2347,7 +3161,11 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_028",
@@ -2357,7 +3175,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_029",
@@ -2367,17 +3189,25 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_030",
           "tag": "dating",
-          "optionA": "Date someone hot who's terrible at texting",
-          "optionB": "Date someone average who sends perfect texts",
+          "optionA": "Have your dating profile written by your best friend",
+          "optionB": "Have your dating profile written by your ex",
           "stats": {
-            "a": 55,
-            "b": 45
-          }
+            "a": 70,
+            "b": 30
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_031",
@@ -2387,7 +3217,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_032",
@@ -2397,7 +3231,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_033",
@@ -2407,17 +3245,24 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_034",
-          "tag": "dating",
-          "optionA": "Kiss a stranger at midnight on New Year's",
-          "optionB": "Spend New Year's alone with a bottle of wine",
+          "tag": "exes",
+          "optionA": "Kiss a stranger at midnight in front of your ex",
+          "optionB": "Be alone at midnight while your ex kisses a stranger",
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy"
+          ]
         },
         {
           "id": "s_035",
@@ -2427,7 +3272,11 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_036",
@@ -2437,7 +3286,11 @@
           "stats": {
             "a": 70,
             "b": 30
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_037",
@@ -2447,7 +3300,11 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_038",
@@ -2457,7 +3314,11 @@
           "stats": {
             "a": 75,
             "b": 25
-          }
+          },
+          "hooks": [
+            "edgy",
+            "exciting"
+          ]
         },
         {
           "id": "s_039",
@@ -2467,7 +3328,11 @@
           "stats": {
             "a": 35,
             "b": 65
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_040",
@@ -2477,7 +3342,11 @@
           "stats": {
             "a": 30,
             "b": 70
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_041",
@@ -2487,7 +3356,11 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "edgy",
+            "exciting"
+          ]
         },
         {
           "id": "s_042",
@@ -2497,7 +3370,10 @@
           "stats": {
             "a": 45,
             "b": 55
-          }
+          },
+          "hooks": [
+            "edgy"
+          ]
         },
         {
           "id": "s_043",
@@ -2507,7 +3383,10 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "s_044",
@@ -2517,7 +3396,11 @@
           "stats": {
             "a": 50,
             "b": 50
-          }
+          },
+          "hooks": [
+            "funny",
+            "exciting"
+          ]
         },
         {
           "id": "s_045",
@@ -2527,7 +3410,11 @@
           "stats": {
             "a": 70,
             "b": 30
-          }
+          },
+          "hooks": [
+            "edgy",
+            "revealing"
+          ]
         },
         {
           "id": "s_046",
@@ -2537,7 +3424,11 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_047",
@@ -2547,7 +3438,11 @@
           "stats": {
             "a": 60,
             "b": 40
-          }
+          },
+          "hooks": [
+            "edgy",
+            "exciting"
+          ]
         },
         {
           "id": "s_048",
@@ -2557,17 +3452,24 @@
           "stats": {
             "a": 55,
             "b": 45
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         },
         {
           "id": "s_049",
-          "tag": "dating",
-          "optionA": "Date a brilliant kisser who can't dance",
-          "optionB": "Date a brilliant dancer who can't kiss",
+          "tag": "bedroom",
+          "optionA": "Hook up with someone who keeps saying 'sorry'",
+          "optionB": "Hook up with someone who keeps saying 'thank you'",
           "stats": {
-            "a": 60,
-            "b": 40
-          }
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "funny"
+          ]
         },
         {
           "id": "s_050",
@@ -2577,7 +3479,11 @@
           "stats": {
             "a": 70,
             "b": 30
-          }
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
         }
       ]
     }
