@@ -7,6 +7,10 @@
 // THE DECK THAT WAS TAPPED, with that card's own split; the verdict line quotes
 // the chosen side's split; no psychoanalysis copy survives; the footnote does
 // not claim the numbers are votes; a second round deals no card from the first.
+// Then HOT SEAT: refuses to start without names; with three it rotates the seat
+// through them in order; the secret pick leaves no trace on screen (no gold,
+// no split, no verdict) until the room has called it; the verdict agrees with
+// what was actually tapped; and the round-end tally matches the drive's own.
 import fs from 'node:fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -106,6 +110,68 @@ for (const deck of data.categories) {
   await picker();
 }
 
+// ---------------- HOT SEAT ----------------
+const HS_NAMES = ['Asha', 'Ben', 'Chitra'];
+check(await click('[role=tab]', 'Hot Seat'), 'no Hot Seat tab');
+await sleep(300);
+await page.evaluate(() => { try { const k = 'party_spark_session'; const d = JSON.parse(localStorage.getItem(k) || '{}'); delete d.teams; localStorage.setItem(k, JSON.stringify(d)); } catch { /* */ } });
+// Without names the deck must refuse to start. (The component read the roster
+// on mount, so this only holds if none was saved; the next step seeds one.)
+const namesBefore = await page.evaluate(() => document.body.innerText);
+if (!/Asha|Ben|Chitra/.test(namesBefore)) {
+  await click('.grid button h3', data.categories[0].name); await sleep(400);
+  check(/Add at least 2 names/.test(await page.evaluate(() => document.body.innerText)), 'Hot Seat started with no names');
+}
+await page.evaluate(names => {
+  const k = 'party_spark_session'; const d = JSON.parse(localStorage.getItem(k) || '{}');
+  d.teams = names; d.lastActivity = Date.now(); d.startTime = d.startTime || Date.now(); d.usedContent = d.usedContent || {};
+  localStorage.setItem(k, JSON.stringify(d));
+}, HS_NAMES);
+await page.reload({ waitUntil: 'networkidle2' });
+await page.waitForFunction(() => document.querySelector('button[aria-label="New games"]'), { timeout: 15000 });
+await page.click('button[aria-label="New games"]'); await sleep(400);
+await click('.game-card h3', 'Would You Rather'); await sleep(1500);
+check(await click('[role=tab]', 'Hot Seat'), 'no Hot Seat tab after reload'); await sleep(300);
+await shot('wyr-hotseat-picker');
+check(await click('.grid button h3', data.categories[0].name), 'no Friends & Family tile in Hot Seat'); await sleep(600);
+const expected = Object.fromEntries(HS_NAMES.map(n => [n, { sat: 0, fooled: 0 }]));
+const phase = () => page.evaluate(() => document.querySelector('[data-seat-phase]')?.getAttribute('data-seat-phase'));
+const optionButtons = s => page.evaluate(i => [...document.querySelectorAll('button')].filter(x => x.querySelector('h3'))[i].click(), s);
+for (let i = 0; i < 10; i++) {
+  const seat = HS_NAMES[i % HS_NAMES.length];
+  const body0 = await page.evaluate(() => document.body.innerText);
+  check(body0.includes(`${seat} is in the hot seat`.toUpperCase()) || body0.includes(`${seat} is in the hot seat`), `card ${i + 1}: expected ${seat} in the seat`);
+  check(await phase() === 'SECRET', `card ${i + 1}: did not open on the secret pick`);
+  const secret = i % 2 ? 'B' : 'A';
+  await optionButtons(secret === 'A' ? 0 : 1); await sleep(300);
+  check(await phase() === 'GUESS', `card ${i + 1}: secret tap did not move to the room's guess`);
+  const leak = await page.evaluate(() => ({
+    gold: [...document.querySelectorAll('button')].filter(x => x.querySelector('h3')).some(b => b.className.includes('bg-gold/15')),
+    pct: [...document.querySelectorAll('button')].filter(x => x.querySelector('h3')).some(b => /\d+%/.test(b.innerText)),
+    verdict: /sided with \d+%/.test(document.body.innerText),
+  }));
+  check(!leak.gold && !leak.pct && !leak.verdict, `card ${i + 1}: secret pick visible before the room called it ${JSON.stringify(leak)}`);
+  if (i === 0) await shot('wyr-hotseat-guess');
+  const fool = i % 3 === 0;
+  const guess = fool ? (secret === 'A' ? 'B' : 'A') : secret;
+  await optionButtons(guess === 'A' ? 0 : 1); await sleep(350);
+  check(await phase() === 'REVEAL', `card ${i + 1}: no reveal after the room's call`);
+  const body = await page.evaluate(() => document.body.innerText);
+  check(fool ? body.includes(`${seat} fooled the room`) : body.includes(`read ${seat} perfectly`), `card ${i + 1}: verdict disagrees with the taps`);
+  check(/room's call/.test(body), `card ${i + 1}: no room's-call marker`);
+  expected[seat].sat++; if (fool) expected[seat].fooled++;
+  if (i === 0) await shot('wyr-hotseat-reveal');
+  check(await click('button', i === 9 ? 'Finish Round' : 'Next Question'), `hot seat: no next on card ${i + 1}`);
+  await sleep(300);
+}
+const endText = await page.evaluate(() => document.body.innerText);
+await shot('wyr-hotseat-end');
+for (const n of HS_NAMES) {
+  const re = new RegExp(`${n}\\s*fooled the room\\s*${expected[n].fooled}\\s*of\\s*${expected[n].sat}`);
+  check(re.test(endText), `round end: ${n} should read fooled ${expected[n].fooled} of ${expected[n].sat}`);
+}
+check(endText.includes('Asha is the hardest to read'), 'round end: wrong hardest-to-read');
+
 await browser.close();
 if (fails.length) { console.log('FAIL\n  ' + fails.join('\n  ')); process.exit(1); }
-console.log(`OK — ${total} cards over ${data.categories.length} decks, each from the deck tapped, Spicy behind the PIN`);
+console.log(`OK — ${total} cards over ${data.categories.length} decks, each from the deck tapped, Spicy behind the PIN; Hot Seat round clean`);

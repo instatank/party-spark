@@ -2,10 +2,11 @@
 import React, { useState, use } from 'react';
 import { Card, Button } from '../ui/Layout';
 import { ScreenHeader } from '../ui/Layout';
-import { ArrowRight, ChevronRight, Sparkles, RotateCcw, Users, Heart, Flame } from 'lucide-react';
+import { ArrowRight, ChevronRight, Sparkles, RotateCcw, Users, Heart, Flame, EyeOff } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
+import TeamRosterRow from '../ui/TeamRosterRow';
 
 // The dilemma bank is lazy-loaded so it code-splits out of this game's chunk.
 // The fetch starts as soon as the chunk loads; use() below suspends into the
@@ -47,6 +48,14 @@ interface WouldYouRatherGameProps {
 
 const ROUND_SIZE = 10;
 
+// HOT SEAT: one named player picks in secret, the room argues and calls what
+// they picked, then the pick is revealed. Three taps a card instead of one —
+// that is the mode, not a step added to Classic, whose one-tap loop is
+// untouched. The seat rotates through the roster and carries across rounds.
+type Mode = 'classic' | 'hotseat';
+type SeatPhase = 'SECRET' | 'GUESS' | 'REVEAL';
+const MIN_HOT_SEAT_PLAYERS = 2;
+
 export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }) => {
     const WYR_DATA = use(wyrDataPromise) as { categories: WYRCategory[] };
     const singleDeck = WYR_DATA.categories.length === 1;
@@ -57,6 +66,18 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [hasVoted, setHasVoted] = useState(false);
     const [selectedOption, setSelectedOption] = useState<'A' | 'B' | null>(null);
+
+    const [mode, setMode] = useState<Mode>('classic');
+    const [players, setPlayers] = useState<string[]>(() => sessionService.getTeams());
+    const [rosterNudge, setRosterNudge] = useState(false);
+    const [seatTurn, setSeatTurn] = useState(0);
+    const [seatPhase, setSeatPhase] = useState<SeatPhase>('SECRET');
+    const [roomGuess, setRoomGuess] = useState<'A' | 'B' | null>(null);
+    // Per round: how many times each player sat, and how many of those the
+    // room called wrong. The round-end screen crowns the hardest to read.
+    const [reads, setReads] = useState<Record<string, { sat: number; fooled: number }>>({});
+    const hotSeat = mode === 'hotseat';
+    const seatName = players.length ? players[seatTurn % players.length] : '';
 
     // PIN gate state for adult category
     const [showPinGate, setShowPinGate] = useState(false);
@@ -71,6 +92,11 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
     const startCategory = (categoryId: string) => {
         const category = WYR_DATA.categories.find(c => c.id === categoryId);
         if (!category) return;
+
+        if (hotSeat && players.length < MIN_HOT_SEAT_PLAYERS) {
+            setRosterNudge(true);
+            return;
+        }
 
         if (category.adult && !isAdultUnlocked()) {
             setPendingCategoryId(categoryId);
@@ -100,6 +126,9 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
         setHasVoted(false);
         setSelectedOption(null);
         setMajorityCount(0);
+        setSeatPhase('SECRET');
+        setRoomGuess(null);
+        setReads({});
         setGameState('PLAYING');
     };
 
@@ -117,6 +146,29 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
         if (q && (option === 'A' ? q.stats.a : q.stats.b) > 50) setMajorityCount(n => n + 1);
     };
 
+    // Hot Seat taps: first the seated player's secret pick, then the room's
+    // call, then the reveal. Nothing on screen changes colour on the secret
+    // tap, so a glance at the phone does not give the pick away.
+    const handleHotSeatTap = (option: 'A' | 'B') => {
+        if (seatPhase === 'SECRET') {
+            setSelectedOption(option);
+            setSeatPhase('GUESS');
+            return;
+        }
+        if (seatPhase === 'GUESS' && selectedOption) {
+            setRoomGuess(option);
+            setHasVoted(true);
+            setSeatPhase('REVEAL');
+            const fooled = option !== selectedOption;
+            setReads(r => {
+                const cur = r[seatName] ?? { sat: 0, fooled: 0 };
+                return { ...r, [seatName]: { sat: cur.sat + 1, fooled: cur.fooled + (fooled ? 1 : 0) } };
+            });
+        }
+    };
+
+    const onOptionTap = (option: 'A' | 'B') => (hotSeat ? handleHotSeatTap(option) : handleVote(option));
+
     React.useEffect(() => {
         if (hasVoted && activeCategory && questions[currentQuestionIndex]) {
             sessionService.markAsUsed(GameType.WOULD_YOU_RATHER, activeCategory.id, questions[currentQuestionIndex].id);
@@ -131,6 +183,11 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
         setCurrentQuestionIndex(prev => prev + 1);
         setHasVoted(false);
         setSelectedOption(null);
+        if (hotSeat) {
+            setSeatTurn(t => t + 1);
+            setSeatPhase('SECRET');
+            setRoomGuess(null);
+        }
     };
 
     // ===== CATEGORY SELECT =====
@@ -159,6 +216,36 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                 <p className="text-muted mb-4 text-sm text-center">
                     Ten dilemmas a round. Both options hurt.
                 </p>
+                <div className="flex gap-1.5 justify-center mb-3" role="tablist" aria-label="Game mode">
+                    {([
+                        { id: 'classic' as const, label: 'Classic' },
+                        { id: 'hotseat' as const, label: '🔥 Hot Seat' },
+                    ]).map(m => (
+                        <button
+                            key={m.id}
+                            role="tab"
+                            aria-selected={mode === m.id}
+                            onClick={() => { setMode(m.id); setRosterNudge(false); }}
+                            className={`px-4 py-1.5 rounded-full text-sm font-bold border transition-colors ${mode === m.id
+                                ? 'bg-gold/15 border-gold text-gold'
+                                : 'bg-surface-alt border-divider text-muted hover:text-ink'
+                                }`}
+                        >
+                            {m.label}
+                        </button>
+                    ))}
+                </div>
+                {hotSeat && (
+                    <div className="max-w-[340px] mx-auto w-full mb-1">
+                        <p className="text-xs text-muted text-center mb-3 leading-snug">
+                            One player picks in secret. The room argues about what they chose, then makes the call.
+                        </p>
+                        <TeamRosterRow teams={players} onTeamsChange={p => { setPlayers(p); setRosterNudge(false); }} noun="Player" max={12} />
+                        {rosterNudge && (
+                            <p className="text-xs text-rose-500 text-center -mt-1 mb-3">Add at least {MIN_HOT_SEAT_PLAYERS} names to play Hot Seat.</p>
+                        )}
+                    </div>
+                )}
                 <div className="flex-1 overflow-y-auto pb-8">
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {WYR_DATA.categories.map(cat => {
@@ -220,12 +307,39 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
 
     // ===== ROUND END =====
     if (gameState === 'ROUND_END') {
-        const replay = () => activeCategory && startCategory(activeCategory.id);
+        const replay = () => {
+            if (!activeCategory) return;
+            if (hotSeat) setSeatTurn(t => t + 1);
+            startCategory(activeCategory.id);
+        };
         return (
             <div className="h-full flex flex-col animate-fade-in">
                 <ScreenHeader title="Would You Rather?" onBack={goBackToCategory} onHome={onExit} />
                 <div className="flex-1 flex flex-col items-center justify-center text-center px-6 gap-6">
-                    <div className="text-5xl">⚖️</div>
+                    <div className="text-5xl">{hotSeat ? '🔥' : '⚖️'}</div>
+                    {hotSeat ? (() => {
+                        const rows = Object.entries(reads).sort((a, b) => b[1].fooled - a[1].fooled || a[1].sat - b[1].sat);
+                        const top = rows[0];
+                        const tied = rows.length > 1 && rows[1][1].fooled === top?.[1].fooled;
+                        return (
+                            <div className="w-full max-w-[340px]">
+                                <h2 className="text-2xl font-black text-ink mb-1">
+                                    {!top || top[1].fooled === 0
+                                        ? 'The room read everyone.'
+                                        : tied ? 'A tie for hardest to read.' : `${top[0]} is the hardest to read.`}
+                                </h2>
+                                <p className="text-xs text-muted mb-4">How often each player fooled the room this round</p>
+                                <div className="grid gap-2 text-left">
+                                    {rows.map(([name, r]) => (
+                                        <div key={name} className="flex items-center justify-between bg-surface-alt border border-divider rounded-xl px-4 py-2.5">
+                                            <span className="font-bold text-ink truncate">{name}</span>
+                                            <span className="text-sm text-muted shrink-0">fooled the room <span className="text-ink font-bold">{r.fooled}</span> of {r.sat}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })() : (
                     <div>
                         <h2 className="text-2xl font-black text-ink mb-2">That's {questions.length}.</h2>
                         <p className="text-muted">
@@ -239,6 +353,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                                     : 'Unpredictable. Nobody can call you.'}
                         </p>
                     </div>
+                    )}
                     <div className="w-full max-w-[340px] grid gap-3">
                         <Button onClick={replay} className="w-full py-4 text-lg font-bold flex items-center justify-center gap-2">
                             <RotateCcw size={18} /> Ten more
@@ -271,10 +386,25 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                     </span>
                 </div>
 
+                {hotSeat && (
+                    <div key={`${currentQuestionIndex}-${seatPhase}`} className="z-10 shrink-0 mb-2 text-center animate-fade-in" data-seat-phase={seatPhase}>
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/15 border border-orange-500/40 text-orange-500 text-xs font-extrabold uppercase tracking-wider mb-2">
+                            🔥 {seatName} is in the hot seat
+                        </div>
+                        <p className="text-sm text-ink-soft leading-snug">
+                            {seatPhase === 'SECRET' && (<><EyeOff size={14} className="inline -mt-0.5 mr-1" />{seatName}, pick in secret. Everyone else, look away.</>)}
+                            {seatPhase === 'GUESS' && <>Locked in. Room: what did <span className="font-bold text-ink">{seatName}</span> pick? Argue, then tap your call.</>}
+                            {seatPhase === 'REVEAL' && (roomGuess === selectedOption
+                                ? <>Called it. The room read <span className="font-bold text-ink">{seatName}</span> perfectly.</>
+                                : <><span className="font-bold text-ink">{seatName}</span> fooled the room.</>)}
+                        </p>
+                    </div>
+                )}
+
                 <div className="flex-1 flex flex-col justify-center gap-6 z-10 pb-8">
                     {/* Option A */}
                     <button
-                        onClick={() => handleVote('A')}
+                        onClick={() => onOptionTap('A')}
                         disabled={hasVoted}
                         className={`relative w-full p-6 md:p-8 rounded-2xl border-2 transition-all duration-300 text-left group flex items-center justify-between gap-4 ${hasVoted
                             ? selectedOption === 'A'
@@ -284,7 +414,12 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                             }`}
                     >
                         <div className="relative z-10 flex-1">
-                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'A' ? 'text-gold' : 'text-muted') : 'text-gold'}`}>Option A</div>
+                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'A' ? 'text-gold' : 'text-muted') : 'text-gold'}`}>
+                                Option A
+                                {hotSeat && hasVoted && roomGuess === 'A' && (
+                                    <span className="ml-2 normal-case tracking-normal text-[11px] font-bold px-2 py-0.5 rounded-full bg-surface-alt border border-divider text-ink-soft">room's call</span>
+                                )}
+                            </div>
                             <h3 className="text-xl md:text-3xl font-bold text-ink leading-tight">
                                 {currentQuestion.optionA}
                             </h3>
@@ -309,7 +444,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
 
                     {/* Option B */}
                     <button
-                        onClick={() => handleVote('B')}
+                        onClick={() => onOptionTap('B')}
                         disabled={hasVoted}
                         className={`relative w-full p-6 md:p-8 rounded-2xl border-2 transition-all duration-300 text-left group flex items-center justify-between gap-4 ${hasVoted
                             ? selectedOption === 'B'
@@ -319,7 +454,12 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                             }`}
                     >
                         <div className="relative z-10 flex-1">
-                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'B' ? 'text-gold' : 'text-muted') : 'text-accent'}`}>Option B</div>
+                            <div className={`text-sm font-bold mb-2 uppercase tracking-wider ${hasVoted ? (selectedOption === 'B' ? 'text-gold' : 'text-muted') : 'text-accent'}`}>
+                                Option B
+                                {hotSeat && hasVoted && roomGuess === 'B' && (
+                                    <span className="ml-2 normal-case tracking-normal text-[11px] font-bold px-2 py-0.5 rounded-full bg-surface-alt border border-divider text-ink-soft">room's call</span>
+                                )}
+                            </div>
                             <h3 className="text-xl md:text-3xl font-bold text-ink leading-tight">
                                 {currentQuestion.optionB}
                             </h3>
@@ -338,11 +478,13 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
 
                 {/* Analysis & Next Button Area */}
                 <div className={`mt-auto pb-10 transition-all duration-500 ease-out transform ${hasVoted ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
-                    {selectedOption && (() => {
+                    {hasVoted && selectedOption && (() => {
                         const mine = selectedOption === 'A' ? currentQuestion.stats.a : currentQuestion.stats.b;
                         return (
                             <p className="text-center text-sm text-ink-soft mb-5">
-                                {mine > 50
+                                {hotSeat
+                                    ? <>{seatName} sided with <span className="font-bold text-ink">{mine}%</span> of people.</>
+                                    : mine > 50
                                     ? <>You're with the <span className="font-bold text-ink">{mine}%</span>.</>
                                     : mine === 50
                                         ? <>Dead even. The room splits <span className="font-bold text-ink">50/50</span>.</>
