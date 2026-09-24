@@ -3,8 +3,8 @@
   "categories": [
     {
       "id": "general",
-      "name": "The Main Deck",
-      "tagline": "Two options. Both hurt. Pick one.",
+      "name": "Friends & Family",
+      "tagline": "Safe for the whole table.",
       "color": "#6366F1",
       "adult": false,
       "items": [
@@ -1006,6 +1006,1577 @@
           "stats": {
             "a": 30,
             "b": 70
+          }
+        },
+        {
+          "id": "g_101",
+          "tag": "family",
+          "optionA": "Have your parents read your chats with your friends",
+          "optionB": "Have your friends read your chats with your parents",
+          "stats": {
+            "a": 30,
+            "b": 70
+          }
+        },
+        {
+          "id": "g_102",
+          "tag": "family",
+          "optionA": "Always be the one taking the group photo",
+          "optionB": "Always be the one with their eyes closed in it",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_103",
+          "tag": "family",
+          "optionA": "Have your childhood nickname follow you to every new job",
+          "optionB": "Have your worst school photo as your permanent profile picture",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_104",
+          "tag": "family",
+          "optionA": "Win every board game, but nobody wants to play with you",
+          "optionB": "Lose every board game, but be everyone's favourite to play with",
+          "stats": {
+            "a": 30,
+            "b": 70
+          }
+        },
+        {
+          "id": "g_105",
+          "tag": "family",
+          "optionA": "Be the family's permanent tech support",
+          "optionB": "Be the family's permanent referee in every argument",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_106",
+          "tag": "family",
+          "optionA": "Have your sibling know all your secrets",
+          "optionB": "Have your parents know just one of them, chosen by your sibling",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_107",
+          "tag": "family",
+          "optionA": "Control the music on every road trip, but never the route",
+          "optionB": "Control the route on every road trip, but never the music",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_108",
+          "tag": "family",
+          "optionA": "Cook one dish perfectly",
+          "optionB": "Cook everything decently",
+          "stats": {
+            "a": 30,
+            "b": 70
+          }
+        },
+        {
+          "id": "g_109",
+          "tag": "family",
+          "optionA": "Have a house full of people every weekend",
+          "optionB": "Have the house to yourself every weekend",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_110",
+          "tag": "family",
+          "optionA": "Grow up in a big joint family",
+          "optionB": "Grow up as an only child",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_111",
+          "tag": "family",
+          "optionA": "Always remember everyone's birthday",
+          "optionB": "Always give the perfect gift, but only when reminded",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_112",
+          "tag": "family",
+          "optionA": "Have a dog that understands every word you say",
+          "optionB": "Have a cat that genuinely likes you",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_113",
+          "tag": "family",
+          "optionA": "Be a guest at a wedding that lasts seven days",
+          "optionB": "Host a wedding that lasts one hour",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_114",
+          "tag": "family",
+          "optionA": "Live next door to your parents",
+          "optionB": "Live a six-hour flight away from them",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_115",
+          "tag": "family",
+          "optionA": "Hear every family story your grandparents never told",
+          "optionB": "Hear the full, unedited story of how your parents met",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_116",
+          "tag": "family",
+          "optionA": "Relive your favourite family holiday exactly as it was",
+          "optionB": "Take a brand-new family holiday anywhere, all paid for",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_117",
+          "tag": "family",
+          "optionA": "Be the favourite child, and everyone knows it",
+          "optionB": "Be the least favourite, and nobody ever says it",
+          "stats": {
+            "a": 65,
+            "b": 35
+          }
+        },
+        {
+          "id": "g_118",
+          "tag": "family",
+          "optionA": "Always win at cards against your family",
+          "optionB": "Always get the last piece of dessert",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_119",
+          "tag": "family",
+          "optionA": "Be the admin of the family group forever",
+          "optionB": "Have its good-morning forwards read aloud to you every day",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_120",
+          "tag": "life",
+          "optionA": "Have a home that cleans itself",
+          "optionB": "Have a car that drives itself",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_121",
+          "tag": "life",
+          "optionA": "Wake up at 5am feeling amazing",
+          "optionB": "Wake up at 10am feeling average",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_122",
+          "tag": "life",
+          "optionA": "Have a bathroom you never have to share",
+          "optionB": "Have a kitchen you never have to clean",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_123",
+          "tag": "life",
+          "optionA": "Sit next to a non-stop talker on a 12-hour flight",
+          "optionB": "Sit next to a loud snorer on a 12-hour flight",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_124",
+          "tag": "life",
+          "optionA": "Walk everywhere within three kilometres",
+          "optionB": "Never walk more than 200 metres again",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_125",
+          "tag": "life",
+          "optionA": "Have your room exactly as it was when you were twelve",
+          "optionB": "Have it completely redesigned by your best friend",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_126",
+          "tag": "life",
+          "optionA": "Only ever wear one colour",
+          "optionB": "Never wear the same outfit twice",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_127",
+          "tag": "life",
+          "optionA": "Live without air conditioning",
+          "optionB": "Live without a fridge",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_128",
+          "tag": "life",
+          "optionA": "Have a month packed with plans you love",
+          "optionB": "Have a month with a completely empty calendar",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_129",
+          "tag": "life",
+          "optionA": "Get a free holiday every year, but someone else picks where",
+          "optionB": "Pay for your own and go wherever you like",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_130",
+          "tag": "powers",
+          "optionA": "Instantly identify any song you hear",
+          "optionB": "Instantly identify any plant, bird or star you see",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_131",
+          "tag": "powers",
+          "optionA": "Remember everything you've ever read",
+          "optionB": "Remember every face and conversation you've ever had",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_132",
+          "tag": "powers",
+          "optionA": "Be fluent in sign language",
+          "optionB": "Be able to read lips perfectly",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_133",
+          "tag": "powers",
+          "optionA": "Spend one day in any year of the past",
+          "optionB": "Spend one day in the year 2100",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_134",
+          "tag": "powers",
+          "optionA": "Meet your great-grandparents when they were your age",
+          "optionB": "Meet your great-grandchildren when they are your age",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_135",
+          "tag": "powers",
+          "optionA": "Talk to any historical figure for an hour",
+          "optionB": "Talk to your eight-year-old self for an hour",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_136",
+          "tag": "powers",
+          "optionA": "Live in a world with no lies",
+          "optionB": "Live in a world with no secrets",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_137",
+          "tag": "powers",
+          "optionA": "Have a superpower only you know about",
+          "optionB": "Have a mediocre superpower the whole world knows about",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_138",
+          "tag": "money",
+          "optionA": "Be famous for ten years, then forgotten",
+          "optionB": "Be quietly respected in your field forever",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "g_139",
+          "tag": "money",
+          "optionA": "Learn one new skill every year, but forget an old one",
+          "optionB": "Keep every skill you have, but never learn a new one",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_140",
+          "tag": "money",
+          "optionA": "Be a genius with numbers",
+          "optionB": "Be a genius with people",
+          "stats": {
+            "a": 30,
+            "b": 70
+          }
+        },
+        {
+          "id": "g_141",
+          "tag": "money",
+          "optionA": "Have a mentor who's brutally honest",
+          "optionB": "Have a mentor who's endlessly encouraging",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_142",
+          "tag": "money",
+          "optionA": "Take a year off at 25",
+          "optionB": "Take a year off at 60",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "g_143",
+          "tag": "money",
+          "optionA": "Start a business with your best friend",
+          "optionB": "Start a business with your sibling",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_144",
+          "tag": "money",
+          "optionA": "Know every answer in every school exam",
+          "optionB": "Be the most popular kid in school",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_145",
+          "tag": "money",
+          "optionA": "Be the smartest person in a room of strangers",
+          "optionB": "Be the least clever person in a room of geniuses",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "g_146",
+          "tag": "food",
+          "optionA": "Eat only street food for a month",
+          "optionB": "Eat only five-star hotel food for a month",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_147",
+          "tag": "food",
+          "optionA": "Eat only breakfast food, for every meal",
+          "optionB": "Never eat breakfast food again",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "g_148",
+          "tag": "food",
+          "optionA": "Have unlimited mangoes forever",
+          "optionB": "Have unlimited chocolate forever",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "g_149",
+          "tag": "food",
+          "optionA": "Own your grandmother's recipe for every dish you love",
+          "optionB": "Have a top chef cook for you once a month",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "g_150",
+          "tag": "phone",
+          "optionA": "Delete every app except five",
+          "optionB": "Keep every app, but get 30 minutes of screen time a day",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        }
+      ],
+      "icon": "users"
+    },
+    {
+      "id": "couples",
+      "name": "Couples",
+      "tagline": "For the two of you.",
+      "icon": "heart",
+      "color": "#EC4899",
+      "adult": false,
+      "items": [
+        {
+          "id": "c_001",
+          "tag": "mind",
+          "optionA": "Always know what your partner is thinking",
+          "optionB": "Have your partner always know what you're thinking",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "c_002",
+          "tag": "past",
+          "optionA": "Have your partner read your diary from when you were fifteen",
+          "optionB": "Have your partner read your chats from your first relationship",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "c_003",
+          "tag": "time",
+          "optionA": "Relive your first date",
+          "optionB": "Skip ahead and spend one day at your 25th anniversary",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "c_004",
+          "tag": "money",
+          "optionA": "Share one bank account for everything",
+          "optionB": "Keep completely separate money, forever",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "c_005",
+          "tag": "home",
+          "optionA": "Share a bed with a partner who snores",
+          "optionB": "Sleep in separate rooms and sleep perfectly",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_006",
+          "tag": "plans",
+          "optionA": "Have your partner plan every holiday",
+          "optionB": "Plan every holiday yourself",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "c_007",
+          "tag": "plans",
+          "optionA": "Get a surprise date every month, planned by them",
+          "optionB": "Plan every date together",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "c_008",
+          "tag": "past",
+          "optionA": "Have your partner's ex move in next door",
+          "optionB": "Have your own ex become your partner's coworker",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_009",
+          "tag": "past",
+          "optionA": "Know every detail of your partner's past relationships",
+          "optionB": "Know nothing about them at all",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "c_010",
+          "tag": "habits",
+          "optionA": "Be with someone who's always early",
+          "optionB": "Be with someone who's always late",
+          "stats": {
+            "a": 70,
+            "b": 30
+          }
+        },
+        {
+          "id": "c_011",
+          "tag": "people",
+          "optionA": "Date your best friend's sibling",
+          "optionB": "Date your boss's child",
+          "stats": {
+            "a": 70,
+            "b": 30
+          }
+        },
+        {
+          "id": "c_012",
+          "tag": "love",
+          "optionA": "Get one long love letter from them every year",
+          "optionB": "Get one tiny surprise from them every week",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "c_013",
+          "tag": "fights",
+          "optionA": "Argue out loud and make up fast",
+          "optionB": "Never raise your voice, but go quiet for a day",
+          "stats": {
+            "a": 65,
+            "b": 35
+          }
+        },
+        {
+          "id": "c_014",
+          "tag": "people",
+          "optionA": "Have a partner who's brilliant with your parents but awkward with your friends",
+          "optionB": "Have one who's brilliant with your friends but awkward with your parents",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "c_015",
+          "tag": "fights",
+          "optionA": "Always be the one who apologises first",
+          "optionB": "Always be the one who turns out to be right",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_016",
+          "tag": "plans",
+          "optionA": "Travel the world together on a tight budget",
+          "optionB": "Stay home together, comfortable",
+          "stats": {
+            "a": 70,
+            "b": 30
+          }
+        },
+        {
+          "id": "c_017",
+          "tag": "trust",
+          "optionA": "Share every password with each other",
+          "optionB": "Share none at all",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_018",
+          "tag": "home",
+          "optionA": "Work in the same office as your partner",
+          "optionB": "Barely see them on weekdays",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "c_019",
+          "tag": "habits",
+          "optionA": "Only watch shows together, so nobody watches ahead",
+          "optionB": "Watch separately and spoil freely",
+          "stats": {
+            "a": 65,
+            "b": 35
+          }
+        },
+        {
+          "id": "c_020",
+          "tag": "people",
+          "optionA": "Have the wedding your parents want",
+          "optionB": "Elope, with nobody there",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_021",
+          "tag": "home",
+          "optionA": "Have a partner who cooks brilliantly and leaves a disaster",
+          "optionB": "Have one who can't cook but cleans everything",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "c_022",
+          "tag": "talk",
+          "optionA": "Only text each other for a week, no calls",
+          "optionB": "Only talk face to face for a week, no phones",
+          "stats": {
+            "a": 30,
+            "b": 70
+          }
+        },
+        {
+          "id": "c_023",
+          "tag": "time",
+          "optionA": "Relive the best day of your relationship",
+          "optionB": "Erase the worst day from both your memories",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "c_024",
+          "tag": "love",
+          "optionA": "Have your partner forget your birthday once",
+          "optionB": "Have your partner forget your anniversary once",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_025",
+          "tag": "trust",
+          "optionA": "Hold your partner's unlocked phone for an hour",
+          "optionB": "Have them hold yours for an hour",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_026",
+          "tag": "people",
+          "optionA": "Get matching tattoos",
+          "optionB": "Wear matching outfits to every family function for a year",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "c_027",
+          "tag": "plans",
+          "optionA": "Move to a new city for your partner's dream job",
+          "optionB": "Have your partner move for yours",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_028",
+          "tag": "love",
+          "optionA": "Be with someone a little jealous but completely devoted",
+          "optionB": "Be with someone relaxed but a little distant",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "c_029",
+          "tag": "love",
+          "optionA": "Know they'll love you forever, but never hear them say it",
+          "optionB": "Hear it every day, but never be completely sure",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "c_030",
+          "tag": "people",
+          "optionA": "Take a two-week holiday with each other's best friends",
+          "optionB": "Take a two-week holiday with each other's families",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "c_031",
+          "tag": "habits",
+          "optionA": "Let your partner choose your outfits for a month",
+          "optionB": "Let your partner choose your haircut, once",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "c_032",
+          "tag": "love",
+          "optionA": "Have your relationship turned into a romantic film",
+          "optionB": "Have it turned into a sitcom",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_033",
+          "tag": "trust",
+          "optionA": "Hear everything your partner says about you to their friends",
+          "optionB": "Hear everything they say about you to their mum",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "c_034",
+          "tag": "talk",
+          "optionA": "Be with someone who laughs at all your jokes",
+          "optionB": "Be with someone who's funnier than you",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "c_035",
+          "tag": "time",
+          "optionA": "Be stuck in a lift with your partner for twelve hours",
+          "optionB": "Not see your partner for twelve days",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "c_036",
+          "tag": "food",
+          "optionA": "Always get the last bite of every shared dessert",
+          "optionB": "Always choose the restaurant",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "c_037",
+          "tag": "habits",
+          "optionA": "Share all your hobbies",
+          "optionB": "Have completely different hobbies",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_038",
+          "tag": "home",
+          "optionA": "Always be the big spoon",
+          "optionB": "Always be the little spoon",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_039",
+          "tag": "love",
+          "optionA": "Have a partner who's terrible at gifts but great with words",
+          "optionB": "Have one who's great at gifts but terrible with words",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_040",
+          "tag": "fights",
+          "optionA": "Never go to bed angry, even if it means talking until 3am",
+          "optionB": "Always sleep on it and talk in the morning",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_041",
+          "tag": "fights",
+          "optionA": "Remember every argument you've ever had",
+          "optionB": "Forget every argument the moment it's over",
+          "stats": {
+            "a": 25,
+            "b": 75
+          }
+        },
+        {
+          "id": "c_042",
+          "tag": "plans",
+          "optionA": "Plan the whole wedding yourselves on a tight budget",
+          "optionB": "Hand it all to a planner and choose nothing",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "c_043",
+          "tag": "trust",
+          "optionA": "Have your partner scroll your saved-posts folder",
+          "optionB": "Have them scroll your camera roll",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_044",
+          "tag": "people",
+          "optionA": "Have your in-laws drop in unannounced once a week",
+          "optionB": "Have them stay for a full month every year",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_045",
+          "tag": "money",
+          "optionA": "Be married to someone famous",
+          "optionB": "Be the famous one in the marriage",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "c_046",
+          "tag": "trust",
+          "optionA": "Your partner keeps one secret they'll never tell you",
+          "optionB": "You keep one secret you'll never tell them",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_047",
+          "tag": "time",
+          "optionA": "Grow old in the city where you met",
+          "optionB": "Retire somewhere neither of you has ever been",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "c_048",
+          "tag": "love",
+          "optionA": "Love someone a little more than they love you",
+          "optionB": "Love someone a little less than they love you",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "c_049",
+          "tag": "love",
+          "optionA": "Have a love that's calm and steady",
+          "optionB": "Have one that's all fireworks and fights",
+          "stats": {
+            "a": 75,
+            "b": 25
+          }
+        },
+        {
+          "id": "c_050",
+          "tag": "past",
+          "optionA": "Have your first kiss replayed on the big screen at a cricket match",
+          "optionB": "Have your first text to each other read out at your wedding",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "c_051",
+          "tag": "home",
+          "optionA": "Share a toothbrush for a day",
+          "optionB": "Share a single phone for a week",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "c_052",
+          "tag": "home",
+          "optionA": "Be with someone who steals the blanket every night",
+          "optionB": "Be with someone who sets six alarms and snoozes them all",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "c_053",
+          "tag": "food",
+          "optionA": "Always agree on what to eat",
+          "optionB": "Always agree on what to watch",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "c_054",
+          "tag": "talk",
+          "optionA": "Have your partner be totally honest about your cooking",
+          "optionB": "Have them be totally honest about your singing",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "c_055",
+          "tag": "fights",
+          "optionA": "Have the same argument every week, forever",
+          "optionB": "Have a brand-new argument every week",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        }
+      ]
+    },
+    {
+      "id": "spicy",
+      "name": "Spicy",
+      "tagline": "Dating, sex, bad decisions.",
+      "icon": "flame",
+      "color": "#F43F5E",
+      "adult": true,
+      "items": [
+        {
+          "id": "s_001",
+          "tag": "exes",
+          "optionA": "Have every ex rate you in public",
+          "optionB": "Have every ex rate you, privately, to your current partner",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "s_002",
+          "tag": "dating",
+          "optionA": "Hook up with your celebrity crush once, and everyone knows",
+          "optionB": "Date them for a month, and nobody believes you",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "s_003",
+          "tag": "exposed",
+          "optionA": "Have your last three late-night texts read out at dinner",
+          "optionB": "Have your dad read your dating-app bio aloud",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "s_004",
+          "tag": "dating",
+          "optionA": "Great chemistry, no conversation",
+          "optionB": "Great conversation, no chemistry",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "s_005",
+          "tag": "bedroom",
+          "optionA": "Only ever make out in public",
+          "optionB": "Never kiss in public again",
+          "stats": {
+            "a": 25,
+            "b": 75
+          }
+        },
+        {
+          "id": "s_006",
+          "tag": "bedroom",
+          "optionA": "Be with an amazing lover who's a terrible kisser",
+          "optionB": "Be with an amazing kisser who's average in bed",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "s_007",
+          "tag": "dating",
+          "optionA": "One perfect night with someone you'll never see again",
+          "optionB": "A slow burn that takes a year to get going",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "s_008",
+          "tag": "exposed",
+          "optionA": "Get caught by your parents",
+          "optionB": "Catch your parents",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "s_009",
+          "tag": "exes",
+          "optionA": "Know exactly how many people your partner has slept with",
+          "optionB": "Never know",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "s_010",
+          "tag": "dating",
+          "optionA": "Always be the one who makes the first move",
+          "optionB": "Never make the first move again",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "s_011",
+          "tag": "exposed",
+          "optionA": "Have your body count on your dating profile",
+          "optionB": "Have your last ex's review on your dating profile",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "s_012",
+          "tag": "texts",
+          "optionA": "Sext only in emojis",
+          "optionB": "Sext only in voice notes",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "s_013",
+          "tag": "dating",
+          "optionA": "Date someone ten years older",
+          "optionB": "Date someone ten years younger",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "s_014",
+          "tag": "bedroom",
+          "optionA": "Have a partner who wants it every day",
+          "optionB": "Have one who wants it once a month",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "s_015",
+          "tag": "bedroom",
+          "optionA": "Do it in a lift",
+          "optionB": "Do it on a plane",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "s_016",
+          "tag": "dating",
+          "optionA": "Have a friend with benefits who catches feelings",
+          "optionB": "Catch feelings for your friend with benefits",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "s_017",
+          "tag": "dating",
+          "optionA": "Kiss your best friend at a party once, and never mention it",
+          "optionB": "Never find out what it would have been like",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "s_018",
+          "tag": "exposed",
+          "optionA": "Have your walk of shame livestreamed",
+          "optionB": "Have your 2am drunk texts livestreamed",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "s_019",
+          "tag": "bedroom",
+          "optionA": "Be great in bed but always a bit sweaty",
+          "optionB": "Be average in bed but always smell amazing",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "s_020",
+          "tag": "exes",
+          "optionA": "Have your partner's ex tell you exactly what they liked",
+          "optionB": "Never ask, and never find out",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "s_021",
+          "tag": "texts",
+          "optionA": "Accidentally send a nude to the family group",
+          "optionB": "Accidentally send one to your boss",
+          "stats": {
+            "a": 40,
+            "b": 60
+          }
+        },
+        {
+          "id": "s_022",
+          "tag": "bedroom",
+          "optionA": "Have loud neighbours every night",
+          "optionB": "Be the loud neighbours every night",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "s_023",
+          "tag": "dating",
+          "optionA": "Only date people your friends set you up with",
+          "optionB": "Only date people you meet on apps",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "s_024",
+          "tag": "bedroom",
+          "optionA": "Fall asleep during sex, once",
+          "optionB": "Have your partner fall asleep during sex, once",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "s_025",
+          "tag": "bedroom",
+          "optionA": "Be blindfolded for an entire date",
+          "optionB": "Have your hands tied for an entire date",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "s_026",
+          "tag": "bedroom",
+          "optionA": "Have a threesome and it's awkward",
+          "optionB": "Never have one and always wonder",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "s_027",
+          "tag": "bedroom",
+          "optionA": "Have your partner narrate everything they're thinking in bed",
+          "optionB": "Have them stay completely silent",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "s_028",
+          "tag": "exes",
+          "optionA": "Get an honest review of your kissing from every ex",
+          "optionB": "Get an honest review of your flirting from everyone you've flirted with",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "s_029",
+          "tag": "bedroom",
+          "optionA": "Hook up in your childhood bedroom at your parents' place",
+          "optionB": "Hook up in your partner's childhood bedroom at theirs",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "s_030",
+          "tag": "dating",
+          "optionA": "Date someone hot who's terrible at texting",
+          "optionB": "Date someone average who sends perfect texts",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "s_031",
+          "tag": "bedroom",
+          "optionA": "Only with the lights on",
+          "optionB": "Only with the lights off",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "s_032",
+          "tag": "exposed",
+          "optionA": "Have your crush find your secret account",
+          "optionB": "Have your mum find it",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "s_033",
+          "tag": "exes",
+          "optionA": "Wake up next to your ex",
+          "optionB": "Wake up next to your boss",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "s_034",
+          "tag": "dating",
+          "optionA": "Kiss a stranger at midnight on New Year's",
+          "optionB": "Spend New Year's alone with a bottle of wine",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "s_035",
+          "tag": "bedroom",
+          "optionA": "Tell your partner your wildest fantasy",
+          "optionB": "Hear theirs",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "s_036",
+          "tag": "exes",
+          "optionA": "Get drunk-dialled by your ex at 3am",
+          "optionB": "Drunk-dial your ex at 3am",
+          "stats": {
+            "a": 70,
+            "b": 30
+          }
+        },
+        {
+          "id": "s_037",
+          "tag": "bedroom",
+          "optionA": "Have a partner who's terrible at dirty talk",
+          "optionB": "Have one who refuses to try it at all",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "s_038",
+          "tag": "exposed",
+          "optionA": "Skinny-dip at a friend's house party",
+          "optionB": "Streak across a cricket ground",
+          "stats": {
+            "a": 75,
+            "b": 25
+          }
+        },
+        {
+          "id": "s_039",
+          "tag": "bedroom",
+          "optionA": "Be with someone great in bed you're not in love with",
+          "optionB": "Be in love with someone who's just okay in bed",
+          "stats": {
+            "a": 35,
+            "b": 65
+          }
+        },
+        {
+          "id": "s_040",
+          "tag": "texts",
+          "optionA": "Send a risky text to the wrong person",
+          "optionB": "Receive a risky text meant for someone else",
+          "stats": {
+            "a": 30,
+            "b": 70
+          }
+        },
+        {
+          "id": "s_041",
+          "tag": "dating",
+          "optionA": "Hook up at a wedding",
+          "optionB": "Hook up at the office party",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "s_042",
+          "tag": "exes",
+          "optionA": "Have your partner watch a video of your first kiss",
+          "optionB": "Watch a video of theirs",
+          "stats": {
+            "a": 45,
+            "b": 55
+          }
+        },
+        {
+          "id": "s_043",
+          "tag": "dating",
+          "optionA": "Only be able to flirt with terrible puns",
+          "optionB": "Only be able to flirt by staring intensely",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "s_044",
+          "tag": "bedroom",
+          "optionA": "On a beach, with sand everywhere",
+          "optionB": "In a tent, in the rain",
+          "stats": {
+            "a": 50,
+            "b": 50
+          }
+        },
+        {
+          "id": "s_045",
+          "tag": "bedroom",
+          "optionA": "Always be the one in the mood",
+          "optionB": "Always be the one who isn't",
+          "stats": {
+            "a": 70,
+            "b": 30
+          }
+        },
+        {
+          "id": "s_046",
+          "tag": "exposed",
+          "optionA": "Have your hookup's mum walk in",
+          "optionB": "Have your own mum walk in",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "s_047",
+          "tag": "dating",
+          "optionA": "Kiss everyone at this party once",
+          "optionB": "Kiss nobody, ever again",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "s_048",
+          "tag": "exposed",
+          "optionA": "Get a hickey right before a family wedding",
+          "optionB": "Get one right before a job interview",
+          "stats": {
+            "a": 55,
+            "b": 45
+          }
+        },
+        {
+          "id": "s_049",
+          "tag": "dating",
+          "optionA": "Date a brilliant kisser who can't dance",
+          "optionB": "Date a brilliant dancer who can't kiss",
+          "stats": {
+            "a": 60,
+            "b": 40
+          }
+        },
+        {
+          "id": "s_050",
+          "tag": "exes",
+          "optionA": "Your partner's safe word is your mum's name",
+          "optionB": "Your partner moans your ex's name, once",
+          "stats": {
+            "a": 70,
+            "b": 30
           }
         }
       ]

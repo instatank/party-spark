@@ -2,7 +2,7 @@
 import React, { useState, use } from 'react';
 import { Card, Button } from '../ui/Layout';
 import { ScreenHeader } from '../ui/Layout';
-import { ArrowRight, ChevronRight, Sparkles, RotateCcw } from 'lucide-react';
+import { ArrowRight, ChevronRight, Sparkles, RotateCcw, Users, Heart, Flame } from 'lucide-react';
 import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
@@ -21,12 +21,21 @@ interface WYRQuestion {
     stats: { a: number; b: number };
 }
 
+// Deck icons are named in the JSON (`icon`) and resolved through this static
+// map; an unknown name falls back to Sparkles rather than rendering nothing.
+const DECK_ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
+    users: Users,
+    heart: Heart,
+    flame: Flame,
+};
+
 // Decks are data: name, tagline and accent live in the JSON, so adding a
 // deck is a JSON edit. With a single deck the picker is skipped entirely.
 interface WYRCategory {
     id: string;
     name: string;
     tagline: string;
+    icon?: string;
     color: string;
     adult: boolean;
     items: WYRQuestion[];
@@ -154,6 +163,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {WYR_DATA.categories.map(cat => {
                             const color = cat.color || '#94A3B8';
+                            const Icon = (cat.icon && DECK_ICONS[cat.icon]) || Sparkles;
                             return (
                                 <button
                                     key={cat.id}
@@ -171,7 +181,7 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                                         />
                                         <div className="flex items-center gap-3">
                                             <span className="flex-shrink-0" style={{ color }}>
-                                                <Sparkles size={16} />
+                                                <Icon size={16} />
                                             </span>
                                             <div className="flex-1 min-w-0">
                                                 <h3 className="text-base font-bold text-ink leading-tight flex items-center gap-1.5">

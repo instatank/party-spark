@@ -205,7 +205,7 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.CHARADES]:            { vibe: 'Classic',  duration: '10 min', players: '4+',   tags: ['teams', 'active', 'crowd'] },
     [GameType.MINI_MAFIA]:          { vibe: 'Strategy', duration: '20 min', players: '5+',   tags: ['betrayal', 'long', 'crowd'] },
     [GameType.NEVER_HAVE_I_EVER]:   { vibe: 'Confess',  duration: '10 min', players: '3+',   tags: ['classic', 'reveal', 'crowd', 'spicy', 'couples'] },
-    [GameType.WOULD_YOU_RATHER]:    { vibe: 'Debate',   duration: '10 min', players: '2+',   tags: ['quick', 'any', 'couples', 'crowd'] },
+    [GameType.WOULD_YOU_RATHER]:    { vibe: 'Debate',   duration: '10 min', players: '2+',   tags: ['quick', 'any', 'couples', 'crowd', 'spicy'] },
     [GameType.ICEBREAKERS]:         { vibe: 'Warm-up',  duration: '5 min',  players: '2+',   tags: ['quick', 'meet', 'gentle', 'couples'] },
     [GameType.WOULD_I_LIE_TO_YOU]:  { vibe: 'Bluff',    duration: '10 min', players: '3+',   tags: ['story', 'read', 'crowd'] },
     [GameType.TRUTH_OR_DRINK]:      { vibe: 'Deep',     duration: '15 min', players: '2+',   tags: ['adult', 'honest', 'spicy', 'couples'] },
@@ -292,7 +292,9 @@ export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
         { label: 'Jobs',    tags: ['jobs', 'careers', 'work', 'professions'] },
     ],
     [GameType.WOULD_YOU_RATHER]: [
-        { label: 'The Main Deck', tags: ['general', 'dilemma', 'debate', 'this or that', 'hypothetical'] },
+        { label: 'Friends & Family', tags: ['general', 'friends', 'family', 'dilemma', 'debate', 'this or that', 'hypothetical'] },
+        { label: 'Couples',          tags: ['couples', 'partner', 'relationship', 'date night', 'love'] },
+        { label: 'Spicy',            tags: ['spicy', 'saucy', 'dating', 'intimate', '18+'] },
     ],
     [GameType.COMPATIBILITY_TEST]: [
         { label: 'Friends', tags: ['friends', 'platonic'] },
