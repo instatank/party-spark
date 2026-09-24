@@ -2782,6 +2782,281 @@
           "hooks": [
             "funny"
           ]
+        },
+        {
+          "id": "c_056",
+          "tag": "adventure",
+          "optionA": "Be dropped in a random city together with no hotel booked, for 48 hours",
+          "optionB": "Board a plane together without knowing where it's going",
+          "stats": {
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "exciting",
+            "funny"
+          ]
+        },
+        {
+          "id": "c_057",
+          "tag": "adventure",
+          "optionA": "Go skydiving together on your anniversary",
+          "optionB": "Go on a ten-day silent retreat together",
+          "stats": {
+            "a": 60,
+            "b": 40
+          },
+          "hooks": [
+            "exciting",
+            "funny"
+          ]
+        },
+        {
+          "id": "c_058",
+          "tag": "adventure",
+          "optionA": "Quit your jobs and travel together for a year",
+          "optionB": "Stay put and buy a home together this year",
+          "stats": {
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
+        },
+        {
+          "id": "c_059",
+          "tag": "adventure",
+          "optionA": "Spend a night locked inside a museum together",
+          "optionB": "Spend a night in a treehouse deep in a jungle",
+          "stats": {
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "exciting"
+          ]
+        },
+        {
+          "id": "c_060",
+          "tag": "adventure",
+          "optionA": "Win a couples' reality show",
+          "optionB": "Get voted off on day one, but become the fan favourites",
+          "stats": {
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "exciting",
+            "funny"
+          ]
+        },
+        {
+          "id": "c_061",
+          "tag": "dates",
+          "optionA": "Take salsa lessons together, with a public recital at the end",
+          "optionB": "Take a cooking class where your partner judges every dish",
+          "stats": {
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "exciting",
+            "funny"
+          ]
+        },
+        {
+          "id": "c_062",
+          "tag": "dates",
+          "optionA": "Swap phones for a whole weekend",
+          "optionB": "Swap wardrobes for a whole weekend",
+          "stats": {
+            "a": 35,
+            "b": 65
+          },
+          "hooks": [
+            "exciting",
+            "edgy",
+            "funny"
+          ]
+        },
+        {
+          "id": "c_063",
+          "tag": "dates",
+          "optionA": "Go on a mystery date where you can't ask a single question",
+          "optionB": "Go on a date where you say yes to everything they suggest",
+          "stats": {
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "exciting"
+          ]
+        },
+        {
+          "id": "c_064",
+          "tag": "adventure",
+          "optionA": "Road-trip across the country in a campervan",
+          "optionB": "Sail around the world on a cruise ship",
+          "stats": {
+            "a": 50,
+            "b": 50
+          },
+          "hooks": [
+            "exciting"
+          ]
+        },
+        {
+          "id": "c_065",
+          "tag": "dates",
+          "optionA": "Renew your vows in Las Vegas, dressed as Elvis",
+          "optionB": "Renew your vows in front of the whole extended family",
+          "stats": {
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "exciting",
+            "funny"
+          ]
+        },
+        {
+          "id": "c_066",
+          "tag": "dates",
+          "optionA": "Go on a double date with both your exes",
+          "optionB": "Go on a double date with both your parents",
+          "stats": {
+            "a": 30,
+            "b": 70
+          },
+          "hooks": [
+            "edgy",
+            "funny"
+          ]
+        },
+        {
+          "id": "c_067",
+          "tag": "dates",
+          "optionA": "Get chased through a haunted house together",
+          "optionB": "Get stuck at the top of a Ferris wheel together for an hour",
+          "stats": {
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "exciting",
+            "funny"
+          ]
+        },
+        {
+          "id": "c_068",
+          "tag": "adventure",
+          "optionA": "Spend your anniversary on a desert camel safari",
+          "optionB": "Spend your anniversary on a houseboat in Kerala",
+          "stats": {
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "exciting"
+          ]
+        },
+        {
+          "id": "c_069",
+          "tag": "adventure",
+          "optionA": "Learn to scuba dive together",
+          "optionB": "Learn to fly a small plane together",
+          "stats": {
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "exciting"
+          ]
+        },
+        {
+          "id": "c_070",
+          "tag": "dates",
+          "optionA": "Go camping for a week with no phones",
+          "optionB": "Book a five-star suite for a weekend and never leave the room",
+          "stats": {
+            "a": 40,
+            "b": 60
+          },
+          "hooks": [
+            "exciting",
+            "funny"
+          ]
+        },
+        {
+          "id": "c_071",
+          "tag": "dates",
+          "optionA": "Redo your proposal, bigger and in public",
+          "optionB": "Redo your first kiss somewhere far more dramatic",
+          "stats": {
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "exciting"
+          ]
+        },
+        {
+          "id": "c_072",
+          "tag": "adventure",
+          "optionA": "Run a food truck together for a summer",
+          "optionB": "Open a tiny café together, forever",
+          "stats": {
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
+        },
+        {
+          "id": "c_073",
+          "tag": "dates",
+          "optionA": "Drive somewhere new at 3am to watch the sunrise",
+          "optionB": "Stay up until 3am telling each other things you've never said",
+          "stats": {
+            "a": 45,
+            "b": 55
+          },
+          "hooks": [
+            "exciting",
+            "revealing"
+          ]
+        },
+        {
+          "id": "c_074",
+          "tag": "dates",
+          "optionA": "Enter a karaoke contest as a duet",
+          "optionB": "Enter a dance-off as a couple",
+          "stats": {
+            "a": 55,
+            "b": 45
+          },
+          "hooks": [
+            "exciting",
+            "funny"
+          ]
+        },
+        {
+          "id": "c_075",
+          "tag": "dates",
+          "optionA": "Spend a week living like you're eighteen again",
+          "optionB": "Spend a week living like you're eighty",
+          "stats": {
+            "a": 65,
+            "b": 35
+          },
+          "hooks": [
+            "exciting",
+            "funny"
+          ]
         }
       ]
     },
