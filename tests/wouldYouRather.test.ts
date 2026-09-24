@@ -7,15 +7,35 @@ import data from '../src/data/would_you_rather.json';
 // tests pin their shape, not their truth.
 
 type Card = { id: string; optionA: string; optionB: string; stats: { a: number; b: number } };
-type Deck = { id: string; name: string; tagline: string; color: string; adult: boolean; items: Card[] };
+type Deck = { id: string; name: string; tagline: string; icon?: string; color: string; adult: boolean; items: Card[] };
 const decks = (data as { categories: Deck[] }).categories;
 const cards = decks.flatMap(d => d.items);
 
 describe('Would You Rather deck', () => {
-    it('ships the general deck with 100 cards', () => {
-        const general = decks.find(d => d.id === 'general');
-        expect(general?.items.length).toBe(100);
-        expect(general?.adult).toBe(false);
+    // Three decks, split by who is in the room. Only Spicy is adult-gated —
+    // Friends & Family has to be safe with parents and kids at the table.
+    it('ships the three room-shaped decks, with only Spicy behind the gate', () => {
+        const byId = Object.fromEntries(decks.map(d => [d.id, d]));
+        expect(decks.map(d => d.id)).toEqual(['general', 'couples', 'spicy']);
+        expect(byId.general.adult).toBe(false);
+        expect(byId.couples.adult).toBe(false);
+        expect(byId.spicy.adult).toBe(true);
+    });
+
+    it('every deck is deep enough for several rounds of 10', () => {
+        for (const d of decks) expect(d.items.length, d.id).toBeGreaterThanOrEqual(40);
+    });
+
+    // Ids are session-dedupe keys: renumbering one resurfaces cards a table
+    // has already played. New cards append; the general deck's first 100 keep
+    // the ids they shipped with.
+    it('ids are prefixed by deck, and the original 100 keep their ids', () => {
+        const prefix: Record<string, string> = { general: 'g_', couples: 'c_', spicy: 's_' };
+        for (const d of decks) for (const c of d.items) expect(c.id.startsWith(prefix[d.id]), c.id).toBe(true);
+        const general = decks.find(d => d.id === 'general')!;
+        expect(general.items.slice(0, 100).map(c => c.id)).toEqual(
+            Array.from({ length: 100 }, (_, i) => `g_${String(i + 1).padStart(3, '0')}`),
+        );
     });
 
     it('every deck carries what the picker renders', () => {
@@ -26,7 +46,7 @@ describe('Would You Rather deck', () => {
         }
     });
 
-    it('ids are unique, and no option text appears twice', () => {
+    it('ids are unique, and no option text appears twice across all decks', () => {
         expect(new Set(cards.map(c => c.id)).size).toBe(cards.length);
         const options = cards.flatMap(c => [c.optionA, c.optionB].map(o => o.toLowerCase()));
         expect(new Set(options).size).toBe(options.length);
