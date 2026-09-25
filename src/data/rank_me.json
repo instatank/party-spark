@@ -1,0 +1,2949 @@
+{
+  "game": "rank-me",
+  "title": "Rank Me",
+  "version": "2.1.0",
+  "itemsPerCard": 5,
+  "modes": {
+    "hotSeat": "One player ranks privately; the rest of the room agrees on ONE shared guess of that order. Room scores.",
+    "knowMe": "Two players. One ranks privately, the other predicts that order. Roles swap every card. Predictor scores.",
+    "couplesVsCouples": "Teams of two (extendable to bigger teams). Inside each team it is Know Me; every team plays the same card each round. Team scores add up on a leaderboard."
+  },
+  "scoring": {
+    "perItem": "Compare where the predictor placed each item with where the ranker placed it. Exact spot = 2 points, one spot off = 1, further = 0.",
+    "endsWeighted": "Items the ranker put at #1 or #5 score double. The middle three count single.",
+    "perCardMax": 14,
+    "percent": "points / 14 * 100",
+    "tiers": {
+      "14": "Mind reader",
+      "10-12": "Close",
+      "7-9": "Getting there",
+      "0-6": "Guesswork"
+    },
+    "reference": "Perfect = 14. Top two swapped = 11. Fully reversed = 2. A random guess averages about 5.",
+    "note": "Points always go to whoever is reading the ranker, never to the ranker for being unpredictable. This keeps rankings honest."
+  },
+  "uiNotes": [
+    "Shuffle the starting item order separately on every ranking screen, so nobody is anchored by the listed order.",
+    "Always show the card's top and bottom labels at the ends of the drag list.",
+    "Hide the spicy deck unless adult mode is on.",
+    "'ex' marks cards that mention an ex; a 'keep it sweet' option can leave them out (useful for couples).",
+    "'desi' marks cards with Indian cultural references; can be used to filter for international groups.",
+    "'theme' is a hidden sub-topic; avoid dealing the same theme twice in a row."
+  ],
+  "contentRules": [
+    "No consensus order: every item should plausibly be someone's #1 and someone else's #5.",
+    "Balanced weight: no item obviously far above or below the others.",
+    "Taste, not fact: the order depends on the person, never on knowledge.",
+    "Like with like: all five items are the same kind of thing.",
+    "Short: items max 22 characters, to fit a drag row on a phone.",
+    "Party-safe: no looks, body, health, religion, politics or ranking people in the room."
+  ],
+  "categories": [
+    {
+      "id": "reallife",
+      "name": "Real Life",
+      "emoji": "☀️",
+      "spicy": false,
+      "description": "Food, habits, travel, screens and pet peeves. How you actually live.",
+      "count": 80
+    },
+    {
+      "id": "whatif",
+      "name": "What If",
+      "emoji": "✨",
+      "spicy": false,
+      "description": "Superpowers, time machines and wild hypotheticals.",
+      "count": 40
+    },
+    {
+      "id": "afterdark",
+      "name": "After Dark",
+      "emoji": "🌙",
+      "spicy": true,
+      "description": "Dating, drinks and awkward moments. Adults only.",
+      "count": 40
+    }
+  ],
+  "cards": [
+    {
+      "id": "reallife-001",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Would miss most if it vanished",
+      "top": "Miss most",
+      "bottom": "Wouldn't notice",
+      "items": [
+        "Cheese",
+        "Chocolate",
+        "Coffee",
+        "Bread",
+        "Spicy food"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-002",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Your 2am craving",
+      "top": "Craving it",
+      "bottom": "Hard pass",
+      "items": [
+        "Instant noodles",
+        "Ice cream",
+        "Leftover pizza",
+        "Chips",
+        "Butter toast"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-003",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Dream breakfast",
+      "top": "Dream",
+      "bottom": "Skip it",
+      "items": [
+        "Aloo paratha",
+        "Pancakes",
+        "Eggs any style",
+        "Poha",
+        "Cereal"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-004",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Best pizza topping",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Pineapple",
+        "Mushrooms",
+        "Extra cheese",
+        "Olives",
+        "Jalapeños"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-005",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Hot drink of choice",
+      "top": "Always",
+      "bottom": "Never",
+      "items": [
+        "Masala chai",
+        "Filter coffee",
+        "Hot chocolate",
+        "Green tea",
+        "Black coffee"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-006",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Street food champion",
+      "top": "Champion",
+      "bottom": "Last place",
+      "items": [
+        "Golgappe",
+        "Momos",
+        "Chole bhature",
+        "Pav bhaji",
+        "Aloo tikki"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-007",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Dessert that wins",
+      "top": "Winner",
+      "bottom": "Loser",
+      "items": [
+        "Gulab jamun",
+        "Brownie",
+        "Cheesecake",
+        "Ice cream",
+        "Rasmalai"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-008",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Most overrated",
+      "top": "Most overrated",
+      "bottom": "Worth the hype",
+      "items": [
+        "Avocado toast",
+        "Sushi",
+        "Truffle fries",
+        "Bubble tea",
+        "Kale"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-009",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Fast food run",
+      "top": "Take me there",
+      "bottom": "Only if desperate",
+      "items": [
+        "McDonald's",
+        "KFC",
+        "Domino's",
+        "Subway",
+        "Burger King"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-010",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Fries dip of choice",
+      "top": "Best dip",
+      "bottom": "Worst dip",
+      "items": [
+        "Ketchup",
+        "Mayo",
+        "Mustard",
+        "Hot sauce",
+        "Cheese sauce"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-011",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "What you'd cook for guests",
+      "top": "Nail it",
+      "bottom": "Disaster",
+      "items": [
+        "Pasta",
+        "Omelette",
+        "Biryani",
+        "Grilled sandwich",
+        "Fried rice"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-012",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Texture you can't stand",
+      "top": "Can't stand",
+      "bottom": "Don't mind",
+      "items": [
+        "Soggy fries",
+        "Slimy okra",
+        "Lumpy porridge",
+        "Chewy squid",
+        "Mushy pasta"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-013",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Perfect movie snack",
+      "top": "Perfect",
+      "bottom": "Pointless",
+      "items": [
+        "Popcorn",
+        "Nachos",
+        "Fries",
+        "Chocolate",
+        "Hot dog"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-014",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Comfort food after a bad day",
+      "top": "Pure comfort",
+      "bottom": "Won't help",
+      "items": [
+        "Rajma chawal",
+        "Mac and cheese",
+        "Instant noodles",
+        "Khichdi",
+        "Pizza delivery"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-015",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Chips flavour",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Classic salted",
+        "Cream & onion",
+        "Magic Masala",
+        "Sour cream",
+        "Peri peri"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-016",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Weird combo you'd try",
+      "top": "Try first",
+      "bottom": "Never",
+      "items": [
+        "Fries in ice cream",
+        "Chilli chocolate",
+        "Achaar sandwich",
+        "Watermelon with salt",
+        "Maggi with ketchup"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-017",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Buffet: what hits your plate",
+      "top": "First",
+      "bottom": "Last",
+      "items": [
+        "Salad",
+        "Starters",
+        "Main course",
+        "Desserts",
+        "Live counter"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-018",
+      "deck": "reallife",
+      "theme": "food",
+      "prompt": "Kitchen job you'd dodge",
+      "top": "Dodge most",
+      "bottom": "Don't mind",
+      "items": [
+        "Washing dishes",
+        "Chopping onions",
+        "Cleaning the fridge",
+        "Grocery run",
+        "Cooking dinner"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-019",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Give up first for a month",
+      "top": "Give up first",
+      "bottom": "Never",
+      "items": [
+        "Chai or coffee",
+        "Sugar",
+        "Social media",
+        "Hot showers",
+        "Takeout"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-020",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "First thing after waking up",
+      "top": "First",
+      "bottom": "Last",
+      "items": [
+        "Check phone",
+        "Chai or coffee",
+        "Shower",
+        "Workout",
+        "Hit snooze"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-021",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Chore you hate most",
+      "top": "Hate most",
+      "bottom": "Weirdly enjoy",
+      "items": [
+        "Laundry",
+        "Dishes",
+        "Ironing",
+        "Cleaning bathroom",
+        "Making the bed"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-022",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Biggest time-waster",
+      "top": "Wastes most",
+      "bottom": "Wastes least",
+      "items": [
+        "Instagram",
+        "YouTube",
+        "WhatsApp groups",
+        "Netflix",
+        "Online shopping"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-023",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Can't live without at home",
+      "top": "Can't live without",
+      "bottom": "Could manage",
+      "items": [
+        "AC",
+        "WiFi",
+        "Hot water",
+        "Fridge",
+        "Washing machine"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-024",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Perfect Sunday",
+      "top": "Perfect",
+      "bottom": "Not for me",
+      "items": [
+        "Sleeping in",
+        "Brunch with friends",
+        "Family lunch",
+        "Binge-watching",
+        "Gym or sport"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-025",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Best part of school",
+      "top": "Loved it",
+      "bottom": "Meh",
+      "items": [
+        "Sports day",
+        "Annual function",
+        "Canteen",
+        "Field trips",
+        "Last-bench chaos"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-026",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Most nostalgic snack",
+      "top": "Pure nostalgia",
+      "bottom": "Never cared",
+      "items": [
+        "Parle-G",
+        "Kurkure",
+        "Cadbury Gems",
+        "Hajmola",
+        "Poppins"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-027",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Best childhood game",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Hide and seek",
+        "Gully cricket",
+        "Video games",
+        "Carrom",
+        "Chor police"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-028",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Most useful adult skill",
+      "top": "Most useful",
+      "bottom": "Overrated",
+      "items": [
+        "Cooking",
+        "Driving",
+        "Budgeting",
+        "Saying no",
+        "Fixing things"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-029",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Where your money goes",
+      "top": "Splurge most",
+      "bottom": "Spend least",
+      "items": [
+        "Gadgets",
+        "Clothes",
+        "Travel",
+        "Eating out",
+        "Home decor"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-030",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Worst way to be woken up",
+      "top": "Worst",
+      "bottom": "Not bad",
+      "items": [
+        "Alarm clock",
+        "Mom yelling",
+        "Blinding sunlight",
+        "Doorbell",
+        "Pet on your face"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-031",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "How well does it describe you?",
+      "top": "Most me",
+      "bottom": "Least me",
+      "items": [
+        "Planner",
+        "Procrastinator",
+        "Overthinker",
+        "Chill",
+        "Perfectionist"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-032",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "How well does it describe you?",
+      "top": "Most me",
+      "bottom": "Least me",
+      "items": [
+        "Foodie",
+        "Homebody",
+        "Party animal",
+        "Workaholic",
+        "Gym freak"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-033",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Most stressful",
+      "top": "Most stressful",
+      "bottom": "Easy",
+      "items": [
+        "Moving house",
+        "Job interview",
+        "Planning a wedding",
+        "Filing taxes",
+        "Hosting guests"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-034",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Best gift to get",
+      "top": "Love it",
+      "bottom": "Meh",
+      "items": [
+        "Cash",
+        "New gadget",
+        "Handwritten letter",
+        "An experience",
+        "Something handmade"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-035",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Surprise day off",
+      "top": "Do this",
+      "bottom": "Not this",
+      "items": [
+        "Sleep all day",
+        "Meet friends",
+        "Catch up on chores",
+        "Solo movie",
+        "Road trip"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-036",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Where you'd rather live",
+      "top": "Dream",
+      "bottom": "No way",
+      "items": [
+        "Big city",
+        "Hill station",
+        "Beach town",
+        "Farmhouse",
+        "Abroad"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-037",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Go-to way to unwind",
+      "top": "Always works",
+      "bottom": "Never works",
+      "items": [
+        "Music",
+        "Long shower",
+        "Power nap",
+        "Evening walk",
+        "Scrolling"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-038",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Monsoon mood",
+      "top": "Most me",
+      "bottom": "Least me",
+      "items": [
+        "Pakoras and chai",
+        "Long drive",
+        "Dancing in rain",
+        "Stay in bed",
+        "Cancel all plans"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-039",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Emoji you use most",
+      "top": "Use most",
+      "bottom": "Never",
+      "items": [
+        "😂",
+        "🙏",
+        "❤️",
+        "👍",
+        "🔥"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-040",
+      "deck": "reallife",
+      "theme": "life",
+      "prompt": "Where you do your best thinking",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Shower",
+        "Commute",
+        "Late at night",
+        "On a walk",
+        "In the loo"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-041",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Everyday annoyances",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Loud chewing",
+        "Late replies",
+        "Voice notes",
+        "People running late",
+        "Slow walkers"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-042",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "On a flight",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Seat kickers",
+        "Armrest hogs",
+        "Crying babies",
+        "Clapping on landing",
+        "Full recliners"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-043",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "On the road",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Nonstop honking",
+        "Lane cutters",
+        "Wrong-side drivers",
+        "High beams",
+        "Bikes on footpaths"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-044",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Texting sins",
+      "top": "Worst sin",
+      "bottom": "Forgivable",
+      "items": [
+        "\"K\" replies",
+        "Seen, no reply",
+        "Paragraph texts",
+        "Too many emojis",
+        "Typing... then nothing"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-045",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Social sins",
+      "top": "Worst sin",
+      "bottom": "Forgivable",
+      "items": [
+        "Spoilers",
+        "Humblebragging",
+        "Oversharing",
+        "Name-dropping",
+        "Interrupting"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-046",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Work sins",
+      "top": "Worst sin",
+      "bottom": "Forgivable",
+      "items": [
+        "Reply-all chains",
+        "Could've been an email",
+        "Late-night calls",
+        "Micromanaging",
+        "Weekend emails"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-047",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "House guests who...",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Show up unannounced",
+        "Overstay",
+        "Wear shoes inside",
+        "Judge your home",
+        "Stay glued to phone"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-048",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Eating out",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Slow service",
+        "Wrong order",
+        "Loud tables",
+        "Bill-splitting maths",
+        "Hidden service charge"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-049",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Relatives' questions",
+      "top": "Most annoying",
+      "bottom": "Can dodge it",
+      "items": [
+        "\"When's the wedding?\"",
+        "\"Salary kitna hai?\"",
+        "\"Why not a doctor?\"",
+        "\"Any good news?\"",
+        "\"Sharma ji's son...\""
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-050",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "At the movies",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Phone screens",
+        "Talkers",
+        "Late arrivals",
+        "Loud crunchers",
+        "Kids kicking seats"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-051",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "At home",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Wet towel on bed",
+        "Dishes in the sink",
+        "Cap off toothpaste",
+        "Lights left on",
+        "Empty bottle in fridge"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-052",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Phone etiquette fails",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Speakerphone calls",
+        "Reels on speaker",
+        "Good morning forwards",
+        "Unmuted group calls",
+        "Autoplay videos"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-053",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Internet evils",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Pop-up ads",
+        "Cookie banners",
+        "Captchas",
+        "Paywalls",
+        "\"Download our app\""
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-054",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Grammar crimes",
+      "top": "Worst crime",
+      "bottom": "Forgivable",
+      "items": [
+        "Your vs you're",
+        "Its vs it's",
+        "\"Could of\"",
+        "RANDOM CAPS",
+        "no punctuation"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-055",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "At the gym",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Weight hoggers",
+        "Mirror selfies",
+        "Loud grunters",
+        "Not re-racking",
+        "Sweaty benches"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-056",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Shopping",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Long queues",
+        "Pushy salespeople",
+        "No trial rooms",
+        "Out of stock",
+        "\"Change nahi hai\""
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-057",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Party guests who...",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Scroll their phone",
+        "Get loud drunk",
+        "Hijack the music",
+        "Leave early",
+        "Won't dance"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-058",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "The friend who's always...",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Broke",
+        "Late",
+        "On their phone",
+        "Complaining",
+        "Cancelling"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-059",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "Weather you hate",
+      "top": "Hate most",
+      "bottom": "Bring it on",
+      "items": [
+        "Humidity",
+        "Dust storms",
+        "Heatwaves",
+        "Dense fog",
+        "Waterlogged roads"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-060",
+      "deck": "reallife",
+      "theme": "peeves",
+      "prompt": "In a queue",
+      "top": "Most annoying",
+      "bottom": "Can live with it",
+      "items": [
+        "Line cutters",
+        "Standing too close",
+        "Loud phone talkers",
+        "Slow payers",
+        "Spot-savers"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-061",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Holiday vibe",
+      "top": "Dream trip",
+      "bottom": "Not for me",
+      "items": [
+        "Beach",
+        "Mountains",
+        "City break",
+        "Road trip",
+        "Staycation"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-062",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Travel with",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Solo",
+        "Partner",
+        "Family",
+        "Friends gang",
+        "Tour group"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-063",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "On holiday you mostly...",
+      "top": "Most",
+      "bottom": "Least",
+      "items": [
+        "Sightsee",
+        "Hunt for food",
+        "Shop",
+        "Try adventure sports",
+        "Laze at the hotel"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-064",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Indian getaway",
+      "top": "Go now",
+      "bottom": "Go last",
+      "items": [
+        "Goa",
+        "Ladakh",
+        "Kerala",
+        "Rajasthan",
+        "The Northeast"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-065",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Worst travel hassle",
+      "top": "Worst",
+      "bottom": "Can handle",
+      "items": [
+        "Flight delays",
+        "Lost luggage",
+        "Dirty hotel room",
+        "Tourist scams",
+        "Getting lost"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-066",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Movie genre",
+      "top": "Favourite",
+      "bottom": "Avoid",
+      "items": [
+        "Comedy",
+        "Horror",
+        "Romance",
+        "Action",
+        "Thriller"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-067",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Music on repeat",
+      "top": "On repeat",
+      "bottom": "Skip",
+      "items": [
+        "Bollywood",
+        "Pop",
+        "Rock",
+        "Hip-hop",
+        "Old classics"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-068",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "What you watch most",
+      "top": "Most",
+      "bottom": "Least",
+      "items": [
+        "Movies",
+        "Series",
+        "YouTube",
+        "Reels",
+        "Live sports"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-069",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Sport to watch",
+      "top": "Glued",
+      "bottom": "Channel change",
+      "items": [
+        "Cricket",
+        "Football",
+        "Tennis",
+        "F1",
+        "Olympics"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-070",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Hobby to pick up",
+      "top": "Start now",
+      "bottom": "Never",
+      "items": [
+        "Painting",
+        "Guitar",
+        "Pottery",
+        "Photography",
+        "Gardening"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-071",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Saturday night",
+      "top": "Perfect",
+      "bottom": "No thanks",
+      "items": [
+        "House party",
+        "Clubbing",
+        "Dinner out",
+        "Movie at home",
+        "Early night"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-072",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Game night pick",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Cards",
+        "Board games",
+        "Charades",
+        "Video games",
+        "Antakshari"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-073",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Road trip must-have",
+      "top": "Must have",
+      "bottom": "Optional",
+      "items": [
+        "Playlist",
+        "Snacks",
+        "Good company",
+        "Dhaba stops",
+        "No fixed plan"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-074",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Where you'd stay",
+      "top": "Book it",
+      "bottom": "Never",
+      "items": [
+        "Luxury hotel",
+        "Homestay",
+        "Hostel",
+        "Camping tent",
+        "Treehouse"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-075",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Book you'd pick up",
+      "top": "Grab it",
+      "bottom": "Leave it",
+      "items": [
+        "Thriller",
+        "Self-help",
+        "Biography",
+        "Fantasy",
+        "Comics"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-076",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Party theme",
+      "top": "Best theme",
+      "bottom": "Worst theme",
+      "items": [
+        "Bollywood night",
+        "Retro 80s",
+        "Pyjama party",
+        "Costume party",
+        "Pool party"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-077",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Adventure you'd try",
+      "top": "Sign me up",
+      "bottom": "No chance",
+      "items": [
+        "Skydiving",
+        "Scuba diving",
+        "Bungee jump",
+        "River rafting",
+        "Paragliding"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-078",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "What you photograph most",
+      "top": "Most",
+      "bottom": "Least",
+      "items": [
+        "Food",
+        "Selfies",
+        "Scenery",
+        "Buildings",
+        "Nothing, just vibes"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-079",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Best night out",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Live concert",
+        "Stand-up show",
+        "Theatre play",
+        "Sports stadium",
+        "Music festival"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "reallife-080",
+      "deck": "reallife",
+      "theme": "downtime",
+      "prompt": "Workout you'd stick to",
+      "top": "Would stick",
+      "bottom": "Would quit",
+      "items": [
+        "Gym",
+        "Yoga",
+        "Running",
+        "Dance class",
+        "A team sport"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-001",
+      "deck": "whatif",
+      "theme": "food",
+      "prompt": "One cuisine for a whole year",
+      "top": "Easy yes",
+      "bottom": "Nightmare",
+      "items": [
+        "Italian",
+        "Chinese",
+        "Mexican",
+        "Japanese",
+        "Thai"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-002",
+      "deck": "whatif",
+      "theme": "food",
+      "prompt": "Desert-island fruit",
+      "top": "Take it",
+      "bottom": "Leave it",
+      "items": [
+        "Grapes",
+        "Watermelon",
+        "Strawberry",
+        "Banana",
+        "Pineapple"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-003",
+      "deck": "whatif",
+      "theme": "life",
+      "prompt": "Fire! Everyone's safe. Grab:",
+      "top": "Grab first",
+      "bottom": "Let it burn",
+      "items": [
+        "Phone",
+        "Laptop",
+        "Photo albums",
+        "Passport",
+        "Jewellery"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-004",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Pick a superpower",
+      "top": "Want most",
+      "bottom": "Keep it",
+      "items": [
+        "Invisibility",
+        "Flying",
+        "Mind reading",
+        "Teleporting",
+        "Time travel"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-005",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Era you'd live in",
+      "top": "Take me there",
+      "bottom": "No thanks",
+      "items": [
+        "The 1960s",
+        "The 1980s",
+        "The 1990s",
+        "Today",
+        "The year 2080"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-006",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Won ₹10 crore. First move?",
+      "top": "First",
+      "bottom": "Last",
+      "items": [
+        "Buy a house",
+        "Travel the world",
+        "Invest it all",
+        "Quit your job",
+        "Spoil the family"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-007",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Famous job for a day",
+      "top": "Dream day",
+      "bottom": "Pass",
+      "items": [
+        "Movie star",
+        "Cricketer",
+        "Astronaut",
+        "Rock star",
+        "Top chef"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-008",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Animal for a day",
+      "top": "Be this",
+      "bottom": "Not this",
+      "items": [
+        "Cat",
+        "Eagle",
+        "Dolphin",
+        "Dog",
+        "Lion"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-009",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Stranded on an island, you bring",
+      "top": "Bring first",
+      "bottom": "Leave behind",
+      "items": [
+        "Knife",
+        "Lighter",
+        "Fishing net",
+        "Hammock",
+        "Endless snacks"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-010",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Zombie apocalypse teammate",
+      "top": "Pick first",
+      "bottom": "Pick last",
+      "items": [
+        "Doctor",
+        "Army veteran",
+        "Mechanic",
+        "Farmer",
+        "Your mom"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-011",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Instant skill, no practice",
+      "top": "Want most",
+      "bottom": "Don't need",
+      "items": [
+        "Every language",
+        "Any instrument",
+        "Chef-level cooking",
+        "Coding",
+        "Pro dancing"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-012",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Give up forever",
+      "top": "Give up first",
+      "bottom": "Never",
+      "items": [
+        "Music",
+        "Movies",
+        "Sweets",
+        "Travel",
+        "Social media"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-013",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Survive a year without",
+      "top": "Easy",
+      "bottom": "Impossible",
+      "items": [
+        "Internet",
+        "Your car",
+        "Eating out",
+        "New clothes",
+        "AC"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-014",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Time machine: first stop",
+      "top": "Go first",
+      "bottom": "Go last",
+      "items": [
+        "Dinosaur era",
+        "Ancient Egypt",
+        "Mughal court",
+        "Your own childhood",
+        "500 years ahead"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-015",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "World you'd live in",
+      "top": "Move in",
+      "bottom": "Stay away",
+      "items": [
+        "Magic school",
+        "Space colony",
+        "Superhero city",
+        "Medieval kingdom",
+        "Underwater city"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-016",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Be famous for",
+      "top": "Dream",
+      "bottom": "Nightmare",
+      "items": [
+        "Acting",
+        "Sports",
+        "Singing",
+        "Writing",
+        "Going viral"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-017",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Send your clone to",
+      "top": "Send first",
+      "bottom": "Go myself",
+      "items": [
+        "Work",
+        "Chores",
+        "The gym",
+        "Family functions",
+        "Paperwork"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-018",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Pet, if anything were legal",
+      "top": "Want it",
+      "bottom": "No thanks",
+      "items": [
+        "Tiger cub",
+        "Penguin",
+        "Monkey",
+        "Owl",
+        "Red panda"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-019",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Unlimited free",
+      "top": "Want most",
+      "bottom": "Don't need",
+      "items": [
+        "Flights",
+        "Food",
+        "Clothes",
+        "Books",
+        "Massages"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-020",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Curse or gift?",
+      "top": "Biggest curse",
+      "bottom": "Best gift",
+      "items": [
+        "Hearing every thought",
+        "Never forgetting",
+        "Can't tell a lie",
+        "Never needing sleep",
+        "Seeing the future"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-021",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Swap lives for a week",
+      "top": "Swap now",
+      "bottom": "No way",
+      "items": [
+        "A monk",
+        "A billionaire",
+        "A rock star",
+        "A farmer",
+        "An astronaut"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-022",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Move abroad to",
+      "top": "Pack my bags",
+      "bottom": "Never",
+      "items": [
+        "USA",
+        "UK",
+        "Dubai",
+        "Japan",
+        "Australia"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-023",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Dream house must have",
+      "top": "Must have",
+      "bottom": "Don't need",
+      "items": [
+        "Pool",
+        "Home theatre",
+        "Library",
+        "Huge kitchen",
+        "Rooftop garden"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-024",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Live inside a movie genre",
+      "top": "Move in",
+      "bottom": "Never",
+      "items": [
+        "Rom-com",
+        "Horror",
+        "Action",
+        "Sci-fi",
+        "Musical"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-025",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Do it for ₹1 crore",
+      "top": "Easy money",
+      "bottom": "No amount",
+      "items": [
+        "Shave your head",
+        "No phone for a year",
+        "Only dal for a year",
+        "Move to a village",
+        "Boss's name tattoo"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-026",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Stuck in a lift 5 hours with",
+      "top": "Fine by me",
+      "bottom": "Nightmare",
+      "items": [
+        "Your boss",
+        "Your ex",
+        "A chatterbox",
+        "A crying baby",
+        "A mime"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": true
+    },
+    {
+      "id": "whatif-027",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Pick a tiny superpower",
+      "top": "Want most",
+      "bottom": "Pass",
+      "items": [
+        "Always find parking",
+        "Perfect toast always",
+        "Never lose socks",
+        "Always know the time",
+        "Infinite phone battery"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-028",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "You rule for a day. First:",
+      "top": "Do first",
+      "bottom": "Do last",
+      "items": [
+        "Free food everywhere",
+        "Four-day work week",
+        "No traffic",
+        "No homework",
+        "Mandatory nap breaks"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-029",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Only one app, forever",
+      "top": "Keep it",
+      "bottom": "Lose it",
+      "items": [
+        "WhatsApp",
+        "Instagram",
+        "Spotify",
+        "Google Maps",
+        "Food delivery"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-030",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Relive one age",
+      "top": "Relive it",
+      "bottom": "Never again",
+      "items": [
+        "Age 5",
+        "Age 13",
+        "Age 18",
+        "Age 25",
+        "Right now"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-031",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Swap bodies for a day with",
+      "top": "Swap now",
+      "bottom": "No way",
+      "items": [
+        "Your pet",
+        "A toddler",
+        "Your sibling",
+        "Your best friend",
+        "A celebrity"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-032",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Forever, everything tastes of",
+      "top": "Bliss",
+      "bottom": "Torture",
+      "items": [
+        "Butter chicken",
+        "Pizza",
+        "Biryani",
+        "Mango",
+        "Popcorn"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-033",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Live a year in",
+      "top": "Sign me up",
+      "bottom": "No chance",
+      "items": [
+        "Space station",
+        "Antarctica base",
+        "Tiny island",
+        "Himalayan monastery",
+        "Cruise ship"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-034",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Your life gets a soundtrack",
+      "top": "Yes please",
+      "bottom": "Please no",
+      "items": [
+        "Bollywood",
+        "Jazz",
+        "Heavy metal",
+        "Lo-fi",
+        "Classical"
+      ],
+      "desi": true,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-035",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Robot butler's main job",
+      "top": "Most needed",
+      "bottom": "Least needed",
+      "items": [
+        "Groceries",
+        "Cleaning",
+        "Driving",
+        "Laundry",
+        "Admin and bills"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-036",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Dinner guest",
+      "top": "Most fun",
+      "bottom": "Least fun",
+      "items": [
+        "A comedian",
+        "A scientist",
+        "A sports legend",
+        "A movie star",
+        "A historical figure"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-037",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Cross the country by",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Train",
+        "Motorbike",
+        "Campervan",
+        "Luxury bus",
+        "Horseback"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-038",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "World's best at",
+      "top": "Want most",
+      "bottom": "Pass",
+      "items": [
+        "Singing",
+        "Storytelling",
+        "Dancing",
+        "Arguing",
+        "Napping"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-039",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Zombie apocalypse hideout",
+      "top": "Hide here",
+      "bottom": "Doomed",
+      "items": [
+        "Mall",
+        "Supermarket",
+        "Army base",
+        "Farmhouse",
+        "Your own home"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "whatif-040",
+      "deck": "whatif",
+      "theme": "whatif",
+      "prompt": "Magic door opens to",
+      "top": "Walk through",
+      "bottom": "Stay shut",
+      "items": [
+        "Any beach",
+        "Your childhood home",
+        "A full fridge",
+        "A 10-min nap room",
+        "Tomorrow"
+      ],
+      "desi": false,
+      "spicy": false,
+      "ex": false
+    },
+    {
+      "id": "afterdark-001",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Ideal first date",
+      "top": "Ideal",
+      "bottom": "Awkward",
+      "items": [
+        "Coffee",
+        "Dinner",
+        "Drinks",
+        "Movie",
+        "Long walk"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-002",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Dating profile red flag",
+      "top": "Swipe left fastest",
+      "bottom": "Can overlook",
+      "items": [
+        "Only group pics",
+        "Gym mirror selfies",
+        "Bio: \"just ask\"",
+        "Holding a fish",
+        "Sunglasses everywhere"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-003",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "First date turn-off",
+      "top": "Instant no",
+      "bottom": "Can forgive",
+      "items": [
+        "30 minutes late",
+        "On phone all night",
+        "Talks about their ex",
+        "Splits to the rupee",
+        "Brags nonstop"
+      ],
+      "desi": true,
+      "spicy": true,
+      "ex": true
+    },
+    {
+      "id": "afterdark-004",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Party drink",
+      "top": "Order first",
+      "bottom": "Never",
+      "items": [
+        "Beer",
+        "Wine",
+        "Cocktails",
+        "Whisky",
+        "Tequila shots"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-005",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Most romantic gesture",
+      "top": "Swoon",
+      "bottom": "Meh",
+      "items": [
+        "Surprise trip",
+        "Handwritten letter",
+        "Cooking dinner",
+        "Flowers",
+        "Remembering details"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-006",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Hangover cure",
+      "top": "Works",
+      "bottom": "Useless",
+      "items": [
+        "Sleep",
+        "Greasy food",
+        "Nimbu pani",
+        "Coconut water",
+        "More drinks"
+      ],
+      "desi": true,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-007",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Most awkward moment",
+      "top": "Most awkward",
+      "bottom": "Laughed it off",
+      "items": [
+        "Waving at a stranger",
+        "Forgetting a name",
+        "Text to wrong chat",
+        "Fly down all day",
+        "Calling teacher mom"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-008",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Your love language",
+      "top": "Most me",
+      "bottom": "Least me",
+      "items": [
+        "Kind words",
+        "Gifts",
+        "Quality time",
+        "Hugs",
+        "Acts of service"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-009",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Worst way to be dumped",
+      "top": "Worst",
+      "bottom": "Least bad",
+      "items": [
+        "Ghosting",
+        "By text",
+        "Via a friend",
+        "In public",
+        "On social media"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-010",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Dealbreaker",
+      "top": "Instant no",
+      "bottom": "Can live with it",
+      "items": [
+        "Smoking",
+        "Bad texter",
+        "Loud snoring",
+        "Messy room",
+        "Mama's boy / girl"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-011",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Hardest to hide from parents",
+      "top": "Hardest",
+      "bottom": "Easy",
+      "items": [
+        "A tattoo",
+        "A partner",
+        "Bad grades",
+        "Late-night parties",
+        "Credit card bill"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-012",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Best place to meet someone",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Dating app",
+        "Through friends",
+        "At work",
+        "At a wedding",
+        "At the gym"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-013",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "After 3 drinks, you...",
+      "top": "Most likely",
+      "bottom": "Never",
+      "items": [
+        "Dance",
+        "Cry",
+        "Text an ex",
+        "Order food",
+        "Fall asleep"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": true
+    },
+    {
+      "id": "afterdark-014",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Best wedding function",
+      "top": "Best party",
+      "bottom": "Skip it",
+      "items": [
+        "Sangeet",
+        "Mehendi",
+        "Baraat",
+        "Reception",
+        "Cocktail night"
+      ],
+      "desi": true,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-015",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Top partner trait",
+      "top": "Must have",
+      "bottom": "Nice bonus",
+      "items": [
+        "Humour",
+        "Looks",
+        "Brains",
+        "Ambition",
+        "Cooking skills"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-016",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Worst to be caught doing",
+      "top": "Mortifying",
+      "bottom": "Who cares",
+      "items": [
+        "Singing in the car",
+        "Talking to yourself",
+        "Stalking an ex",
+        "Rehearsing arguments",
+        "Dancing alone"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": true
+    },
+    {
+      "id": "afterdark-017",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Date night at home",
+      "top": "Perfect",
+      "bottom": "Boring",
+      "items": [
+        "Cook together",
+        "Movie night",
+        "Board games",
+        "Deep talks",
+        "Takeout and wine"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-018",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Biggest relationship crime",
+      "top": "Worst crime",
+      "bottom": "Forgivable",
+      "items": [
+        "Liking ex's posts",
+        "Checking their phone",
+        "Forgetting anniversary",
+        "Leaving on read",
+        "Stealing the blanket"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": true
+    },
+    {
+      "id": "afterdark-019",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Best flirting move",
+      "top": "Works on me",
+      "bottom": "Never works",
+      "items": [
+        "Eye contact",
+        "Cheesy lines",
+        "Humour",
+        "Compliments",
+        "Sending memes"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-020",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Post-party food",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Shawarma",
+        "Maggi",
+        "Parantha",
+        "Burger",
+        "Momos"
+      ],
+      "desi": true,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-021",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Worst date activity",
+      "top": "Worst",
+      "bottom": "Actually fun",
+      "items": [
+        "Karaoke",
+        "Bowling",
+        "Meeting their family",
+        "Hiking",
+        "Cooking class"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-022",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "At a party you're usually",
+      "top": "Most me",
+      "bottom": "Least me",
+      "items": [
+        "On the dance floor",
+        "In the kitchen",
+        "Taking photos",
+        "Controlling music",
+        "Balcony deep talks"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-023",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Worst thing to hear on a date",
+      "top": "Instant ick",
+      "bottom": "Fine",
+      "items": [
+        "\"My ex used to...\"",
+        "\"Let's split it\"",
+        "\"I'm into crypto\"",
+        "\"My mom says...\"",
+        "\"I don't watch films\""
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": true
+    },
+    {
+      "id": "afterdark-024",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Biggest ick",
+      "top": "Biggest ick",
+      "bottom": "Cute actually",
+      "items": [
+        "Baby voice",
+        "Socks with sandals",
+        "Too much cologne",
+        "Replies \"hehe\"",
+        "Talks in 3rd person"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-025",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Dream proposal",
+      "top": "Dream",
+      "bottom": "Cringe",
+      "items": [
+        "Beach at sunset",
+        "Mountain top",
+        "Candlelit dinner",
+        "Flash mob",
+        "At home in PJs"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-026",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Drinking game",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Never Have I Ever",
+        "Beer pong",
+        "Kings cup",
+        "Truth or dare",
+        "Flip cup"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-027",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Hardest to say sorry for",
+      "top": "Hardest",
+      "bottom": "Easy",
+      "items": [
+        "Forgot their birthday",
+        "Drunk texting",
+        "Reading their chats",
+        "Missing their event",
+        "Flirting with a friend"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-028",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Worst ex behaviour",
+      "top": "Worst",
+      "bottom": "Harmless",
+      "items": [
+        "Watching your stories",
+        "Late-night \"hey\"",
+        "Dating your friend",
+        "Keeping your hoodie",
+        "Badmouthing you"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": true
+    },
+    {
+      "id": "afterdark-029",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Pick-up line style",
+      "top": "Works on me",
+      "bottom": "Cringe",
+      "items": [
+        "Cheesy pun",
+        "Straight honesty",
+        "Food-based",
+        "Nerdy",
+        "Bollywood dialogue"
+      ],
+      "desi": true,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-030",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Most likely to lose at 3am",
+      "top": "Most likely",
+      "bottom": "Never",
+      "items": [
+        "Your phone",
+        "Your keys",
+        "Your dignity",
+        "Your friends",
+        "Your shoes"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-031",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Couples who...",
+      "top": "Most annoying",
+      "bottom": "Cute",
+      "items": [
+        "PDA everywhere",
+        "Matching outfits",
+        "Baby talk",
+        "Share one Instagram",
+        "Fight in public"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-032",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Honeymoon pick",
+      "top": "Book it",
+      "bottom": "Pass",
+      "items": [
+        "Maldives",
+        "Europe tour",
+        "Swiss Alps",
+        "Bali",
+        "Safari"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-033",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Fib about on a first date",
+      "top": "Most likely",
+      "bottom": "Never",
+      "items": [
+        "Your age",
+        "Your job",
+        "Cooking skills",
+        "Number of exes",
+        "Gym habits"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": true
+    },
+    {
+      "id": "afterdark-034",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Worst to find your dating app",
+      "top": "Worst",
+      "bottom": "Who cares",
+      "items": [
+        "Your mom",
+        "Your boss",
+        "Your ex",
+        "Your cousin",
+        "Your neighbour"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": true
+    },
+    {
+      "id": "afterdark-035",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "First thing you notice",
+      "top": "First",
+      "bottom": "Last",
+      "items": [
+        "Smile",
+        "Confidence",
+        "Voice",
+        "Style",
+        "Sense of humour"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-036",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Night out ends with",
+      "top": "Perfect end",
+      "bottom": "Worst end",
+      "items": [
+        "Dancing till close",
+        "Street food run",
+        "Deep talks on the curb",
+        "Early cab home",
+        "Karaoke"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-037",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Hardest secret to keep",
+      "top": "Hardest",
+      "bottom": "Easy",
+      "items": [
+        "A surprise party",
+        "A friend's affair",
+        "Your salary",
+        "A crush",
+        "A spoiler"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-038",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Relationship step you'd rush",
+      "top": "Rush it",
+      "bottom": "Slow down",
+      "items": [
+        "Moving in",
+        "Meeting parents",
+        "Saying \"I love you\"",
+        "Sharing passwords",
+        "First trip together"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    },
+    {
+      "id": "afterdark-039",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Truth or dare you'd dodge",
+      "top": "Dodge first",
+      "bottom": "Easy",
+      "items": [
+        "Show last search",
+        "Read last text",
+        "Call your ex",
+        "Room posts a story",
+        "Show your gallery"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": true
+    },
+    {
+      "id": "afterdark-040",
+      "deck": "afterdark",
+      "theme": "afterdark",
+      "prompt": "Best first-kiss spot",
+      "top": "Best",
+      "bottom": "Worst",
+      "items": [
+        "Rooftop",
+        "Beach",
+        "In the car",
+        "Doorstep",
+        "Back row, cinema"
+      ],
+      "desi": false,
+      "spicy": true,
+      "ex": false
+    }
+  ]
+}

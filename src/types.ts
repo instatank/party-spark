@@ -29,6 +29,7 @@ export enum GameType {
     SHORTLIST = 'SHORTLIST',
     TARGET = 'TARGET',
     THE_LINE = 'THE_LINE',
+    RANK_ME = 'RANK_ME',
     // Non-game screens routed through the same switch:
     GAME_NIGHT = 'GAME_NIGHT',   // crew playlist flow (setup / hub / recap)
     STATS = 'STATS'              // lifetime trophies & stats

@@ -31,6 +31,7 @@ const BallparkGame = lazy(() => import('./components/games/BallparkGame').then(m
 const EchoGame = lazy(() => import('./components/games/EchoGame').then(m => ({ default: m.EchoGame })));
 const ShortlistGame = lazy(() => import('./components/games/ShortlistGame').then(m => ({ default: m.ShortlistGame })));
 const TargetGame = lazy(() => import('./components/games/TargetGame').then(m => ({ default: m.TargetGame })));
+const RankMeGame = lazy(() => import('./components/games/RankMeGame').then(m => ({ default: m.RankMeGame })));
 const TheLineGame = lazy(() => import('./components/games/TheLineGame').then(m => ({ default: m.TheLineGame })));
 const MiniMafiaGame = lazy(() => import('./components/games/MiniMafiaGame').then(m => ({ default: m.MiniMafiaGame })));
 const FactOrFictionGame = lazy(() => import('./components/games/FactOrFictionGame').then(m => ({ default: m.FactOrFictionGame })));
@@ -110,6 +111,7 @@ const comingSoonGameIds = [
 // order inside the tab (newest first). Move an id out of this list once
 // it stops being new and it rejoins the main list automatically.
 const NEW_GAME_IDS = [
+  GameType.RANK_ME,
   GameType.WOULD_YOU_RATHER,
   GameType.THE_LINE,
   GameType.TARGET,
@@ -206,6 +208,8 @@ const App = () => {
         return <ShortlistGame onExit={exitGame} />;
       case GameType.TARGET:
         return <TargetGame onExit={exitGame} />;
+      case GameType.RANK_ME:
+        return <RankMeGame onExit={exitGame} />;
       case GameType.THE_LINE:
         return <TheLineGame onExit={exitGame} />;
       case GameType.MINI_MAFIA:

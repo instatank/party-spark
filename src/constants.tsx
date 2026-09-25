@@ -1,6 +1,6 @@
 import { GameType, type GameMeta } from './types';
 
-import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2, Shuffle, Gavel, Target, Layers, Fingerprint, Calculator, ArrowUpNarrowWide } from 'lucide-react';
+import { Ban, Brain, Mic, Sparkles, Camera, Flame, Zap, VenetianMask, Split, Users, Hand, Compass, CheckCircle2, Wine, Heart, Timer, Link2, Shuffle, Gavel, Target, Layers, Fingerprint, Calculator, ArrowUpNarrowWide, ListOrdered } from 'lucide-react';
 
 export const GAMES: GameMeta[] = [
     // --- Play Now (ranked) ---
@@ -125,6 +125,14 @@ export const GAMES: GameMeta[] = [
         minPlayers: 1
     },
     {
+        id: GameType.RANK_ME,
+        title: "Rank Me",
+        description: "Rank five things. See who can read you.",
+        icon: "rank",
+        color: "bg-pink-500",
+        minPlayers: 2
+    },
+    {
         id: GameType.THE_LINE,
         title: "The Line",
         description: "Never say the number. Say where it goes.",
@@ -218,6 +226,7 @@ export const GAME_RICH_META: Record<GameType, GameRichMeta> = {
     [GameType.SHORTLIST]:           { vibe: 'Deduce',   duration: '15 min', players: '2–8',  tags: ['crowd', 'couples', 'solo', 'brain', 'puzzle', 'deduction', 'co-op'] },
     [GameType.ECHO]:                { vibe: 'Recall',   duration: '10 min', players: '2–6',  tags: ['crowd', 'couples', 'memory', 'brain', 'puzzle', 'classic'] },
     [GameType.BALLPARK]:            { vibe: 'Nerve',    duration: '5 min',  players: '1–6',  tags: ['quick', 'solo', 'couples', 'crowd', 'puzzle', 'brain', 'trivia'] },
+    [GameType.RANK_ME]:             { vibe: 'Read',     duration: '15 min', players: '2–12', tags: ['couples', 'crowd', 'social', 'reveal', 'know', 'spicy'] },
     [GameType.THE_LINE]:            { vibe: 'Order',    duration: '15 min', players: '1–8',  tags: ['solo', 'couples', 'crowd', 'brain', 'puzzle', 'trivia', 'learn'] },
     // Non-game screens — never listed on Home, entries exist only to satisfy
     // the Record<GameType, …> type.
@@ -314,6 +323,11 @@ export const GAME_SUBCATEGORIES: Partial<Record<GameType, SubcatEntry[]>> = {
         { label: 'Classic', tags: ['classic', 'easy', 'casual', 'numbers', 'maths'] },
         { label: 'Tough',   tags: ['tough', 'hard', 'challenging', 'numbers', 'maths'] },
     ],
+    [GameType.RANK_ME]: [
+        { label: 'Real Life',  tags: ['real life', 'food', 'habits', 'peeves', 'travel', 'everyday'] },
+        { label: 'What If',    tags: ['what if', 'hypothetical', 'superpowers', 'time travel'] },
+        { label: 'After Dark', tags: ['after dark', 'dating', 'drinks', 'spicy', '18+', 'couples'] },
+    ],
     [GameType.THE_LINE]: [
         { label: 'How Tall',     tags: ['tall', 'height', 'mountains', 'buildings', 'metres'] },
         { label: 'How Fast',     tags: ['fast', 'speed', 'animals', 'vehicles', 'records'] },
@@ -385,6 +399,7 @@ export const getIcon = (name: string, size: number = 24) => {
         case 'fingerprint': return <Fingerprint size={size} />;
         case 'calculator': return <Calculator size={size} />;
         case 'sequence': return <ArrowUpNarrowWide size={size} />;
+        case 'rank': return <ListOrdered size={size} />;
         default: return <Sparkles size={size} />;
     }
 };
