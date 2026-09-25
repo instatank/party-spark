@@ -22,7 +22,7 @@ const HOME_GAMES = [
 ];
 // Behind the home screen's NEW tab (NEW_GAME_IDS in App.tsx) — one extra
 // click before the card exists in the DOM.
-const NEW_GAMES = ['Would You Rather', 'The Line', 'Target', 'Shortlist', 'Echo', 'Ballpark', 'House Rules'];
+const NEW_GAMES = ['Rank Me', 'Would You Rather', 'The Line', 'Target', 'Shortlist', 'Echo', 'Ballpark', 'House Rules'];
 const COMING_SOON_GAMES = ['Would I Lie To You', 'Icebreakers', 'The Traitors'];
 const WITH_TABS = process.argv.includes('--tabs');
 const GAMES = [
