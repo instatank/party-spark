@@ -35,12 +35,19 @@ interface RoomPanelProps {
     /** Extra controls for the host only (difficulty pickers, timer chips).
      *  Guests inherit the host's config and so must not see them. */
     hostControls?: React.ReactNode;
+    /** Settings the host fixes at the moment of starting, computed from the
+     *  lobby as it stands then — e.g. a frozen seat order. Merged over
+     *  `config`. Use this for anything a late joiner must not reshuffle. */
+    startConfig?: (room: Room) => Record<string, unknown>;
+    /** One line everyone in the lobby sees describing the host's current
+     *  settings ("Spicy deck · Hot Seat"), so a guest can bail before start. */
+    describeConfig?: (config: Record<string, unknown>) => React.ReactNode;
     /** Fires once the host starts — the room has left LOBBY. */
     onStart: (session: RoomSession, room: Room) => void;
     onCancel: () => void;
 }
 
-export type RoomAccent = 'gold' | 'lime' | 'violet';
+export type RoomAccent = 'gold' | 'lime' | 'violet' | 'pink';
 
 // Tailwind v4 only detects complete static strings — never assemble these with
 // template literals. (This exact mistake has bitten the codebase repeatedly.)
@@ -48,13 +55,14 @@ const ACCENT: Record<RoomAccent, { text: string; ring: string; chip: string; bar
     gold: { text: 'text-gold', ring: 'focus:ring-gold/50', chip: 'bg-gold/15 text-gold border-gold/30', bar: 'bg-gold' },
     lime: { text: 'text-lime-500', ring: 'focus:ring-lime-500/50', chip: 'bg-lime-500/15 text-lime-500 border-lime-500/30', bar: 'bg-lime-500' },
     violet: { text: 'text-violet-400', ring: 'focus:ring-violet-400/50', chip: 'bg-violet-400/15 text-violet-400 border-violet-400/30', bar: 'bg-violet-400' },
+    pink: { text: 'text-pink-500', ring: 'focus:ring-pink-500/50', chip: 'bg-pink-500/15 text-pink-500 border-pink-500/30', bar: 'bg-pink-500' },
 };
 
 const NAME_KEY = 'partyspark_room_name';
 
 const RoomPanel: React.FC<RoomPanelProps> = ({
     game, title, blurb, accent, config = {}, minPlayers = 2,
-    startDurationMs, hostControls, onStart, onCancel,
+    startDurationMs, hostControls, startConfig, describeConfig, onStart, onCancel,
 }) => {
     const a = ACCENT[accent];
     const [session, setSession] = useState<RoomSession | null>(null);
@@ -72,6 +80,19 @@ const RoomPanel: React.FC<RoomPanelProps> = ({
     // The guest's cue to enter the game is the host's phase flip arriving on a
     // poll — there is no "go" message. Same signal drives the host, so both
     // sides run the identical code path and cannot diverge.
+    // The host's lobby choices travel to the room AS THEY CHANGE, not only at
+    // creation. Before this, a pack or deck picked in the lobby after "Create"
+    // never reached meta.config, so every phone (host included) dealt from
+    // whatever was selected at the moment the room was made.
+    const configKey = JSON.stringify(config);
+    const pushedKey = useRef(configKey);
+    useEffect(() => {
+        if (!isHost || room?.meta.phase !== 'LOBBY' || pushedKey.current === configKey) return;
+        pushedKey.current = configKey;
+        void host({ config });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isHost, room?.meta.phase, configKey]);
+
     const startedRef = useRef(false);
     useEffect(() => {
         if (!session || !room || startedRef.current) return;
@@ -125,7 +146,10 @@ const RoomPanel: React.FC<RoomPanelProps> = ({
     const doStart = async () => {
         if (!room || room.players.length < minPlayers) return;
         hapticLight();
-        await host({ phase: 'PLAY', round: 1, durationMs: startDurationMs ?? null });
+        await host({
+            phase: 'PLAY', round: 1, durationMs: startDurationMs ?? null,
+            config: { ...config, ...(startConfig?.(room) ?? {}) },
+        });
     };
 
     const copyCode = async () => {
@@ -183,6 +207,12 @@ const RoomPanel: React.FC<RoomPanelProps> = ({
                         </div>
                     )}
                 </div>
+
+                {describeConfig && (
+                    <p className="text-center text-xs text-ink-soft mb-4" data-room-config>
+                        {describeConfig(room.meta.config)}
+                    </p>
+                )}
 
                 {!persistent && (
                     <p className="text-xs text-amber-500 bg-amber-500/10 border border-amber-500/25 rounded-lg p-3 mb-4">
