@@ -59,8 +59,18 @@ export function logOf<T>(room: Room, id: string): Record<string, T> {
  *  someone's pocket is still IN the room, so presence alone cannot unstick a
  *  reveal that waits on it. */
 export const forcedKey = (g: number, t: number): string => `${g}:${t}`;
-export const isForced = (room: Room, t: number): boolean =>
-    room.meta.config.forced === forcedKey(gameNo(room), t);
+/** `forced` is one key (the simultaneous games only ever care about the turn
+ *  in play) or a list of keys (Truth or Drink, where a skipped turn stays
+ *  skipped while the game moves past it). */
+export const isForced = (room: Room, t: number): boolean => {
+    const f = room.meta.config.forced;
+    const key = forcedKey(gameNo(room), t);
+    return Array.isArray(f) ? f.includes(key) : f === key;
+};
+export const forcedList = (room: Room): string[] => {
+    const f = room.meta.config.forced;
+    return Array.isArray(f) ? f.filter((x): x is string => typeof x === 'string') : typeof f === 'string' ? [f] : [];
+};
 
 /**
  * Who a turn is still waiting on: the players whose answer is needed, minus
