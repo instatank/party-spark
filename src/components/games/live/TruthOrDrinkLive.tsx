@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { GlassWater, MessageCircleHeart, RotateCcw, Share2, Wand2, Sparkles, DoorClosed, SkipForward } from 'lucide-react';
 import { ScreenHeader, Button } from '../../ui/Layout';
 import RoomPanel from '../../ui/RoomPanel';
@@ -13,7 +13,7 @@ import { statsStore } from '../../../services/statsStore';
 import { playPop, playReveal } from '../../../services/audio';
 import { hapticLight, hapticSuccess } from '../../../services/haptics';
 import { GameType } from '../../../types';
-import { LiveOffline, LiveSpectating } from './LiveBits';
+import { LiveOffline, LiveSpectating, LiveCue } from './LiveBits';
 
 // TRUTH OR DRINK on separate phones. Turn-based: card t belongs to the player
 // at seat t, and only their phone can answer it; every other phone shows the
@@ -56,8 +56,6 @@ export const TruthOrDrinkLive: React.FC<Props> = ({ decks, questions, onBack, on
     const [busy, setBusy] = useState(false);
     const [aiError, setAiError] = useState('');
     const [sharing, setSharing] = useState(false);
-    const recorded = useRef('');
-    const lastSeen = useRef<number>(-1);
 
     const leave = () => { if (session) void leaveRoom(session.code, session.playerId); setSession(null); onBack(); };
     const home = () => { if (session) void leaveRoom(session.code, session.playerId); onHome(); };
@@ -67,11 +65,12 @@ export const TruthOrDrinkLive: React.FC<Props> = ({ decks, questions, onBack, on
     const deckMeta = decks.find(d => d.id === cfgDeckId) ?? decks[0];
     const custom = cfgDeckId === 'custom';
     const customDeck = Array.isArray(r?.meta.config.customDeck) ? (r!.meta.config.customDeck as unknown[]).filter((x): x is string => typeof x === 'string') : null;
+    const seed = r?.meta.seed ?? 0;
+    const customKey = customDeck ? JSON.stringify(customDeck) : '';
     const cards = useMemo(() => {
-        if (!r) return [];
-        if (custom) return customDeck ? customDeck.slice(0, LIVE_TOD_ROUNDS) : [];
-        return dealTodDeck(questions[cfgDeckId] ?? [], r.meta.seed);
-    }, [r?.meta.seed, cfgDeckId, custom, customDeck?.join('\u0000')]);   // eslint-disable-line react-hooks/exhaustive-deps
+        if (custom) return customKey ? (JSON.parse(customKey) as string[]).slice(0, LIVE_TOD_ROUNDS) : [];
+        return dealTodDeck(questions[cfgDeckId] ?? [], seed);
+    }, [custom, customKey, questions, cfgDeckId, seed]);
 
     // ---------------- lobby ----------------
     if (!session) {
@@ -218,11 +217,6 @@ export const TruthOrDrinkLive: React.FC<Props> = ({ decks, questions, onBack, on
 
     // ---------------- end ----------------
     if (ended) {
-        if (recorded.current !== `${r.meta.code}:${g}`) {
-            recorded.current = `${r.meta.code}:${g}`;
-            statsStore.recordPlay('TRUTH_OR_DRINK');
-            if (winners.length) statsStore.recordWins('TRUTH_OR_DRINK', winners);
-        }
         const share = async () => {
             if (sharing) return;
             setSharing(true);
@@ -241,6 +235,10 @@ export const TruthOrDrinkLive: React.FC<Props> = ({ decks, questions, onBack, on
         return (
             <div className="flex flex-col h-full animate-fade-in" data-live-end>
                 <ScreenHeader title="That's a Wrap" onBack={leave} onHome={home} />
+                <LiveCue cueKey={`${r.meta.code}:${g}`} onCue={() => {
+                    statsStore.recordPlay('TRUTH_OR_DRINK');
+                    if (winners.length) statsStore.recordWins('TRUTH_OR_DRINK', winners);
+                }} />
                 <div className="flex-1 overflow-y-auto flex flex-col items-center px-4 gap-5 text-center pb-8">
                     <p className="text-7xl">🥂</p>
                     <h2 className="text-3xl font-serif font-bold text-ink" data-headline>
@@ -290,10 +288,6 @@ export const TruthOrDrinkLive: React.FC<Props> = ({ decks, questions, onBack, on
         }
         return null;
     })();
-    if (lastSeen.current !== t) {
-        lastSeen.current = t;
-        if (mine) queueMicrotask(() => { playReveal(); hapticSuccess(); });
-    }
 
     const choose = (c: TodChoice) => {
         if (!mine) return;
@@ -304,6 +298,8 @@ export const TruthOrDrinkLive: React.FC<Props> = ({ decks, questions, onBack, on
     return (
         <div className="flex flex-col h-full animate-fade-in relative z-10" data-live-turn={t} data-live-player={player.name} data-live-question={question}>
             <ScreenHeader title={mine ? 'Your turn' : `${player.name}'s turn`} onBack={leave} onHome={home} confirmOnExit />
+            {/* A nudge on the phone whose turn just came round. */}
+            <LiveCue cueKey={mine ? `${g}:${t}` : ''} onCue={() => { playReveal(); hapticSuccess(); }} />
             <div className="px-2 pb-4 flex-1 flex flex-col max-w-[420px] mx-auto w-full">
                 {!inGame && <LiveSpectating />}
                 {last && (

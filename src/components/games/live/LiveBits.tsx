@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ArrowRight, Loader2, WifiOff, Users } from 'lucide-react';
 import { Button, ScreenHeader } from '../../ui/Layout';
 import { PinGateModal } from '../../ui/PinGate';
@@ -102,3 +102,13 @@ export const LiveEntryTile: React.FC<{ title: string; tagline: string; onClick: 
         </div>
     </button>
 );
+
+/** Runs `onCue` once each time `cueKey` changes to a new non-empty value — a
+ *  reveal sound, a stats write at the end. Effects, not render-time ref
+ *  checks, because React may render a component more than once per commit. */
+export const LiveCue: React.FC<{ cueKey: string; onCue: () => void }> = ({ cueKey, onCue }) => {
+    const fire = useRef(onCue);
+    useEffect(() => { fire.current = onCue; });
+    useEffect(() => { if (cueKey) fire.current(); }, [cueKey]);
+    return null;
+};

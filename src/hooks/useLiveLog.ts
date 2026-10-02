@@ -9,9 +9,14 @@ import { gameNo, logOf, rosterOf } from '../services/liveRoom';
 // complete on its own. The local copy is what makes the tap instant: without
 // it the button would sit unpressed until the next poll came back.
 
+type Local<T> = { g: number; log: Record<string, T> } | null;
+
 export function useLiveLog<T>(room: UseRoomResult, session: RoomSession | null) {
-    const local = useRef<{ g: number; log: Record<string, T> } | null>(null);
-    const [, rerender] = useState(0);
+    // State drives the render; the ref is read only inside the tap handler,
+    // where two taps landing before a re-render must still see each other
+    // (otherwise both would pass the one-answer-per-turn check).
+    const [local, setLocal] = useState<Local<T>>(null);
+    const latest = useRef<Local<T>>(null);
     const r = room.room;
     const g = r ? gameNo(r) : 0;
     const me = session?.playerId ?? '';
@@ -21,18 +26,19 @@ export function useLiveLog<T>(room: UseRoomResult, session: RoomSession | null) 
     const logs: Record<string, Record<string, T>> = {};
     if (r) {
         for (const p of rosterOf(r)) logs[p.id] = logOf<T>(r, p.id);
-        if (local.current?.g === g) logs[me] = { ...logs[me], ...local.current.log };
+        if (local?.g === g) logs[me] = { ...logs[me], ...local.log };
     }
 
     const answer = useCallback((t: number, value: T) => {
         if (!r) return;
-        const base = local.current?.g === g ? local.current.log : logOf<T>(r, me);
+        const base = latest.current?.g === g ? latest.current.log : logOf<T>(r, me);
         if (base[t] !== undefined) return;   // one answer per turn, no changing it
-        const next = { ...base, [t]: value };
-        local.current = { g, log: next };
-        rerender(n => n + 1);
-        void room.patch({ g, log: next });
+        const next = { g, log: { ...base, [t]: value } };
+        latest.current = next;
+        setLocal(next);
+        void room.patch(next);
     }, [r, g, me, room]);
 
-    return { logs, mine: (t: number): T | undefined => logs[me]?.[t], answer, g, me };
+    const mine = (t: number): T | undefined => logs[me]?.[t];
+    return { logs, mine, answer, g, me };
 }

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { RotateCcw, Check, X as XIcon, EyeOff } from 'lucide-react';
 import { ScreenHeader, Button } from '../../ui/Layout';
 import RoomPanel from '../../ui/RoomPanel';
@@ -14,7 +14,7 @@ import { useLiveLog } from '../../../hooks/useLiveLog';
 import { playReveal, playPop } from '../../../services/audio';
 import { hapticLight, hapticSuccess } from '../../../services/haptics';
 import { GameType } from '../../../types';
-import { LiveWaiting, LiveNext, LiveOffline, LiveSpectating, LiveAdultGate } from './LiveBits';
+import { LiveWaiting, LiveNext, LiveOffline, LiveSpectating, LiveAdultGate, LiveCue } from './LiveBits';
 
 // WOULD YOU RATHER on separate phones. Everything synced is derived from the
 // room — the deck and mode the host froze into config, the seed, the round
@@ -54,14 +54,9 @@ export const WouldYouRatherLive: React.FC<{ decks: Deck[]; onBack: () => void; o
     const r = room.room;
     const cfgDeck = decks.find(d => d.id === r?.meta.config.deck) ?? decks[0];
     const cfgMode: LiveWyrMode = r?.meta.config.mode === 'hotseat' ? 'hotseat' : 'vote';
-    const cards = useMemo(
-        () => (r ? dealLiveRound(cfgDeck.items, r.meta.seed) : []),
-        [r?.meta.seed, cfgDeck],   // eslint-disable-line react-hooks/exhaustive-deps
-    );
+    const seed = r?.meta.seed ?? 0;
+    const cards = useMemo(() => dealLiveRound(cfgDeck.items, seed), [cfgDeck, seed]);
     const t = r ? turnOf(r) : 0;
-
-    // A beat of sound when a card flips to its reveal — once per card.
-    const revealedRef = useRef<string>('');
 
     // ---------------- lobby ----------------
     if (!session) {
@@ -229,11 +224,6 @@ export const WouldYouRatherLive: React.FC<{ decks: Deck[]; onBack: () => void; o
     const split = splitFor(roster, logs, t);
     const seatPick = seatP ? logs[seatP.id]?.[t] : undefined;
 
-    if (revealed && revealedRef.current !== `${g}:${t}`) {
-        revealedRef.current = `${g}:${t}`;
-        queueMicrotask(() => { playReveal(); hapticSuccess(); });
-    }
-
     const tap = (side: Side) => {
         if (!inGame || myPick || revealed) return;
         hapticLight(); playPop();
@@ -309,6 +299,8 @@ export const WouldYouRatherLive: React.FC<{ decks: Deck[]; onBack: () => void; o
     return (
         <div className="h-full flex flex-col animate-fade-in" data-live-card={card.id} data-live-turn={t}>
             <ScreenHeader title={cfgDeck.name} onBack={leave} onHome={home} confirmOnExit />
+            {/* A beat of sound when a card flips to its reveal — once per card. */}
+            <LiveCue cueKey={revealed ? `${g}:${t}` : ''} onCue={() => { playReveal(); hapticSuccess(); }} />
             <div className="flex-1 overflow-y-auto pb-8">
                 <div className="max-w-[380px] mx-auto w-full">
                     {!inGame && <LiveSpectating />}

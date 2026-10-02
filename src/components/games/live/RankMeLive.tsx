@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Check, Lock, RotateCcw, Heart } from 'lucide-react';
 import { ScreenHeader, Button } from '../../ui/Layout';
 import RoomPanel from '../../ui/RoomPanel';
@@ -21,7 +21,7 @@ import { hapticLight, hapticSuccess } from '../../../services/haptics';
 import { GameType } from '../../../types';
 import { RankList } from '../rankme/RankList';
 import { RevealTable } from '../rankme/RevealTable';
-import { LiveWaiting, LiveNext, LiveOffline, LiveSpectating, LiveAdultGate } from './LiveBits';
+import { LiveWaiting, LiveNext, LiveOffline, LiveSpectating, LiveAdultGate, LiveCue } from './LiveBits';
 
 // RANK ME on separate phones. The point of a second phone here is privacy
 // without hand-offs: the ranker orders on their own screen while everybody
@@ -57,8 +57,6 @@ export const RankMeLive: React.FC<Props> = ({ data, onBack, onHome }) => {
     // the turn (or this phone's role in it) changes.
     const [working, setWorking] = useState<{ key: string; order: string[] }>({ key: '', order: [] });
     const [view, setView] = useState<{ key: string; id: string | null }>({ key: '', id: null });
-    const recorded = useRef('');
-    const sounded = useRef('');
 
     const leave = () => { if (session) void leaveRoom(session.code, session.playerId); setSession(null); onBack(); };
     const home = () => { if (session) void leaveRoom(session.code, session.playerId); onHome(); };
@@ -71,11 +69,14 @@ export const RankMeLive: React.FC<Props> = ({ data, onBack, onHome }) => {
     const turns = liveTurnCount(cfgMode, roster.length, { laps: Number(cfg.laps) || 2, rounds: Number(cfg.rounds) || 6 });
     // Dealing must not depend on THIS phone's unlock — every phone deals the
     // host's selection; the per-device PIN only decides what this phone shows.
-    const cards = useMemo(() => {
-        if (!r) return [];
-        const pool = cardPool(data.cards, { decks: cfgDecks, adultAllowed: cfgDecks.includes(SPICY), keepItSweet: cfg.sweet === true });
-        return dealSequence(pool, turns, mulberry32(r.meta.seed));
-    }, [r?.meta.seed, cfgDecks.join(), cfg.sweet, turns]);   // eslint-disable-line react-hooks/exhaustive-deps
+    const seed = r?.meta.seed ?? 0;
+    const sweetOn = cfg.sweet === true;
+    // Cheap (a few hundred comparisons), so derived every render rather than
+    // memoised — the compiler could not preserve a manual memo here.
+    const cards = dealSequence(
+        cardPool(data.cards, { decks: cfgDecks, adultAllowed: cfgDecks.includes(SPICY), keepItSweet: sweetOn }),
+        turns, mulberry32(seed),
+    );
 
     // ---------------- lobby ----------------
     if (!session) {
@@ -198,15 +199,14 @@ export const RankMeLive: React.FC<Props> = ({ data, onBack, onHome }) => {
         const winners = cfgMode === 'couples'
             ? (board.length > 1 && board[0].points > board[1].points ? board[0].team.map(p => p.name) : [])
             : (readers.length > 1 && readers[0].pct > readers[1].pct ? [readers[0].name] : []);
-        if (recorded.current !== `${r.meta.code}:${g}`) {
-            recorded.current = `${r.meta.code}:${g}`;
-            statsStore.recordPlay(GameType.RANK_ME);
-            if (winners.length) statsStore.recordWins(GameType.RANK_ME, winners);
-        }
         const best = reads.reduce<LiveRead | null>((b, x) => (!b || x.score.points >= b.score.points ? x : b), null);
         return (
             <div className="h-full flex flex-col animate-fade-in" data-live-end={cfgMode}>
                 <ScreenHeader title="Rank Me" onBack={leave} onHome={home} />
+                <LiveCue cueKey={`${r.meta.code}:${g}`} onCue={() => {
+                    statsStore.recordPlay(GameType.RANK_ME);
+                    if (winners.length) statsStore.recordWins(GameType.RANK_ME, winners);
+                }} />
                 <div className="flex-1 overflow-y-auto pb-10">
                     <div className="max-w-[360px] mx-auto w-full text-center">
                         <div className="text-5xl mb-2">{cfgMode === 'couples' ? '🏆' : '🔮'}</div>
@@ -281,11 +281,7 @@ export const RankMeLive: React.FC<Props> = ({ data, onBack, onHome }) => {
     }
 
     const reads = revealed ? readsAt(cfgMode, roster, logs, t) : [];
-    if (revealed && sounded.current !== turnKey) {
-        sounded.current = turnKey;
-        const perfect = reads.some(x => x.score.points === MAX_CARD_POINTS);
-        queueMicrotask(() => { if (perfect) { playDing(); hapticSuccess(); } else { playReveal(); hapticLight(); } });
-    }
+    const perfect = reads.some(x => x.score.points === MAX_CARD_POINTS);
 
     const deck = data.categories.find(d => d.id === card.deck);
     const deckColor = DECK_COLOR[card.deck] ?? ACCENT;
@@ -334,6 +330,7 @@ export const RankMeLive: React.FC<Props> = ({ data, onBack, onHome }) => {
     return (
         <div className="h-full flex flex-col animate-fade-in" data-live-turn={t} data-live-card={card.id} data-live-role={role ?? 'none'}>
             <ScreenHeader title="Rank Me" onBack={leave} onHome={home} confirmOnExit />
+            <LiveCue cueKey={revealed ? turnKey : ''} onCue={() => { if (perfect) { playDing(); hapticSuccess(); } else { playReveal(); hapticLight(); } }} />
             <div className="flex-1 overflow-y-auto pb-8">
                 {!roster.some(p => p.id === me) && <div className="max-w-[340px] mx-auto"><LiveSpectating /></div>}
                 {cardHead}
