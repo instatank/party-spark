@@ -123,6 +123,10 @@ export function makeDrive(base) {
         return code;
     }
 
+    /** Drop console errors matching `pred` — for a failure the drive caused
+     *  on purpose (an aborted request logs "Failed to load resource"). */
+    const ignoreErrors = pred => { for (let i = errors.length - 1; i >= 0; i--) if (pred(errors[i])) errors.splice(i, 1); };
+
     async function finish() {
         check(errors.length === 0, `no console errors (${errors.length})`);
         errors.slice(0, 10).forEach(e => console.log(`      ${e}`));
@@ -131,5 +135,5 @@ export function makeDrive(base) {
         process.exit(fails.length ? 1 : 0);
     }
 
-    return { launch, newPhone, text, clickText, clickSel, typeInto, waitFor, attr, attrs, exists, clickNewTab, enterPin, formRoom, check, finish };
+    return { ignoreErrors, launch, newPhone, text, clickText, clickSel, typeInto, waitFor, attr, attrs, exists, clickNewTab, enterPin, formRoom, check, finish };
 }

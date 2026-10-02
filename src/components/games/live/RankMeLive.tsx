@@ -255,7 +255,7 @@ export const RankMeLive: React.FC<Props> = ({ data, onBack, onHome }) => {
                             ) : <p className="text-sm text-muted py-2">{hostName} can start another game.</p>}
                             <button onClick={leave} className="text-sm text-muted hover:text-ink py-2">Leave room</button>
                         </div>
-                        <LiveOffline offline={room.offline} />
+                        <LiveOffline offline={room.offline} error={room.error} />
                     </div>
                 </div>
             </div>
@@ -411,7 +411,7 @@ export const RankMeLive: React.FC<Props> = ({ data, onBack, onHome }) => {
                         </div>
                     </div>
                 )}
-                <LiveOffline offline={room.offline} />
+                <LiveOffline offline={room.offline} error={room.error} />
             </div>
         </div>
     );

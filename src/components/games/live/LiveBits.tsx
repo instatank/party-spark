@@ -50,11 +50,15 @@ export const LiveNext: React.FC<{
     )
 );
 
-export const LiveOffline: React.FC<{ offline: boolean }> = ({ offline }) =>
+/** Connection trouble, said out loud. A failed write that nobody mentions is
+ *  the worst failure a room has: the player believes they answered. */
+export const LiveOffline: React.FC<{ offline: boolean; error?: string | null }> = ({ offline, error }) =>
     offline ? (
         <p className="flex items-center justify-center gap-2 text-xs text-rose-500 py-2">
             <WifiOff size={13} /> Lost the connection. Retrying…
         </p>
+    ) : error ? (
+        <p className="text-center text-xs text-rose-500 py-2" data-live-error>{error} Retrying…</p>
     ) : null;
 
 /** Shown on a phone that joined after the deal: it watches this game and is

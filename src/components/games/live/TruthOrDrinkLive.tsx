@@ -139,7 +139,7 @@ export const TruthOrDrinkLive: React.FC<Props> = ({ decks, questions, onBack, on
                         <Wand2 size={32} className="text-vibe animate-pulse" />
                         <p className="text-ink font-bold">{hostName} is writing a deck for your group.</p>
                         <p className="text-sm text-muted">It lands on every phone the moment it's ready.</p>
-                        <LiveOffline offline={room.offline} />
+                        <LiveOffline offline={room.offline} error={room.error} />
                     </div>
                 </div>
             );
@@ -268,7 +268,7 @@ export const TruthOrDrinkLive: React.FC<Props> = ({ decks, questions, onBack, on
                         ) : <p className="text-sm text-muted">{hostName} can deal another round.</p>}
                         <button onClick={leave} className="text-sm text-muted hover:text-ink py-2">Leave room</button>
                     </div>
-                    <LiveOffline offline={room.offline} />
+                    <LiveOffline offline={room.offline} error={room.error} />
                 </div>
             </div>
         );
@@ -362,7 +362,7 @@ export const TruthOrDrinkLive: React.FC<Props> = ({ decks, questions, onBack, on
                         </button>
                     </div>
                 )}
-                <LiveOffline offline={room.offline} />
+                <LiveOffline offline={room.offline} error={room.error} />
             </div>
         </div>
     );

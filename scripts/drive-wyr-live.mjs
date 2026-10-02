@@ -102,8 +102,22 @@ for (let t = 2; t < 10; t++) {
     await clickSel(A, '[data-live-next]');
     if (!(await allOnCard(t))) { check(false, `card ${t + 1} reached`); break; }
     const side = t % 2 ? 'A' : 'B', other = side === 'A' ? 'B' : 'A';
+    // Card 3: Priya's vote write is lost on the network. Her phone shows the
+    // vote; unless the log re-publishes itself, the room waits on her forever.
+    let dropped = 0;
+    const drop = req => {
+        if (!dropped && req.method() === 'POST' && req.url().includes('/api/room') && (req.postData() || '').includes('"action":"patch"')) { dropped++; req.abort(); }
+        else req.continue();
+    };
+    if (t === 2) { await B.setRequestInterception(true); B.on('request', drop); }
     await tap(A, side); await tap(B, side); await tap(C, other);
-    await Promise.all(phones.map(p => waitFor(p, () => document.querySelector('[data-live-count]'))));
+    const healed = await Promise.all(phones.map(p => waitFor(p, () => document.querySelector('[data-live-count]'))));
+    if (t === 2) {
+        check(dropped === 1, "Priya's vote write was dropped on the network");
+        check(healed.every(Boolean), 'the room still reveals: her log re-published itself on the next poll');
+        B.off('request', drop); await B.setRequestInterception(false);
+        D.ignoreErrors(e => e.startsWith('[Priya]') && /Failed to load resource|ERR_FAILED/.test(e));
+    }
     ledger.push({ Ankit: side, Priya: side, Sam: other });
 }
 await clickSel(A, '[data-live-next]');

@@ -207,7 +207,7 @@ export const WouldYouRatherLive: React.FC<{ decks: Deck[]; onBack: () => void; o
                             )}
                             <button onClick={leave} className="text-sm text-muted hover:text-ink py-2">Leave room</button>
                         </div>
-                        <LiveOffline offline={room.offline} />
+                        <LiveOffline offline={room.offline} error={room.error} />
                     </div>
                 </div>
             </div>
@@ -340,7 +340,7 @@ export const WouldYouRatherLive: React.FC<{ decks: Deck[]; onBack: () => void; o
                             />
                         ) : null}
                     </div>
-                    <LiveOffline offline={room.offline} />
+                    <LiveOffline offline={room.offline} error={room.error} />
                     {!hot && <p className="text-center text-[10px] text-muted font-mono mt-6">* The room's split is real. "est." is PartySpark's estimate.</p>}
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { RoomSession, UseRoomResult } from '../services/roomService';
 import { gameNo, logOf, rosterOf } from '../services/liveRoom';
 
@@ -38,6 +38,22 @@ export function useLiveLog<T>(room: UseRoomResult, session: RoomSession | null) 
         setLocal(next);
         void room.patch(next);
     }, [r, g, me, room]);
+
+    // Self-healing publish. A patch that failed (a phone dropping signal for a
+    // second) would otherwise leave the answer showing on this phone while the
+    // room waits on it forever, with nothing on screen to say why. So on every
+    // poll, if the server's copy of my log is missing anything I answered,
+    // send the whole log again. Idempotent: the log is complete each time.
+    const rev = r?.players.find(p => p.id === me)?.rev ?? 0;
+    const roomRev = r?.meta.rev ?? 0;
+    const polled = r ? r.players.length + rev + roomRev : 0;
+    useEffect(() => {
+        if (!r || !local || local.g !== g) return;
+        const server = logOf<T>(r, me);
+        const missing = Object.keys(local.log).some(k => server[k] === undefined);
+        if (missing) void room.patch(local);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [r, polled]);
 
     const mine = (t: number): T | undefined => logs[me]?.[t];
     return { logs, mine, answer, g, me };
