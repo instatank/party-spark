@@ -180,6 +180,14 @@ const HANDLERS: Record<RoomAction, (p: Record<string, unknown>) => Promise<unkno
         const { code, playerId } = p as { code: string; playerId: string };
         await removePlayer(code, playerId);
         const room = await readRoom(code);
+        // A host who leaves hands the room to whoever has been in it longest.
+        // Only the host can advance a round, so without this every phone left
+        // behind sits on its last screen for good. This is still the host's
+        // own write — their last one — so "the host owns meta" holds.
+        if (room && room.meta.hostId === playerId && room.players.length > 0) {
+            room.meta = { ...room.meta, hostId: room.players[0].id, rev: room.meta.rev + 1 };
+            await writeMeta(room.meta);
+        }
         return shape(room ?? { meta: null as unknown as RoomMeta, players: [] });
     },
 };
