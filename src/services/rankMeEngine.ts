@@ -195,3 +195,23 @@ export function recordDeal(seen: ReadonlySet<string>, deal: Deal, pool: readonly
     next.add(deal.card.id);
     return next;
 }
+
+// ---------------------------------------------------------------- live dealing
+
+// Separate phones deal the WHOLE game up front from the room seed, through the
+// same pickCard rules as one phone (no repeats, vary the theme) but with the
+// device history left out: `seen` lives in each phone's localStorage, so two
+// phones would prefer different cards and deal different games from one seed.
+export function dealSequence(pool: readonly RankCard[], count: number, rnd: () => number): RankCard[] {
+    const used = new Set<string>();
+    const out: RankCard[] = [];
+    let lastTheme: string | null = null;
+    for (let i = 0; i < count; i++) {
+        const d = pickCard(pool, { sessionUsed: used, seen: new Set(), lastTheme }, rnd);
+        if (!d) break;
+        out.push(d.card);
+        used.add(d.card.id);
+        lastTheme = d.card.theme;
+    }
+    return out;
+}

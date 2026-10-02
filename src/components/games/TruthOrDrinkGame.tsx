@@ -15,6 +15,8 @@ import { IntimateDiceGame } from './IntimateDiceGame';
 import { TheTellGame } from './TheTellGame';
 import { NerveGame } from './NerveGame';
 import SpinTheBottle from '../ui/SpinTheBottle';
+import { TruthOrDrinkLive } from './live/TruthOrDrinkLive';
+import { LiveEntryTile } from './live/LiveBits';
 import { GameType } from '../../types';
 
 // The question decks are lazy-loaded so they code-split out of this game's
@@ -32,6 +34,7 @@ type GameState =
     | 'TELL'
     | 'NERVE'
     | 'BOTTLE'
+    | 'LIVE'
     | 'END';
 
 const INTIMATE_KEY = 'partyspark_intimate_unlocked';
@@ -479,6 +482,13 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     pass-the-phone session. Persists across games. */}
                 <TeamRosterRow teams={players} onTeamsChange={setPlayers} noun="Player" max={10} />
                 <div className="flex-1 overflow-y-auto pb-8">
+                    <div className="max-w-[340px] mx-auto w-full mb-3">
+                        <LiveEntryTile
+                            title="Play on separate phones"
+                            tagline="Every deck. The question lands on every phone. Needs internet."
+                            onClick={() => setGameState('LIVE')}
+                        />
+                    </div>
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {CATEGORIES.map(cat => {
                             const color = deckPalette(cat.id).solid;
@@ -635,6 +645,19 @@ export const TruthOrDrinkGame: React.FC<{ onExit: () => void }> = ({ onExit }) =
                     />
                 )}
             </div>
+        );
+    }
+
+    // Separate phones — every deck, Create Your Vibe included. Owns its own
+    // lobby, deal and screens; the sub-games below stay one-phone.
+    if (gameState === 'LIVE') {
+        return (
+            <TruthOrDrinkLive
+                decks={CATEGORIES.map(c => ({ id: c.id, title: c.title, emoji: c.emoji, tagline: c.tagline, color: deckPalette(c.id).solid, tint: deckPalette(c.id).tint }))}
+                questions={questionData as Record<string, string[]>}
+                onBack={() => setGameState('CATEGORY_SELECT')}
+                onHome={onExit}
+            />
         );
     }
 

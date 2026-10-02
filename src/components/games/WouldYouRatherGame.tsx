@@ -7,6 +7,8 @@ import { sessionService, shuffle } from '../../services/SessionManager';
 import { GameType } from '../../types';
 import { PinGateModal, isAdultUnlocked } from '../ui/PinGate';
 import TeamRosterRow from '../ui/TeamRosterRow';
+import { WouldYouRatherLive } from './live/WouldYouRatherLive';
+import { LiveEntryTile } from './live/LiveBits';
 
 // The dilemma bank is lazy-loaded so it code-splits out of this game's chunk.
 // The fetch starts as soon as the chunk loads; use() below suspends into the
@@ -59,7 +61,7 @@ const MIN_HOT_SEAT_PLAYERS = 2;
 export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }) => {
     const WYR_DATA = use(wyrDataPromise) as { categories: WYRCategory[] };
     const singleDeck = WYR_DATA.categories.length === 1;
-    const [gameState, setGameState] = useState<'CATEGORY' | 'PLAYING' | 'ROUND_END'>('CATEGORY');
+    const [gameState, setGameState] = useState<'CATEGORY' | 'PLAYING' | 'ROUND_END' | 'LIVE'>('CATEGORY');
     const [majorityCount, setMajorityCount] = useState(0);
     const [activeCategory, setActiveCategory] = useState<WYRCategory | null>(null);
     const [questions, setQuestions] = useState<WYRQuestion[]>([]);
@@ -190,6 +192,12 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
         }
     };
 
+    // ===== SEPARATE PHONES =====
+    // Owns its own lobby, deal and screens; this component only opens it.
+    if (gameState === 'LIVE') {
+        return <WouldYouRatherLive decks={WYR_DATA.categories} onBack={() => setGameState('CATEGORY')} onHome={onExit} />;
+    }
+
     // ===== CATEGORY SELECT =====
     if (gameState === 'CATEGORY') {
         // Same design pattern as MLT/TOD: 3px inset left bar + 33% center
@@ -247,6 +255,13 @@ export const WouldYouRatherGame: React.FC<WouldYouRatherGameProps> = ({ onExit }
                     </div>
                 )}
                 <div className="flex-1 overflow-y-auto pb-8">
+                    <div className="max-w-[340px] mx-auto w-full mb-4">
+                        <LiveEntryTile
+                            title="Play on separate phones"
+                            tagline="Real votes from the room, revealed together. Needs internet."
+                            onClick={() => { setRosterNudge(false); setGameState('LIVE'); }}
+                        />
+                    </div>
                     <div className="grid gap-3 max-w-[340px] mx-auto w-full">
                         {WYR_DATA.categories.map(cat => {
                             const color = cat.color || '#94A3B8';

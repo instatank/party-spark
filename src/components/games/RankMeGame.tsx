@@ -14,6 +14,8 @@ import {
 } from '../../services/rankMeEngine';
 import { RankList } from './rankme/RankList';
 import { RevealTable } from './rankme/RevealTable';
+import { RankMeLive } from './live/RankMeLive';
+import { LiveEntryTile } from './live/LiveBits';
 import { ArrowRight, Check, ChevronDown, Heart, Lock, RotateCcw, Search, Settings2 } from 'lucide-react';
 
 // RANK ME — a social reading game, not trivia. A ranker privately orders five
@@ -30,7 +32,7 @@ const DECK_COLOR: Record<string, string> = { reallife: '#F59E0B', whatif: '#8B5C
 const ROOM = 'The room';
 
 type Mode = 'hotseat' | 'knowme' | 'couples';
-type Stage = 'SETUP' | 'PASS_RANK' | 'RANK' | 'PASS_READ' | 'READ' | 'REVEAL' | 'BOARD' | 'END';
+type Stage = 'SETUP' | 'LIVE' | 'PASS_RANK' | 'RANK' | 'PASS_READ' | 'READ' | 'REVEAL' | 'BOARD' | 'END';
 
 interface Turn { ranker: string; reader: string; team: number | null; round: number }
 interface Play { turn: Turn; card: RankCard; rankerOrder: string[]; prediction: string[]; score: CardScore }
@@ -234,6 +236,11 @@ export const RankMeGame: React.FC<RankMeGameProps> = ({ onExit }) => {
         />
     );
 
+    // Separate phones: owns its own lobby, deal and screens.
+    if (stage === 'LIVE') {
+        return <RankMeLive data={DATA} onBack={() => setStage('SETUP')} onHome={onExit} />;
+    }
+
     // =====================================================================
     // SETUP
     // =====================================================================
@@ -251,6 +258,14 @@ export const RankMeGame: React.FC<RankMeGameProps> = ({ onExit }) => {
                 )}
                 <div className="flex-1 overflow-y-auto pb-10">
                     <p className="text-muted mb-4 text-sm text-center">Rank five things. See who can read you.</p>
+
+                    <div className="max-w-[340px] mx-auto w-full mb-4">
+                        <LiveEntryTile
+                            title="Play on separate phones"
+                            tagline="Rank in private while everyone predicts at once. Needs internet."
+                            onClick={() => { setNudge(null); setStage('LIVE'); }}
+                        />
+                    </div>
 
                     <div className="flex gap-1.5 justify-center mb-2 flex-wrap" role="tablist" aria-label="Game mode">
                         {MODES.map(m => (
