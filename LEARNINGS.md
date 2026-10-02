@@ -246,3 +246,11 @@ Format + method: `playbook/LEARNING_METHOD.md` in `instatank/time-tracker`.
 - Where else: (pending — answer at next wrap)
 - Quiz question: The same trap has now been written up four times and hit five. What single piece of work would make the fifth card unnecessary?
 - Internalized: no
+
+### 2026-10-02 — Vercel retired Node 20 and every deploy failed, behind a green check
+- What happened: the multiplayer work was finished and CI was green, but the first preview deploy had failed before installing anything: "Node.js Version 20.x is discontinued and must be upgraded." The project pinned Node 20 in `package.json`; the last production deploy a week earlier had worked, so nothing in our code changed, Vercel's rules did. Merging would have failed to deploy production too, even a plain redeploy of `main`. On the PR, the only Vercel check (*Vercel Preview Comments*) showed a green tick the whole time, because it reports that the bot posted its comment, not that the build worked. Caught only by opening the deployment's own state. Fixed by moving to Node 24 (the version Vercel asked for), verified locally on 24 and then on the preview (Redis self-test passing) before merging.
+- Concept: this is the 2026-06-01 Gemini card again, one layer down. A platform retires a runtime on its own schedule exactly as a provider retires a model ("vercel… especially vercel" was the founder's own answer on that card). The second lesson is about the signal: a green tick only means what that specific check measures. "Deployed" is proved by the deployment's status, never by a check with a similar name.
+- In my words: (pending — answer at next wrap)
+- Where else: (pending — answer at next wrap)
+- Quiz question: The PR shows a green Vercel tick and CI passed. Name the one place you look to know the app actually deployed, and one reason a platform could break your deploy without you changing a line.
+- Internalized: no
